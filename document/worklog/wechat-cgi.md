@@ -88,7 +88,7 @@ The running environment of the widget is divided into rendering layer and logic 
 
 The rendering layer and logic layer of the applet are managed by two threads respectively: the interface of the rendering layer uses WebView to render, and the logic layer uses JsCore threads to run JS scripts. There are many interfaces in a small program, so there are many WebView threads in the rendering layer. The communication between the two threads will be transferred through the Wechat client (hereinafter, the Native will be used to refer to the Wechat client), and the logical layer will send network requests through the Native forwarding. The communication model of the widget is shown in the figure below.
 
-<img src="./wechat-cgi-0.png">
+<img src="./markdownimg/wechat-cgi-0.png">
 
 ### Programs and Pages
 
@@ -150,4 +150,4 @@ The applet provides many APIs for developers to use, such as access to user info
 
 ## Hello World
 
-<img src="./wechat-cgi-1.png">
+<img src="./markdownimg/wechat-cgi-1.png">
