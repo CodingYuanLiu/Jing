@@ -3,47 +3,66 @@
     <view class="search flex-wrp">
         <view class="search-left flex-item">
             <image src="../../images/search.png"></image>
-            <input placeholder="搜索话题, 问题或人" placeholder-class="search-placeholder" />
+            <input placeholder="搜索活动, 商家或用户" placeholder-class="search-placeholder" />
         </view>
         <view class="search-right flex-item" bindtap="upper">
             <image src="../../images/lighting.png"></image>
         </view>
     </view>
-
-    <block wx:for="{{feed}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
-        <view class="feed-item">
-            <view class="feed-source">
-                <a class="">
-                    <view class="avatar">
-                        <image src="{{item.feed_source_img}}"></image>
+    <view >
+        <block wx:for="{{category}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="flex-wrp" style="display: block; width: 100%; float: top">
+                <block wx:for="{{item.r}}" wx:for-index="idx" wx:for-item="item_r" data-idx="{{idx}}">
+                    <view class="feed-item" style="width:17%; float: left">
+                        <view class="feed-source">
+                            <a class="">
+                                <view class="avatar">
+                                    <image src="{{item_r.icon}}"></image>
+                                </view>
+                                <text>{{item_r.name}}</text>
+                            </a>
+                        </view>
                     </view>
-                    <text>{{item.feed_source_name}}{{item.feed_source_txt}}</text>
-                </a>
-                <image class="item-more" mode="aspectFit" src="../../images/more.png"></image>
+                </block>
             </view>
-            <view class="feed-content">
-                <view class="question" qid="{{question_id}}" bindtap="bindQueTap">
-                    <a class="question-link">
-                        <text>{{item.question}}</text>
+        </block>
+    </view>
+    <!-- <view class="ctnt0" >
+        <block wx:for="{{feed}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="feed-item">
+                <view class="feed-source">
+                    <a class="">
+                        <view class="avatar">
+                            <image src="{{item.feed_source_img}}"></image>
+                        </view>
+                        <text>{{item.feed_source_name}}{{item.feed_source_txt}}</text>
                     </a>
+                    <image class="item-more" mode="aspectFit" src="../../images/more.png"></image>
                 </view>
-                <view class="answer-body">
-                    <view bindtap="bindItemTap">
-                        <text class="answer-txt" aid="{{answer_id}}">{{item.answer_ctnt}}</text>
+                <view class="feed-content">
+                    <view class="question" qid="{{question_id}}" bindtap="bindQueTap">
+                        <a class="question-link">
+                            <text>{{item.question}}</text>
+                        </a>
                     </view>
-                    <view class="answer-actions" bindtap="bindItemTap">
-                        <view class="like dot">
-                            <a>{{item.good_num}} 赞同 </a>
+                    <view class="answer-body">
+                        <view bindtap="bindItemTap">
+                            <text class="answer-txt" aid="{{answer_id}}">{{item.answer_ctnt}}</text>
                         </view>
-                        <view class="comments dot">
-                            <a>{{item.comment_num}} 评论 </a>
-                        </view>
-                        <view class="follow-it">
-                            <a>关注问题</a>
+                        <view class="answer-actions" bindtap="bindItemTap">
+                            <view class="like dot">
+                                <a>{{item.good_num}} 赞同 </a>
+                            </view>
+                            <view class="comments dot">
+                                <a>{{item.comment_num}} 评论 </a>
+                            </view>
+                            <view class="follow-it">
+                                <a>关注问题</a>
+                            </view>
                         </view>
                     </view>
                 </view>
             </view>
-        </view>
-    </block>
+        </block>
+    </view> -->
 </scroll-view>
