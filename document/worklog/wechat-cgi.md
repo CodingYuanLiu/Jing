@@ -147,3 +147,7 @@ Wechat provides abundant basic components for developers, who can assemble vario
 The applet provides many APIs for developers to use, such as access to user information, Wechat payment and so on.
 
 ***Note that most API callbacks are asynchronous, and you need to deal with the asynchronous problem of code logic.***
+
+## Hello World
+
+<img src="./wechat-cgi-1.png">
