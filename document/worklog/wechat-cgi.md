@@ -14,17 +14,13 @@
 
 JSON configuration file with `.json` suffix.
 
-JSON is a data format, not a programming language. In small programs, JSON plays the role of static configuration.
-
 #### 1. Applet configuration: app.json
 
 `App.json` is the global configuration of current applets, including all page paths, interface performance, network timeout, bottom tab, etc.
 
 #### 2. Tool configuration: project.config.json
 
-Usually when you use a tool, you will do some personalized configuration according to your preferences, such as interface color, compiler configuration, etc. When you change another computer to reinstall the tool, you also need to reconfigure.
-
-Considering this, the applet developer tool generates a `project.config.json` in the root directory of each project. Any configuration you make on the tool will be written to this file. When you reinstall the tool or change the computer, you just load the code package of the same project, and the developer tool will automatically help you restore the personalization of the project you were developing at that time. Configuration, which will include the color of the editor, code upload automatic compression and a series of other options.
+The applet developer tool generates a `project.config.json` in the root directory of each project. Any configuration you make on the tool will be written to this file. When you reinstall the tool or change the computer, you just load the code package of the same project, and the developer tool will automatically help you restore the personalization of the project you were developing at that time. Configuration, which will include the color of the editor, code upload automatic compression and a series of other options.
 
 #### 3. Page configuration: page.json
 
@@ -72,7 +68,7 @@ The Wechat applet provides a data binding mechanism similar to `React` and `Vue`
 
 ### WXSS Style
 
-WXSS has most of the features of CSS, and wechat-cgi have also made some extensions and modifications in WXSS.
+***WXSS has most of the features of CSS***, and wechat-cgi have also made some extensions and modifications in WXSS.
 
 1. New size units have been added. WXSS supports the new size unit `rpx`. You just need to submit it to the underlying of the wechat-cgi to convert to suit for different mobile devices. The result will be slightly different from the expected result due to float numbers.
 
@@ -82,4 +78,72 @@ WXSS has most of the features of CSS, and wechat-cgi have also made some extensi
 
 ### JSs
 
-Just like development of frontend, we write JS files to handle user operations.
+Just like development of frontend, ***we write JS files to handle user operations.***
+
+## Wechat-cgi Host Environment
+
+### Rendering Layer and Logical Layer
+
+The running environment of the widget is divided into rendering layer and logic layer, in which ***WXML template and WXSS style work in rendering layer and JS script work in logic layer.***
+
+The rendering layer and logic layer of the applet are managed by two threads respectively: the interface of the rendering layer uses WebView to render, and the logic layer uses JsCore threads to run JS scripts. There are many interfaces in a small program, so there are many WebView threads in the rendering layer. The communication between the two threads will be transferred through the Wechat client (hereinafter, the Native will be used to refer to the Wechat client), and the logical layer will send network requests through the Native forwarding. The communication model of the widget is shown in the figure below.
+
+<img src="./wechat-cgi-0.png">
+
+### Programs and Pages
+
+Before opening the widget, the client will download the code package of the whole widget locally.
+
+Through the pages field of app.json, you can know all the page paths of your current applet:
+
+```json
+{
+  "pages":[
+    "pages/index/index",
+    "pages/logs/logs"
+  ]
+}
+```
+
+The first page written in the pages field is the home page of the applet (the first page you see when you open the applet).
+
+After the applet starts, the onLaunch callback of the App instance defined by app.js is executed:
+
+```js
+App({
+  onLaunch: function () {
+    // 小程序启动之后 触发
+  }
+})
+```
+
+The whole applet has only one instance of App, which is shared by all pages.
+
+Next, let's take a brief look at how a page of the applet is written.
+
+You can see that there are actually four kinds of files under `pages/logs/logs`. The Wechat client will first generate an interface according to the `logs.json` configuration. You can define the color and text at the top of the interface in the JSON file. Next, the client loads the `WXML` structure and `WXSS` style of the page. Finally, the client loads `logs.js`, and you can see that the overall content of `logs.js` is as follows:
+
+```js
+Page ({)
+    data: {// Participating in Page Rendering Data
+        logs: []
+    }
+    onLoad: function (){
+        // Execute after page rendering
+    }
+}
+```
+
+`Page` is a page constructor that generates a page. When generating a page, the widget framework renders the `data` and `index.wxml` together to render the final structure, and you get the look of the widget you see.
+
+After rendering the interface, the page instance will receive a callback `onLoad`, where you can process your logic.
+
+### Components
+
+Wechat provides abundant basic components for developers, who can assemble various components to assemble their own small programs just like building blocks.
+
+### API
+
+The applet provides many APIs for developers to use, such as access to user information, Wechat payment and so on.
+
+***Note that most API callbacks are asynchronous, and you need to deal with the asynchronous problem of code logic.***
