@@ -171,3 +171,65 @@ func Find(key string) Pair {
 ```
 
 In model, we build a connection to mysql. At first, model connect database by uri, then register model and create table. Obviously, `Insert()` inserts a key-value pair to database, and `Find()` finds a key-value pair by `key`.
+
+## Run Beego with docker
+Firstly, pull mysql image and run it:
+``` bash
+docker run --name mysql-test -e MYSQL_ROOT_PASSWORD=yyyuan8868218 -d mysql:5.6
+```
+-e parameter is required to be the root password.
+Secondly, create a QuickStart database in mysql container
+``` bash
+docker exec -it mysql-test bash
+```
+In the container:
+``` bash
+mysql -u root -p
+```
+```sql
+create database QuickStart;
+```
+To see the ip of the container,use:
+``` bash
+root@2619804835c4:/# cat /etc/hosts
+127.0.0.1       localhost
+::1     localhost ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+172.17.0.2      2619804835c4
+```
+So in my go `model.go` file, change the address of mysql to:
+```go
+    orm.RegisterDataBase("default", "mysql", "root:yyyuan8868218@tcp(172.17.0.2:3306)/QuickStart?charset=utf8", 30)
+```
+
+Then create beego container. Firstly add a dockerfile:
+```dockerfile
+FROM golang:1.10.7
+EXPOSE 8080
+CMD ["/bin/bash"]
+```
+build and run the image
+```bash
+docker build -t go_dbtest .
+docker run -dit --name go_test1 -v C:\Users\Liu\go\src\:/go/src -p 8088:8080 go_dbtest:latest
+```
+C:\Users\Liu\go\src is the `GOPATH` of my win10, so that GOPATH\quickstart is my recent workdir.
+Entry the go container and get beego:
+```bash
+docker exec -it go_test1 bash
+```
+In the container:
+``` bash
+go get github.com/astaxie/beego 
+go get github.com/beego/bee 
+go get github.com/go-sql-driver/mysql
+go get github.com/astaxie/beego/orm
+```
+Now,run beego in the container manually
+```bash
+bee run
+```
+Now we can access the service on 8088.
