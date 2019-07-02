@@ -151,3 +151,9 @@ The applet provides many APIs for developers to use, such as access to user info
 ## Hello World
 
 <img src="./wechat-cgi-1.png">
+
+## Development
+
+Now the user interface has been initially developed. Code is in `../code/wechat-cgi/` folder.
+
+And today I bought a Aliyun domain name and doing some SSL things.
