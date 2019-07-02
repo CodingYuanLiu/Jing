@@ -5,6 +5,13 @@ App({
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
+    wx.request({
+        url: 'http://192.168.1.84:8088/book/all',
+        method: 'GET',
+        success: function(res) {
+            console.log(res)
+        }
+    })
   },
   getUserInfo:function(cb){
     var that = this

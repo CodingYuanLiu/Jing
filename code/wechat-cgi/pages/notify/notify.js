@@ -17,7 +17,7 @@ Page({
   data: {
     focus: false,
     inputValue: '',
-      navTab: ["通知", "私信"],
+      navTab: ["通知", "私信","群聊"],
       currentNavtab: "0"
   },
   bindButtonTap: function() {
