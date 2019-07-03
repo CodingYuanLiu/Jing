@@ -1,0 +1,66 @@
+<!--answer.wxml-->
+<view class="container">
+    <view class="question" bindtap="toQuestion">
+        <text class="question-title">{{content.title}}</text>
+    </view>
+    <view class="answerer-wrp">
+        <view class="bg-half"></view>
+        <view class="answerer flex-wrp">
+            <view class="avatar flex-item">
+                <image src="{{content.useravatar}}"></image>
+            </view>
+            <view class="answerer-info flex-item">
+                <text class="answerer-name">{{content.username}}</text>
+                <text class="answerer-des">{{content.usersign}}</text>
+            </view>
+            <view class="follow flex-item">
+                <text>十 关注</text>
+            </view>
+        </view>
+    </view>
+    <view class="answer-content">
+        <text>{{content.text}}
+        </text>
+        <image src="../../images/1444983318907-_DSC1826.jpg"></image>
+        <image src="../../images/1444983318907-_DSC1826.jpg"></image>
+    </view>
+
+    <view class="answer-footer flex-wrp">
+        <view class="operation ">
+            <!-- <view class="operation-btn flex-item">
+                    <image src="../../images/heart2.png"></image>
+                    <text>感谢</text>
+                </view> -->
+
+            <view class="operation-btn flex-item" style="float: left">
+                <image src="../../images/icons/add_line.png"></image>
+                <text>加入</text>
+            </view>
+            <view class="operation-btn flex-item" style="float: left">
+                <image src="../../images/icons/good.png"></image>
+                <text>302</text>
+            </view>
+            <view class="search flex-wrp">
+            <view class="search-left flex-item">
+                <input placeholder="添加评论" placeholder-class="search-placeholder" />
+            </view>
+            <view class="search-right flex-item" bindtap="upper">
+                <image src="../../images/icons/icon_community_line.png"></image>
+            </view>
+        </view>
+        </view>
+        <!-- <view class="good" style="width: 50rpx">
+            <!-- <view class="good-bad">
+                <image src="../../images/icons/good.png"></image>
+                <view class="good-num">2.1k</view>
+            </view> -->
+        <!-- <view class="good-bad">
+                <image src="../../images/good-bad.png"></image>
+            </view>
+        </view> -->
+
+        
+
+
+    </view>
+</view>
