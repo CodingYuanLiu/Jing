@@ -12,6 +12,29 @@ Page({
         usersign: "我是一个很开心的人",
         useravatar: "../../images/icon1.jpeg",
         text: "想吃肯德基，满50减15券差23元！上的风格化法国的手法对付国家和地方打赏！"
+    },
+    comment: {
+        length: 3,
+        content: [
+            {
+                avatar: "../../images/icon8.jpg",
+                nickname: "George",
+                lasttime: "3 天前",
+                content: "我我我！",
+            },
+            {
+                avatar: "../../images/icon9.jpeg",
+                nickname: "Alex",
+                lasttime: "3 天前",
+                content: "我我我！",
+            },
+            {
+                avatar: "../../images/icon8.jpg",
+                nickname: "sssnnne",
+                lasttime: "1 天前",
+                content: "我aa我aa我！",
+            },
+        ]
     }
   },
   //事件处理函数

@@ -1,0 +1,21 @@
+<!--pages/userinfo/userinfo.wxml-->
+<view>
+    <view class="user flex-wrp">
+        <view class="avatar flex-item">
+            <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
+        </view>
+        <view class="user-info flex-item">
+            <text style="font-size:40rpx; padding-top: 20rpx">{{user.username}}</text>
+        </view>
+    </view>
+</view>
+<view>
+    <i-panel title="个人信息">
+        <i-input value="{{ user.nickname }}" autofocus="{{!editing}}"  type="text" maxlength="10" title="昵称" disabled="{{!editing}}"/>
+        <i-input value="{{ user.phone }}" type="text" title="联系电话" disabled="{{!editing}}"/>
+        <i-input value="{{ user.signature }}" type="text" title="个性签名" maxlength="50" 
+        disabled="{{!editing}}"/>
+    </i-panel>
+    <i-button type="primary" bind:click="handleClick">{{button_message}}</i-button>
+
+</view>

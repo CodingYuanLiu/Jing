@@ -12,6 +12,11 @@ Page({
       url: ''
     })
   },
+  handleToUserInfo: function () {
+      wx.navigateTo({
+          url: '/pages/userinfo/userinfo',
+      })
+  },
   onLoad: function () {
     console.log('onLoad')
     var that = this

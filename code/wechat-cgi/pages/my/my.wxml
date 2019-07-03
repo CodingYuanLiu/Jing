@@ -1,6 +1,6 @@
 
 <view class="container more">
-  <view class="user flex-wrp">
+  <view class="user flex-wrp" bindtap="handleToUserInfo">
     <view class="avatar flex-item">
       <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
     </view>
