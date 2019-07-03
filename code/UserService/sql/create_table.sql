@@ -1,3 +1,7 @@
+create database jing charset utf8;
+
+use jing;
+
 create table user (
 	id    int  not null  auto_increment,
     username varchar(20) not null,
