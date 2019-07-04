@@ -8,7 +8,9 @@
         "pages/answer/answer",
         "pages/question/question",
         "pages/comment/comment",
-        "pages/userinfo/userinfo"
+        "pages/userinfo/userinfo",
+        "pages/login/login",
+        "pages/signup/signup"
     ],
     "window": {
         "backgroundTextStyle": "light",
