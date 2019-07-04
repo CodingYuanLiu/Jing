@@ -10,9 +10,6 @@ import "../jaccount"
 
 func JaccountLogin(ctx iris.Context) {
 	jaccount.SendCode("KIr40g1K90EObtNARwda", "basic", "https://sebastianj1wzyd.xyz/getuserinfo")
-	_, _ = ctx.JSON(iris.Map{
-		"status": "200",
-	})
 }
 
 func GetUserInfo(ctx iris.Context) {
