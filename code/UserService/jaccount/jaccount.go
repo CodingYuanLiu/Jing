@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
-	"strings"
 )
 
 type JSON map[string]interface{}
@@ -23,18 +21,13 @@ func SendCode(clientId string, scope string, redirectUri string) {
 }
 
 func GetAccessToken(code string, clientId string, clientSecret string, redirectUri string) string {
-	data := url.Values{
+	resp, _ := http.PostForm("https://jaccount.sjtu.edu.cn/oauth2/token", url.Values{
 		"grant_type": {"authorization_code"},
 		"code": {code},
 		"redirect_uri": {redirectUri},
 		"client_id": {clientId},
 		"client_secret": {clientSecret},
-	}
-	req, _ := http.NewRequest("POST", "https://jaccount.sjtu.edu.cn/oauth2/token", strings.NewReader(data.Encode()))
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
-	client := &http.Client{}
-	resp, _ := client.Do(req)
+	})
 	respJson, _ := ioutil.ReadAll(resp.Body)
 	fmt.Printf("%s\n", respJson)
 	j := JSON{}

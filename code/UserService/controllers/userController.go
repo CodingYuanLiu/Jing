@@ -14,15 +14,8 @@ func JaccountLogin(ctx iris.Context) {
 
 func GetUserInfo(ctx iris.Context) {
 	code := ctx.URLParam("code")
-	accessToken := jaccount.GetAccessToken(code, "KIr40g1K90EObtNARwda", "16BA4A646213794CD6C72F32F219D37A4AE51345897AC889", "https://sebastianj1wzyd.xyz/print")
+	accessToken := jaccount.GetAccessToken(code, "KIr40g1K90EObtNARwda", "16BA4A646213794CD6C72F32F219D37A4AE51345897AC889", "https://sebastianj1wzyd.xyz/getuserinfo")
 	_, _ = ctx.JSON(jaccount.GetProfile(accessToken))
-}
-
-func Print(ctx iris.Context) {
-	n := iris.Map{}
-	fmt.Println(ctx.String())
-	ctx.ReadJSON(&n)
-	fmt.Print(n)
 }
 
 func QueryUser(ctx iris.Context) {
