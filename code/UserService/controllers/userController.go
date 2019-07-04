@@ -5,6 +5,12 @@ import "strconv"
 import "fmt"
 import "../models"
 
+func Print(ctx iris.Context) {
+	n := iris.Map{}
+	ctx.ReadJSON(&n)
+	fmt.Print(n)
+}
+
 func QueryUser(ctx iris.Context) {
 	s_id := ctx.URLParam("id")
 	id, err := strconv.Atoi(s_id)

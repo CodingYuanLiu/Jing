@@ -9,5 +9,6 @@ func main() {
 	app.Post("/updateuser", controllers.UpdateUser)
 	app.Post("/insertuser", controllers.InsertUser)
 	app.Post("/login", controllers.Login)
+	app.Get("/print", controllers.Print)
 	_ = app.Run(iris.Addr(":30251"))
 }
