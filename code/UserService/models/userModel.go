@@ -9,8 +9,10 @@ var db *sql.DB
 
 func QueryUser(id int) iris.Map {
 	var username, password, nickname, phone string
-	err := db.QueryRow(fmt.Sprintf("select * from user where id = %d", id)).Scan(&id, &username, &password, &nickname, &phone)
+	query := fmt.Sprintf("select * from user where id = %d", id)
+	err := db.QueryRow(query).Scan(&id, &username, &password, &nickname, &phone)
 	if err != nil {
+		fmt.Println(query)
 		fmt.Println(err)
 		return iris.Map{
 			"status": "error",
@@ -33,9 +35,11 @@ func UpdateUser(form iris.Map) iris.Map {
 	id := form["id"]
 	nickname := form["nickname"]
 	phone := form["phone"]
-	_, err := db.Exec(fmt.Sprintf("update user set nickname=\"%s\", phone=\"%s\" where id = %d", nickname, phone, id))
+	query := fmt.Sprintf("update user set nickname=\"%s\", phone=\"%s\" where id = %d", nickname, phone, id)
+	_, err := db.Exec(query)
 	if err != nil {
 		fmt.Println(err)
+		fmt.Println(query)
 		return iris.Map{
 			"status": "error",
 		}
