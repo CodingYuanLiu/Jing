@@ -55,7 +55,7 @@ func Login(form iris.Map) iris.Map {
 	username := form["username"]
 	password := form["password"]
 	var id int
-	query := fmt.Sprintf("select id from user where username='%s' and password='%s", username, password)
+	query := fmt.Sprintf("select id from user where username='%s' and `password`='%s'", username, password)
 	err := db.QueryRow(query).Scan(&id)
 	if err != nil {
 		fmt.Println(query)
