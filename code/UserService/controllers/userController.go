@@ -9,7 +9,7 @@ import "../models"
 import "../jaccount"
 
 func JaccountLogin(ctx iris.Context) {
-	jaccount.SendCode("KIr40g1K90EObtNARwda", "basic", "https://sebastianj1wzyd.xyz/getuserinfo")
+	ctx.Redirect(jaccount.GetRawLoginUrl("KIr40g1K90EObtNARwda", "basic", "https://sebastianj1wzyd.xyz/getuserinfo"))
 }
 
 func GetUserInfo(ctx iris.Context) {
