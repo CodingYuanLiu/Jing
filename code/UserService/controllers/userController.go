@@ -15,6 +15,15 @@ func QueryUser(ctx iris.Context) {
 	_, _ = ctx.JSON(models.QueryUser(id))
 }
 
+func Login(ctx iris.Context) {
+	n := iris.Map{}
+	if err := ctx.ReadJSON(&n); err != nil {
+		fmt.Println(err)
+		return
+	}
+	_, _ = ctx.JSON(models.Login(n))
+}
+
 
 func UpdateUser(ctx iris.Context) {
 	n := iris.Map{}

@@ -7,6 +7,8 @@ import "github.com/kataras/iris"
 
 var db *sql.DB
 
+// To do: forbid SQL injection attack
+
 func QueryUser(id int) iris.Map {
 	var username, password, nickname, phone string
 	query := fmt.Sprintf("select * from user where id = %d", id)
@@ -35,7 +37,7 @@ func UpdateUser(form iris.Map) iris.Map {
 	id := form["id"]
 	nickname := form["nickname"]
 	phone := form["phone"]
-	query := fmt.Sprintf("update user set nickname=\"%s\", phone=\"%s\" where id = %f", nickname, phone, id)
+	query := fmt.Sprintf("update user set nickname='%s', phone='%s' where id = %f", nickname, phone, id)
 	_, err := db.Exec(query)
 	if err != nil {
 		fmt.Println(err)
@@ -46,6 +48,24 @@ func UpdateUser(form iris.Map) iris.Map {
 	}
 	return iris.Map{
 		"status": 200,
+	}
+}
+
+func Login(form iris.Map) iris.Map {
+	username := form["username"]
+	password := form["password"]
+	var id int
+	query := fmt.Sprintf("select id from user where username='%s' and password='%s", username, password)
+	err := db.QueryRow(query).Scan(&id)
+	if err != nil {
+		fmt.Println(query)
+		fmt.Println(err)
+		return iris.Map{
+			"status": "error",
+			"msg": "Bad credentials",
+		}
+	} else {
+		return QueryUser(id)
 	}
 }
 
