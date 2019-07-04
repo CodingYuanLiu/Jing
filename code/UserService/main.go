@@ -8,5 +8,5 @@ func main() {
 	app.Get("/queryuser", controllers.QueryUser)
 	app.Post("/updateuser", controllers.UpdateUser)
 	app.Post("/insertuser", controllers.InsertUser)
-	_ = app.Run(iris.Addr(":8080"))
+	_ = app.Run(iris.Addr(":30251"))
 }

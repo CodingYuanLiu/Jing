@@ -13,6 +13,7 @@ func QueryUser(id int) iris.Map {
 	if err != nil {
 		fmt.Println(err)
 		return iris.Map{
+			"status": "error",
 			"msg": fmt.Sprintf("User #%d not exists", id),
 		}
 	}
@@ -49,8 +50,10 @@ func InsertUser(form iris.Map) iris.Map {
 	password := form["password"]
 	nickname := form["nickname"]
 	phone := form["phone"]
-	_, err := db.Exec(fmt.Sprintf("insert into user (username, `password`, nickname, phone) values ('%s', '%s', '%s', '%s')", username, password, nickname, phone))
+	query := fmt.Sprintf("insert into user (username, `password`, nickname, phone) values ('%s', '%s', '%s', '%s')", username, password, nickname, phone)
+	_, err := db.Exec(query)
 	if err != nil {
+		fmt.Println(query)
 		fmt.Println(err)
 		return iris.Map{
 			"status": "error",
@@ -63,7 +66,7 @@ func InsertUser(form iris.Map) iris.Map {
 
 func init() {
 	var err error
-	db, err = sql.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
+	db, err = sql.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}
