@@ -35,7 +35,7 @@ func UpdateUser(form iris.Map) iris.Map {
 	id := form["id"]
 	nickname := form["nickname"]
 	phone := form["phone"]
-	query := fmt.Sprintf("update user set nickname=\"%s\", phone=\"%s\" where id = %d", nickname, phone, id)
+	query := fmt.Sprintf("update user set nickname=\"%s\", phone=\"%s\" where id = %f", nickname, phone, id)
 	_, err := db.Exec(query)
 	if err != nil {
 		fmt.Println(err)
@@ -70,7 +70,7 @@ func InsertUser(form iris.Map) iris.Map {
 
 func init() {
 	var err error
-	db, err = sql.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
+	db, err = sql.Open("mysql", "root:jing@tcp(mysql-jing:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}
