@@ -163,4 +163,58 @@ service := micro.NewService(
 )
 ```
 ### Wrappers
-go-Micro 可以利用Decorator pattern的思想，对已有的服务进行包装加工。
+go-Micro 可以利用Decorator pattern的思想，对已有的服务进行包装加工。例如,在server端我们给handler加一个输出日志的功能：
+```go
+// implements the server.HandlerWrapper
+func logWrapper(fn server.HandlerFunc) server.HandlerFunc {
+	return func(ctx context.Context, req server.Request, rsp interface{}) error {
+		fmt.Printf("[%v] server request: %s", time.Now(), req.Endpoint())
+		return fn(ctx, req, rsp)
+	}
+}
+```
+然后用这个函数去Decorate我们的服务，给我们的服务加上这个功能：
+``` go
+service := micro.NewService(
+	micro.Name("greeter"),
+	// wrap the handler
+	micro.WrapHandler(logWrapper),
+)
+```
+Client同样可以用这样的方法添加功能：
+``` go
+type logWrapper struct {
+	client.Client
+}
+
+func (l *logWrapper) Call(ctx context.Context, req client.Request, rsp interface{}, opts ...client.CallOption) error {
+	fmt.Printf("[wrapper] client request to service: %s endpoint: %s\n", req.Service(), req.Endpoint())
+	return l.Client.Call(ctx, req, rsp)
+}
+
+// implements client.Wrapper as logWrapper
+func logWrap(c client.Client) client.Client {
+	return &logWrapper{c}
+}
+```
+```go
+service := micro.NewService(
+	micro.Name("greeter.client"),//这个地方的代码，官方文档上有误！
+	// wrap the client
+	micro.WrapClient(logWrap),
+)
+```
+
+### 大坑: 选择服务注册ip
+> 这是一个困扰了我数日的问题，为此我还向github官方发了个issue：https://github.com/micro/examples/issues/70
+
+我使用的windows系统。若是不选择服务注册的ip，则系统会把服务注册到一个我用ipconfig查不到的ip上面。因此访问这个服务会报`{"id":"go.micro.client","code":408,"detail":"call timeout: context deadline exceeded","status":"Request Timeout"} `错误。</br>
+因此，我需要手动选择服务注册的ip地址。
+``` go
+// server.go
+service := micro.NewService(
+		micro.Name("go.micro.srv.greeter"),
+		micro.Address("127.0.0.1:54782"),//端口号随便指定一个
+	)
+```
+之后这个服务就会被注册到127.0.0.1上面，并且可以成功访问。
