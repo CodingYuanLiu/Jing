@@ -133,7 +133,34 @@ Hello John
 ```
 
 ### Plugins
-go-Micro 默认了一系列interface来实现一系列功能。但是这些功能都是可以通过插件灵活替换的。比如可以利用etcd来服务注册而不是默认的consul。
+go-Micro 默认了一系列interface来实现一系列功能。但是这些功能都是可以通过插件灵活替换的。比如可以利用etcd来服务注册而不是默认的consul(新版go-micro的默认服务注册应该是mdns)。
+修改服务注册为consul:
 
+main.go: import plugins
+```go
+import (
+	"context"
+	"fmt"
+	"time"
+
+	proto "github.com/micro/examples/service/proto"
+	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/registry"
+	"github.com/micro/go-micro/registry/consul"
+)
+```
+使用注册服务
+``` go
+reg := consul.NewRegistry(func(op *registry.Options) {
+	op.Addrs = []string{
+		"127.0.0.1:8500",
+	}
+})
+// Create a new service. Optionally include some options here.
+service := micro.NewService(
+	micro.Name("greeter"),
+	micro.Registry(reg),
+)
+```
 ### Wrappers
 go-Micro 可以利用Decorator pattern的思想，对已有的服务进行包装加工。
