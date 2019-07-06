@@ -128,3 +128,42 @@ forward-socks5t   /    127.0.0.1:1080 .
 如果包了`HTTP 408 timeout`错误，可以在`consul`检查一下服务注册的`ip`,也就是`Address`那一栏，是不是`Address`是不可访问的，如果是，这个具体怎么办我也不是很清楚，继续学习中...
 
 希望之后的学习不要再碰到这么大的坑了，这个坑浪费我一整天的时间了
+
+## examples 学习
+
+- [] api
+- [] booking
+- [] broker
+- [] client
+- [] command
+- [] config
+- [] event
+- [] filter
+- [] flags
+- [] form
+- [] function
+- [] fetip
+- [] graceful
+- [x] greeter
+- [] grpc
+- [] heartbeat
+- [x] helloworld
+- [] kubernetes
+- [] metadata
+- [] mocking
+- [] noproto
+- [] options
+- [] plugins
+- [] proxy
+- [] pubsub
+- [] redirect
+- [] roundrobin
+- [] secure
+- [] server
+- [] service
+- [] sharding
+- [] shutdown
+- [] stream
+- [] template
+- [] waitgroup
+- [] wrapper
