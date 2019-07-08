@@ -1,12 +1,14 @@
 package handler
 
 import (
-	"jing/app/login/dao"
-	"jing/app/login/model"
-	login "jing/app/login/proto/login"
 	"context"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jameskeane/bcrypt"
+	"jing/app/login/dao"
+	"jing/app/login/model"
+	login "jing/app/login/proto/login"
+	userDao "jing/app/user/dao"
+	"strconv"
 	"time"
 )
 
@@ -14,7 +16,7 @@ type LoginService struct {
 
 }
 
-func buildToken(user dao.User) (tokenString string) {
+func BuildToken(user userDao.User) (tokenString string) {
 	claims := make(jwt.MapClaims)
 	claims["username"] = user.Username
 	claims["userId"] = user.ID
@@ -46,7 +48,7 @@ func (s *LoginService) LoginByJaccount(ctx context.Context, in *login.LJReq, out
 		out.Status = -2
 	} else {
 		out.Status = 0
-		out.JwtToken = buildToken(user)
+		out.JwtToken = BuildToken(user)
 	}
 	return nil
 }
@@ -59,7 +61,7 @@ func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *logi
 	} else {
 		if bcrypt.Match(in.Password, user.Password) {
 			out.Status = 200
-			out.JwtToken = buildToken(user)
+			out.JwtToken = BuildToken(user)
 			return nil
 		} else {
 			out.Status = 401
@@ -73,9 +75,9 @@ func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login
 	resp.Status = status
 	if status == 0 {
 		claims := token.Claims.(jwt.MapClaims)
-		resp.UserId = claims["userId"].(int32)
+		resp.UserId = int32(claims["userId"].(float64))
 		resp.Username = claims["username"].(string)
-		resp.Admin = claims["admin"].(bool)
+		resp.Admin, _ = strconv.ParseBool(claims["admin"].(string))
 	} else {
 		resp.UserId = -1
 		resp.Username = ""
