@@ -1,11 +1,11 @@
 package dao
 
 import (
-	"../model"
 	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"jing/app/user/model"
 )
 
 var db *gorm.DB
@@ -31,7 +31,7 @@ func FindUserById(id int) (User, error) {
 
 func FindUserByUsername(username string) (User, error) {
 	user := User{}
-	db.Where("username", username).First(&user)
+	db.Where("username = ?", username).First(&user)
 	if user.ID == 0 {
 		return user, errors.New("user not found")
 	}
@@ -59,7 +59,7 @@ func CreateUser(json model.JSON) error {
 	user.Phone = json["phone"].(string)
 	user.Nickname = json["nickname"].(string)
 	user.Jaccount = json["jaccount"].(string)
-	db.Save(user)
+	db.Create(&user)
 	return nil
 }
 

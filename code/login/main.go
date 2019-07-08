@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/micro/go-micro"
 	"jing/app/login/handler"
 	login "jing/app/login/proto/login"
-	"github.com/micro/go-micro"
 )
 
 type Say struct{}
