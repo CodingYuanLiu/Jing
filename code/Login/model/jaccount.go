@@ -1,4 +1,4 @@
-package jaccount
+package model
 
 import (
 	"encoding/json"
@@ -8,16 +8,9 @@ import (
 	"net/url"
 )
 
-type JSON map[string]interface{}
-
 func GetRawLoginUrl(clientId string, scope string, redirectUri string) string {
 	return fmt.Sprintf("https://jaccount.sjtu.edu.cn/oauth2/authorize?response_type=code&client_id=%s&scope=%s"+
 		"&redirect_uri=%s", clientId, scope, redirectUri)
-}
-
-func SendCode(clientId string, scope string, redirectUri string) {
-	getUrl := GetRawLoginUrl(clientId, scope, redirectUri)
-	_, _ = http.Get(getUrl)
 }
 
 func GetAccessToken(code string, clientId string, clientSecret string, redirectUri string) string {
@@ -29,7 +22,6 @@ func GetAccessToken(code string, clientId string, clientSecret string, redirectU
 		"client_secret": {clientSecret},
 	})
 	respJson, _ := ioutil.ReadAll(resp.Body)
-	fmt.Printf("%s\n", respJson)
 	j := JSON{}
 	_ = json.Unmarshal(respJson, &j)
 	return j["access_token"].(string)

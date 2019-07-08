@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package go.micro.srv.user;
+
+service User {
+    rpc LoginByJaccount(LJReq) returns (TokenResp) {}
+    rpc LoginByUP(UPReq) returns (TokenResp) {}
+    rpc GetAccessToken(CodeReq) returns (AccessResp) {}
+}
