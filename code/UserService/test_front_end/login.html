@@ -1,0 +1,77 @@
+<html>
+    <header>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </header>
+    <style>
+        #login {
+            border: 1px solid black;
+            width: fit-content;
+            padding: 20px;
+            margin: 0 auto; 
+        }
+        #login div {
+            padding: 10px;
+        }
+        #login div a {
+            width: 70px;
+            display: inline-block;
+        }
+        #login button {
+            padding: 5px;
+            margin: 5px;
+        }
+    </style>
+    <div id="login">
+        <div>
+            <a>用户名</a>
+            <input v-model="username">
+        </div>
+        <div>
+            <a>密码</a>
+            <input v-model="password">
+        </div>
+        <button @click="login">登录</button>
+        <button @click="jaccount">通过Jaccount登录</button>
+        <button @click="query">查询</button>
+    </div>
+    <footer>
+        <script>
+            var a = new Vue({
+                el: "#login",
+                data: {
+                    username: '',
+                    password: ''
+                },
+                methods: {
+                    login: function() {
+                        axios({
+                            method: "post",
+                            url: "http://localhost:8080/login",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                            },
+                            data: { username: this.username, password: this.password },
+                            params: { username: this.username, password: this.password },
+                            withCredentials: true,
+                        }).then(response => {
+                            window.alert("成功！");
+                        }).catch(error => {
+                            window.alert("失败！");
+                        })
+                    },
+                    jaccount: function() {
+                        axios.get("http://localhost:8080/jaccount").then(response => window.location.href = response.data)
+                    },
+                    query: function() {
+                        axios.get("http://localhost:8080/queryuser", {
+                            withCredentials: true,
+                        }).then(response => {
+                            console.log(response);
+                        })
+                    }
+                }
+            })
+        </script>
+    </footer>
+</html>
