@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"jing/app/login/dao"
-	"jing/app/login/model"
-	login "jing/app/login/proto/login"
 	"context"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jameskeane/bcrypt"
+	"jing/app/login/dao"
+	"jing/app/login/model"
+	login "jing/app/login/proto/login"
 	"time"
 )
 
