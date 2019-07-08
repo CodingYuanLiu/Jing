@@ -2,19 +2,13 @@ def label = "jenkins-jnlp-slave"
 podTemplate(label: label, cloud: 'kubernetes') {
     node(label){
         stage('Build') {
-            steps {
-                echo 'Building..'
-            }
+            echo 'Building..'
         }
         stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
+            echo 'Testing..'
         }
         stage('Deploy') {
-            steps {
-                echo 'Deploying....'
-            }
+            echo 'Deploying....'
         }
     }
 }
