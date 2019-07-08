@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"./handler"
-	login "./proto/login"
+	"jing/app/login/handler"
+	login "jing/app/login/proto/login"
 	"github.com/micro/go-micro"
 )
 

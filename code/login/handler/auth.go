@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"../dao"
-	"../model"
-	login "../proto/login"
+	"jing/app/login/dao"
+	"jing/app/login/model"
+	login "jing/app/login/proto/login"
 	"context"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jameskeane/bcrypt"
