@@ -5,22 +5,13 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	userDao "jing/app/user/dao"
 )
 
 var db *gorm.DB
 
-type User struct {
-	ID int 				`gorm:"primary_key;auto_increment"`
-	Username string		`gorm:"not null"`
-	Password string		`gorm:"not null"`
-	Nickname string		`gorm:"not null"`
-	Phone string		`gorm:"not null"`
-	Signature string
-	Jaccount string		`gorm:"not null"`
-}
-
-func FindUserByJaccount(jaccount string) (User, error) {
-	user := User{}
+func FindUserByJaccount(jaccount string) (userDao.User, error) {
+	user := userDao.User{}
 	db.Where("jaccount = ?", jaccount).First(&user)
 	if user.ID == 0 {
 		return user, errors.New("user not found")
@@ -28,8 +19,8 @@ func FindUserByJaccount(jaccount string) (User, error) {
 	return user, nil
 }
 
-func FindUserByUsername(username string) (User, error) {
-	user := User{}
+func FindUserByUsername(username string) (userDao.User, error) {
+	user := userDao.User{}
 	db.Where("username = ?", username).First(&user)
 	if user.ID == 0 {
 		return user, errors.New("user not found")
@@ -44,8 +35,8 @@ func init()  {
 	if err != nil {
 		fmt.Println(err)
 	}
-	if !db.HasTable(&User{}) {
-		db.CreateTable(&User{})
+	if !db.HasTable(&userDao.User{}) {
+		db.CreateTable(&userDao.User{})
 	}
 	return
 }
