@@ -4,6 +4,7 @@ podTemplate(label: label, cloud: 'kubernetes') {
         stage('checkout git') {
             checkout develop
             sh 'ls'
+            sh 'echo "hello"'
         }
         stage('another') {
             echo 'hello'
