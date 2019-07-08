@@ -35,7 +35,7 @@ func GetAccessToken(code string, clientId string, clientSecret string, redirectU
 	return j["access_token"].(string)
 }
 
-func GetProfile(accessToken string) map[string]interface{} {
+func GetProfile(accessToken string) JSON {
 	req, _ := http.NewRequest("GET", "https://api.sjtu.edu.cn/v1/me/profile", nil)
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 	client := &http.Client{}
@@ -43,5 +43,5 @@ func GetProfile(accessToken string) map[string]interface{} {
 	respJson, _ := ioutil.ReadAll(resp.Body)
 	j := JSON{}
 	_ = json.Unmarshal(respJson, &j)
-	return j["entities"].([]interface{})[0].(map[string]interface{})
+	return j
 }
