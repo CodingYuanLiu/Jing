@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package activity;
+
+service Activity{
+    rpc Publish(PubReq) returns (PubResp){}
+    //rpc Modify(MdfReq) returns (MdfResp){}
+    //rpc Delete(DltReq) returns (DltResp){}
+    //rpc Query(QryReq) returns (QryResp){}
+}
+
+message PubReq{
+   int32 actid = 1;
+   string type = 2;
+   string createTime = 3;
+   string endTime = 4;
+   string title = 5;
+   string description = 6;
+   repeated string tag = 7;
+}
+message PubResp{
+    int32 status = 1;
+    string description = 2;
+}
+/*
+message MdfReq{}
+message MdfResp{}
+message DltReq{}
+message DltResp{}
+message QryReq{}
+message QryResp{}
+*/

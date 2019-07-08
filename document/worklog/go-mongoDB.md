@@ -102,8 +102,8 @@ c.Remove(bson.M{"name": "Jimmy Kuu"})
 ### Insert
 ``` go
 temp := bookcomment{
-    Bnum:232,
-    Comment: []string{
+    Bnum:212, // Book number
+    Comment: []string{ // Book comments
         "comment1",
         "comment2",
     },
