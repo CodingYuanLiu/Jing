@@ -14,6 +14,7 @@ podTemplate(label: label, cloud: 'kubernetes') {
             ls
             cd login 
             ls
+            go build login.go
             """
         }
         stage('Deploy') {
