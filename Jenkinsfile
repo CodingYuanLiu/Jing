@@ -15,6 +15,19 @@ podTemplate(label: label, cloud: 'kubernetes') {
             cd login 
             ls
             go build login.go
+            cd ..
+            """
+            sh """
+            cd api-gateway
+            ls
+            go build main.go
+            cd ..
+            """
+            sh """
+            cd user 
+            ls
+            go build user.go
+            cd ..
             """
         }
         stage('Deploy') {
