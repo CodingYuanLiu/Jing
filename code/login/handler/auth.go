@@ -76,7 +76,7 @@ func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *logi
 func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *login.TokenResp) error {
 	code := in.Code
 	resp, err := http.Get(fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-		"wx2f062d3bd8d4e1ba", "91400ecabfae4bcd51870b4e521c5179", code))
+		"wx5bd0c2b91b75fd41", "d074420c87722879111087314aa4b17d", code))
 	if err != nil {
 		out.Status = -1
 		return nil
