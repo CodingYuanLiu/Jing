@@ -109,9 +109,7 @@ func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
 	bindRsp, _ := loginClient.CallBindJacAndWx(jwt, jac)
 
 	if bindRsp.Status == 0 {
-		c.JSON(http.StatusOK, map[string]string {
-			"message" : "Jaccount and wechat bind Ok",
-		})
+		c.String(http.StatusOK, "绑定成功，重新在小程序中登录即可")
 	} else if bindRsp.Status > 0 {
 		c.JSON(http.StatusInternalServerError, map[string]string {
 			"message" : "Bind error",
