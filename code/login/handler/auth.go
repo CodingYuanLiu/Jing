@@ -84,16 +84,16 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 	respJson, _ := ioutil.ReadAll(resp.Body)
 	j := model.JSON{}
 	_ = json.Unmarshal(respJson, &j)
-	fmt.Println(j)
-	errcode := int(j["errcode"].(float64))
-	if errcode == 40029 {
-		out.Status = 1
-		return nil
-	} else if errcode != 0 {
-		out.Status = -1
-		return nil
+	if j["errcode"] != nil {
+		errcode := int(j["errcode"].(float64))
+		if errcode == 40029 {
+			out.Status = 1
+			return nil
+		} else if errcode != 0 {
+			out.Status = -1
+			return nil
+		}
 	}
-	fmt.Println(j)
 	openId := j["openid"].(string)
 	user, err := dao.FindUserByOpenId(openId)
 	if err != nil {
