@@ -105,7 +105,7 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
 	code := c.Param("code")
 	jwt := c.Param("jwt")
-	jacRsp, _ := loginClient.CallGetJac(code, "https://sebastianj1wzyd.xyz/api/public/wx/redirect/?jwt=" + jwt)
+	jacRsp, _ := loginClient.CallGetJac(code, "https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + jwt)
 
 	jac := jacRsp.Jaccount
 
