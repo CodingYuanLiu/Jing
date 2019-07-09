@@ -116,6 +116,8 @@ func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq
 	if status == 0 {
 		claims := token.Claims.(jwt.MapClaims)
 		userId := int(claims["userId"].(float64))
+		fmt.Println(userId)
+		fmt.Println(in.Jaccount)
 		_, err := dao.FindUserByJaccount(in.Jaccount)
 		if err != nil {
 			err2 := dao.BindJaccountById(userId, in.Jaccount)

@@ -3,7 +3,6 @@ package controller_login
 import "C"
 import (
 	"encoding/base64"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/skip2/go-qrcode"
 	loginClient "jing/app/api-gateway/cli/login"
@@ -103,8 +102,6 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
 	code := c.Query("code")
 	jwt := c.Query("jwt")
-	fmt.Println(jwt)
-	fmt.Println(code)
 	jacRsp, _ := loginClient.CallGetJac(code, "https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + jwt)
 
 	jac := jacRsp.Jaccount
