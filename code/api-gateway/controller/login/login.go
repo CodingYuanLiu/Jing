@@ -108,8 +108,10 @@ func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
 	jacRsp, _ := loginClient.CallGetJac(code)
 
 	jac := jacRsp.Jaccount
+	log.Println(jacRsp.Jaccount)
 
 	bindRsp, _ := loginClient.CallBindJacAndWx(jwt, jac)
+	log.Println(bindRsp.Status)
 
 	if bindRsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]string {
