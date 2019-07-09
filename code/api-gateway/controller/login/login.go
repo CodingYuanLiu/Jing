@@ -2,8 +2,9 @@ package controller_login
 
 import "C"
 import (
+	"encoding/base64"
 	"github.com/gin-gonic/gin"
-	qrcode "github.com/skip2/go-qrcode"
+	"github.com/skip2/go-qrcode"
 	loginClient "jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
 	"log"
@@ -87,7 +88,8 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 		if err != nil {
 			log.Println(err)
 		}
-		c.Data(http.StatusMovedPermanently, "image/png", png)
+		str := base64.StdEncoding.EncodeToString(png)
+		c.String(http.StatusMovedPermanently, "image/png", str)
 	} else if rsp.Status == 22 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Need update user info",
