@@ -25,6 +25,9 @@ func (lc *LoginController) GetUserStatus (c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, map[string]string {
 			"message" : "Need Authorization field",
 		})
+
+		c.Abort()
+		return
 	}
 	rsp, _:= loginClient.CallAuth(jwt)
 	if rsp.Status == -2 || rsp.Status == -3{
@@ -62,6 +65,8 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 	err := c.BindJSON(codeBody)
 	if err != nil {
 		log.Println(err)
+		c.Abort()
+		return
 	}
 	rsp, _ := loginClient.CallGetWXOpenId(codeBody.code)
 	if rsp.Status == 0 {
@@ -124,6 +129,8 @@ func (lc *LoginController) NativeLogin (c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string]string {
 			"message" : "Username or password not found",
 		})
+		c.Abort()
+		return
 	}
 	rsp, _ := loginClient.CallLoginByUP(username, password)
 
