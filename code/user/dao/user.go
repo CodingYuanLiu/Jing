@@ -12,12 +12,12 @@ var db *gorm.DB
 
 type User struct {
 	ID int 				`gorm:"primary_key;auto_increment"`
-	Username string		`gorm:"unique"`
+	Username string
 	Password string
 	Nickname string
 	Phone string
 	Signature string
-	OpenId string		`gorm:"unique"`
+	OpenId string
 	Jaccount string
 }
 
