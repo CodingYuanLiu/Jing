@@ -125,6 +125,16 @@ func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq
 	return nil
 }
 
+func (s *LoginService) GetJaccount(ctx context.Context, in *login.CodeReq, out *login.JaccResp) error {
+	code := in.Code
+	redirectUri := in.RedirectUri
+	accessToken := model.GetAccessToken(code, "KIr40g1K90EObtNARwda", "16BA4A646213794CD6C72F32F219D37A4AE51345897AC889", redirectUri)
+	profile := model.GetProfile(accessToken)
+	jaccount := profile["entities"].([]interface {})[0].(map[string]interface {})["account"].(string)
+	out.Jaccount = jaccount
+	return nil
+}
+
 func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login.AuthResp) error {
 	token, status := parseToken(req.Jwt)
 	resp.Status = status

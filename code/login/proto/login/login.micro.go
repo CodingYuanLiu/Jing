@@ -39,6 +39,7 @@ type LoginService interface {
 	LoginByUP(ctx context.Context, in *UPReq, opts ...client.CallOption) (*TokenResp, error)
 	LoginByWx(ctx context.Context, in *WxReq, opts ...client.CallOption) (*TokenResp, error)
 	GetAccessToken(ctx context.Context, in *CodeReq, opts ...client.CallOption) (*AccessResp, error)
+	GetJaccount(ctx context.Context, in *CodeReq, opts ...client.CallOption) (*JaccResp, error)
 	BindJwtAndJaccount(ctx context.Context, in *BindReq, opts ...client.CallOption) (*BindResp, error)
 }
 
@@ -110,6 +111,16 @@ func (c *loginService) GetAccessToken(ctx context.Context, in *CodeReq, opts ...
 	return out, nil
 }
 
+func (c *loginService) GetJaccount(ctx context.Context, in *CodeReq, opts ...client.CallOption) (*JaccResp, error) {
+	req := c.c.NewRequest(c.name, "Login.GetJaccount", in)
+	out := new(JaccResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *loginService) BindJwtAndJaccount(ctx context.Context, in *BindReq, opts ...client.CallOption) (*BindResp, error) {
 	req := c.c.NewRequest(c.name, "Login.BindJwtAndJaccount", in)
 	out := new(BindResp)
@@ -128,6 +139,7 @@ type LoginHandler interface {
 	LoginByUP(context.Context, *UPReq, *TokenResp) error
 	LoginByWx(context.Context, *WxReq, *TokenResp) error
 	GetAccessToken(context.Context, *CodeReq, *AccessResp) error
+	GetJaccount(context.Context, *CodeReq, *JaccResp) error
 	BindJwtAndJaccount(context.Context, *BindReq, *BindResp) error
 }
 
@@ -138,6 +150,7 @@ func RegisterLoginHandler(s server.Server, hdlr LoginHandler, opts ...server.Han
 		LoginByUP(ctx context.Context, in *UPReq, out *TokenResp) error
 		LoginByWx(ctx context.Context, in *WxReq, out *TokenResp) error
 		GetAccessToken(ctx context.Context, in *CodeReq, out *AccessResp) error
+		GetJaccount(ctx context.Context, in *CodeReq, out *JaccResp) error
 		BindJwtAndJaccount(ctx context.Context, in *BindReq, out *BindResp) error
 	}
 	type Login struct {
@@ -169,6 +182,10 @@ func (h *loginHandler) LoginByWx(ctx context.Context, in *WxReq, out *TokenResp)
 
 func (h *loginHandler) GetAccessToken(ctx context.Context, in *CodeReq, out *AccessResp) error {
 	return h.LoginHandler.GetAccessToken(ctx, in, out)
+}
+
+func (h *loginHandler) GetJaccount(ctx context.Context, in *CodeReq, out *JaccResp) error {
+	return h.LoginHandler.GetJaccount(ctx, in, out)
 }
 
 func (h *loginHandler) BindJwtAndJaccount(ctx context.Context, in *BindReq, out *BindResp) error {
