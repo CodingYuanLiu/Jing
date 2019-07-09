@@ -89,7 +89,7 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 			log.Println(err)
 		}
 		str := base64.StdEncoding.EncodeToString(png)
-		c.String(http.StatusMovedPermanently, "image/png", str)
+		c.String(http.StatusMovedPermanently, str)
 	} else if rsp.Status == 22 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Need update user info",
