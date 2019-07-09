@@ -24,7 +24,6 @@ func GetAccessToken(code string, clientId string, clientSecret string, redirectU
 	respJson, _ := ioutil.ReadAll(resp.Body)
 	j := JSON{}
 	_ = json.Unmarshal(respJson, &j)
-	fmt.Println(j)
 	return j["access_token"].(string)
 }
 
