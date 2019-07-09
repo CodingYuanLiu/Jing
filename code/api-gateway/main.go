@@ -42,7 +42,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.POST("/register", uc.Register)
 		publicRouter.POST("/login/jaccount", lc.OAuthLogin)
 		publicRouter.POST("/login/native", lc.NativeLogin)
-		publicRouter.GET("/:id/detail", uc.QueryUser)
+		publicRouter.GET("/detail/:id", uc.QueryUser)
 		publicRouter.POST("/login/wx", lc.GetWXCode)
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
 		//publicRouter.GET("/activity", )
