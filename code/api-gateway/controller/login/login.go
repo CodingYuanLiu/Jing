@@ -14,7 +14,7 @@ type LoginController struct {
 }
 
 type WXCode struct {
-	code string `json:"code" binding: required`
+	Code string `json:"code" binding: required`
 }
 
 func (lc *LoginController) GetUserStatus (c *gin.Context) {
@@ -25,7 +25,6 @@ func (lc *LoginController) GetUserStatus (c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, map[string]string {
 			"message" : "Need Authorization field",
 		})
-
 		c.Abort()
 		return
 	}
@@ -68,7 +67,11 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 		c.Abort()
 		return
 	}
-	rsp, _ := loginClient.CallGetWXOpenId(codeBody.code)
+
+	log.Println("code :", codeBody.Code)
+	rsp, _ := loginClient.CallGetWXOpenId(codeBody.Code)
+	log.Println(rsp)
+
 	if rsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Login success",
