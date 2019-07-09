@@ -76,9 +76,10 @@ func CallGetWXOpenId(code string) (*loginProto.TokenResp, error) {
 	return resp, err
 }
 
-func CallGetJac(code string) (*loginProto.JaccResp, error) {
+func CallGetJac(code string, redirectUri string) (*loginProto.JaccResp, error) {
 	resp, err := LoginClient.GetJaccount(context.TODO(), &loginProto.CodeReq{
 		Code : code,
+		RedirectUri: redirectUri,
 	})
 	if err != nil {
 		// ...
