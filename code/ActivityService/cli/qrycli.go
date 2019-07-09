@@ -1,8 +1,9 @@
 package main
+
 import (
+	activity "ActivityService/proto"
 	"context"
 	"fmt"
-	activity "ActivityService/proto"
 	"github.com/micro/go-micro"
 )
 

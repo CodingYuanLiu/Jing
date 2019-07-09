@@ -9,15 +9,26 @@ service ActivitySrv{
     rpc Query(QryReq) returns (QryResp){}
 }
 
-message PubReq{
-   //int32 actid = 1;
-   string type = 2;
-   string createTime = 3;
-   string endTime = 4;
-   string title = 5;
-   string description = 6;
-   repeated string tag = 7;
+message BasicInfo{
+    string createTime = 3;
+    string endTime = 4;
+    string title = 5;
+    string description = 6;
+    repeated string tag = 7;
 }
+
+message PubReq{
+    string type = 2;
+    BasicInfo info = 3;
+    TaxiInfo taxiinfo = 4;
+
+    /*
+    TakeoutInfo takeoutinfo = 5;
+    OrderInfo orderinfo = 6;
+    OthersInfo othersInfo = 7;
+    */
+}
+
 message PubResp{
     int32 status = 1;
     string description = 2;
@@ -39,6 +50,7 @@ message MdfResp{
 message DltReq{
     int32 actid = 1;
 }
+
 message DltResp{
     int32 status = 1;
     string description = 2;
@@ -47,6 +59,7 @@ message DltResp{
 message QryReq{
     int32 actid = 1;
 }
+
 message QryResp{
     string type = 2;
     string createTime = 3;
@@ -55,3 +68,18 @@ message QryResp{
     string description = 6;
     repeated string tag = 7;
 }
+
+message TaxiInfo{
+    string departTime = 1;
+    string origin = 2;
+    string destination = 3;
+}
+
+/*
+message TakeoutInfo{
+
+}
+
+message OrderInfo{
+
+}*/
