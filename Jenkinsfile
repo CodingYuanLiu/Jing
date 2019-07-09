@@ -5,6 +5,9 @@ podTemplate(label: label, cloud: 'kubernetes') {
 
             echo 'Building..'
             git url: 'https://github.com/CodingYuanLiu/Jing.git', branch: 'develop'
+            
+        }
+        stage('Build') {
             steps {
                 sh 'ls'
                 sh 'cd code'
@@ -12,11 +15,6 @@ podTemplate(label: label, cloud: 'kubernetes') {
                 sh 'cd login' 
                 sh 'ls'
             }
-        }
-        stage('Build') {
-            echo 'Building'
-            sh 'ls'
-            sh 'go build login.go'
         }
         stage('Deploy') {
             echo 'Deploying....'
