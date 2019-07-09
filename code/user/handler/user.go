@@ -43,10 +43,6 @@ func (h *UserService) Register(ctx context.Context, in *user.RegReq, out *user.R
 	return nil
 }
 
-func (h *UserService) SaveWxUser(ctx context.Context, in *user.RegReq, out *user.RegResp) error {
-
-}
-
 func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.FindResp) error {
 	user2, err := dao.FindUserById(int(in.Id))
 	if err != nil {
