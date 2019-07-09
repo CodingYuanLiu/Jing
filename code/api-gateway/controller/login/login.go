@@ -111,7 +111,7 @@ func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
 	bindRsp, _ := loginClient.CallBindJacAndWx(jwt, jac)
 
 	if bindRsp.Status == 0 {
-		file, _ := os.Open("../../template/bind_success.html")
+		file, _ := os.Open("bind_success.html")
 		b, _ := ioutil.ReadAll(file)
 		c.Data(http.StatusOK, "text/html;charset=UTF-8", b)
 	} else if bindRsp.Status > 0 {
