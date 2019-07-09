@@ -9,5 +9,6 @@ require (
 	github.com/golang/protobuf v1.3.1
 	github.com/micro/go-micro v1.5.0
 	github.com/nats-io/nats-server/v2 v2.0.0 // indirect
+	github.com/skip2/go-qrcode v0.0.0-20190110000554-dc11ecdae0a9
 	github.com/ugorji/go v1.1.5-pre // indirect
 )
