@@ -8,7 +8,12 @@ service Login {
     rpc LoginByUP(UPReq) returns (TokenResp) {}
     rpc LoginByWx(WxReq) returns (TokenResp) {}
     rpc GetAccessToken(CodeReq) returns (AccessResp) {}
+    rpc GetJaccount(CodeReq) returns (JaccResp) {}
     rpc BindJwtAndJaccount(BindReq) returns (BindResp) {}
+}
+
+message JaccResp {
+    string jaccount = 1;
 }
 
 message BindReq {

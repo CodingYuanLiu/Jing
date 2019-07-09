@@ -37,6 +37,8 @@ func (uc *UserController) Register (c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message" : "Miss some field",
 		})
+		c.Abort()
+		return
 	}
 	rsp, _ := userClient.CallRegister(reqBody.Username, reqBody.Password,
 			reqBody.Phone, reqBody.Nickname, reqBody.Jaccount)

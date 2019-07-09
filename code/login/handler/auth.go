@@ -76,7 +76,7 @@ func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *logi
 func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *login.TokenResp) error {
 	code := in.Code
 	resp, err := http.Get(fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-		"wx2f062d3bd8d4e1ba", "91400ecabfae4bcd51870b4e521c5179", code))
+		"wx5bd0c2b91b75fd41", "d074420c87722879111087314aa4b17d", code))
 	if err != nil {
 		out.Status = -1
 		return nil
@@ -84,19 +84,23 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 	respJson, _ := ioutil.ReadAll(resp.Body)
 	j := model.JSON{}
 	_ = json.Unmarshal(respJson, &j)
-	errcode := int(j["errcode"].(float64))
-	if errcode == 40029 {
-		out.Status = 1
-		return nil
-	} else if errcode != 0 {
-		out.Status = -1
-		return nil
+	if j["errcode"] != nil {
+		errcode := int(j["errcode"].(float64))
+		if errcode == 40029 {
+			out.Status = 1
+			return nil
+		} else if errcode != 0 {
+			out.Status = -1
+			return nil
+		}
 	}
 	openId := j["openid"].(string)
 	user, err := dao.FindUserByOpenId(openId)
 	if err != nil {
 		_ = dao.CreateUserByOpenId(openId)
 		user, _ = dao.FindUserByOpenId(openId)
+		out.Status = 21
+	} else if user.Jaccount == "" {
 		out.Status = 21
 	} else if user.Nickname == "" {
 		out.Status = 22
@@ -122,6 +126,16 @@ func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq
 		}
 		out.Status = 2
 	}
+	return nil
+}
+
+func (s *LoginService) GetJaccount(ctx context.Context, in *login.CodeReq, out *login.JaccResp) error {
+	code := in.Code
+	redirectUri := in.RedirectUri
+	accessToken := model.GetAccessToken(code, "KIr40g1K90EObtNARwda", "16BA4A646213794CD6C72F32F219D37A4AE51345897AC889", redirectUri)
+	profile := model.GetProfile(accessToken)
+	jaccount := profile["entities"].([]interface {})[0].(map[string]interface {})["account"].(string)
+	out.Jaccount = jaccount
 	return nil
 }
 

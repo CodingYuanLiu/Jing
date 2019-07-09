@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/micro/go-micro/client"
 	loginProto "jing/app/api-gateway/proto/login"
+	"log"
 )
 
 
@@ -64,8 +65,35 @@ func CallGetAccessToken(redirectUri string, code string) (*loginProto.AccessResp
 	return resp, err
 }
 
-/*
-func CallGetWXOpenId(code string) (*loginProto.) {
-	rsp
+
+func CallGetWXOpenId(code string) (*loginProto.TokenResp, error) {
+	resp, err := LoginClient.LoginByWx(context.TODO(), &loginProto.WxReq{
+		Code:code,
+	})
+	if err != nil {
+		// ...
+	}
+	return resp, err
 }
- */
+
+func CallGetJac(code string) (*loginProto.JaccResp, error) {
+	resp, err := LoginClient.GetJaccount(context.TODO(), &loginProto.CodeReq{
+		Code : code,
+	})
+	if err != nil {
+		// ...
+	}
+	return resp, err
+}
+
+func CallBindJacAndWx(jwt string, jaccount string) (*loginProto.BindResp, error) {
+	resp, err := LoginClient.BindJwtAndJaccount(context.TODO(), &loginProto.BindReq{
+		Jwt:jwt,
+		Jaccount:jaccount,
+	})
+
+	if err != nil {
+		log.Println(err)
+	}
+	return resp, err
+}

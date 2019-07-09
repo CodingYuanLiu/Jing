@@ -30,7 +30,7 @@ func FindUserByUsername(username string) (userDao.User, error) {
 
 func FindUserByOpenId(openId string) (userDao.User, error) {
 	user := userDao.User{}
-	db.Where("openid = ?", openId).First(&user)
+	db.Where("open_id = ?", openId).First(&user)
 	if user.ID == 0 {
 		return user, errors.New("user not found")
 	}
@@ -59,7 +59,8 @@ func BindJaccountById(id int, jaccount string) error {
 func init()  {
 	var err error
 	//db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
-	db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
+	//db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}

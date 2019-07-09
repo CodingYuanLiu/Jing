@@ -12,12 +12,12 @@ var db *gorm.DB
 
 type User struct {
 	ID int 				`gorm:"primary_key;auto_increment"`
-	Username string		`gorm:"unique"`
+	Username string
 	Password string
 	Nickname string
 	Phone string
 	Signature string
-	OpenId string		`gorm:"unique"`
+	OpenId string
 	Jaccount string
 }
 
@@ -67,7 +67,8 @@ func CreateUser(json model.JSON) error {
 func init()  {
 	var err error
 	//db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
-	db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
+	//db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}

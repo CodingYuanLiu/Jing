@@ -38,11 +38,13 @@ func setupRouter() *gin.Engine {
 
 	publicRouter := router.Group("/api/public")
 	{
-		publicRouter.POST("/status", lc.GetUserStatus)
+		publicRouter.GET("/status", lc.GetUserStatus)
 		publicRouter.POST("/register", uc.Register)
 		publicRouter.POST("/login/jaccount", lc.OAuthLogin)
 		publicRouter.POST("/login/native", lc.NativeLogin)
-		publicRouter.GET("/:id/detail", uc.QueryUser)
+		publicRouter.GET("/detail/:id", uc.QueryUser)
+		publicRouter.POST("/login/wx", lc.GetWXCode)
+		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
 		//publicRouter.GET("/activity", )
 	}
 	/*
