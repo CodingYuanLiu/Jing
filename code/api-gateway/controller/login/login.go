@@ -3,11 +3,11 @@ package controller_login
 import "C"
 import (
 	"github.com/gin-gonic/gin"
+	qrcode "github.com/skip2/go-qrcode"
 	loginClient "jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
 	"log"
 	"net/http"
-	qrcode "github.com/skip2/go-qrcode"
 )
 
 type LoginController struct {
