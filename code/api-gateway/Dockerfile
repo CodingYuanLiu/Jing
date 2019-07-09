@@ -1,9 +1,9 @@
 ############################################################
-# Dockerfile to build user container images
+# Dockerfile to build gateway container images
 ############################################################
 # Set the base image to Ubuntu
 FROM ubuntu
 # Add app to the image
-ADD ./user /home/app/bin
+ADD ./main /home/app/bin
 # Run APP
-ENTRYPOINT [ "/home/app/bin/user" ] 
+ENTRYPOINT [ "/home/app/bin/main" ] 
