@@ -64,3 +64,8 @@ func CallGetAccessToken(redirectUri string, code string) (*loginProto.AccessResp
 	return resp, err
 }
 
+/*
+func CallGetWXOpenId(code string) (*loginProto.) {
+	rsp
+}
+ */

@@ -2,27 +2,28 @@ package controller_login
 
 import (
 	"github.com/gin-gonic/gin"
-	authService "jing/app/api-gateway/service/auth-service"
-	"log"
+	loginClient "jing/app/api-gateway/cli/login"
+	srv "jing/app/api-gateway/service"
 	"net/http"
 )
 
 type LoginController struct {
-	AuthSrv *authService.AuthService
 }
 
 func (lc *LoginController) GetUserStatus (c *gin.Context) {
 	auth := c.Request.Header.Get("Authorization")
 
-	rsp := lc.AuthSrv.Verify(auth)
-
-	if rsp == nil {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Service down",
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string {
+			"message" : "Need Authorization field",
 		})
-	} else if rsp.Status == -2 {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
+	}
+
+	rsp, _:= loginClient.CallAuth(jwt)
+	if rsp.Status == -2 || rsp.Status == -3{
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message" : "Invaild token",
 		})
 	} else if rsp.Status == -1 {
 		c.JSON(http.StatusUnauthorized, map[string]string {
@@ -48,23 +49,36 @@ func (lc *LoginController) OAuthLogin (c *gin.Context) {
 func (lc *LoginController) OAuthRedirect (c *gin.Context) {
 
 }
+/*
+func (lc *LoginController) GetWXCode (c *gin.Context) {
+	codeBody := new(authService.WXCode)
+	err := c.BindJSON(codeBody)
+	if err != nil {
+		log.Println(err)
+	}
+
+	rsp := lc.AuthSrv.GetWXCodeSrv(codeBody.Code)
+
+}
+*/
 
 func (lc *LoginController) NativeLogin (c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 
-	log.Println(username, password)
-	rsp := lc.AuthSrv.LoginByUP(username, password)
-	log.Println(rsp)
-	if rsp == nil {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
+	verified := srv.VerifyUP(username, password)
+	if !verified {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message" : "Username or password not found",
 		})
-	} else if rsp.Status == 401 {
+	}
+	rsp, _ := loginClient.CallLoginByUP(username, password)
+
+	if rsp.Status == 1 {
 		c.JSON(http.StatusUnauthorized, map[string]string {
 			"message" : "Bad credential",
 		})
-	} else if rsp.Status == 200 {
+	} else if rsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Login success",
 			"jwt_token" : rsp.JwtToken,

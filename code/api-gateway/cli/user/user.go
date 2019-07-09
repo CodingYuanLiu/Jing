@@ -30,9 +30,6 @@ func CallUpdateUser(id int32, phone string, signature string,
 		req.Nickname = nickname
 	}
 
-	log.Println("call update user : ", phone)
-	log.Println("call update user : ", signature)
-	log.Println("call update user : ", nickname)
 
 	rsp, err := UserClient.Update(context.TODO(), req)
 

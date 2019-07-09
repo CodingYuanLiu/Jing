@@ -5,9 +5,7 @@ import (
 	"github.com/micro/go-micro/web"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
-	authSrv "jing/app/api-gateway/service/auth-service"
-	userSrv "jing/app/api-gateway/service/user-service"
-	filter "jing/app/api-gateway/filter"
+	"jing/app/api-gateway/filter"
 	"log"
 )
 
@@ -35,10 +33,8 @@ func setupRouter() *gin.Engine {
 
 	// login service
 	lc := new(loginController.LoginController)
-	lc.AuthSrv = new(authSrv.AuthService)
 	// user service
 	uc := new(userController.UserController)
-	uc.UserSrv = new(userSrv.UserService)
 
 	publicRouter := router.Group("/api/public")
 	{

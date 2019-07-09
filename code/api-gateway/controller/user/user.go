@@ -3,29 +3,45 @@ package controller_user
 import "C"
 import (
 	"github.com/gin-gonic/gin"
-	userService "jing/app/api-gateway/service/user-service"
+	userClient "jing/app/api-gateway/cli/user"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type UserController struct {
-	UserSrv *userService.UserService
 }
 
-func (uc *UserController) Register (c *gin.Context) {
-	reqBody := new(userService.RegisterBody)
-	err := c.ShouldBindJSON(reqBody)
-	// tips := make(map[string]interface{})
-	if err != nil {
-		for e := range err.Error()  {
-			log.Println(e)
-		}
-	}
-	rsp := uc.UserSrv.RegisterSrv(reqBody)
 
-	if rsp == nil {
-		// ...
-	} else if rsp.Status == 400 {
+type RegisterBody struct {
+	Username string `json:"username" binding : "required"`
+	Password string `json:"password" binding : "required"`
+	Phone string `json:"phone" binding : "required"`
+	Nickname string `json:"nickname" binding : "required"`
+	Jaccount string `json:"jaccount" binding : "required"`
+}
+
+type UpdateBody struct {
+	Id int `json:"id" binding: "required"`
+	Phone string `json:"phone" binding: "optional"`
+	Signature string `json:"signature" binding :"optional"`
+	Nickname string `json: "nickname" binding: "optional"`
+}
+
+
+func (uc *UserController) Register (c *gin.Context) {
+	reqBody := new(RegisterBody)
+	err := c.ShouldBindJSON(reqBody)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message" : "Miss some field",
+		})
+	}
+	rsp, _ := userClient.CallRegister(reqBody.Username, reqBody.Password,
+			reqBody.Phone, reqBody.Nickname, reqBody.Jaccount)
+
+	if rsp.Status == 400 {
 		c.JSON(http.StatusBadRequest, map[string]string {
 			"message" : "Bad request",
 		})
@@ -42,19 +58,18 @@ func (uc *UserController) Register (c *gin.Context) {
 
 
 func (uc *UserController) UpdateUser (c *gin.Context) {
-	updateBody := new (userService.UpdateBody)
+
+	updateBody := new (UpdateBody)
 	if err := c.BindJSON(updateBody); err != nil {
 		log.Println(err)
 	}
 
-	log.Println("in controller : ", updateBody.Phone)
-	log.Println("in controller : ", updateBody.Signature)
-	log.Println("in controller : ", updateBody.Nickname)
-	rsp := uc.UserSrv.UpdateUserSrv(updateBody)
+	rsp, _ := userClient.CallUpdateUser(int32(updateBody.Id),
+		updateBody.Nickname, updateBody.Phone, updateBody.Signature)
 
-	if rsp == nil {
-		// ...
-	} else if rsp.Status == 400 {
+
+	// All field update, rely on the frontend
+	if rsp.Status == 400 {
 		c.JSON(http.StatusBadRequest, map[string]string {
 			"message" : "Bad request",
 		})
@@ -71,12 +86,14 @@ func (uc *UserController) UpdateUser (c *gin.Context) {
 
 func (uc *UserController) QueryUser (c *gin.Context) {
 	id := c.Param("id")
-	rsp := uc.UserSrv.QueryUserSrv(id)
-	if rsp == nil {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
+	intId, err := strconv.Atoi(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string] string{
+			"message" : "Bad request",
 		})
-	} else if rsp.Id < 0 {
+	}
+	rsp, err := userClient.CallQueryUser(int32(intId))
+	if rsp.Id < 0 {
 		c.JSON(http.StatusBadRequest, map[string]string {
 			"message" : "Bad request",
 		})
