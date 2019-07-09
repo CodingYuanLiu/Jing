@@ -28,6 +28,22 @@ func FindUserByUsername(username string) (userDao.User, error) {
 	return user, nil
 }
 
+func FindUserByOpenId(openId string) (userDao.User, error) {
+	user := userDao.User{}
+	db.Where("openid = ?", openId).First(&user)
+	if user.ID == 0 {
+		return user, errors.New("user not found")
+	}
+	return user, nil
+}
+
+func CreateUserByOpenId(openId string) error {
+	user := userDao.User{}
+	user.OpenId = openId
+	db.Create(&user)
+	return nil
+}
+
 func init()  {
 	var err error
 	db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")

@@ -12,12 +12,13 @@ var db *gorm.DB
 
 type User struct {
 	ID int 				`gorm:"primary_key;auto_increment"`
-	Username string		`gorm:"not null"`
-	Password string		`gorm:"not null"`
-	Nickname string		`gorm:"not null"`
-	Phone string		`gorm:"not null"`
+	Username string		`gorm:"unique"`
+	Password string
+	Nickname string
+	Phone string
 	Signature string
-	Jaccount string		`gorm:"not null"`
+	OpenId string		`gorm:"unique"`
+	Jaccount string
 }
 
 func FindUserById(id int) (User, error) {

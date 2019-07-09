@@ -20,6 +20,7 @@ func (h *UserService) Update(ctx context.Context, in *user.UpdateReq, out *user.
 	}
 	_ = dao.UpdateUserById(int(in.Id), "nickname", in.Nickname)
 	_ = dao.UpdateUserById(int(in.Id), "signature", in.Signature)
+	out.Status = 200
 	return nil
 }
 
@@ -40,6 +41,10 @@ func (h *UserService) Register(ctx context.Context, in *user.RegReq, out *user.R
 	}
 	out.Status = 200
 	return nil
+}
+
+func (h *UserService) SaveWxUser(ctx context.Context, in *user.RegReq, out *user.RegResp) error {
+
 }
 
 func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.FindResp) error {
