@@ -8,13 +8,13 @@ podTemplate(label: label, cloud: 'kubernetes') {
             
         }
         stage('Build') {
-            steps {
-                sh 'ls'
-                sh 'cd code'
-                sh 'ls'
-                sh 'cd login' 
-                sh 'ls'
-            }
+            sh """
+            ls
+            cd code
+            ls
+            cd login 
+            ls
+            """
         }
         stage('Deploy') {
             echo 'Deploying....'
