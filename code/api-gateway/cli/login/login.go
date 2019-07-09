@@ -3,7 +3,7 @@ package cli_login
 import (
 	"context"
 	"github.com/micro/go-micro/client"
-	loginProto "jing/app/login/proto/login"
+	loginProto "jing/app/api-gateway/proto/login"
 )
 
 
@@ -13,7 +13,7 @@ var (
 
 
 func init() {
-	LoginClient = loginProto.NewLoginService("go.micro.srv.login", client.DefaultClient)
+	LoginClient = loginProto.NewLoginService("go.micro.srv.auth-service", client.DefaultClient)
 }
 
 
@@ -28,9 +28,9 @@ func CallAuth(jwt string) (*loginProto.AuthResp, error) {
 }
 
 
-func CallLoginByJaccount(access_token string) (*loginProto.TokenResp, error) {
+func CallLoginByJaccount(accessToken string) (*loginProto.TokenResp, error) {
 	resp, err := LoginClient.LoginByJaccount(context.TODO(), &loginProto.LJReq{
-		AccessToken:access_token,
+		AccessToken: accessToken,
 	})
 	if err != nil {
 		//...

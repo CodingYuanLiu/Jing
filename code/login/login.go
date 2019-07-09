@@ -13,7 +13,7 @@ type Say struct{}
 
 func main() {
 	service := micro.NewService(
-		micro.Name("go.micro.srv.login"),
+		micro.Name("go.micro.srv.auth-service"),
 		micro.Address("127.0.0.1:30661"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*10),

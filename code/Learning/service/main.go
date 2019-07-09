@@ -34,7 +34,7 @@ func main() {
 
 	// Init will parse the command line flags.
 	service.Init()
-	// Register handler
+	// Register service
 	proto.RegisterGreeterHandler(service.Server(), new(Greeter))
 
 	// Run the server
