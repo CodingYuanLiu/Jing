@@ -113,7 +113,6 @@ func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login
 	if status == 0 {
 		claims := token.Claims.(jwt.MapClaims)
 		resp.UserId = int32(claims["userId"].(float64))
-		resp.Username = claims["username"].(string)
 		resp.Admin, _ = strconv.ParseBool(claims["admin"].(string))
 	} else {
 		resp.UserId = -1

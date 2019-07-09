@@ -51,7 +51,6 @@ func TestLoginService_Auth(t *testing.T) {
 	a.Equal("dfy", authResp.Username)
 	a.Equal(int32(4), authResp.UserId)
 	a.Equal(false, authResp.Admin)
-
 	authReq.Jwt = ""
 	_ = loginService.Auth(context.TODO(), &authReq, &authResp)
 	a.Equal(int32(-3), authResp.Status)
