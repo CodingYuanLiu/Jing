@@ -15,8 +15,8 @@ podTemplate(label: label, cloud: 'kubernetes') {
             cd login 
             ls
             go build login.go
-            sudo docker build -t sebastianj1w/login:latest .
-            sudo docker push sebastianj1w/login:latest
+            docker build -t sebastianj1w/login:latest .
+            docker push sebastianj1w/login:latest
             """
             sh """
             ls
@@ -25,8 +25,8 @@ podTemplate(label: label, cloud: 'kubernetes') {
             cd api-gateway
             ls
             go build main.go
-            sudo docker build -t sebastianj1w/apigateway:latest .
-            sudo docker push sebastianj1w/apigateway:latest
+            docker build -t sebastianj1w/apigateway:latest .
+            docker push sebastianj1w/apigateway:latest
             """
             sh """
             ls
@@ -35,8 +35,8 @@ podTemplate(label: label, cloud: 'kubernetes') {
             cd user
             ls
             go build user.go
-            sudo docker build -t sebastianj1w/user:latest .
-            sudo docker push sebastianj1w/user:latest
+            docker build -t sebastianj1w/user:latest .
+            docker push sebastianj1w/user:latest
             """
         }
         stage('Deploy') {
