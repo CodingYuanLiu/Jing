@@ -27,6 +27,7 @@ func main(){
 	collection := session.DB("Jing").C("Activity")
 	//objectId:=bson.ObjectIdHex("5d23f2a372df504ce4aa856a")
 	id := new(autoid)
+	//Now the self increasing id is stored in Activity Collection. A specific collection may be needed later.
  	collection.FindId(bson.ObjectIdHex("5d23f2a372df504ce4aa856a")).One(&id)
 	srv.Id=id.Autoid
 	service.Init()

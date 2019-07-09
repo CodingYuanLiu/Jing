@@ -35,7 +35,7 @@ var _ server.Option
 
 type ActivitySrvService interface {
 	Publish(ctx context.Context, in *PubReq, opts ...client.CallOption) (*PubResp, error)
-	//rpc Modify(MdfReq) returns (MdfResp){}
+	Modify(ctx context.Context, in *MdfReq, opts ...client.CallOption) (*MdfResp, error)
 	Delete(ctx context.Context, in *DltReq, opts ...client.CallOption) (*DltResp, error)
 	Query(ctx context.Context, in *QryReq, opts ...client.CallOption) (*QryResp, error)
 }
@@ -68,6 +68,16 @@ func (c *activitySrvService) Publish(ctx context.Context, in *PubReq, opts ...cl
 	return out, nil
 }
 
+func (c *activitySrvService) Modify(ctx context.Context, in *MdfReq, opts ...client.CallOption) (*MdfResp, error) {
+	req := c.c.NewRequest(c.name, "ActivitySrv.Modify", in)
+	out := new(MdfResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *activitySrvService) Delete(ctx context.Context, in *DltReq, opts ...client.CallOption) (*DltResp, error) {
 	req := c.c.NewRequest(c.name, "ActivitySrv.Delete", in)
 	out := new(DltResp)
@@ -92,7 +102,7 @@ func (c *activitySrvService) Query(ctx context.Context, in *QryReq, opts ...clie
 
 type ActivitySrvHandler interface {
 	Publish(context.Context, *PubReq, *PubResp) error
-	//rpc Modify(MdfReq) returns (MdfResp){}
+	Modify(context.Context, *MdfReq, *MdfResp) error
 	Delete(context.Context, *DltReq, *DltResp) error
 	Query(context.Context, *QryReq, *QryResp) error
 }
@@ -100,6 +110,7 @@ type ActivitySrvHandler interface {
 func RegisterActivitySrvHandler(s server.Server, hdlr ActivitySrvHandler, opts ...server.HandlerOption) error {
 	type activitySrv interface {
 		Publish(ctx context.Context, in *PubReq, out *PubResp) error
+		Modify(ctx context.Context, in *MdfReq, out *MdfResp) error
 		Delete(ctx context.Context, in *DltReq, out *DltResp) error
 		Query(ctx context.Context, in *QryReq, out *QryResp) error
 	}
@@ -116,6 +127,10 @@ type activitySrvHandler struct {
 
 func (h *activitySrvHandler) Publish(ctx context.Context, in *PubReq, out *PubResp) error {
 	return h.ActivitySrvHandler.Publish(ctx, in, out)
+}
+
+func (h *activitySrvHandler) Modify(ctx context.Context, in *MdfReq, out *MdfResp) error {
+	return h.ActivitySrvHandler.Modify(ctx, in, out)
 }
 
 func (h *activitySrvHandler) Delete(ctx context.Context, in *DltReq, out *DltResp) error {

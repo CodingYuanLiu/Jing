@@ -4,7 +4,7 @@ package activity;
 
 service ActivitySrv{
     rpc Publish(PubReq) returns (PubResp){}
-    //rpc Modify(MdfReq) returns (MdfResp){}
+    rpc Modify(MdfReq) returns (MdfResp){}
     rpc Delete(DltReq) returns (DltResp){}
     rpc Query(QryReq) returns (QryResp){}
 }
@@ -23,10 +23,19 @@ message PubResp{
     string description = 2;
     int32 actid = 3;
 }
-/*
-message MdfReq{}
-message MdfResp{}
-*/
+
+message MdfReq{
+    int32 actid = 1;
+    string createTime = 2;
+    string endTime = 3;
+    string description = 4;
+    repeated string tag = 5;
+}
+message MdfResp{
+    int32 status = 1;
+    string description = 2;
+}
+
 message DltReq{
     int32 actid = 1;
 }
