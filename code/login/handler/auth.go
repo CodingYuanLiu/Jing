@@ -107,6 +107,24 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 	return nil
 }
 
+func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq, out *login.BindResp) error {
+	token, status := parseToken(in.Jwt)
+	if status == 0 {
+		claims := token.Claims.(jwt.MapClaims)
+		userId := int(claims["userId"].(float64))
+		_, err := dao.FindUserByJaccount(in.Jaccount)
+		if err != nil {
+			err2 := dao.BindJaccountById(userId, in.Jaccount)
+			if err2 != nil {
+				out.Status = 1
+			}
+			out.Status = 0
+		}
+		out.Status = 2
+	}
+	return nil
+}
+
 func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login.AuthResp) error {
 	token, status := parseToken(req.Jwt)
 	resp.Status = status

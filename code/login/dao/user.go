@@ -44,6 +44,18 @@ func CreateUserByOpenId(openId string) error {
 	return nil
 }
 
+func BindJaccountById(id int, jaccount string) error {
+	user := userDao.User{}
+	db.First(&user, id)
+	if user.Jaccount == "" {
+		return errors.New("jaccount has been bound")
+	} else {
+		user.Jaccount = jaccount
+		db.Save(&user)
+	}
+	return nil
+}
+
 func init()  {
 	var err error
 	//db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
