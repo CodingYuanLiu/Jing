@@ -69,10 +69,7 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 		c.Abort()
 		return
 	}
-
-	log.Println("code :", codeBody.Code)
 	rsp, _ := loginClient.CallGetWXOpenId(codeBody.Code)
-	log.Println(rsp)
 
 	if rsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]string {
@@ -104,8 +101,8 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 }
 
 func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
-	code := c.Param("code")
-	jwt := c.Param("jwt")
+	code := c.Query("code")
+	jwt := c.Query("jwt")
 	fmt.Println(jwt)
 	fmt.Println(code)
 	jacRsp, _ := loginClient.CallGetJac(code, "https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + jwt)
