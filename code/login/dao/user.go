@@ -30,7 +30,7 @@ func FindUserByUsername(username string) (userDao.User, error) {
 
 func FindUserByOpenId(openId string) (userDao.User, error) {
 	user := userDao.User{}
-	db.Where("openid = ?", openId).First(&user)
+	db.Where("open_id = ?", openId).First(&user)
 	if user.ID == 0 {
 		return user, errors.New("user not found")
 	}
