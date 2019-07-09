@@ -100,6 +100,8 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 		_ = dao.CreateUserByOpenId(openId)
 		user, _ = dao.FindUserByOpenId(openId)
 		out.Status = 21
+	} else if user.Jaccount == "" {
+		out.Status = 21
 	} else if user.Nickname == "" {
 		out.Status = 22
 	} else {
