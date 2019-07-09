@@ -2,6 +2,7 @@ package cli_login
 
 import (
 	"context"
+	"fmt"
 	"github.com/micro/go-micro/client"
 	loginProto "jing/app/api-gateway/proto/login"
 	"log"
@@ -81,6 +82,8 @@ func CallGetJac(code string, redirectUri string) (*loginProto.JaccResp, error) {
 		Code : code,
 		RedirectUri: redirectUri,
 	})
+	fmt.Println(code)
+	fmt.Println(redirectUri)
 	if err != nil {
 		// ...
 	}
