@@ -3,18 +3,18 @@ package controller_login
 import "C"
 import (
 	"github.com/gin-gonic/gin"
+	qrcode "github.com/skip2/go-qrcode"
 	loginClient "jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
 	"log"
 	"net/http"
-	qrcode "github.com/skip2/go-qrcode"
 )
 
 type LoginController struct {
 }
 
 type WXCode struct {
-	code string `json:"code" binding: required`
+	Code string `json:"code" binding: required`
 }
 
 func (lc *LoginController) GetUserStatus (c *gin.Context) {
@@ -25,6 +25,8 @@ func (lc *LoginController) GetUserStatus (c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, map[string]string {
 			"message" : "Need Authorization field",
 		})
+		c.Abort()
+		return
 	}
 	rsp, _:= loginClient.CallAuth(jwt)
 	if rsp.Status == -2 || rsp.Status == -3{
@@ -62,8 +64,14 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 	err := c.BindJSON(codeBody)
 	if err != nil {
 		log.Println(err)
+		c.Abort()
+		return
 	}
-	rsp, _ := loginClient.CallGetWXOpenId(codeBody.code)
+
+	log.Println("code :", codeBody.Code)
+	rsp, _ := loginClient.CallGetWXOpenId(codeBody.Code)
+	log.Println(rsp)
+
 	if rsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Login success",
@@ -124,6 +132,8 @@ func (lc *LoginController) NativeLogin (c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string]string {
 			"message" : "Username or password not found",
 		})
+		c.Abort()
+		return
 	}
 	rsp, _ := loginClient.CallLoginByUP(username, password)
 
