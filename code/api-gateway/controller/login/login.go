@@ -5,12 +5,10 @@ import (
 	"encoding/base64"
 	"github.com/gin-gonic/gin"
 	"github.com/skip2/go-qrcode"
-	"io/ioutil"
 	loginClient "jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
 	"log"
 	"net/http"
-	"os"
 )
 
 type LoginController struct {
@@ -111,9 +109,7 @@ func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
 	bindRsp, _ := loginClient.CallBindJacAndWx(jwt, jac)
 
 	if bindRsp.Status == 0 {
-		file, _ := os.Open("bind_success.html")
-		b, _ := ioutil.ReadAll(file)
-		c.Data(http.StatusOK, "text/html;charset=UTF-8", b)
+		c.String(http.StatusOK, "<h1>已完成绑定，重新打开微信小程序即可使用即应的强大功能</h1>")
 	} else if bindRsp.Status > 0 {
 		c.JSON(http.StatusInternalServerError, map[string]string {
 			"message" : "Bind error",
