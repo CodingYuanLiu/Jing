@@ -1,48 +1,58 @@
-
 <view class="container more">
-  <view class="user flex-wrp">
-    <view class="avatar flex-item">
-      <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
+    <view class="user flex-wrp" bindtap="handleToLogin" hidden="{{log}}">
+        <view class="avatar flex-item">
+            <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
+        </view>
+        <view class="user-info flex-item">
+            <text class="userinfo-nickname">点击登录</text>
+        </view>
     </view>
-    <view class="user-info flex-item">
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-      <text class="edit">查看或编辑个人主页</text>
-    </view>
-  </view>
-
-  <view class="my">
-    <view class="my-item flex-wrp">
-      <view class="myitem-icon flex-item" >
-        <image src="../../images/icons/pubed_line.png"></image>
-      </view>
-      <view class="myitem-name flex-item">
-        <text>我发布的</text>
-      </view>
-    </view>
-    <view class="my-item flex-wrp">
-      <view class="myitem-icon flex-item" >
-        <image src="../../images/icons/add_line.png"></image>
-      </view>
-      <view class="myitem-name flex-item">
-        <text>我加入的</text>
-      </view>
-    </view>
-    <view class="my-item flex-wrp">
-      <view class="myitem-icon flex-item" >
-        <image src="../../images/icons/editing_line.png"></image>
-      </view>
-      <view class="myitem-name flex-item">
-        <text>我的草稿</text>
-      </view>
-    </view>
-    <view class="my-item flex-wrp">
-      <view class="myitem-icon flex-item" >
-        <image src="../../images/icons/recent_line.png"></image>
-      </view>
-      <view class="myitem-name flex-item">
-        <text>最近浏览</text>
-      </view>
+    <view class="user flex-wrp" bindtap="handleToUserInfo" hidden="{{!log}}">
+        <view class="avatar flex-item">
+            <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
+        </view>
+        <view class="user-info flex-item">
+            <text class="userinfo-nickname">{{user.nickname}}</text>
+            <text class="edit">查看或编辑个人主页</text>
+        </view>
     </view>
 
-  </view>
+    <view class="my">
+        <view class="my-item flex-wrp">
+            <view class="myitem-icon flex-item">
+                <image src="../../images/icons/pubed_line.png"></image>
+            </view>
+            <view class="myitem-name flex-item">
+                <text>我发布的</text>
+            </view>
+        </view>
+        <view class="my-item flex-wrp">
+            <view class="myitem-icon flex-item">
+                <image src="../../images/icons/add_line.png"></image>
+            </view>
+            <view class="myitem-name flex-item">
+                <text>我加入的</text>
+            </view>
+        </view>
+        <view class="my-item flex-wrp">
+            <view class="myitem-icon flex-item">
+                <image src="../../images/icons/editing_line.png"></image>
+            </view>
+            <view class="myitem-name flex-item">
+                <text>我的草稿</text>
+            </view>
+        </view>
+        <view class="my-item flex-wrp">
+            <view class="myitem-icon flex-item">
+                <image src="../../images/icons/recent_line.png"></image>
+            </view>
+            <view class="myitem-name flex-item">
+                <text>最近浏览</text>
+            </view>
+        </view>
+
+    </view>
+    <view  hidden="{{!log}}" style="width: 100%; background: white">
+        <i-button style="width: 100%" type="error" bind:click="handleLogout">退出登录</i-button>
+    </view>
 </view>

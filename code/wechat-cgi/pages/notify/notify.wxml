@@ -7,37 +7,51 @@
 <scroll-view scroll-y="true" class="container notify withtab" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
     <view class="ctnt0" hidden="{{currentNavtab==0 ? '' : true}}">
         <view class="unread">
-            <text>0 条未读</text>
+            <text>{{notify.unread}} 条未读</text>
             <image src="../../images/allread.png"></image>
         </view>
-        <view class="notify-item flex-wrp">
+        <block wx:for="{{notify.content}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="notify-item flex-wrp">
+                <view class="avatar flex-item">
+                    <image src="{{item.avatar}}"></image>
+                </view>
+                <view class="notify-content flex-item">
+                    <text class="notify-source">{{item.nickname}} {{item.title}}</text>
+                    <text class="notify-title">{{item.content}}</text>
+                </view>
+            </view>
+        </block>
+        <!-- <view class="notify-item flex-wrp">
             <view class="avatar flex-item">
                 <image src="../../images/icon1.jpeg"></image>
             </view>
             <view class="notify-content flex-item">
-                <text class="notify-source">Rebecca  回答了问题</text>
-                <text class="notify-title">C#如何在不覆盖原有文件的情况下直接修改某一部分的内容？</text>
+                <text class="notify-source">Rebecca 发送了加入活动请求</text>
+                <text class="notify-title">保证不鸽！ 求通过！</text>
             </view>
-        </view>
+        </view> -->
     </view>
     <view class="ctnt0" hidden="{{currentNavtab==1 ? '' : true}}">
         <view class="unread">
-            <text>0 条未读</text>
+            <text>{{message.unread}} 条未读</text>
             <image src="../../images/allread.png"></image>
         </view>
-        <view class="chat-item flex-wrp">
-            <view class="avatar flex-item">
-                <image src="../../images/icon8.jpg"></image>
-            </view>
-            <view class="chat-content flex-item">
-                <view class="chat-source">
-                    <text class="chatmate">Alex</text>
-                    <text class="lasttime">1 个月前</text>
+        <block wx:for="{{message.content}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="chat-item flex-wrp">
+                <view class="avatar flex-item">
+                    <image src="{{item.avatar}}"></image>
                 </view>
-                <text class="chat-txt">你好~ 你好~ 你好~</text>
+                <view class="chat-content flex-item">
+                    <view class="chat-source">
+                        <text class="chatmate">{{item.nickname}}</text>
+                        <text class="lasttime">{{item.lasttime}}</text>
+                    </view>
+                    <text class="chat-txt">{{item.lasttext}}</text>
+                </view>
             </view>
-        </view>
-        <view class="chat-item flex-wrp">
+        </block>
+
+        <!-- <view class="chat-item flex-wrp">
             <view class="avatar flex-item">
                 <image src="../../images/icon9.jpeg"></image>
             </view>
@@ -48,28 +62,30 @@
                 </view>
                 <text class="chat-txt">你好~ 你好~ 你好~</text>
             </view>
-        </view>
+        </view> -->
 
         <!-- </view> -->
     </view>
     <view class="ctnt0" hidden="{{currentNavtab==2 ? '' : true}}">
         <view class="unread">
-            <text>0 条未读</text>
+            <text>{{groupchat.unread}} 个群聊有新消息</text>
             <image src="../../images/allread.png"></image>
         </view>
-        <view class="chat-item flex-wrp">
-            <view class="avatar flex-item">
-                <image src="../../images/icon8.jpg"></image>
-            </view>
-            <view class="chat-content flex-item">
-                <view class="chat-source">
-                    <text class="chatmate">Alex</text>
-                    <text class="lasttime">1 个月前</text>
+        <block wx:for="{{groupchat.content}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="chat-item flex-wrp">
+                <view class="avatar flex-item">
+                    <image src="{{item.avatar}}"></image>
                 </view>
-                <text class="chat-txt">你好~ 你好~ 你好~</text>
+                <view class="chat-content flex-item">
+                    <view class="chat-source">
+                        <text class="chatmate">{{item.title}}</text>
+                        <text class="lasttime">{{item.lasttime}}</text>
+                    </view>
+                    <text class="chat-txt">{{item.last_nick}}: {{item.lasttext}}</text>
+                </view>
             </view>
-        </view>
-        <view class="chat-item flex-wrp">
+        </block>
+        <!-- <view class="chat-item flex-wrp">
             <view class="avatar flex-item">
                 <image src="../../images/icon9.jpeg"></image>
             </view>
@@ -80,7 +96,7 @@
                 </view>
                 <text class="chat-txt">你好~ 你好~ 你好~</text>
             </view>
-        </view>
+        </view> -->
 
         <!-- </view> -->
     </view>

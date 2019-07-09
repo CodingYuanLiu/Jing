@@ -24,6 +24,40 @@
         <image src="../../images/1444983318907-_DSC1826.jpg"></image>
         <image src="../../images/1444983318907-_DSC1826.jpg"></image>
     </view>
+    <view class="ctnt0">
+        <view class="unread">
+            <text>{{comment.length}} 条评论</text>
+            <!-- <image src="../../images/allread.png"></image> -->
+        </view>
+        <block wx:for="{{comment.content}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="chat-item flex-wrp">
+                <view class="avatar flex-item">
+                    <image src="{{item.avatar}}"></image>
+                </view>
+                <view class="chat-content flex-item">
+                    <view class="chat-source">
+                        <text class="chatmate">{{item.nickname}}</text>
+                        <text class="lasttime">{{item.lasttime}}</text>
+                    </view>
+                    <text class="chat-txt">{{item.content}}</text>
+                </view>
+            </view>
+        </block>
+        <view class="chat-item flex-wrp">
+            <view class="avatar flex-item">
+                <image src=""></image>
+            </view>
+            <view class="chat-content flex-item">
+                <view class="chat-source">
+                    <text class="chatmate"> </text>
+                    <text class="lasttime"> </text>
+                </view>
+                <text class="chat-txt"> </text>
+            </view>
+        </view>
+
+        <!-- </view> -->
+    </view>
 
     <view class="answer-footer flex-wrp">
         <view class="operation ">
@@ -41,13 +75,13 @@
                 <text>302</text>
             </view>
             <view class="search flex-wrp">
-            <view class="search-left flex-item">
-                <input placeholder="添加评论" placeholder-class="search-placeholder" />
+                <view class="search-left flex-item">
+                    <input placeholder="添加评论" placeholder-class="search-placeholder" />
+                </view>
+                <view class="search-right flex-item" bindtap="upper">
+                    <image src="../../images/icons/icon_community_line.png"></image>
+                </view>
             </view>
-            <view class="search-right flex-item" bindtap="upper">
-                <image src="../../images/icons/icon_community_line.png"></image>
-            </view>
-        </view>
         </view>
         <!-- <view class="good" style="width: 50rpx">
             <!-- <view class="good-bad">
@@ -59,7 +93,6 @@
             </view>
         </view> -->
 
-        
 
 
     </view>
