@@ -6,6 +6,7 @@ service Login {
     rpc Auth(AuthReq) returns (AuthResp) {}
     rpc LoginByJaccount(LJReq) returns (TokenResp) {}
     rpc LoginByUP(UPReq) returns (TokenResp) {}
+    rpc LoginByWx(WxReq) returns (TokenResp) {}
     rpc GetAccessToken(CodeReq) returns (AccessResp) {}
 }
 
@@ -36,10 +37,15 @@ message LJReq {
 
 message TokenResp {
     int32 status = 4;
+    // uncaught error = -1, success = 0, incorrect = 1, access_token expired = 11, invalid jaccount = 12, need jaccount = 21 (weixin), need fill form = 22
     string jwt_token = 5;
 }
 
 message UPReq {
     string username = 3;
     string password = 4;
+}
+
+message WxReq {
+    string code = 5;
 }

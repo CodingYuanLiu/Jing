@@ -3,38 +3,13 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/web"
-	loginHandler "jing/app/api-gateway/handler/login"
+	loginController "jing/app/api-gateway/controller/login"
+	userController "jing/app/api-gateway/controller/user"
+	"jing/app/api-gateway/filter"
 	"log"
 )
 
 
-func setupRouter() *gin.Engine {
-	router := gin.Default()
-
-	lh := new(loginHandler.Login)
-	publicRouter := router.Group("/api/public")
-	{
-		publicRouter.POST("/user/status", lh.AuthHandler)
-		//publicRouter.POST("/user/register", )
-		publicRouter.POST("/user/login/jaccount", lh.LoginByJaccountHandler)
-		publicRouter.POST("/user/login/up", lh.LoginByUPHanler)
-		//publicRouter.GET("/user/detail", )
-		//publicRouter.GET("/activity", )
-	}
-	/*
-		adminRouter := router.Group("/api/admin")
-		{
-			adminRouter.GET("/users")
-			adminRouter.GET("/activities")
-		}
-		userRouter := router.Group("api/user")
-		{
-			userRouter.PUT("/info/update")
-
-		}
-	*/
-	return router
-}
 
 func main() {
 	service := web.NewService(
@@ -50,4 +25,37 @@ func main() {
 	if err := service.Run(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func setupRouter() *gin.Engine {
+	router := gin.Default()
+	router.Use(filter.AuthFilter)
+
+	// login service
+	lc := new(loginController.LoginController)
+	// user service
+	uc := new(userController.UserController)
+
+	publicRouter := router.Group("/api/public")
+	{
+		publicRouter.POST("/status", lc.GetUserStatus)
+		publicRouter.POST("/register", uc.Register)
+		publicRouter.POST("/login/jaccount", lc.OAuthLogin)
+		publicRouter.POST("/login/native", lc.NativeLogin)
+		publicRouter.GET("/:id/detail", uc.QueryUser)
+		//publicRouter.GET("/activity", )
+	}
+	/*
+		adminRouter := router.Group("/api/admin")
+		{
+			adminRouter.GET("/users")
+			adminRouter.GET("/activities")
+		}
+	*/
+	userRouter := router.Group("/api/user")
+	{
+		userRouter.PUT("/info/update", uc.UpdateUser)
+	}
+
+	return router
 }

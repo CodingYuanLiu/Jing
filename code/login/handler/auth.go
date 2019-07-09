@@ -2,12 +2,16 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jameskeane/bcrypt"
+	"io/ioutil"
 	"jing/app/login/dao"
 	"jing/app/login/model"
 	login "jing/app/login/proto/login"
 	userDao "jing/app/user/dao"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -18,7 +22,6 @@ type LoginService struct {
 
 func BuildToken(user userDao.User) (tokenString string) {
 	claims := make(jwt.MapClaims)
-	claims["username"] = user.Username
 	claims["userId"] = user.ID
 	claims["admin"] = "false"
 	claims["exp"] = time.Now().Add(time.Hour).Unix()
@@ -39,13 +42,13 @@ func (s *LoginService) LoginByJaccount(ctx context.Context, in *login.LJReq, out
 	profile := model.GetProfile(in.AccessToken)
 	e := int(profile["errno"].(float64))
 	if e != 0 {
-		out.Status = -1
+		out.Status = 11
 		return nil
 	}
 	jaccount := profile["entities"].([]interface {})[0].(map[string]interface {})["account"].(string)
 	user, err := dao.FindUserByJaccount(jaccount)
 	if err != nil {
-		out.Status = -2
+		out.Status = 12
 	} else {
 		out.Status = 0
 		out.JwtToken = BuildToken(user)
@@ -56,18 +59,52 @@ func (s *LoginService) LoginByJaccount(ctx context.Context, in *login.LJReq, out
 func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *login.TokenResp) error {
 	user, err := dao.FindUserByUsername(in.Username)
 	if err != nil {
-		out.Status = 401
+		out.Status = 1
 		return nil
 	} else {
 		if bcrypt.Match(in.Password, user.Password) {
-			out.Status = 200
+			out.Status = 0
 			out.JwtToken = BuildToken(user)
 			return nil
 		} else {
-			out.Status = 401
+			out.Status = 1
 			return nil
 		}
 	}
+}
+
+func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *login.TokenResp) error {
+	code := in.Code
+	resp, err := http.Get(fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+		"wx2f062d3bd8d4e1ba", "91400ecabfae4bcd51870b4e521c5179", code))
+	if err != nil {
+		out.Status = -1
+		return nil
+	}
+	respJson, _ := ioutil.ReadAll(resp.Body)
+	j := model.JSON{}
+	_ = json.Unmarshal(respJson, &j)
+	errcode := int(j["errcode"].(float64))
+	if errcode == 40029 {
+		out.Status = 1
+		return nil
+	} else if errcode != 0 {
+		out.Status = -1
+		return nil
+	}
+	openId := j["openid"].(string)
+	user, err := dao.FindUserByOpenId(openId)
+	if err != nil {
+		_ = dao.CreateUserByOpenId(openId)
+		user, _ = dao.FindUserByOpenId(openId)
+		out.Status = 21
+	} else if user.Nickname == "" {
+		out.Status = 22
+	} else {
+		out.Status = 0
+	}
+	out.JwtToken = BuildToken(user)
+	return nil
 }
 
 func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login.AuthResp) error {
@@ -76,7 +113,6 @@ func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login
 	if status == 0 {
 		claims := token.Claims.(jwt.MapClaims)
 		resp.UserId = int32(claims["userId"].(float64))
-		resp.Username = claims["username"].(string)
 		resp.Admin, _ = strconv.ParseBool(claims["admin"].(string))
 	} else {
 		resp.UserId = -1
