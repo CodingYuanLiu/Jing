@@ -221,5 +221,149 @@ func main() {
 ### struct method
 
 ```go
+package main
+import (
+    "fmt"
+)
+type Method struct {
+	items []int
+}
+func (m *Method) Insert(item int) {
+	m.items = append(m.items, item)
+}
+
+func main() {
+	method := new(Method)
+	method.Insert(1)
+	method.Insert(2)
+	for v := range method.items {
+		fmt.Println(v)
+	}
+}
+// Go里，把方法作为接收器，只有结构体的实例，即接收器，才能调用方法，结构体没有自己的方法。
+// 其大致格式如下
+func (接收器变量 类型) 方法名　(参数列表) (返回参数)　{
+    body
+}
+// 当接收器不是指针的时候，对接收器对象的更改是不会作用到接收器对象上去的
+type Point struct{
+    x int
+    y int
+}
+func (p Point) Add(other Point) Point{
+    return Point{p.x + other.x, p.y + other.y}
+}
+```
+
+## interface
+
+```go
+type 接口名称　interface {
+    method1(args) (return value list)
+    method2(args) (return value list)
+}
+```
+
+Go 的接口是非侵入式的，实现接口并不影响接口，也不需要引入接口的包，只需要完全实现接口的方法
+
+```go
+// main package
+package main
+
+import (
+	"./myioImpl"
+	"./myio"
+)
+func main () {
+	m := new(myioImpl.MyioImpl)
+	var inter myio.Writer = m
+	inter.WriteInt(7)
+}
+
+// myio package
+package myio
+
+type Writer interface {
+    // 这里data是空接口类型，类似java里的Object
+	WriteInt(data interface{}) error
+}
+
+func Add(x,y int) int {
+	return x+y
+}
+
+// myioImpl
+package myioImpl
+
+import(
+	"fmt"
+)
+type MyioImpl struct {
+}
+
+func (writer *MyioImpl)WriteInt(data interface{}) error{
+	fmt.Println(data)
+	return nil
+}
+
+structure
+|
+ myio
+    |myio.go
+|
+ myioImpl
+    |myioImpl.go
+|
+ main.go
+```
+
+#### 实现接口需要函数名一致
+
+#### 实现接口需要方法参数一致
+
+#### 必须实现接口的所有方法才算实现了接口
+
+## Package
+
+- 标识符首字母小写在包外是无法访问的，只有首字母大写才能在包外进行访问
+
+## Parallel
+
+Go 中采用`go func()`形式来使用 Go 管理的 goroutine,goroutine 类似线程，但是调度和管理由 Go 进行管理,Go 会合理的将这些 goroutine 分配到每个 Cpu 上去
+
+```go
 
 ```
+
+## Unit test
+
+Go 自带一个`Testing`包及 go test 工具
+
+- 测试文件必须是`[name]_test`格式，命名必须以`_test`结尾。
+- 测试函数必须以`Test`开头,参数必须是`*Testing.T`
+
+```go
+package learntest
+
+import "testing"
+
+func TestSum(t *testing.T)  {
+	res := Sum(1, 2)
+	if res != 3 {
+		t.Fatal("Test failed")
+	} else {
+		t.Log("Test Passed")
+	}
+}
+```
+
+```go
+package learntest
+
+
+func Sum(n1 int, n2 int) int {
+	return n1 + n2
+}
+```
+
+> go test -v file_test.go file.go
