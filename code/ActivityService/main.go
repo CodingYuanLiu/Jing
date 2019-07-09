@@ -1,48 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"context"
 	activity "ActivityService/proto"
+	"ActivityService/srv"
 	"github.com/micro/go-micro"
 	"gopkg.in/mgo.v2"
-	//"gopkg.in/mgo.v2/bson"
-	"ActivityService/Model"
+	"gopkg.in/mgo.v2/bson"
+	"log"
 )
 
-type Activity struct{
-	Collection *mgo.Collection
-}
-
-func (act *Activity) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
-	//fmt.Println(req)
-	insert(req,act.Collection)
-	resp.Status=200
-	resp.Description="OK"
-	return nil
-}
-
-func insert(req *activity.PubReq,collection *mgo.Collection) error {
-	newact := Model.BasicAct{
-		Actid:req.Actid,
-		Type:req.Type,
-		CreateTime:req.CreateTime,
-		EndTime:req.EndTime,
-		Title:req.Title,
-		Description:req.Description,
-		Tag:req.Tag,
-	}
-	err := collection.Insert(newact)
-	if err!=nil{
-		fmt.Println("Insert Fail!")
-	}
-	return err
+type autoid struct{
+	Autoid int32
 }
 
 func main(){
 	service:=micro.NewService(
-		micro.Name("testact"),
+		micro.Name("Jing.srv.act"),
 		micro.Address("127.0.0.1:50010"),
 		)
 	session, err := mgo.Dial("127.0.0.1:27017")
@@ -52,11 +25,16 @@ func main(){
 	defer session.Close()
 
 	collection := session.DB("Jing").C("Activity")
-
+	//objectId:=bson.ObjectIdHex("5d23f2a372df504ce4aa856a")
+	id := new(autoid)
+ 	collection.FindId(bson.ObjectIdHex("5d23f2a372df504ce4aa856a")).One(&id)
+	srv.Id=id.Autoid
 	service.Init()
-	actservice := new(Activity)
+	actservice := new(srv.ActivitySrv)
 	actservice.Collection = collection
-	activity.RegisterActivityHandler(service.Server(),actservice)
+	if err:=activity.RegisterActivitySrvHandler(service.Server(),actservice);err!=nil{
+		log.Fatal(err)
+	}
 	if err := service.Run(); err != nil {
 		log.Fatal(err)
 	}

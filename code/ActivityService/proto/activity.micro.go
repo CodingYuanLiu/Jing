@@ -31,32 +31,35 @@ var _ context.Context
 var _ client.Option
 var _ server.Option
 
-// Client API for Activity service
+// Client API for ActivitySrv service
 
-type ActivityService interface {
+type ActivitySrvService interface {
 	Publish(ctx context.Context, in *PubReq, opts ...client.CallOption) (*PubResp, error)
+	//rpc Modify(MdfReq) returns (MdfResp){}
+	Delete(ctx context.Context, in *DltReq, opts ...client.CallOption) (*DltResp, error)
+	Query(ctx context.Context, in *QryReq, opts ...client.CallOption) (*QryResp, error)
 }
 
-type activityService struct {
+type activitySrvService struct {
 	c    client.Client
 	name string
 }
 
-func NewActivityService(name string, c client.Client) ActivityService {
+func NewActivitySrvService(name string, c client.Client) ActivitySrvService {
 	if c == nil {
 		c = client.NewClient()
 	}
 	if len(name) == 0 {
 		name = "activity"
 	}
-	return &activityService{
+	return &activitySrvService{
 		c:    c,
 		name: name,
 	}
 }
 
-func (c *activityService) Publish(ctx context.Context, in *PubReq, opts ...client.CallOption) (*PubResp, error) {
-	req := c.c.NewRequest(c.name, "Activity.Publish", in)
+func (c *activitySrvService) Publish(ctx context.Context, in *PubReq, opts ...client.CallOption) (*PubResp, error) {
+	req := c.c.NewRequest(c.name, "ActivitySrv.Publish", in)
 	out := new(PubResp)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -65,27 +68,60 @@ func (c *activityService) Publish(ctx context.Context, in *PubReq, opts ...clien
 	return out, nil
 }
 
-// Server API for Activity service
+func (c *activitySrvService) Delete(ctx context.Context, in *DltReq, opts ...client.CallOption) (*DltResp, error) {
+	req := c.c.NewRequest(c.name, "ActivitySrv.Delete", in)
+	out := new(DltResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
 
-type ActivityHandler interface {
+func (c *activitySrvService) Query(ctx context.Context, in *QryReq, opts ...client.CallOption) (*QryResp, error) {
+	req := c.c.NewRequest(c.name, "ActivitySrv.Query", in)
+	out := new(QryResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Server API for ActivitySrv service
+
+type ActivitySrvHandler interface {
 	Publish(context.Context, *PubReq, *PubResp) error
+	//rpc Modify(MdfReq) returns (MdfResp){}
+	Delete(context.Context, *DltReq, *DltResp) error
+	Query(context.Context, *QryReq, *QryResp) error
 }
 
-func RegisterActivityHandler(s server.Server, hdlr ActivityHandler, opts ...server.HandlerOption) error {
-	type activity interface {
+func RegisterActivitySrvHandler(s server.Server, hdlr ActivitySrvHandler, opts ...server.HandlerOption) error {
+	type activitySrv interface {
 		Publish(ctx context.Context, in *PubReq, out *PubResp) error
+		Delete(ctx context.Context, in *DltReq, out *DltResp) error
+		Query(ctx context.Context, in *QryReq, out *QryResp) error
 	}
-	type Activity struct {
-		activity
+	type ActivitySrv struct {
+		activitySrv
 	}
-	h := &activityHandler{hdlr}
-	return s.Handle(s.NewHandler(&Activity{h}, opts...))
+	h := &activitySrvHandler{hdlr}
+	return s.Handle(s.NewHandler(&ActivitySrv{h}, opts...))
 }
 
-type activityHandler struct {
-	ActivityHandler
+type activitySrvHandler struct {
+	ActivitySrvHandler
 }
 
-func (h *activityHandler) Publish(ctx context.Context, in *PubReq, out *PubResp) error {
-	return h.ActivityHandler.Publish(ctx, in, out)
+func (h *activitySrvHandler) Publish(ctx context.Context, in *PubReq, out *PubResp) error {
+	return h.ActivitySrvHandler.Publish(ctx, in, out)
+}
+
+func (h *activitySrvHandler) Delete(ctx context.Context, in *DltReq, out *DltResp) error {
+	return h.ActivitySrvHandler.Delete(ctx, in, out)
+}
+
+func (h *activitySrvHandler) Query(ctx context.Context, in *QryReq, out *QryResp) error {
+	return h.ActivitySrvHandler.Query(ctx, in, out)
 }
