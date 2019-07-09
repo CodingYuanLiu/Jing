@@ -125,8 +125,9 @@ func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq
 				out.Status = 1
 			}
 			out.Status = 0
+		} else {
+			out.Status = 2
 		}
-		out.Status = 2
 	}
 	return nil
 }
