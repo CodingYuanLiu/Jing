@@ -12,32 +12,38 @@ func TestLoginService_LoginByUP(t *testing.T) {
 	a := assert.New(t)
 	loginService := &LoginService{}
 	loginReq := login.UPReq{
-		Username: "dfy",
-		Password: "hello",
+		Username: "username",
+		Password: "password",
 	}
 	loginResp := login.TokenResp{}
 	_ = loginService.LoginByUP(context.TODO(), &loginReq, &loginResp)
 	user := dao.User{
-		ID: 4,
-		Username: "dfy",
+		ID: 1,
+		Username: "username",
 	}
 	token := BuildToken(user)
 	a.Equal(token, loginResp.JwtToken)
-	a.Equal(int32(200), loginResp.Status)
+	a.Equal(int32(0), loginResp.Status)
 	loginReq = login.UPReq{
-		Username: "dfy",
-		Password: "hell",
+		Username: "username",
+		Password: "wrongPassword",
 	}
 	_ = loginService.LoginByUP(context.TODO(), &loginReq, &loginResp)
-	a.Equal(int32(401), loginResp.Status)
+	a.Equal(int32(1), loginResp.Status)
+	loginReq = login.UPReq{
+		Username: "user",
+		Password: "password",
+	}
+	_ = loginService.LoginByUP(context.TODO(), &loginReq, &loginResp)
+	a.Equal(int32(1), loginResp.Status)
 }
 
 func TestLoginService_Auth(t *testing.T) {
 	a := assert.New(t)
 	loginService := &LoginService{}
 	loginReq := login.UPReq{
-		Username: "dfy",
-		Password: "hello",
+		Username: "username",
+		Password: "password",
 	}
 	loginResp := login.TokenResp{}
 	_ = loginService.LoginByUP(context.TODO(), &loginReq, &loginResp)
@@ -48,12 +54,10 @@ func TestLoginService_Auth(t *testing.T) {
 	authResp := login.AuthResp{}
 	_ = loginService.Auth(context.TODO(), &authReq, &authResp)
 	a.Equal(int32(0), authResp.Status)
-	a.Equal("dfy", authResp.Username)
-	a.Equal(int32(4), authResp.UserId)
+	a.Equal(int32(1), authResp.UserId)
 	a.Equal(false, authResp.Admin)
 	authReq.Jwt = ""
 	_ = loginService.Auth(context.TODO(), &authReq, &authResp)
-	a.Equal(int32(-3), authResp.Status)
-	a.Equal("", authResp.Username)
+	a.Equal(int32(-2), authResp.Status)
 	a.Equal(int32(-1), authResp.UserId)
 }

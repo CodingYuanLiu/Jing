@@ -161,9 +161,6 @@ func parseToken(tokenString string) (t *jwt.Token, status int32) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte("lqynb"), nil
 	})
-	if token == nil {
-		return nil, -3
-	}
 	if err != nil {
 		return nil, -2
 	}
