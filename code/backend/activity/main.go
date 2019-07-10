@@ -1,11 +1,11 @@
 package main
 
 import (
-	activity "jing/app/activity/proto"
-	"jing/app/activity/handler"
 	"github.com/micro/go-micro"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"jing/app/activity/handler"
+	activity "jing/app/activity/proto"
 	"log"
 )
 
