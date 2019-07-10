@@ -1,18 +1,18 @@
 package handler
 
 import (
-	"jing/app/activity/model"
-	activity "jing/app/activity/proto"
 	"context"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"jing/app/activity/model"
+	activity "jing/app/activity/proto"
 	"log"
 )
 
-func (activity *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
+func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
 	//fmt.Println(req)
-	id := insert(req, activity.Collection)
+	id := insert(req, actSrv.Collection)
 	resp.Status = 200
 	resp.Description="OK"
 	resp.Actid = id
