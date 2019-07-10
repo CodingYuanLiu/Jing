@@ -71,6 +71,7 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 
 	if rsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]interface{} {
+			"status": 0,
 			"message": "Login success",
 			"jwt": rsp.JwtToken,
 		})
