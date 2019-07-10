@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/micro/go-micro/client"
-	loginProto "jing/app/api-gateway/proto/login"
+	loginProto "jing/app/login/proto/login"
 	"log"
 )
 

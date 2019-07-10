@@ -32,9 +32,9 @@ func setupRouter() *gin.Engine {
 	router.Use(filter.AuthFilter)
 
 	// login service
-	lc := new(loginController.LoginController)
+	lc := new(loginController.Controller)
 	// user service
-	uc := new(userController.UserController)
+	uc := new(userController.Controller)
 
 	publicRouter := router.Group("/api/public")
 	{
