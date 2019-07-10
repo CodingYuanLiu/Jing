@@ -7,12 +7,13 @@ import (
 	"github.com/micro/go-micro"
 	"jing/app/login/handler"
 	login "jing/app/login/proto/login"
+	k8s "github.com/micro/kubernetes/go/micro"
 )
 
 type Say struct{}
 
 func main() {
-	service := micro.NewService(
+	service := k8s.NewService(
 		micro.Name("go.micro.handler.auth-service"),
 		micro.Address("127.0.0.1:30661"),
 		micro.RegisterTTL(time.Second*30),
