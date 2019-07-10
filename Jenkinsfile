@@ -8,6 +8,7 @@ podTemplate(label: label, cloud: 'kubernetes') {
             
         }
         stage('Build') {
+            sh "go version"
             sh """
             cd code/backend/login 
             go build login.go
