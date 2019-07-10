@@ -10,18 +10,18 @@ podTemplate(label: label, cloud: 'kubernetes') {
         stage('Build') {
             sh "go version"
             sh """
-            cd code/backend/login 
-            go build login.go
-            docker build -t jing855/login:latest .
-            docker login -u jing855 -p summer855
-            docker push jing855/login:latest
-            """
-            sh """
             cd code/backend/api-gateway             
             go build main.go
             docker build -t jing855/apigateway:latest .
             docker login -u jing855 -p summer855
             docker push jing855/apigateway:latest
+            """
+            sh """
+            cd code/backend/login 
+            go build login.go
+            docker build -t jing855/login:latest .
+            docker login -u jing855 -p summer855
+            docker push jing855/login:latest
             """
             sh """
             cd code/backend/user
