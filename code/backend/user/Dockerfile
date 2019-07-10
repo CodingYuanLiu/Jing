@@ -6,4 +6,4 @@ FROM ubuntu
 # Add app to the image
 ADD ./user /home/app/bin
 # Run APP
-ENTRYPOINT [ "/home/app/bin/user" ] 
+CMD [ "/home/app/bin" ] 
