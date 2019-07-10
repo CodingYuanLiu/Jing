@@ -41,7 +41,6 @@ func (lc *LoginController) GetUserStatus (c *gin.Context) {
 	} else if rsp.Status == 0{
 		c.JSON(http.StatusOK, map[string]interface {}{
 			"message" : "You are online",
-			"username" : rsp.Username,
 			"id" : rsp.UserId,
 		})
 	} else {
