@@ -53,7 +53,7 @@ func NewLoginService(name string, c client.Client) LoginService {
 		c = client.NewClient()
 	}
 	if len(name) == 0 {
-		name = "go.micro.srv.login"
+		name = "go.micro.handler.login"
 	}
 	return &loginService{
 		c:    c,
