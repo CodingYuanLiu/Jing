@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"github.com/micro/go-micro/client"
-	userProto "jing/app/api-gateway/proto/user"
+	userProto "jing/app/user/proto/user"
 	"log"
 )
 
