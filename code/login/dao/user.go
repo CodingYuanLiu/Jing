@@ -47,7 +47,7 @@ func CreateUserByOpenId(openId string) error {
 func BindJaccountById(id int, jaccount string) error {
 	user := userDao.User{}
 	db.First(&user, id)
-	if user.Jaccount == "" {
+	if user.Jaccount != "" {
 		return errors.New("jaccount has been bound")
 	} else {
 		user.Jaccount = jaccount

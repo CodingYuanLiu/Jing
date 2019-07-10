@@ -41,7 +41,6 @@ func (lc *LoginController) GetUserStatus (c *gin.Context) {
 	} else if rsp.Status == 0{
 		c.JSON(http.StatusOK, map[string]interface {}{
 			"message" : "You are online",
-			"username" : rsp.Username,
 			"id" : rsp.UserId,
 		})
 	} else {
@@ -68,20 +67,19 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 		c.Abort()
 		return
 	}
-
-	log.Println("code :", codeBody.Code)
 	rsp, _ := loginClient.CallGetWXOpenId(codeBody.Code)
-	log.Println(rsp)
 
 	if rsp.Status == 0 {
-		c.JSON(http.StatusOK, map[string]string {
-			"message" : "Login success",
+		c.JSON(http.StatusOK, map[string]interface{} {
+			"status": 0,
+			"message": "Login success",
+			"jwt": rsp.JwtToken,
 		})
 	} else if rsp.Status == 21 {
 
 		url := "https://jaccount.sjtu.edu.cn/oauth2/authorize" +
 			"?response_type=code&client_id=KIr40g1K90EObtNARwda" +
-			"&scope=basic&redirect_uri=https://sebastianj1wzyd.xyz/api/public/wx/redirect/?jwt=" + rsp.JwtToken
+			"&scope=basic&redirect_uri=https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + rsp.JwtToken
 
 		var png []byte
 		png, err := qrcode.Encode(url, qrcode.Medium, 256)
@@ -91,8 +89,10 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 		str := base64.StdEncoding.EncodeToString(png)
 		c.String(http.StatusMovedPermanently, str)
 	} else if rsp.Status == 22 {
-		c.JSON(http.StatusOK, map[string]string {
+		c.JSON(http.StatusOK, map[string]interface{} {
 			"message" : "Need update user info",
+			"status": 22,
+			"jwt": rsp.JwtToken,
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, map[string]string {
@@ -103,18 +103,16 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 }
 
 func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
-	code := c.Param("code")
-	jwt := c.Param("jwt")
-	jacRsp, _ := loginClient.CallGetJac(code)
+	code := c.Query("code")
+	jwt := c.Query("jwt")
+	jacRsp, _ := loginClient.CallGetJac(code, "https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + jwt)
 
 	jac := jacRsp.Jaccount
 
 	bindRsp, _ := loginClient.CallBindJacAndWx(jwt, jac)
 
 	if bindRsp.Status == 0 {
-		c.JSON(http.StatusOK, map[string]string {
-			"message" : "Jaccount and wechat bind Ok",
-		})
+		c.String(http.StatusOK, "<h1>已完成绑定，重新打开微信小程序即可使用即应的强大功能</h1>")
 	} else if bindRsp.Status > 0 {
 		c.JSON(http.StatusInternalServerError, map[string]string {
 			"message" : "Bind error",

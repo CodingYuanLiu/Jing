@@ -67,7 +67,7 @@ func (uc *UserController) UpdateUser (c *gin.Context) {
 	}
 
 	rsp, _ := userClient.CallUpdateUser(int32(updateBody.Id),
-		updateBody.Nickname, updateBody.Phone, updateBody.Signature)
+		updateBody.Phone, updateBody.Signature, updateBody.Nickname)
 
 
 	// All field update, rely on the frontend
