@@ -71,8 +71,9 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 	rsp, _ := loginClient.CallGetWXOpenId(codeBody.Code)
 
 	if rsp.Status == 0 {
-		c.JSON(http.StatusOK, map[string]string {
-			"message" : "Login success",
+		c.JSON(http.StatusOK, map[string]interface{} {
+			"message": "Login success",
+			"jwt": rsp.JwtToken,
 		})
 	} else if rsp.Status == 21 {
 
@@ -88,8 +89,10 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 		str := base64.StdEncoding.EncodeToString(png)
 		c.String(http.StatusMovedPermanently, str)
 	} else if rsp.Status == 22 {
-		c.JSON(http.StatusOK, map[string]string {
+		c.JSON(http.StatusOK, map[string]interface{} {
 			"message" : "Need update user info",
+			"status": 22,
+			"jwt": rsp.JwtToken,
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, map[string]string {
