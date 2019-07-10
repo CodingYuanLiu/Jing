@@ -6,4 +6,4 @@ FROM ubuntu
 # Add app to the image
 ADD ./user /home/app/bin
 # Run APP
-CMD [ "/home/app/bin/user" ] 
+CMD [ "/home/app/bin" ] 
