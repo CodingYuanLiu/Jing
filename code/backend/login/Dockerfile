@@ -6,4 +6,4 @@ FROM ubuntu
 # Add app to the image
 ADD ./login /home/app/bin
 # Run APP
-ENTRYPOINT [ "/home/app/bin/login" ] 
+CMD [ "/home/app/bin/login" ] 
