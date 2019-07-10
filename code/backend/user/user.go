@@ -11,7 +11,7 @@ import (
 
 func main() {
 	service := micro.NewService(
-		micro.Name("go.micro.srv.user"),
+		micro.Name("go.micro.handler.user"),
 		micro.Address("127.0.0.1:30662"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*10),

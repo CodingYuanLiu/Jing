@@ -49,7 +49,7 @@ func NewUserService(name string, c client.Client) UserService {
 		c = client.NewClient()
 	}
 	if len(name) == 0 {
-		name = "go.micro.srv.user"
+		name = "go.micro.handler.user"
 	}
 	return &userService{
 		c:    c,

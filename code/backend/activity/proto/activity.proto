@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package activity;
+
+service ActivitySrv{
+    rpc Publish(PubReq) returns (PubResp){}
+    rpc Modify(MdfReq) returns (MdfResp){}
+    rpc Delete(DltReq) returns (DltResp){}
+    rpc Query(QryReq) returns (QryResp){}
+}
+
+message BasicInfo{
+    string type = 2;
+    string createTime = 3;
+    string endTime = 4;
+    string title = 5;
+    string description = 6;
+    repeated string tag = 7;
+}
+
+message PubReq{
+    BasicInfo info = 3;
+    TaxiInfo taxiinfo = 4;
+    TakeoutInfo takeoutinfo = 5;
+    OrderInfo orderinfo = 6;
+    /*
+    OthersInfo othersInfo = 7;
+    */
+}
+
+message PubResp{
+    int32 status = 1;
+    string description = 2;
+    int32 actid = 3;
+}
+
+message MdfReq{
+    int32 actid = 1;
+    string createTime = 2;
+    string endTime = 3;
+    string description = 4;
+    repeated string tag = 5;
+    TaxiInfo taxiinfo=6;
+
+    TakeoutInfo takeoutinfo = 7;
+    /*
+    OrderInfo orderinfo = 8;
+    */
+}
+message MdfResp{
+    int32 status = 1;
+    string description = 2;
+}
+
+message DltReq{
+    int32 actid = 1;
+}
+
+message DltResp{
+    int32 status = 1;
+    string description = 2;
+}
+
+message QryReq{
+    int32 actid = 1;
+}
+
+message QryResp{
+    BasicInfo basicinfo = 1;
+    TaxiInfo taxiinfo = 2;
+    TakeoutInfo takeoutinfo = 3;
+    OrderInfo orderinfo = 4;
+}
+
+message TaxiInfo{
+    string departTime = 1;
+    string origin = 2;
+    string destination = 3;
+}
+
+
+message TakeoutInfo{
+    string store = 1;
+    string ordertime = 2;
+}
+
+message OrderInfo{
+    string store = 1;
+}
