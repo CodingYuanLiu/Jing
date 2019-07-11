@@ -4,16 +4,17 @@ import (
 	"log"
 	"time"
 
-	"github.com/micro/go-micro"
 	"jing/app/user/handler"
 	user "jing/app/user/proto/user"
+
+	"github.com/micro/go-micro"
 	k8s "github.com/micro/kubernetes/go/micro"
 )
 
 func main() {
 	service := k8s.NewService(
-		micro.Name("go.micro.srv.user"),
-		micro.Address("127.0.0.1:30662"),
+		micro.Name("go-micro-srv-user"),
+		micro.Address(":8080"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*10),
 	)

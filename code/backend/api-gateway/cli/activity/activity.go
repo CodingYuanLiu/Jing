@@ -1,15 +1,15 @@
 package activity
 
 import (
-	"context"
-	"github.com/micro/go-micro/client"
 	activityProto "jing/app/activity/proto"
+
+	"github.com/micro/go-micro/client"
 )
 
 var (
 	ActivityService activityProto.ActivitySrvService
 )
 
-func init()  {
-	ActivityService = activityProto.NewActivitySrvService("go.micro.handler.act", client.DefaultClient)
+func init() {
+	ActivityService = activityProto.NewActivitySrvService("go-micro-srv-act", client.DefaultClient)
 }
