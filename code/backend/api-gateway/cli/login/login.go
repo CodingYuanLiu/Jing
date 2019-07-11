@@ -3,21 +3,19 @@ package cli_login
 import (
 	"context"
 	"fmt"
-	"github.com/micro/go-micro/client"
 	loginProto "jing/app/login/proto/login"
 	"log"
-)
 
+	"github.com/micro/go-micro/client"
+)
 
 var (
 	LoginClient loginProto.LoginService
 )
 
-
 func init() {
-	LoginClient = loginProto.NewLoginService("go.micro.srv.auth-service", client.DefaultClient)
+	LoginClient = loginProto.NewLoginService("go-micro-srv-auth-service", client.DefaultClient)
 }
-
 
 func CallAuth(jwt string) (*loginProto.AuthResp, error) {
 	resp, err := LoginClient.Auth(context.TODO(), &loginProto.AuthReq{
@@ -29,7 +27,6 @@ func CallAuth(jwt string) (*loginProto.AuthResp, error) {
 	return resp, nil
 }
 
-
 func CallLoginByJaccount(accessToken string) (*loginProto.TokenResp, error) {
 	resp, err := LoginClient.LoginByJaccount(context.TODO(), &loginProto.LJReq{
 		AccessToken: accessToken,
@@ -40,12 +37,10 @@ func CallLoginByJaccount(accessToken string) (*loginProto.TokenResp, error) {
 	return resp, nil
 }
 
-
 func CallLoginByUP(username string, password string) (*loginProto.TokenResp, error) {
 	resp, err := LoginClient.LoginByUP(context.TODO(), &loginProto.UPReq{
-		Username:username,
-		Password:password,
-
+		Username: username,
+		Password: password,
 	})
 	if err != nil {
 		// ...
@@ -56,8 +51,8 @@ func CallLoginByUP(username string, password string) (*loginProto.TokenResp, err
 
 func CallGetAccessToken(redirectUri string, code string) (*loginProto.AccessResp, error) {
 	resp, err := LoginClient.GetAccessToken(context.TODO(), &loginProto.CodeReq{
-		RedirectUri : redirectUri,
-		Code : code,
+		RedirectUri: redirectUri,
+		Code:        code,
 	})
 	if err != nil {
 		// ...
@@ -66,10 +61,9 @@ func CallGetAccessToken(redirectUri string, code string) (*loginProto.AccessResp
 	return resp, err
 }
 
-
 func CallGetWXOpenId(code string) (*loginProto.TokenResp, error) {
 	resp, err := LoginClient.LoginByWx(context.TODO(), &loginProto.WxReq{
-		Code:code,
+		Code: code,
 	})
 	if err != nil {
 		// ...
@@ -79,7 +73,7 @@ func CallGetWXOpenId(code string) (*loginProto.TokenResp, error) {
 
 func CallGetJac(code string, redirectUri string) (*loginProto.JaccResp, error) {
 	resp, err := LoginClient.GetJaccount(context.TODO(), &loginProto.CodeReq{
-		Code : code,
+		Code:        code,
 		RedirectUri: redirectUri,
 	})
 	fmt.Println(code)
@@ -92,8 +86,8 @@ func CallGetJac(code string, redirectUri string) (*loginProto.JaccResp, error) {
 
 func CallBindJacAndWx(jwt string, jaccount string) (*loginProto.BindResp, error) {
 	resp, err := LoginClient.BindJwtAndJaccount(context.TODO(), &loginProto.BindReq{
-		Jwt:jwt,
-		Jaccount:jaccount,
+		Jwt:      jwt,
+		Jaccount: jaccount,
 	})
 
 	if err != nil {
