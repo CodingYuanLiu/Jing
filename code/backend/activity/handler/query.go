@@ -12,7 +12,7 @@ import (
 func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error {
 	//fmt.Println(req)
 	var result map[string] interface{}
-	err := actSrv.Collection.Find(bson.M{"actid": req.Actid}).One(&result)
+	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		return err
@@ -20,7 +20,7 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 		log.Fatal(err)
 	}
 	//Use map to fetch the result.
-	mapBasicInfo := result["basicInfo"].(map[string] interface{})
+	mapBasicInfo := result["basicinfo"].(map[string] interface{})
 	basicInfo := activity.BasicInfo{
 		Type:        mapBasicInfo["type"].(string),
 		Description: mapBasicInfo["description"].(string),
@@ -31,23 +31,23 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	for _,param := range mapBasicInfo["tag"].([]interface{}){
 		basicInfo.Tag = append(basicInfo.Tag,param.(string))
 	}
-	resp.Basicinfo = &basicInfo
+	resp.BasicInfo = &basicInfo
 	switch basicInfo.Type {
-	case "Taxi":
-		mapTaxiInfo := result["taxiInfo"].(map[string] interface{})
+	case "taxi":
+		mapTaxiInfo := result["taxiinfo"].(map[string] interface{})
 		taxiInfo := activity.TaxiInfo{
 			DepartTime:  mapTaxiInfo["departtime"].(string),
 			Origin:      mapTaxiInfo["origin"].(string),
 			Destination: mapTaxiInfo["destination"].(string),
 		}
-		resp.Taxiinfo = &taxiInfo
-	case "Takeout":
+		resp.TaxiInfo = &taxiInfo
+	case "takeout":
 		mapTakeoutInfo :=result["takeoutinfo"].(map[string] interface{})
 		takeoutInfo := activity.TakeoutInfo{
 			Store:     mapTakeoutInfo["store"].(string),
-			Ordertime: mapTakeoutInfo["ordertime"].(string),
+			OrderTime: mapTakeoutInfo["ordertime"].(string),
 		}
-		resp.Takeoutinfo = &takeoutInfo
+		resp.TakeoutInfo = &takeoutInfo
 	default :
 		fmt.Println("Undefined Type.")
 	}

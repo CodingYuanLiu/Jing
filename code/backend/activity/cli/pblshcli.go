@@ -27,15 +27,15 @@ func main(){
 			Destination:"Xinzhuang",
 		},*/
 		Info: &activity.BasicInfo{
-			Type:"Takeout",
+			Type:"takeout",
 			CreateTime:"2020-6-5",
 			EndTime:"2020-7-6",
 			Title:"BK in the noon",
 			Description:"Takeout description",
 			Tag: []string{"KFC","Element"},
 		},
-		Takeoutinfo: &activity.TakeoutInfo{
-			Ordertime:"2019-7-10 15:41:00",
+		TakeoutInfo: &activity.TakeoutInfo{
+			OrderTime:"2019-7-10 15:41:00",
 			Store:"BK",
 		},
 	})

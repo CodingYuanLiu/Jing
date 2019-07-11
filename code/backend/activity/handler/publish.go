@@ -15,7 +15,7 @@ func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp
 	id := insert(req, actSrv.Collection, actSrv.IdCollection)
 	resp.Status = 200
 	resp.Description="OK"
-	resp.Actid = id
+	resp.ActId = id
 	return nil
 }
 
@@ -32,24 +32,24 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 	}
 	var err error
 	switch basicInfo.Type{
-	case "Taxi":
+	case "taxi":
 		newAct := model.TaxiAct{
 			Actid:     id,
 			BasicInfo: basicInfo,
 			TaxiInfo: model.TaxiInfo{
-				DepartTime:req.Taxiinfo.DepartTime,
-				Origin:req.Taxiinfo.Origin,
-				Destination:req.Taxiinfo.Destination,
+				DepartTime:req.TaxiInfo.DepartTime,
+				Origin:req.TaxiInfo.Origin,
+				Destination:req.TaxiInfo.Destination,
 			},
 		}
 		err = collection.Insert(newAct)
-	case "Takeout":
+	case "takeout":
 		newAct := model.TakeoutAct{
 			Actid:     id,
 			BasicInfo: basicInfo,
 			TakeoutInfo:model.TakeoutInfo{
-				Store:req.Takeoutinfo.Store,
-				OrderTime:req.Takeoutinfo.Ordertime,
+				Store:req.TakeoutInfo.Store,
+				OrderTime:req.TakeoutInfo.OrderTime,
 			},
 		}
 		err = collection.Insert(newAct)

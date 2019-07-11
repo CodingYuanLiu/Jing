@@ -32,7 +32,10 @@ func main(){
 		handler.Id = 0
 		id := new(id)
 		id.AutoId = int32(0)
-		idCollection.Insert(id)
+		insertErr := idCollection.Insert(id)
+		if insertErr !=nil{
+			log.Fatal(insertErr)
+		}
 	}else if err !=nil{
 		log.Fatal(err)
 	}else {

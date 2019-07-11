@@ -9,7 +9,7 @@ import (
 )
 
 func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp *activity.DltResp) error {
-	err := actSrv.Collection.Remove(bson.M{"actid": req.Actid})
+	err := actSrv.Collection.Remove(bson.M{"actid": req.ActId})
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		resp.Status = 500

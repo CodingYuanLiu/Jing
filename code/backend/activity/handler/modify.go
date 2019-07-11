@@ -11,7 +11,7 @@ import (
 
 func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
 	var act map[string]interface{}
-	err := actSrv.Collection.Find(bson.M{"actid": req.Actid}).One(&act)
+	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		return err
@@ -29,23 +29,23 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	}
 
 	switch fetchType{
-	case "Taxi":
+	case "taxi":
 		taxiInfo := model.TaxiInfo{
-			DepartTime:req.Taxiinfo.DepartTime,
-			Origin:req.Taxiinfo.Origin,
-			Destination:req.Taxiinfo.Destination,
+			DepartTime:req.TaxiInfo.DepartTime,
+			Origin:req.TaxiInfo.Origin,
+			Destination:req.TaxiInfo.Destination,
 		}
 
 		err = actSrv.Collection.Update(
-		bson.M{"actid":req.Actid},
+		bson.M{"actid":req.ActId},
 		bson.M{"$set":bson.M{"basicinfo":basicInfo,"taxiinfo":taxiInfo}})
-	case "Takeout":
+	case "takeout":
 		takeoutInfo:=model.TakeoutInfo{
-			Store:req.Takeoutinfo.Store,
-			OrderTime:req.Takeoutinfo.Ordertime,
+			Store:req.TakeoutInfo.Store,
+			OrderTime:req.TakeoutInfo.OrderTime,
 		}
 		err = actSrv.Collection.Update(
-			bson.M{"actid":req.Actid},
+			bson.M{"actid":req.ActId},
 			bson.M{"$set":bson.M{"basicinfo":basicInfo,"takeoutinfo":takeoutInfo}})
 	default:
 		resp.Status=500
