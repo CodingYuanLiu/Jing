@@ -15,6 +15,7 @@ import (
 func main() {
 	service := k8s.NewService(
 		web.Name("go.micro.api.api"),
+		web.Address(":9090"),
 		)
 
 	service.Init()
