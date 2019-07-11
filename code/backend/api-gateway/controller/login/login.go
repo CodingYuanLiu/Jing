@@ -1,4 +1,4 @@
-package controller_login
+package login
 
 import "C"
 import (
@@ -11,14 +11,14 @@ import (
 	"net/http"
 )
 
-type LoginController struct {
+type Controller struct {
 }
 
 type WXCode struct {
 	Code string `json:"code" binding: required`
 }
 
-func (lc *LoginController) GetUserStatus (c *gin.Context) {
+func (lc *Controller) GetUserStatus (c *gin.Context) {
 	auth := c.Request.Header.Get("Authorization")
 
 	verified, jwt := srv.VerifyAuthorization(auth)
@@ -50,16 +50,16 @@ func (lc *LoginController) GetUserStatus (c *gin.Context) {
 	}
 }
 
-func (lc *LoginController) OAuthLogin (c *gin.Context) {
+func (lc *Controller) OAuthLogin (c *gin.Context) {
 
 }
 
-func (lc *LoginController) OAuthRedirect (c *gin.Context) {
+func (lc *Controller) OAuthRedirect (c *gin.Context) {
 
 }
 
 
-func (lc *LoginController) GetWXCode (c *gin.Context) {
+func (lc *Controller) GetWXCode (c *gin.Context) {
 	codeBody := new(WXCode)
 	err := c.BindJSON(codeBody)
 	if err != nil {
@@ -102,7 +102,7 @@ func (lc *LoginController) GetWXCode (c *gin.Context) {
 
 }
 
-func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
+func (lc *Controller) BindJaccountAndWX(c *gin.Context) {
 	code := c.Query("code")
 	jwt := c.Query("jwt")
 	jacRsp, _ := loginClient.CallGetJac(code, "https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + jwt)
@@ -123,7 +123,7 @@ func (lc *LoginController) BindJaccountAndWX(c *gin.Context) {
 
 
 
-func (lc *LoginController) NativeLogin (c *gin.Context) {
+func (lc *Controller) NativeLogin (c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 

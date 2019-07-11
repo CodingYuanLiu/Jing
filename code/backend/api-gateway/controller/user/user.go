@@ -1,4 +1,4 @@
-package controller_user
+package user
 
 import "C"
 import (
@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-type UserController struct {
+type Controller struct {
 }
 
 
@@ -29,7 +29,7 @@ type UpdateBody struct {
 }
 
 
-func (uc *UserController) Register (c *gin.Context) {
+func (uc *Controller) Register (c *gin.Context) {
 	reqBody := new(RegisterBody)
 	err := c.ShouldBindJSON(reqBody)
 	if err != nil {
@@ -59,7 +59,7 @@ func (uc *UserController) Register (c *gin.Context) {
 }
 
 
-func (uc *UserController) UpdateUser (c *gin.Context) {
+func (uc *Controller) UpdateUser (c *gin.Context) {
 
 	updateBody := new (UpdateBody)
 	if err := c.BindJSON(updateBody); err != nil {
@@ -86,7 +86,7 @@ func (uc *UserController) UpdateUser (c *gin.Context) {
 	}
 }
 
-func (uc *UserController) QueryUser (c *gin.Context) {
+func (uc *Controller) QueryUser (c *gin.Context) {
 	id := c.Param("id")
 	intId, err := strconv.Atoi(id)
 	if err != nil {
