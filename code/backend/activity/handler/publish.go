@@ -1,25 +1,25 @@
 package handler
 
 import (
+	"jing/app/activity/model"
+	activity "jing/app/activity/proto"
 	"context"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"jing/app/activity/model"
-	activity "jing/app/activity/proto"
 	"log"
 )
 
-func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
+func (activity *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
 	//fmt.Println(req)
-	id := insert(req, actSrv.Collection)
+	id := insert(req, activity.Collection,activity.IdCollection)
 	resp.Status = 200
 	resp.Description="OK"
 	resp.Actid = id
 	return nil
 }
 
-func insert(req *activity.PubReq,collection *mgo.Collection) int32 {
+func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Collection) int32 {
 	id := GetId()
 	basicinfo := model.BasicInfo{
 		//Actid:id,
@@ -59,8 +59,8 @@ func insert(req *activity.PubReq,collection *mgo.Collection) int32 {
 	if err!=nil{
 		fmt.Println("Insert Fail!")
 	}
-	err = collection.Update(
-		bson.M{"_id": bson.ObjectIdHex("5d23f2a372df504ce4aa856a")},
+	err = idCollection.Update(
+		bson.M{"autoid": id-1},
 		bson.M{"$inc": bson.M{ "autoid": 1 }})
 	if err!=nil{
 		log.Fatal(err)

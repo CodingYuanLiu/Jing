@@ -7,6 +7,7 @@ import (
 
 type ActivitySrv struct{
 	Collection *mgo.Collection
+	IdCollection *mgo.Collection
 }
 
 var Id int32

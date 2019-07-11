@@ -12,7 +12,7 @@ func main(){
 	service.Init()
 	c1 := activity.NewActivitySrvService("Jing.handler.act",service.Client())
 	rsp,err:= c1.Query(context.TODO(), &activity.QryReq{
-		Actid:2,
+		Actid:6,
 	})
 	if err != nil {
 		fmt.Println(err)

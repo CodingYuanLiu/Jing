@@ -1,34 +1,34 @@
 package handler
 
 import (
+	"jing/app/activity/model"
+	activity "jing/app/activity/proto"
 	"context"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"jing/app/activity/model"
-	activity "jing/app/activity/proto"
 )
 
-func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
+func (activity *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
 	var act map[string]interface{}
-	err := actSrv.Collection.Find(bson.M{"actid": req.Actid}).One(&act)
+	err := activity.Collection.Find(bson.M{"actid": req.Actid}).One(&act)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		return err
 	}
-	mapBasicinfo :=act["basicinfo"].(map[string]interface{})
-	fetchType := mapBasicinfo["type"].(string)
+	map_basicinfo :=act["basicinfo"].(map[string]interface{})
+	fetch_type:=map_basicinfo["type"].(string)
 
 	basicinfo:=model.BasicInfo{
-		Type:        fetchType,
-		Title:       mapBasicinfo["title"].(string),
-		CreateTime:  req.CreateTime,
-		EndTime:     req.EndTime,
-		Description: req.Description,
-		Tag:         req.Tag,
+		Type:fetch_type,
+		Title:map_basicinfo["title"].(string),
+		CreateTime:req.CreateTime,
+		EndTime:req.EndTime,
+		Description:req.Description,
+		Tag:req.Tag,
 	}
 
-	switch fetchType {
+	switch fetch_type{
 	case "Taxi":
 		taxiinfo := model.TaxiInfo{
 			DepartTime:req.Taxiinfo.DepartTime,
@@ -36,7 +36,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 			Destination:req.Taxiinfo.Destination,
 		}
 
-		err = actSrv.Collection.Update(
+		err = activity.Collection.Update(
 		bson.M{"actid":req.Actid},
 		bson.M{"$set":bson.M{"basicinfo":basicinfo,"taxiinfo":taxiinfo}})
 	case "Takeout":
@@ -44,7 +44,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 			Store:req.Takeoutinfo.Store,
 			OrderTime:req.Takeoutinfo.Ordertime,
 		}
-		err = actSrv.Collection.Update(
+		err = activity.Collection.Update(
 			bson.M{"actid":req.Actid},
 			bson.M{"$set":bson.M{"basicinfo":basicinfo,"takeoutinfo":takeoutinfo}})
 	default:

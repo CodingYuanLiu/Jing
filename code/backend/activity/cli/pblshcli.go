@@ -30,13 +30,13 @@ func main(){
 			Type:"Takeout",
 			CreateTime:"2020-6-5",
 			EndTime:"2020-7-6",
-			Title:"KFC in the noon",
+			Title:"BK in the noon",
 			Description:"Takeout description",
 			Tag: []string{"KFC","Element"},
 		},
 		Takeoutinfo: &activity.TakeoutInfo{
 			Ordertime:"2019-7-10 15:41:00",
-			Store:"KFC",
+			Store:"BK",
 		},
 	})
 	if err != nil {

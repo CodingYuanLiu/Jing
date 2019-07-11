@@ -1,15 +1,15 @@
 package handler
 
 import (
+	activity "jing/app/activity/proto"
 	"context"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	activity "jing/app/activity/proto"
 )
 
-func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp *activity.DltResp) error {
-	err := actSrv.Collection.Remove(bson.M{"actid": req.Actid})
+func (activity *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp *activity.DltResp) error {
+	err := activity.Collection.Remove(bson.M{"actid": req.Actid})
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		resp.Status = 500

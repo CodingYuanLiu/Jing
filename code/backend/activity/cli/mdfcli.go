@@ -23,11 +23,11 @@ func main(){
 			Origin:"ModifiedOrigin",
 			Destination:"ModifiedDest",
 		},*/
-		Actid:6,
+		Actid:8,
 		CreateTime:"2075-7-7",
 		EndTime:"2075-7-17",
 		Description:"Modified takeout description",
-		Tag: []string{"KFC","Element"},
+		Tag: []string{"BurgerKing","Element"},
 		Takeoutinfo:&activity.TakeoutInfo{
 			Store:"Burger King",
 			Ordertime:"2077-7-7",
