@@ -15,7 +15,7 @@ type Say struct{}
 func main() {
 	service := k8s.NewService(
 		micro.Name("go.micro.srv.auth-service"),
-		micro.Address(":9090"),
+		micro.Address(":8080"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*10),
 	)

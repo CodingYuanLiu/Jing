@@ -17,7 +17,6 @@ require (
 	github.com/jameskeane/bcrypt v0.0.0-20120420032655-c3cd44c1e20f
 	github.com/jinzhu/gorm v1.9.8
 	github.com/micro/go-micro v1.7.0
-	github.com/micro/go-web v0.6.0
 	github.com/micro/kubernetes v0.7.0
 	github.com/nats-io/nats-server/v2 v2.0.0 // indirect
 	github.com/skip2/go-qrcode v0.0.0-20190110000554-dc11ecdae0a9
