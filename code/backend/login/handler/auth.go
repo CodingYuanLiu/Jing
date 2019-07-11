@@ -151,7 +151,6 @@ func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login
 		resp.Admin, _ = strconv.ParseBool(claims["admin"].(string))
 	} else {
 		resp.UserId = -1
-		resp.Username = ""
 		resp.Admin = false
 	}
 	return nil

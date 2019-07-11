@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-micro/web"
+	"jing/app/api-gateway/controller/activity"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
 	"jing/app/api-gateway/filter"
@@ -35,6 +36,8 @@ func setupRouter() *gin.Engine {
 	lc := new(loginController.Controller)
 	// user service
 	uc := new(userController.Controller)
+	// activity service
+	ac := new(activity.Controller)
 
 	publicRouter := router.Group("/api/public")
 	{
@@ -45,6 +48,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/detail/:id", uc.QueryUser)
 		publicRouter.POST("/login/wx", lc.GetWXCode)
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
+		publicRouter.GET("/act/query", ac.QueryActivity)
 		//publicRouter.GET("/activity", )
 	}
 	/*
@@ -56,6 +60,11 @@ func setupRouter() *gin.Engine {
 	*/
 	userRouter := router.Group("/api/user")
 	{
+		// TODO: Privilege & Request activity
+		userRouter.POST("/act/publish", ac.PublishActivity)
+		userRouter.POST("/act/modify", ac.ModifyActivity)
+		userRouter.POST("/act/join", ac.JoinActivity)
+		userRouter.POST("/act/delete", ac.DeleteActivity)
 		userRouter.PUT("/info/update", uc.UpdateUser)
 	}
 

@@ -21,6 +21,31 @@ type User struct {
 	Jaccount string
 }
 
+type Join struct {
+	ID 		int 		`gorm:"primary_key;auto_increment"`
+	UserID	int
+	ActID	int
+	IsAdmin bool
+}
+
+func PublishActivity(userId int, actId int) error {
+	join := Join{}
+	join.UserID = userId
+	join.ActID = actId
+	join.IsAdmin = true
+	db.Create(&join)
+	return nil
+}
+
+func JoinActivity(userId int, actId int) error {
+	join := Join{}
+	join.UserID = userId
+	join.ActID = actId
+	join.IsAdmin = false
+	db.Create(&join)
+	return nil
+}
+
 func FindUserById(id int) (User, error) {
 	user := User{}
 	db.First(&user, id)
@@ -74,6 +99,9 @@ func init()  {
 	}
 	if !db.HasTable(&User{}) {
 		db.CreateTable(&User{})
+	}
+	if !db.HasTable(&Join{}) {
+		db.CreateTable(&Join{})
 	}
 	return
 }

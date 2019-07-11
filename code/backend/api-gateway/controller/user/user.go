@@ -14,18 +14,18 @@ type Controller struct {
 
 
 type RegisterBody struct {
-	Username string `json:"username" binding : "required"`
-	Password string `json:"password" binding : "required"`
-	Phone string `json:"phone" binding : "required"`
-	Nickname string `json:"nickname" binding : "required"`
-	Jaccount string `json:"jaccount" binding : "required"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Phone string `json:"phone" binding:"required"`
+	Nickname string `json:"nickname" binding:"required"`
+	Jaccount string `json:"jaccount" binding:"required"`
 }
 
 type UpdateBody struct {
-	Id int `json:"id" binding: "required"`
-	Phone string `json:"phone" binding: "optional"`
-	Signature string `json:"signature" binding :"optional"`
-	Nickname string `json: "nickname" binding: "optional"`
+	Id int `json:"id" binding:"required"`
+	Phone string `json:"phone" binding:"optional"`
+	Signature string `json:"signature" binding:"optional"`
+	Nickname string `json:"nickname" binding:"optional"`
 }
 
 
