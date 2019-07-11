@@ -15,7 +15,7 @@ var (
 
 
 func init() {
-	LoginClient = loginProto.NewLoginService("go.micro.handler.auth-service", client.DefaultClient)
+	LoginClient = loginProto.NewLoginService("go.micro.srv.auth-service", client.DefaultClient)
 }
 
 
