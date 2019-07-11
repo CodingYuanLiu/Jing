@@ -2,6 +2,8 @@ module jing/app
 
 go 1.12
 
+replace github.com/ugorji/go => github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43
+
 replace github.com/hashicorp/consul => github.com/hashicorp/consul v1.5.1
 
 replace github.com/testcontainers/testcontainer-go => github.com/testcontainers/testcontainers-go v0.0.0-20181115231424-8e868ca12c0f
