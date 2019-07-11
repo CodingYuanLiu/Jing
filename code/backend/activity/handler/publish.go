@@ -34,7 +34,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 	switch basicInfo.Type{
 	case "taxi":
 		newAct := model.TaxiAct{
-			Actid:     id,
+			ActId:     id,
 			BasicInfo: basicInfo,
 			TaxiInfo: model.TaxiInfo{
 				DepartTime:req.TaxiInfo.DepartTime,
@@ -45,11 +45,29 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		err = collection.Insert(newAct)
 	case "takeout":
 		newAct := model.TakeoutAct{
-			Actid:     id,
+			ActId:     id,
 			BasicInfo: basicInfo,
 			TakeoutInfo:model.TakeoutInfo{
 				Store:req.TakeoutInfo.Store,
 				OrderTime:req.TakeoutInfo.OrderTime,
+			},
+		}
+		err = collection.Insert(newAct)
+	case "order":
+		newAct := model.OrderAct{
+			ActId:id,
+			BasicInfo:basicInfo,
+			OrderInfo:model.OrderInfo{
+				Store:req.OrderInfo.Store,
+			},
+		}
+		err = collection.Insert(newAct)
+	case "other":
+		newAct := model.OtherAct{
+			ActId:id,
+			BasicInfo:basicInfo,
+			OtherInfo:model.OtherInfo{
+				ActivityTime:req.OtherInfo.ActivityTime,
 			},
 		}
 		err = collection.Insert(newAct)

@@ -17,7 +17,7 @@ type TaxiInfo struct{
 }
 
 type TaxiAct struct{
-	Actid int32
+	ActId int32
 	BasicInfo BasicInfo
 	TaxiInfo TaxiInfo
 }
@@ -27,7 +27,25 @@ type TakeoutInfo struct{
 	OrderTime string
 }
 type TakeoutAct struct{
-	Actid int32
+	ActId int32
 	TakeoutInfo TakeoutInfo
 	BasicInfo BasicInfo
+}
+
+type OrderInfo struct{
+	Store string
+}
+type OrderAct struct{
+	ActId int32
+	BasicInfo BasicInfo
+	OrderInfo OrderInfo
+}
+
+type OtherInfo struct{
+	ActivityTime string
+}
+type OtherAct struct {
+	ActId int32
+	BasicInfo BasicInfo
+	OtherInfo OtherInfo
 }

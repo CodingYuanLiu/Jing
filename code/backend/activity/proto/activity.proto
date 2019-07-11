@@ -20,12 +20,12 @@ message BasicInfo{
 
 message PubReq{
     BasicInfo info = 3;
+
     TaxiInfo taxiInfo = 4;
     TakeoutInfo takeoutInfo = 5;
     OrderInfo orderInfo = 6;
-    /*
-    OthersInfo othersInfo = 7;
-    */
+    OtherInfo otherInfo = 7;
+
 }
 
 message PubResp{
@@ -40,12 +40,11 @@ message MdfReq{
     string endTime = 3;
     string description = 4;
     repeated string tag = 5;
-    TaxiInfo taxiInfo=6;
 
+    TaxiInfo taxiInfo=6;
     TakeoutInfo takeoutInfo = 7;
-    /*
     OrderInfo orderInfo = 8;
-    */
+    OtherInfo otherInfo = 9;
 }
 message MdfResp{
     int32 status = 1;
@@ -70,6 +69,7 @@ message QryResp{
     TaxiInfo taxiInfo = 2;
     TakeoutInfo takeoutInfo = 3;
     OrderInfo orderInfo = 4;
+    OtherInfo otherInfo = 5;
 }
 
 message TaxiInfo{
@@ -78,7 +78,6 @@ message TaxiInfo{
     string destination = 3;
 }
 
-
 message TakeoutInfo{
     string store = 1;
     string orderTime = 2;
@@ -86,4 +85,8 @@ message TakeoutInfo{
 
 message OrderInfo{
     string store = 1;
+}
+
+message OtherInfo{
+    string activityTime = 1;
 }

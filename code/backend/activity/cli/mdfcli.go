@@ -23,14 +23,32 @@ func main(){
 			Origin:"ModifiedOrigin",
 			Destination:"ModifiedDest",
 		},*/
-		Actid:7,
+		/*
+		ActId:7,
 		CreateTime:"2075-7-7",
 		EndTime:"2075-7-17",
 		Description:"Modified takeout description",
 		Tag: []string{"BurgerKing","Element"},
-		Takeoutinfo:&activity.TakeoutInfo{
+		TakeoutInfo:&activity.TakeoutInfo{
 			Store:"Burger King",
-			Ordertime:"2077-7-7",
+			OrderTime:"2077-7-7",
+		},*/
+		/*
+		ActId:7,
+		CreateTime:"2015-7-7",
+		EndTime:"2015-7-17",
+		Description:"Modified order description",
+		Tag: []string{"Dior","Taobao"},
+		OrderInfo:&activity.OrderInfo{
+			Store:"Taobao Dior",
+		},*/
+		ActId:8,
+		CreateTime:"2025-7-7",
+		EndTime:"2025-7-17",
+		Description:"Modified other description",
+		Tag: []string{"Dior","Taobao"},
+		OtherInfo:&activity.OtherInfo{
+			ActivityTime:"2025-11-11",
 		},
 	})
 	if err != nil {

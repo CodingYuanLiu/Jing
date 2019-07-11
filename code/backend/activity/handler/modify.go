@@ -35,7 +35,6 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 			Origin:req.TaxiInfo.Origin,
 			Destination:req.TaxiInfo.Destination,
 		}
-
 		err = actSrv.Collection.Update(
 		bson.M{"actid":req.ActId},
 		bson.M{"$set":bson.M{"basicinfo":basicInfo,"taxiinfo":taxiInfo}})
@@ -47,6 +46,20 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		err = actSrv.Collection.Update(
 			bson.M{"actid":req.ActId},
 			bson.M{"$set":bson.M{"basicinfo":basicInfo,"takeoutinfo":takeoutInfo}})
+	case "order":
+		orderInfo := model.OrderInfo{
+			Store:req.OrderInfo.Store,
+		}
+		err = actSrv.Collection.Update(
+			bson.M{"actid":req.ActId},
+			bson.M{"$set":bson.M{"basicinfo":basicInfo,"orderinfo":orderInfo}})
+	case "other":
+		otherInfo := model.OtherInfo{
+			ActivityTime:req.OtherInfo.ActivityTime,
+		}
+		err = actSrv.Collection.Update(
+			bson.M{"actid":req.ActId},
+			bson.M{"$set":bson.M{"basicinfo":basicInfo,"otherinfo":otherInfo}})
 	default:
 		resp.Status=500
 		resp.Description="Undefined Type"

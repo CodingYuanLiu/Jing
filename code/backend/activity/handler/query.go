@@ -48,6 +48,18 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 			OrderTime: mapTakeoutInfo["ordertime"].(string),
 		}
 		resp.TakeoutInfo = &takeoutInfo
+	case "order":
+		mapOrderInfo := result["orderinfo"].(map[string] interface{})
+		orderInfo := activity.OrderInfo{
+			Store: mapOrderInfo["store"].(string),
+		}
+		resp.OrderInfo = &orderInfo
+	case "other":
+		mapOtherInfo := result["otherinfo"].(map[string] interface{})
+		otherInfo := activity.OtherInfo{
+			ActivityTime:mapOtherInfo["activitytime"].(string),
+		}
+		resp.OtherInfo = &otherInfo
 	default :
 		fmt.Println("Undefined Type.")
 	}

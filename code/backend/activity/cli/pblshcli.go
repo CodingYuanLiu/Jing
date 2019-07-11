@@ -26,6 +26,7 @@ func main(){
 			Origin:"Minhang",
 			Destination:"Xinzhuang",
 		},*/
+		/*
 		Info: &activity.BasicInfo{
 			Type:"takeout",
 			CreateTime:"2020-6-5",
@@ -37,6 +38,29 @@ func main(){
 		TakeoutInfo: &activity.TakeoutInfo{
 			OrderTime:"2019-7-10 15:41:00",
 			Store:"BK",
+		},*/
+		/*
+		Info: &activity.BasicInfo{
+			Type:"order",
+			CreateTime:"2020-10-5",
+			EndTime:"2020-12-6",
+			Title:"Dior lipstick",
+			Description:"description",
+			Tag: []string{"Dior","Lipstick"},
+		},
+		OrderInfo: &activity.OrderInfo{
+			Store:"Dior",
+		},*/
+		Info: &activity.BasicInfo{
+			Type:"other",
+			CreateTime:"2022-10-5",
+			EndTime:"2022-12-6",
+			Title:"Basketball this afternoon",
+			Description:"description",
+			Tag: []string{"Basketball"},
+		},
+		OtherInfo: &activity.OtherInfo{
+			ActivityTime:"2022-11-11 11:11:21",
 		},
 	})
 	if err != nil {
