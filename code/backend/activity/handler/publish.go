@@ -10,9 +10,9 @@ import (
 	"log"
 )
 
-func (activity *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
+func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
 	//fmt.Println(req)
-	id := insert(req, activity.Collection,activity.IdCollection)
+	id := insert(req, actSrv.Collection, actSrv.IdCollection)
 	resp.Status = 200
 	resp.Description="OK"
 	resp.Actid = id
@@ -21,7 +21,7 @@ func (activity *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,re
 
 func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Collection) int32 {
 	id := GetId()
-	basicinfo := model.BasicInfo{
+	basicInfo := model.BasicInfo{
 		//Actid:id,
 		Type:req.Info.Type,
 		CreateTime:req.Info.CreateTime,
@@ -31,28 +31,28 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		Tag:req.Info.Tag,
 	}
 	var err error
-	switch basicinfo.Type{
+	switch basicInfo.Type{
 	case "Taxi":
-		newact := model.TaxiAct{
-			Actid:id,
-			BasicInfo:basicinfo,
+		newAct := model.TaxiAct{
+			Actid:     id,
+			BasicInfo: basicInfo,
 			TaxiInfo: model.TaxiInfo{
 				DepartTime:req.Taxiinfo.DepartTime,
 				Origin:req.Taxiinfo.Origin,
 				Destination:req.Taxiinfo.Destination,
 			},
 		}
-		err = collection.Insert(newact)
+		err = collection.Insert(newAct)
 	case "Takeout":
-		newact := model.TakeoutAct{
-			Actid:id,
-			BasicInfo:basicinfo,
+		newAct := model.TakeoutAct{
+			Actid:     id,
+			BasicInfo: basicInfo,
 			TakeoutInfo:model.TakeoutInfo{
 				Store:req.Takeoutinfo.Store,
 				OrderTime:req.Takeoutinfo.Ordertime,
 			},
 		}
-		err = collection.Insert(newact)
+		err = collection.Insert(newAct)
 	default:
 		fmt.Println("Undefined Type.")
 	}

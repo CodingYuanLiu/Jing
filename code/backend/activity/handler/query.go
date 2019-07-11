@@ -9,10 +9,10 @@ import (
 	"log"
 )
 
-func (actsrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error {
+func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error {
 	//fmt.Println(req)
 	var result map[string] interface{}
-	err := actsrv.Collection.Find(bson.M{"actid": req.Actid}).One(&result)
+	err := actSrv.Collection.Find(bson.M{"actid": req.Actid}).One(&result)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		return err
@@ -20,34 +20,34 @@ func (actsrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 		log.Fatal(err)
 	}
 	//Use map to fetch the result.
-	map_basicinfo := result["basicinfo"].(map[string] interface{})
-	basicinfo := activity.BasicInfo{
-		Type:map_basicinfo["type"].(string),
-		Description: map_basicinfo["description"].(string),
-		Title: map_basicinfo["title"].(string),
-		CreateTime : map_basicinfo["createtime"].(string),
-		EndTime : map_basicinfo["endtime"].(string),
+	mapBasicInfo := result["basicInfo"].(map[string] interface{})
+	basicInfo := activity.BasicInfo{
+		Type:        mapBasicInfo["type"].(string),
+		Description: mapBasicInfo["description"].(string),
+		Title:       mapBasicInfo["title"].(string),
+		CreateTime : mapBasicInfo["createtime"].(string),
+		EndTime :    mapBasicInfo["endtime"].(string),
 	}
-	for _,param := range map_basicinfo["tag"].([]interface{}){
-		basicinfo.Tag = append(basicinfo.Tag,param.(string))
+	for _,param := range mapBasicInfo["tag"].([]interface{}){
+		basicInfo.Tag = append(basicInfo.Tag,param.(string))
 	}
-	resp.Basicinfo = &basicinfo
-	switch basicinfo.Type {
+	resp.Basicinfo = &basicInfo
+	switch basicInfo.Type {
 	case "Taxi":
-		map_taxiinfo := result["taxiinfo"].(map[string] interface{})
-		taxiinfo := activity.TaxiInfo{
-			DepartTime:map_taxiinfo["departtime"].(string),
-			Origin:map_taxiinfo["origin"].(string),
-			Destination: map_taxiinfo["destination"].(string),
+		mapTaxiInfo := result["taxiInfo"].(map[string] interface{})
+		taxiInfo := activity.TaxiInfo{
+			DepartTime:  mapTaxiInfo["departtime"].(string),
+			Origin:      mapTaxiInfo["origin"].(string),
+			Destination: mapTaxiInfo["destination"].(string),
 		}
-		resp.Taxiinfo = &taxiinfo
+		resp.Taxiinfo = &taxiInfo
 	case "Takeout":
-		map_takeoutinfo:=result["takeoutinfo"].(map[string] interface{})
-		takeoutinfo:= activity.TakeoutInfo{
-			Store:map_takeoutinfo["store"].(string),
-			Ordertime:map_takeoutinfo["ordertime"].(string),
+		mapTakeoutInfo :=result["takeoutinfo"].(map[string] interface{})
+		takeoutInfo := activity.TakeoutInfo{
+			Store:     mapTakeoutInfo["store"].(string),
+			Ordertime: mapTakeoutInfo["ordertime"].(string),
 		}
-		resp.Takeoutinfo = &takeoutinfo
+		resp.Takeoutinfo = &takeoutInfo
 	default :
 		fmt.Println("Undefined Type.")
 	}

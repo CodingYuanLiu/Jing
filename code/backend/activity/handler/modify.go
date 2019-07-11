@@ -9,44 +9,44 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (activity *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
+func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
 	var act map[string]interface{}
-	err := activity.Collection.Find(bson.M{"actid": req.Actid}).One(&act)
+	err := actSrv.Collection.Find(bson.M{"actid": req.Actid}).One(&act)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		return err
 	}
-	map_basicinfo :=act["basicinfo"].(map[string]interface{})
-	fetch_type:=map_basicinfo["type"].(string)
+	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
+	fetchType:= mapBasicInfo["type"].(string)
 
-	basicinfo:=model.BasicInfo{
-		Type:fetch_type,
-		Title:map_basicinfo["title"].(string),
-		CreateTime:req.CreateTime,
-		EndTime:req.EndTime,
-		Description:req.Description,
-		Tag:req.Tag,
+	basicInfo:=model.BasicInfo{
+		Type:        fetchType,
+		Title:       mapBasicInfo["title"].(string),
+		CreateTime:  req.CreateTime,
+		EndTime:     req.EndTime,
+		Description: req.Description,
+		Tag:         req.Tag,
 	}
 
-	switch fetch_type{
+	switch fetchType{
 	case "Taxi":
-		taxiinfo := model.TaxiInfo{
+		taxiInfo := model.TaxiInfo{
 			DepartTime:req.Taxiinfo.DepartTime,
 			Origin:req.Taxiinfo.Origin,
 			Destination:req.Taxiinfo.Destination,
 		}
 
-		err = activity.Collection.Update(
+		err = actSrv.Collection.Update(
 		bson.M{"actid":req.Actid},
-		bson.M{"$set":bson.M{"basicinfo":basicinfo,"taxiinfo":taxiinfo}})
+		bson.M{"$set":bson.M{"basicinfo":basicInfo,"taxiinfo":taxiInfo}})
 	case "Takeout":
-		takeoutinfo:=model.TakeoutInfo{
+		takeoutInfo:=model.TakeoutInfo{
 			Store:req.Takeoutinfo.Store,
 			OrderTime:req.Takeoutinfo.Ordertime,
 		}
-		err = activity.Collection.Update(
+		err = actSrv.Collection.Update(
 			bson.M{"actid":req.Actid},
-			bson.M{"$set":bson.M{"basicinfo":basicinfo,"takeoutinfo":takeoutinfo}})
+			bson.M{"$set":bson.M{"basicinfo":basicInfo,"takeoutinfo":takeoutInfo}})
 	default:
 		resp.Status=500
 		resp.Description="Undefined Type"
