@@ -5,7 +5,6 @@ import (
 	"github.com/micro/go-micro/web"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
-	k8s "github.com/micro/kubernetes/go/micro"
 	"jing/app/api-gateway/filter"
 	"log"
 )
@@ -13,7 +12,7 @@ import (
 
 
 func main() {
-	service := k8s.NewService(
+	service := web.NewService(
 		web.Name("go.micro.api.api"),
 		)
 
