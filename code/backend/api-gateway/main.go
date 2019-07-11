@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/micro/go-micro/web"
-	"github.com/micro/go-plugins/registry/kubernetes"
+	"github.com/micro/go-web"
+	k8s "github.com/micro/kubernetes/go/web"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
 	"jing/app/api-gateway/filter"
@@ -13,10 +13,8 @@ import (
 
 
 func main() {
-	r := kubernetes.NewRegistry()
-	service := web.NewService(
+	service := k8s.NewService(
 		web.Name("go.micro.api.api"),
-		web.Registry(r),
 		)
 
 	service.Init()
