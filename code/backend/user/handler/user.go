@@ -13,13 +13,20 @@ type UserService struct {
 }
 
 func (h *UserService) Update(ctx context.Context, in *user.UpdateReq, out *user.UpdateResp) error {
-	err := dao.UpdateUserById(int(in.Id), "phone", in.Phone)
+	var err error
+	if in.Phone != "" {
+		err = dao.UpdateUserById(int(in.Id), "phone", in.Phone)
+	}
 	if err != nil {
 		out.Status = 400
 		return nil
 	}
-	_ = dao.UpdateUserById(int(in.Id), "nickname", in.Nickname)
-	_ = dao.UpdateUserById(int(in.Id), "signature", in.Signature)
+	if in.Nickname != "" {
+		_ = dao.UpdateUserById(int(in.Id), "nickname", in.Nickname)
+	}
+	if in.Signature != "" {
+		_ = dao.UpdateUserById(int(in.Id), "signature", in.Signature)
+	}
 	out.Status = 200
 	return nil
 }
