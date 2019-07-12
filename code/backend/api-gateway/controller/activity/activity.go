@@ -79,19 +79,8 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	act := activityClient.Activity{}
-	err := c.ShouldBindJSON(&act)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Miss some field",
-		})
-		c.Abort()
-		return
-	}
 	resp, _ := login.CallAuth(jwt)
 	if resp.UserId == -1 {
-		log.Println(err)
 		c.JSON(http.StatusUnauthorized, map[string]string{
 			"message": "Invalid jwt",
 		})
@@ -167,19 +156,8 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	act := activityClient.ModifiedActivity{}
-	err := c.ShouldBindJSON(&act)
-	if err != nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Miss some field",
-		})
-		c.Abort()
-		return
-	}
 	resp, _ := login.CallAuth(jwt)
 	if resp.UserId == -1 {
-		log.Println(err)
 		c.JSON(http.StatusUnauthorized, map[string]string{
 			"message": "Invalid jwt",
 		})
@@ -187,7 +165,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		return
 	}
 	actId, _ := strconv.Atoi(c.Query("act_id"))
-	err = activityClient.DeleteActivity(int(resp.UserId), actId)
+	err := activityClient.DeleteActivity(int(resp.UserId), actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Can't delete such activity",
@@ -199,7 +177,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 
 func (activityController Controller) QueryActivity(c *gin.Context) {
 	actId, _ := strconv.Atoi(c.Query("act_id"))
-	resp, _ := activityClient.QueryActivity(actId)
+	resp, err := activityClient.QueryActivity(actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Can't find that act",

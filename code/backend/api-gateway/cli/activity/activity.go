@@ -21,9 +21,9 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	qryReq := activityProto.QryReq{
 		ActId: int32(actId),
 	}
-	resp, err := Client.Query(context.TODO(), &qryReq)
-	if err != nil {
-		return nil, err
+	resp, _ := Client.Query(context.TODO(), &qryReq)
+	if resp.Status != 200 {
+		return nil, errors.New("no such activity")
 	}
 	return resp, nil
 }
