@@ -15,8 +15,9 @@ func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp
 	id := insert(req, actSrv.Collection, actSrv.IdCollection)
 	if id == -1{
 		resp.Status = 500
-		resp.Description = "Undefined Type."
+		resp.Description = "Undefined Type"
 		resp.ActId = -1
+		return nil
 	}
 	resp.Status = 200
 	resp.Description = "OK"
@@ -81,7 +82,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		}
 		err = collection.Insert(newAct)
 	default:
-		//fmt.Println("Undefined Type.")
+		fmt.Println("Undefined Type.")
 		return -1
 	}
 	if err!=nil{

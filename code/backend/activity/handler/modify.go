@@ -14,6 +14,8 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
+		resp.Status=404
+		resp.Description="Not Found"
 		return err
 	}
 	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
@@ -60,10 +62,11 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		err = actSrv.Collection.Update(
 			bson.M{"actid":req.ActId},
 			bson.M{"$set":bson.M{"basicinfo":basicInfo,"otherinfo":otherInfo}})
+		/*
 	default:
 		resp.Status=500
 		resp.Description="Undefined Type"
-		return nil
+		return nil*/
 	}
 	if err!=nil{
 		fmt.Println(err)
