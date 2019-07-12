@@ -47,6 +47,58 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	return
 }
 
+func (activityController *Controller) Comment(c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+	userId := resp.UserId
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Json parse error",
+		})
+		c.Abort()
+		return
+	}
+	if jsonForm["receiver_id"] == nil || jsonForm["content"] == nil || jsonForm["act_id"] == nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Miss some field",
+		})
+		c.Abort()
+		return
+	}
+	err = activityClient.AddComment(int(jsonForm["act_id"].(float64)), int(userId), int(jsonForm["receiver_id"].(float64)),
+		jsonForm["content"].(string))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't comment",
+		})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{
+		"message": "Comment successfully",
+	})
+}
+
 func (activityController *Controller) FindAllActivity(c *gin.Context) {
 	acts := dao.GetAllActId()
 	var actJSONs []myjson.JSON

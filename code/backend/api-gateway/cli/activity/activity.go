@@ -17,6 +17,20 @@ func init()  {
 	Client = activityProto.NewActivitySrvService("go.micro.handler.act", client.DefaultClient)
 }
 
+func AddComment(actId int, userId int, receiverId int, content string) error {
+	req := activityProto.CmtReq{
+		ActId: int32(actId),
+		UserId: int32(userId),
+		ReceiverId: int32(receiverId),
+		Content: content,
+	}
+	resp, _ := Client.Comment(context.TODO(), &req)
+	if resp.Status == 200 {
+		return errors.New("can't comment")
+	}
+	return nil
+}
+
 func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	qryReq := activityProto.QryReq{
 		ActId: int32(actId),
