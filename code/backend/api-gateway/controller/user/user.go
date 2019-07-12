@@ -2,8 +2,11 @@ package user
 
 import "C"
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	userClient "jing/app/api-gateway/cli/user"
+	myjson "jing/app/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -61,14 +64,37 @@ func (uc *Controller) Register (c *gin.Context) {
 
 func (uc *Controller) UpdateUser (c *gin.Context) {
 
-	updateBody := new (UpdateBody)
-	if err := c.BindJSON(updateBody); err != nil {
-		log.Println(err)
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "incorrect json format",
+		})
+		c.Abort()
+		return
 	}
 
-	rsp, _ := userClient.CallUpdateUser(int32(updateBody.Id),
-		updateBody.Phone, updateBody.Signature, updateBody.Nickname)
+	if jsonForm["id"] == nil {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "Missing field id",
+		})
+		c.Abort()
+		return
+	}
+	if jsonForm["phone"] == nil {
+		jsonForm["phone"] = ""
+	}
+	if jsonForm["signature"] == nil {
+		jsonForm["signature"] = ""
+	}
+	if jsonForm["nickname"] == nil {
+		jsonForm["nickname"] = ""
+	}
 
+	rsp, _ := userClient.CallUpdateUser(int32(jsonForm["id"].(float64)),
+		jsonForm["phone"].(string), jsonForm["signature"].(string), jsonForm["nickname"].(string))
 
 	// All field update, rely on the frontend
 	if rsp.Status == 400 {

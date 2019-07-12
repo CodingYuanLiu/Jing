@@ -43,6 +43,7 @@ func setupRouter() *gin.Engine {
 	publicRouter := router.Group("/api/public")
 	{
 		publicRouter.GET("/status", lc.GetUserStatus)
+		// TODO: Confirm register's security
 		publicRouter.POST("/register", uc.Register)
 		publicRouter.POST("/login/jaccount", lc.OAuthLogin)
 		publicRouter.POST("/login/native", lc.NativeLogin)
