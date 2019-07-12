@@ -45,7 +45,7 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	} else if resp.BasicInfo.Type == "other" {
 		returnJson["activity_time"] = resp.OtherInfo.ActivityTime
 	}
-	returnJson["comments"] = new ([]myjson.JSON)
+	returnJson["comments"] = []myjson.JSON{}
 	comments := resp.Comments
 	for _, v := range comments {
 		var title string
@@ -62,7 +62,7 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 			"time": v.Time,
 			"title": title,
 		}
-		returnJson["comments"] = append(*returnJson["comments"].(*[]myjson.JSON), comment)
+		returnJson["comments"] = append(returnJson["comments"].([]myjson.JSON), comment)
 	}
 	return
 }
