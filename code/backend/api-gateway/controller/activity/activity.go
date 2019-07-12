@@ -53,7 +53,7 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 			"content": v.Content,
 			"time": v.Time,
 		}
-		returnJson["comments"] = append(returnJson["comments"].([]myjson.JSON), comment)
+		returnJson["comments"] = append(*returnJson["comments"].(*[]myjson.JSON), comment)
 	}
 	return
 }

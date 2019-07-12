@@ -26,7 +26,7 @@ func AddComment(actId int, userId int, receiverId int, content string, time stri
 		Time: time,
 	}
 	resp, _ := Client.Comment(context.TODO(), &req)
-	if resp.Status == 200 {
+	if resp.Status != 200 {
 		return errors.New("can't comment")
 	}
 	return nil
