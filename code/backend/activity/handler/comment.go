@@ -13,6 +13,7 @@ func (actSrv *ActivitySrv) Comment(ctx context.Context,req *activity.CmtReq,resp
 		UserId:req.UserId,
 		ReceiverId:req.ReceiverId,
 		Content:req.Content,
+		Time:req.Time,
 	}
 	err := actSrv.Collection.Update(
 		bson.M{"actid":req.ActId},

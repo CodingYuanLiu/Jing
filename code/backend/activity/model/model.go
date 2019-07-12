@@ -60,4 +60,5 @@ type Comment struct {
 	ReceiverId int32
 	UserId int32
 	Content string
+	Time string
 }

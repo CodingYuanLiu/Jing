@@ -99,6 +99,7 @@ message CmtReq{
     int32 userId = 2;
     int32 receiverId = 4;
     string content = 3;
+    string time = 5;
 }
 
 message CmtResp{
@@ -110,4 +111,5 @@ message Comment{
     int32 userId = 1;
     int32 receiverId = 2;
     string content = 3;
+    string time = 4;
 }

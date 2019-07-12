@@ -44,6 +44,7 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 			UserId:int32(intUserId),
 			ReceiverId:int32(intReceiverId),
 			Content:mapParam["content"].(string),
+			Time:mapParam["time"].(string),
 		}
 		comments = append(comments,&comment)
 	}

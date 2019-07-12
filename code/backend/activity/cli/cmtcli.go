@@ -15,6 +15,7 @@ func main(){
 		ActId:1,
 		UserId:1,
 		ReceiverId:2,
+		Time: "2019-10-13 12:32:21",
 		Content:"Second Comment",
 	})
 	if err != nil {
