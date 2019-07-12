@@ -7,6 +7,7 @@ service ActivitySrv{
     rpc Modify(MdfReq) returns (MdfResp){}
     rpc Delete(DltReq) returns (DltResp){}
     rpc Query(QryReq) returns (QryResp){}
+    rpc Comment(CmtReq) returns (CmtResp) {}
 }
 
 message BasicInfo{
@@ -90,4 +91,16 @@ message OrderInfo{
 
 message OtherInfo{
     string activityTime = 1;
+}
+
+message CmtReq{
+    int32 actId = 1;
+    int32 userId = 2;
+    int32 receiverId = 4;
+    string content = 3;
+}
+
+message CmtResp{
+    int32 status = 1;
+    string description = 2;
 }

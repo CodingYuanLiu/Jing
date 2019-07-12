@@ -48,6 +48,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 				Origin:req.TaxiInfo.Origin,
 				Destination:req.TaxiInfo.Destination,
 			},
+		Comments: []model.Comment{},
 		}
 		err = collection.Insert(newAct)
 	case "takeout":
@@ -59,6 +60,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 				Store:req.TakeoutInfo.Store,
 				OrderTime:req.TakeoutInfo.OrderTime,
 			},
+		Comments: []model.Comment{},
 		}
 		err = collection.Insert(newAct)
 	case "order":
@@ -69,6 +71,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 			OrderInfo:model.OrderInfo{
 				Store:req.OrderInfo.Store,
 			},
+		Comments: []model.Comment{},
 		}
 		err = collection.Insert(newAct)
 	case "other":
@@ -79,6 +82,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 			OtherInfo:model.OtherInfo{
 				ActivityTime:req.OtherInfo.ActivityTime,
 			},
+		Comments: []model.Comment{},
 		}
 		err = collection.Insert(newAct)
 	default:

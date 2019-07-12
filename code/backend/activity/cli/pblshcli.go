@@ -10,7 +10,7 @@ import (
 func main(){
 	service :=micro.NewService()
 	service.Init()
-	c1 := activity.NewActivitySrvService("Jing.handler.act",service.Client())
+	c1 := activity.NewActivitySrvService("go.micro.handler.act",service.Client())
 	rsp,err:= c1.Publish(context.TODO(), &activity.PubReq{
 		/*
 		Info: &activity.BasicInfo{
