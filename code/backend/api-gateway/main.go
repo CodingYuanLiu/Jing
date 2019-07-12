@@ -50,7 +50,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.POST("/login/wx", lc.GetWXCode)
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
 		publicRouter.GET("/act/query", ac.QueryActivity)
-		//publicRouter.GET("/act/findall", ac.QueryActivity)
+		publicRouter.GET("/act/findall", ac.FindAllActivity)
 		//publicRouter.GET("/activity", )
 	}
 	/*
@@ -63,6 +63,8 @@ func setupRouter() *gin.Engine {
 	userRouter := router.Group("/api/user")
 	{
 		// TODO: Privilege & Request activity
+		userRouter.GET("/act/myact", ac.MyAct)
+		userRouter.GET("/act/manageact", ac.ManageAct)
 		userRouter.POST("/act/publish", ac.PublishActivity)
 		userRouter.POST("/act/modify", ac.ModifyActivity)
 		userRouter.POST("/act/join", ac.JoinActivity)

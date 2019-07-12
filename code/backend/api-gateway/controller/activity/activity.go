@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	activityProto "jing/app/activity/proto"
 	activityClient "jing/app/api-gateway/cli/activity"
 	"jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
@@ -17,6 +18,99 @@ import (
 type Controller struct{}
 
 // TODO: confirm whether user is admin
+
+func generateJSON(actId int, userId int, userName string, userSignature string, resp *activityProto.QryResp) (returnJson myjson.JSON) {
+	returnJson = map[string]interface{}{
+		"sponsor_id": userId,
+		"sponsor_username": userName,
+		"signature": userSignature,
+		"act_id": actId,
+		"type": resp.BasicInfo.Type,
+		"description": resp.BasicInfo.Description,
+		"title": resp.BasicInfo.Title,
+		"tag": resp.BasicInfo.Tag,
+		"create_time": resp.BasicInfo.CreateTime,
+		"end_time": resp.BasicInfo.EndTime,
+	}
+	if resp.BasicInfo.Type == "taxi" {
+		returnJson["depart_time"] = resp.TaxiInfo.DepartTime
+		returnJson["origin"] = resp.TaxiInfo.Origin
+		returnJson["destination"] = resp.TaxiInfo.Destination
+	} else if resp.BasicInfo.Type == "takeout" {
+		returnJson["store"] = resp.TakeoutInfo.Store
+		returnJson["order_time"] = resp.TakeoutInfo.OrderTime
+	} else if resp.BasicInfo.Type == "order" {
+		returnJson["store"] = resp.OrderInfo.Store
+	} else if resp.BasicInfo.Type == "other" {
+		returnJson["activity_time"] = resp.OtherInfo.ActivityTime
+	}
+	return
+}
+
+func (activityController *Controller) FindAllActivity(c *gin.Context) {
+	acts := dao.GetAllActId()
+	var actJSONs []myjson.JSON
+	for _, v := range acts {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
+
+func (activityController *Controller) MyAct(c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+	var actJSONs []myjson.JSON
+	acts := dao.GetJoinedActivity(int(resp.UserId))
+	for _, v := range acts {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
+
+func (activityController *Controller) ManageAct(c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+	var actJSONs []myjson.JSON
+	acts := dao.GetManagingActivity(int(resp.UserId))
+	for _, v := range acts {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
+
 func (activityController *Controller) PublishActivity(c *gin.Context) {
 	auth := c.Request.Header.Get("Authorization")
 	verified, jwt := srv.VerifyAuthorization(auth)
@@ -185,36 +279,23 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 	}
 }
 
+func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
+	resp, err := activityClient.QueryActivity(actId)
+	userId := dao.GetActivityAdmin(actId)
+	user, _ := dao.FindUserById(userId)
+	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature, resp)
+	return
+}
+
 func (activityController Controller) QueryActivity(c *gin.Context) {
 	actId, _ := strconv.Atoi(c.Query("act_id"))
-	resp, err := activityClient.QueryActivity(actId)
+	returnJson , err := getActivityJson(actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Can't find that act",
 		})
 		c.Abort()
 		return
-	}
-	returnJson := map[string]interface{}{
-		"act_id": actId,
-		"type": resp.BasicInfo.Type,
-		"description": resp.BasicInfo.Description,
-		"title": resp.BasicInfo.Title,
-		"tag": resp.BasicInfo.Tag,
-		"create_time": resp.BasicInfo.CreateTime,
-		"end_time": resp.BasicInfo.EndTime,
-	}
-	if resp.BasicInfo.Type == "taxi" {
-		returnJson["depart_time"] = resp.TaxiInfo.DepartTime
-		returnJson["origin"] = resp.TaxiInfo.Origin
-		returnJson["destination"] = resp.TaxiInfo.Destination
-	} else if resp.BasicInfo.Type == "takeout" {
-		returnJson["store"] = resp.TakeoutInfo.Store
-		returnJson["order_time"] = resp.TakeoutInfo.OrderTime
-	} else if resp.BasicInfo.Type == "order" {
-		returnJson["store"] = resp.OrderInfo.Store
-	} else if resp.BasicInfo.Type == "other" {
-		returnJson["activity_time"] = resp.OtherInfo.ActivityTime
 	}
 	c.JSON(http.StatusOK, returnJson)
 }

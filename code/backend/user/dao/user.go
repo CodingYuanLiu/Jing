@@ -28,6 +28,45 @@ type Join struct {
 	IsAdmin bool
 }
 
+// TODO: let lqy implement these more functionally
+func GetAllActId() []int {
+	var joins []Join
+	db.Find(&joins)
+	actIds := map[int]int{}
+	for _, v := range joins {
+		actIds[v.ActID] = 1
+	}
+	var acts []int
+	for k := range actIds {
+		acts = append(acts, k)
+	}
+	return acts
+}
+
+func GetManagingActivity(userId int) (acts []int) {
+	var joins []Join
+	db.Where("user_id = ? and is_admin = ?", userId, true).Find(&joins)
+	for _, v := range joins {
+		acts = append(acts, v.ActID)
+	}
+	return
+}
+
+func GetJoinedActivity(userId int) (acts []int) {
+	var joins []Join
+	db.Where("user_id = ?", userId).Find(&joins)
+	for _, v := range joins {
+		acts = append(acts, v.ActID)
+	}
+	return
+}
+
+func GetActivityAdmin(actId int) int {
+	join := Join{}
+	db.Where("act_id = ? and is_admin = ?", actId, true).First(&join)
+	return join.UserID
+}
+
 func PublishActivity(userId int, actId int) error {
 	join := Join{}
 	join.UserID = userId
