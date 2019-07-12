@@ -50,6 +50,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.POST("/login/wx", lc.GetWXCode)
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
 		publicRouter.GET("/act/query", ac.QueryActivity)
+		//publicRouter.GET("/act/findall", ac.QueryActivity)
 		//publicRouter.GET("/activity", )
 	}
 	/*
