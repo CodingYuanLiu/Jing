@@ -53,8 +53,9 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 		if v.ReceiverId != -1 {
 			receiver, _ := dao.FindUserById(int(v.ReceiverId))
 			title = fmt.Sprintf("%s -> %s", user.Nickname, receiver.Nickname)
+		} else {
+			title = fmt.Sprintf("%s", user.Nickname)
 		}
-		title = fmt.Sprintf("%s", user.Nickname)
 		comment := myjson.JSON{
 			"user_id": v.UserId,
 			"receiver_id": v.ReceiverId,
