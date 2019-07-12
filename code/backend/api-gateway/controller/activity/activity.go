@@ -38,8 +38,13 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	if jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
-		jsonForm["title"] == nil || jsonForm["description"] == nil || jsonForm["tag"] == nil{
+	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
+		jsonForm["title"] == nil || jsonForm["description"] == nil || jsonForm["tag"] == nil) ||
+		jsonForm["type"].(string) == "taxi" && (jsonForm["depart_time"] == nil || jsonForm["origin"] == nil || jsonForm["destination"] == nil) ||
+		jsonForm["type"].(string) == "takeout" && (jsonForm["order_time"] == nil || jsonForm["store"] == nil) ||
+		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||
+		jsonForm["type"].(string) == "other" && (jsonForm["activity_time"] == nil)
+	if check {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Miss some field",
@@ -115,8 +120,13 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	if jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
-		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil {
+	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
+		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil) ||
+		jsonForm["type"].(string) == "taxi" && (jsonForm["depart_time"] == nil || jsonForm["origin"] == nil || jsonForm["destination"] == nil) ||
+		jsonForm["type"].(string) == "takeout" && (jsonForm["order_time"] == nil || jsonForm["store"] == nil) ||
+		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||
+		jsonForm["type"].(string) == "other" && (jsonForm["activity_time"] == nil)
+	if check {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Miss some field",

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"log"
 	"strings"
 )
 
@@ -10,7 +9,6 @@ func VerifyAuthorization(auth string) (bool, string) {
 		return false, ""
 	} else {
 		jwt := strings.TrimPrefix(auth[7:], " ")
-		log.Println(jwt)
 		return true, jwt
 	}
 
