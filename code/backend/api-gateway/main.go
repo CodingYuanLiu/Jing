@@ -15,6 +15,7 @@ import (
 func main() {
 	service := web.NewService(
 		web.Name("go.micro.api.api"),
+		web.Address(":8080"),
 		)
 
 	service.Init()

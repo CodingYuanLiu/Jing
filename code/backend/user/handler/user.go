@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 	"github.com/jameskeane/bcrypt"
-	"jing/app/user/model"
+	json2 "jing/app/json"
 )
 import user "jing/app/user/proto/user"
 import "jing/app/user/dao"
@@ -27,7 +27,7 @@ func (h *UserService) Update(ctx context.Context, in *user.UpdateReq, out *user.
 func (h *UserService) Register(ctx context.Context, in *user.RegReq, out *user.RegResp) error {
 	code, _ := bcrypt.Salt(10)
 	password, _ := bcrypt.Hash(in.Password, code)
-	json := model.JSON{
+	json := json2.JSON{
 		"username": in.Username,
 		"password": password,
 		"nickname": in.Nickname,

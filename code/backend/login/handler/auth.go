@@ -7,6 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jameskeane/bcrypt"
 	"io/ioutil"
+	json2 "jing/app/json"
 	"jing/app/login/dao"
 	"jing/app/login/model"
 	login "jing/app/login/proto/login"
@@ -82,7 +83,7 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 		return nil
 	}
 	respJson, _ := ioutil.ReadAll(resp.Body)
-	j := model.JSON{}
+	j := json2.JSON{}
 	_ = json.Unmarshal(respJson, &j)
 	if j["errcode"] != nil {
 		errcode := int(j["errcode"].(float64))

@@ -15,7 +15,7 @@ type id struct{
 }
 func main(){
 	service:=micro.NewService(
-		micro.Name("Jing.handler.act"),
+		micro.Name("go.micro.handler.act"),
 		micro.Address("127.0.0.1:50010"),
 		)
 	session, err := mgo.Dial("mongodb://jing:jing@127.0.0.1:27017/Jing")

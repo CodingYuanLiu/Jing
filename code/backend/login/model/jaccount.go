@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	json2 "jing/app/json"
 	"net/http"
 	"net/url"
 )
@@ -22,18 +23,18 @@ func GetAccessToken(code string, clientId string, clientSecret string, redirectU
 		"client_secret": {clientSecret},
 	})
 	respJson, _ := ioutil.ReadAll(resp.Body)
-	j := JSON{}
+	j := json2.JSON{}
 	_ = json.Unmarshal(respJson, &j)
 	return j["access_token"].(string)
 }
 
-func GetProfile(accessToken string) JSON {
+func GetProfile(accessToken string) json2.JSON {
 	req, _ := http.NewRequest("GET", "https://api.sjtu.edu.cn/v1/me/profile", nil)
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 	client := &http.Client{}
 	resp, _ := client.Do(req)
 	respJson, _ := ioutil.ReadAll(resp.Body)
-	j := JSON{}
+	j := json2.JSON{}
 	_ = json.Unmarshal(respJson, &j)
 	return j
 }

@@ -1,10 +1,13 @@
 package activity
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	activityClient "jing/app/api-gateway/cli/activity"
 	"jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
+	myjson "jing/app/json"
 	"jing/app/user/dao"
 	"log"
 	"net/http"
@@ -12,36 +15,6 @@ import (
 )
 
 type Controller struct{}
-
-type Activity struct {
-	Type string 		`json:"type" binding:"required"`
-	CreateTime string	`json:"create_time" binding:"required"`
-	EndTime string		`json:"end_time" binding:"required"`
-	Title string		`json:"title" binding:"required"`
-	Description string	`json:"description" binding:"required"`
-	Tag []string		`json:"tag" binding:"required"`
-	Store string		`json:"store" binding:"optional"`
-	OrderTime string	`json:"order_time" binding:"optional"`
-	DepartTime string	`json:"depart_time" binding:"optional"`
-	Origin string		`json:"origin" binding:"optional"`
-	Destination string	`json:"destination" binding:"optional"`
-	ActivityTime string `json:"activity_time" binding:"optional"`
-}
-
-type ModifyActivity struct {
-	ActId int			`json:"act_id" binding:"required"`
-	Type string 		`json:"type" binding:"required"`
-	CreateTime string	`json:"create_time" binding:"required"`
-	EndTime string		`json:"end_time" binding:"required"`
-	Description string	`json:"description" binding:"required"`
-	Tag []string		`json:"tag" binding:"required"`
-	Store string		`json:"store" binding:"optional"`
-	OrderTime string	`json:"order_time" binding:"optional"`
-	DepartTime string	`json:"depart_time" binding:"optional"`
-	Origin string		`json:"origin" binding:"optional"`
-	Destination string	`json:"destination" binding:"optional"`
-	ActivityTime string `json:"activity_time" binding:"optional"`
-}
 
 // TODO: confirm whether user is admin
 func (activityController *Controller) PublishActivity(c *gin.Context) {
@@ -54,9 +27,19 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	act := Activity{}
-	err := c.ShouldBindJSON(&act)
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Json parse error",
+		})
+		c.Abort()
+		return
+	}
+	if jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
+		jsonForm["title"] == nil || jsonForm["description"] == nil || jsonForm["tag"] == nil{
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Miss some field",
@@ -73,7 +56,7 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.PublishActivity(int(resp.UserId), act)
+	err = activityClient.PublishActivity(int(resp.UserId), jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Can't publish such activity",
@@ -96,7 +79,7 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	act := Activity{}
+	act := activityClient.Activity{}
 	err := c.ShouldBindJSON(&act)
 	if err != nil {
 		log.Println(err)
@@ -132,9 +115,19 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	act := ModifyActivity{}
-	err := c.ShouldBindJSON(&act)
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Json parse error",
+		})
+		c.Abort()
+		return
+	}
+	if jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
+		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Miss some field",
@@ -151,7 +144,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.ModifyActivity(int(resp.UserId), act)
+	err = activityClient.ModifyActivity(int(resp.UserId), jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Can't modify such activity",
@@ -174,7 +167,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	act := ModifyActivity{}
+	act := activityClient.ModifiedActivity{}
 	err := c.ShouldBindJSON(&act)
 	if err != nil {
 		log.Println(err)
@@ -206,7 +199,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 
 func (activityController Controller) QueryActivity(c *gin.Context) {
 	actId, _ := strconv.Atoi(c.Query("act_id"))
-	resp, err := activityClient.QueryActivity(actId)
+	resp, _ := activityClient.QueryActivity(actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Can't find that act",

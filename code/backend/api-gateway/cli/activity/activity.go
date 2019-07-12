@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/micro/go-micro/client"
 	activityProto "jing/app/activity/proto"
-	"jing/app/api-gateway/controller/activity"
+	"jing/app/json"
 	"jing/app/user/dao"
 )
 
@@ -39,33 +39,37 @@ func DeleteActivity(userId int, actId int) error {
 	return nil
 }
 
-func ModifyActivity(userId int, act activity.ModifyActivity) error {
-	actType := act.Type
+func ModifyActivity(userId int, jsonForm json.JSON) error {
+	actType := jsonForm["type"].(string)
+	var tags []string
+	for _, v := range jsonForm["tag"].([]interface{}) {
+		tags = append(tags, v.(string))
+	}
 	mdfReq := activityProto.MdfReq{
-		ActId:       int32(act.ActId),
-		CreateTime:  act.CreateTime,
-		EndTime:     act.EndTime,
-		Description: act.Description,
-		Tag:         act.Tag,
+		ActId:       int32(jsonForm["act_id"].(float64)),
+		CreateTime:  jsonForm["create_time"].(string),
+		EndTime:     jsonForm["end_time"].(string),
+		Description: jsonForm["description"].(string),
+		Tag:         tags,
 	}
 	if actType == "takeout" {
 		mdfReq.TakeoutInfo = &activityProto.TakeoutInfo{
-			Store: act.Store,
-			OrderTime: act.OrderTime,
+			Store: 		jsonForm["store"].(string),
+			OrderTime: 	jsonForm["order_time"].(string),
 		}
 	} else if actType == "taxi" {
 		mdfReq.TaxiInfo = &activityProto.TaxiInfo{
-			DepartTime: act.DepartTime,
-			Origin: act.Origin,
-			Destination: act.Destination,
+			DepartTime: 	jsonForm["depart_time"].(string),
+			Origin: 		jsonForm["origin"].(string),
+			Destination: 	jsonForm["destination"].(string),
 		}
 	} else if actType == "order" {
 		mdfReq.OrderInfo = &activityProto.OrderInfo{
-			Store: act.Store,
+			Store: 			jsonForm["store"].(string),
 		}
 	} else if actType == "other" {
 		mdfReq.OtherInfo = &activityProto.OtherInfo{
-			ActivityTime: act.ActivityTime,
+			ActivityTime: 	jsonForm["activity_time"].(string),
 		}
 	}
 	resp2, err := Client.Modify(context.TODO(), &mdfReq)
@@ -78,36 +82,40 @@ func ModifyActivity(userId int, act activity.ModifyActivity) error {
 	return nil
 }
 
-func PublishActivity(userId int, act activity.Activity) error {
-	actType := act.Type
+func PublishActivity(userId int, jsonForm json.JSON) error {
+	actType := jsonForm["type"].(string)
+	var tags []string
+	for _, v := range jsonForm["tag"].([]interface{}) {
+		tags = append(tags, v.(string))
+	}
 	pubReq := activityProto.PubReq{
 		Info: &activityProto.BasicInfo{
-			Type:        act.Type,
-			CreateTime:  act.CreateTime,
-			EndTime:     act.EndTime,
-			Title:       act.Title,
-			Description: act.Description,
-			Tag:         act.Tag,
+			Type:        actType,
+			CreateTime:  jsonForm["create_time"].(string),
+			EndTime:     jsonForm["end_time"].(string),
+			Title:       jsonForm["title"].(string),
+			Description: jsonForm["description"].(string),
+			Tag:         tags,
 		},
 	}
 	if actType == "takeout" {
 		pubReq.TakeoutInfo = &activityProto.TakeoutInfo{
-			Store: act.Store,
-			OrderTime: act.OrderTime,
+			Store: 		jsonForm["store"].(string),
+			OrderTime: 	jsonForm["order_time"].(string),
 		}
 	} else if actType == "taxi" {
 		pubReq.TaxiInfo = &activityProto.TaxiInfo{
-			DepartTime: act.DepartTime,
-			Origin: act.Origin,
-			Destination: act.Destination,
+			DepartTime: 	jsonForm["depart_time"].(string),
+			Origin: 		jsonForm["origin"].(string),
+			Destination: 	jsonForm["destination"].(string),
 		}
 	} else if actType == "order" {
 		pubReq.OrderInfo = &activityProto.OrderInfo{
-			Store: act.Store,
+			Store: 			jsonForm["store"].(string),
 		}
 	} else if actType == "other" {
 		pubReq.OtherInfo = &activityProto.OtherInfo{
-			ActivityTime: act.ActivityTime,
+			ActivityTime: 	jsonForm["activity_time"].(string),
 		}
 	}
 	resp2, err := Client.Publish(context.TODO(), &pubReq)

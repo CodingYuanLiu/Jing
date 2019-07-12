@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"jing/app/activity/model"
-	activity "jing/app/activity/proto"
 	"context"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"jing/app/activity/model"
+	activity "jing/app/activity/proto"
 )
 
 func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {

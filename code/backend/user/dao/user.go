@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"jing/app/user/model"
+	"jing/app/json"
 )
 
 var db *gorm.DB
@@ -74,7 +74,7 @@ func UpdateUserById(id int, column string, value interface{}) error {
 	return nil
 }
 
-func CreateUser(json model.JSON) error {
+func CreateUser(json json.JSON) error {
 	user := User{}
 	user.Username = json["username"].(string)
 	_, err := FindUserByUsername(user.Username)
