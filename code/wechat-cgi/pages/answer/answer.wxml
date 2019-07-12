@@ -1,6 +1,6 @@
 <!--answer.wxml-->
 <view class="container">
-    <view class="question" bindtap="toQuestion">
+    <view class="question">
         <text class="question-title">{{content.title}}</text>
     </view>
     <view class="answerer-wrp">
@@ -10,34 +10,34 @@
                 <image src="{{content.useravatar}}"></image>
             </view>
             <view class="answerer-info flex-item">
-                <text class="answerer-name">{{content.username}}</text>
-                <text class="answerer-des">{{content.usersign}}</text>
+                <text class="answerer-name">{{content.sponsor_username}}</text>
+                <text class="answerer-des">{{content.signature}}</text>
             </view>
-            <view class="follow flex-item">
+            <!-- <view class="follow flex-item">
                 <text>十 关注</text>
-            </view>
+            </view> -->
         </view>
     </view>
     <view class="answer-content">
-        <text>{{content.text}}
+        <text>{{content.description}}
         </text>
-        <image src="../../images/1444983318907-_DSC1826.jpg"></image>
-        <image src="../../images/1444983318907-_DSC1826.jpg"></image>
+        <!-- <image src="../../images/1444983318907-_DSC1826.jpg"></image>
+        <image src="../../images/1444983318907-_DSC1826.jpg"></image> -->
     </view>
     <view class="ctnt0">
         <view class="unread">
-            <text>{{comment.length}} 条评论</text>
-            <!-- <image src="../../images/allread.png"></image> -->
+            <text>{{comment_length}} 条评论</text>
+            <image src="../../images/allread.png"></image>
         </view>
-        <block wx:for="{{comment.content}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+        <block wx:for="{{content.comments}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <view class="chat-item flex-wrp">
                 <view class="avatar flex-item">
                     <image src="{{item.avatar}}"></image>
                 </view>
                 <view class="chat-content flex-item">
                     <view class="chat-source">
-                        <text class="chatmate">{{item.nickname}}</text>
-                        <text class="lasttime">{{item.lasttime}}</text>
+                        <text class="chatmate">{{item.title}}</text>
+                        <text class="lasttime">{{item.time}}</text>
                     </view>
                     <text class="chat-txt">{{item.content}}</text>
                 </view>

@@ -83,6 +83,7 @@
 }
 .answer-content{
     padding: 30rpx 40rpx;
+    width: 90%;
     background: #ffffff;
 }
 .answer-content text{

@@ -12,7 +12,7 @@
             <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
         </view>
         <view class="user-info flex-item">
-            <text class="userinfo-nickname">{{user.nickname}}</text>
+            <text class="userinfo-nickname">{{userInfo.nickname}}</text>
             <text class="edit">查看或编辑个人主页</text>
         </view>
     </view>

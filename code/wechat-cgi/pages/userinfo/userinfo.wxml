@@ -6,7 +6,7 @@
             <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
         </view>
         <view class="user-info flex-item">
-            <text style="font-size:40rpx; padding-top: 20rpx">{{user.username}}</text>
+            <text style="font-size:40rpx; padding-top: 20rpx">{{user.nickname}}</text>
         </view>
     </view>
 </view>

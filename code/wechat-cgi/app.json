@@ -10,7 +10,9 @@
         "pages/comment/comment",
         "pages/userinfo/userinfo",
         "pages/login/login",
-        "pages/signup/signup"
+        "pages/scan/scan",
+        "pages/fillinfo/fillinfo",
+        "pages/newact/newact"
     ],
     "window": {
         "backgroundTextStyle": "light",
