@@ -13,7 +13,7 @@ var (
 )
 
 func init() {
-	Client = userProto.NewUserService("go.micro.srv.user", client.DefaultClient)
+	Client = userProto.NewUserService("user", client.DefaultClient)
 }
 
 func CallUpdateUser(id int32, phone string, signature string,

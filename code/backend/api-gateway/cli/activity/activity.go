@@ -11,5 +11,5 @@ var (
 )
 
 func init() {
-	ActivityService = activityProto.NewActivitySrvService("go-micro-srv-act", client.DefaultClient)
+	ActivityService = activityProto.NewActivitySrvService("act", client.DefaultClient)
 }

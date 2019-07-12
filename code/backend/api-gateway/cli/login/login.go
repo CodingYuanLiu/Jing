@@ -14,7 +14,7 @@ var (
 )
 
 func init() {
-	LoginClient = loginProto.NewLoginService("go.micro.srv.auth-service", client.DefaultClient)
+	LoginClient = loginProto.NewLoginService("auth-service", client.DefaultClient)
 }
 
 func CallAuth(jwt string) (*loginProto.AuthResp, error) {
