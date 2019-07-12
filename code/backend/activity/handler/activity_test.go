@@ -51,10 +51,10 @@ func Before() ActivitySrv{
 	}
 	return actSrv
 }
-func TestActivitySrv_Publish(t *testing.T) {
+func TestActivitySrv_Taxi(t *testing.T) {
 	a := assert.New(t)
 	actSrv := Before()
-	taxiReq := 	&activity.PubReq{
+	taxiPubReq := 	&activity.PubReq{
 		Info: &activity.BasicInfo{
 			Type:"taxi",
 			CreateTime:"2019.6.5",
@@ -69,9 +69,35 @@ func TestActivitySrv_Publish(t *testing.T) {
 			Destination: "Xinzhuang",
 		},
 	}
-	taxiResp := &activity.PubResp{}
-	_ = actSrv.Publish(context.TODO(),taxiReq,taxiResp)
-	a.Equal(int32(200), taxiResp.Status)
-	a.Equal("OK",taxiResp.Description)
-	a.Equal(int32(1),taxiResp.ActId)
+	taxiPubResp := &activity.PubResp{}
+	_ = actSrv.Publish(context.TODO(), taxiPubReq, taxiPubResp)
+	a.Equal(int32(200), taxiPubResp.Status)
+	a.Equal("OK", taxiPubResp.Description)
+	a.Equal(int32(1), taxiPubResp.ActId)
+
+	taxiQryReq := &activity.QryReq{
+		ActId:1,
+	}
+	taxiQryResp := &activity.QryResp{}
+	_ = actSrv.Query(context.TODO(),taxiQryReq,taxiQryResp)
+	a.Equal(int32(200),taxiQryResp.Status)
+	a.Equal("taxi",taxiQryResp.BasicInfo.Type)
+	a.Equal("Minhang",taxiQryResp.TaxiInfo.Origin)
+	a.Equal((*activity.OrderInfo)(nil),taxiQryResp.OrderInfo)
+
+	taxiMdfReq:= &activity.MdfReq{
+		ActId:1,
+		CreateTime:"2015-7-7",
+		EndTime:"2015-7-17",
+		Description:"Modified description",
+		Tag: []string{"Joy City","Taxi"},
+		TaxiInfo: &activity.TaxiInfo{
+			DepartTime:"2020-7-7 12:21:32",
+			Origin:"ModifiedOrigin",
+			Destination:"ModifiedDest",
+		},
+	}
+	taxiMdfResp := &activity.MdfResp{}
+	_ = actSrv.Modify(context.TODO(),taxiMdfReq,taxiMdfResp)
 }
+

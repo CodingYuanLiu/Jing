@@ -15,6 +15,7 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
+		resp.Status = 404
 		return err
 	}else if err != nil{
 		log.Fatal(err)
@@ -41,6 +42,7 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 			Destination: mapTaxiInfo["destination"].(string),
 		}
 		resp.TaxiInfo = &taxiInfo
+		resp.Status = 200
 	case "takeout":
 		mapTakeoutInfo :=result["takeoutinfo"].(map[string] interface{})
 		takeoutInfo := activity.TakeoutInfo{
@@ -48,20 +50,22 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 			OrderTime: mapTakeoutInfo["ordertime"].(string),
 		}
 		resp.TakeoutInfo = &takeoutInfo
+		resp.Status = 200
 	case "order":
 		mapOrderInfo := result["orderinfo"].(map[string] interface{})
 		orderInfo := activity.OrderInfo{
 			Store: mapOrderInfo["store"].(string),
 		}
 		resp.OrderInfo = &orderInfo
+		resp.Status = 200
+
 	case "other":
 		mapOtherInfo := result["otherinfo"].(map[string] interface{})
 		otherInfo := activity.OtherInfo{
 			ActivityTime:mapOtherInfo["activitytime"].(string),
 		}
 		resp.OtherInfo = &otherInfo
-	default :
-		fmt.Println("Undefined Type.")
+		resp.Status = 200
 	}
 	return nil
 }
