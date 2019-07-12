@@ -20,17 +20,9 @@ func CallUpdateUser(id int32, phone string, signature string,
 
 	req := new(userProto.UpdateReq)
 	req.Id = id
-	if phone != "" {
-		req.Phone = phone
-	}
-	if signature != "" {
-		req.Signature = signature
-	}
-	if nickname != "" {
-		req.Nickname = nickname
-	}
-
-
+	req.Phone = phone
+	req.Signature = signature
+	req.Nickname = nickname
 	rsp, err := Client.Update(context.TODO(), req)
 
 	if err != nil {
