@@ -9,6 +9,7 @@ import (
 	"log"
 )
 
+//The struct is used to store stylistic id in MongoDB.
 type id struct{
 	AutoId int32
 }

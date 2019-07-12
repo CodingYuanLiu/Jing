@@ -65,6 +65,7 @@ message QryReq{
 }
 
 message QryResp{
+    int32 status = 6;
     BasicInfo basicInfo = 1;
     TaxiInfo taxiInfo = 2;
     TakeoutInfo takeoutInfo = 3;

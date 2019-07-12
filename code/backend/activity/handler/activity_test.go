@@ -99,5 +99,6 @@ func TestActivitySrv_Taxi(t *testing.T) {
 	}
 	taxiMdfResp := &activity.MdfResp{}
 	_ = actSrv.Modify(context.TODO(),taxiMdfReq,taxiMdfResp)
+	a.Equal()
 }
 
