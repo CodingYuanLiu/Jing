@@ -20,7 +20,7 @@ type Controller struct{}
 // TODO: confirm whether user is admin
 
 func generateJSON(actId int, userId int, userName string, userSignature string, resp *activityProto.QryResp) (returnJson myjson.JSON) {
-	returnJson = map[string]interface{}{
+	returnJson = myjson.JSON{
 		"sponsor_id": userId,
 		"sponsor_username": userName,
 		"signature": userSignature,
@@ -43,6 +43,17 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 		returnJson["store"] = resp.OrderInfo.Store
 	} else if resp.BasicInfo.Type == "other" {
 		returnJson["activity_time"] = resp.OtherInfo.ActivityTime
+	}
+	returnJson["comments"] = new ([]myjson.JSON)
+	comments := resp.Comments
+	for _, v := range comments {
+		comment := myjson.JSON{
+			"user_id": v.UserId,
+			"receiver_id": v.ReceiverId,
+			"content": v.Content,
+			"time": v.Time,
+		}
+		returnJson["comments"] = append(returnJson["comments"].([]myjson.JSON), comment)
 	}
 	return
 }
@@ -77,7 +88,7 @@ func (activityController *Controller) Comment(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	if jsonForm["receiver_id"] == nil || jsonForm["content"] == nil || jsonForm["act_id"] == nil {
+	if jsonForm["receiver_id"] == nil || jsonForm["content"] == nil || jsonForm["act_id"] == nil || jsonForm["time"] == nil {
 		log.Println(err)
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Miss some field",
@@ -86,7 +97,7 @@ func (activityController *Controller) Comment(c *gin.Context) {
 		return
 	}
 	err = activityClient.AddComment(int(jsonForm["act_id"].(float64)), int(userId), int(jsonForm["receiver_id"].(float64)),
-		jsonForm["content"].(string))
+		jsonForm["content"].(string), jsonForm["time"].(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Can't comment",

@@ -17,12 +17,13 @@ func init()  {
 	Client = activityProto.NewActivitySrvService("go.micro.handler.act", client.DefaultClient)
 }
 
-func AddComment(actId int, userId int, receiverId int, content string) error {
+func AddComment(actId int, userId int, receiverId int, content string, time string) error {
 	req := activityProto.CmtReq{
 		ActId: int32(actId),
 		UserId: int32(userId),
 		ReceiverId: int32(receiverId),
 		Content: content,
+		Time: time,
 	}
 	resp, _ := Client.Comment(context.TODO(), &req)
 	if resp.Status == 200 {
