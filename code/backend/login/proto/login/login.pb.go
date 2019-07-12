@@ -507,17 +507,17 @@ func (m *WxReq) GetCode() string {
 }
 
 func init() {
-	proto.RegisterType((*JaccResp)(nil), "go.micro.handler.login.JaccResp")
-	proto.RegisterType((*BindReq)(nil), "go.micro.handler.login.BindReq")
-	proto.RegisterType((*BindResp)(nil), "go.micro.handler.login.BindResp")
-	proto.RegisterType((*AccessResp)(nil), "go.micro.handler.login.AccessResp")
-	proto.RegisterType((*CodeReq)(nil), "go.micro.handler.login.CodeReq")
-	proto.RegisterType((*AuthReq)(nil), "go.micro.handler.login.AuthReq")
-	proto.RegisterType((*AuthResp)(nil), "go.micro.handler.login.AuthResp")
-	proto.RegisterType((*LJReq)(nil), "go.micro.handler.login.LJReq")
-	proto.RegisterType((*TokenResp)(nil), "go.micro.handler.login.TokenResp")
-	proto.RegisterType((*UPReq)(nil), "go.micro.handler.login.UPReq")
-	proto.RegisterType((*WxReq)(nil), "go.micro.handler.login.WxReq")
+	proto.RegisterType((*JaccResp)(nil), "go.micro.srv.login.JaccResp")
+	proto.RegisterType((*BindReq)(nil), "go.micro.srv.login.BindReq")
+	proto.RegisterType((*BindResp)(nil), "go.micro.srv.login.BindResp")
+	proto.RegisterType((*AccessResp)(nil), "go.micro.srv.login.AccessResp")
+	proto.RegisterType((*CodeReq)(nil), "go.micro.srv.login.CodeReq")
+	proto.RegisterType((*AuthReq)(nil), "go.micro.srv.login.AuthReq")
+	proto.RegisterType((*AuthResp)(nil), "go.micro.srv.login.AuthResp")
+	proto.RegisterType((*LJReq)(nil), "go.micro.srv.login.LJReq")
+	proto.RegisterType((*TokenResp)(nil), "go.micro.srv.login.TokenResp")
+	proto.RegisterType((*UPReq)(nil), "go.micro.srv.login.UPReq")
+	proto.RegisterType((*WxReq)(nil), "go.micro.srv.login.WxReq")
 }
 
 func init() { proto.RegisterFile("login.proto", fileDescriptor_67c21677aa7f4e4f) }

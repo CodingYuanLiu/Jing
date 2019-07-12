@@ -351,12 +351,12 @@ func (m *FindResp) GetSignature() string {
 }
 
 func init() {
-	proto.RegisterType((*UpdateReq)(nil), "go.micro.handler.user.UpdateReq")
-	proto.RegisterType((*UpdateResp)(nil), "go.micro.handler.user.UpdateResp")
-	proto.RegisterType((*RegReq)(nil), "go.micro.handler.user.RegReq")
-	proto.RegisterType((*RegResp)(nil), "go.micro.handler.user.RegResp")
-	proto.RegisterType((*FindReq)(nil), "go.micro.handler.user.FindReq")
-	proto.RegisterType((*FindResp)(nil), "go.micro.handler.user.FindResp")
+	proto.RegisterType((*UpdateReq)(nil), "go.micro.srv.user.UpdateReq")
+	proto.RegisterType((*UpdateResp)(nil), "go.micro.srv.user.UpdateResp")
+	proto.RegisterType((*RegReq)(nil), "go.micro.srv.user.RegReq")
+	proto.RegisterType((*RegResp)(nil), "go.micro.srv.user.RegResp")
+	proto.RegisterType((*FindReq)(nil), "go.micro.srv.user.FindReq")
+	proto.RegisterType((*FindResp)(nil), "go.micro.srv.user.FindResp")
 }
 
 func init() { proto.RegisterFile("user.proto", fileDescriptor_116e343673f7ffaf) }
