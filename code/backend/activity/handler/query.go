@@ -1,11 +1,11 @@
 package handler
 
 import (
-	activity "jing/app/activity/proto"
 	"context"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	activity "jing/app/activity/proto"
 	"log"
 )
 
@@ -32,7 +32,23 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	for _,param := range mapBasicInfo["tag"].([]interface{}){
 		basicInfo.Tag = append(basicInfo.Tag,param.(string))
 	}
+	var comments []*activity.Comment
+	for _,param := range result["comments"].([]interface{}){
+		//Need a intermediate map tp transfer map to comment
+		mapParam := param.(map[string] interface{})
+
+		//Need a intermediate variable to transfer int to int32
+		intUserId := mapParam["userid"].(int)
+		intReceiverId := mapParam["receiverid"].(int)
+		comment := activity.Comment{
+			UserId:int32(intUserId),
+			ReceiverId:int32(intReceiverId),
+			Content:mapParam["content"].(string),
+		}
+		comments = append(comments,&comment)
+	}
 	resp.BasicInfo = &basicInfo
+	resp.Comments = comments
 	switch basicInfo.Type {
 	case "taxi":
 		mapTaxiInfo := result["taxiinfo"].(map[string] interface{})
