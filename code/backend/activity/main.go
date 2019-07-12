@@ -15,7 +15,11 @@ type id struct{
 }
 func main(){
 	service:=micro.NewService(
+<<<<<<< Updated upstream
 		micro.Name("go.micro.handler.act"),
+=======
+		micro.Name("micro.api.handler.act"),
+>>>>>>> Stashed changes
 		micro.Address("127.0.0.1:50010"),
 		)
 	session, err := mgo.Dial("mongodb://jing:jing@127.0.0.1:27017/Jing")
