@@ -32,6 +32,10 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	for _,param := range mapBasicInfo["tag"].([]interface{}){
 		basicInfo.Tag = append(basicInfo.Tag,param.(string))
 	}
+	for _,param := range mapBasicInfo["images"].([]interface{}){
+		basicInfo.Images = append(basicInfo.Images,param.(string))
+	}
+
 	var comments []*activity.Comment
 	for _,param := range result["comments"].([]interface{}){
 		//Need a intermediate map tp transfer map to comment

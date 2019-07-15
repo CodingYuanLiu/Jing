@@ -9,6 +9,7 @@ type BasicInfo struct{
 	Description string
 	//Comments []Comment
 	Tag []string
+	Images []string
 }
 
 type TaxiInfo struct{
