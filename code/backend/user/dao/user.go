@@ -52,6 +52,11 @@ func GetManagingActivity(userId int) (acts []int) {
 	return
 }
 
+func DeleteActivity(actId int) error {
+	db.Where("act_id = ?", actId).Delete(Join{})
+	return nil
+}
+
 func GetJoinedActivity(userId int) (acts []int) {
 	var joins []Join
 	db.Where("user_id = ?", userId).Find(&joins)

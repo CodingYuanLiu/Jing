@@ -310,6 +310,21 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	acts := dao.GetManagingActivity(int(resp.UserId))
+	flag := false
+	for _, v := range acts {
+		if int(jsonForm["act_id"].(float64)) == v {
+			flag = true
+			break
+		}
+	}
+	if !flag {
+		c.JSON(http.StatusForbidden, map[string]string{
+			"message": "403 Forbidden",
+		})
+		c.Abort()
+		return
+	}
 	err = activityClient.ModifyActivity(int(resp.UserId), jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
@@ -341,7 +356,22 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	acts := dao.GetManagingActivity(int(resp.UserId))
 	actId, _ := strconv.Atoi(c.Query("act_id"))
+	flag := false
+	for _, v := range acts {
+		if actId == v {
+			flag = true
+			break
+		}
+	}
+	if !flag {
+		c.JSON(http.StatusForbidden, map[string]string{
+			"message": "403 Forbidden",
+		})
+		c.Abort()
+		return
+	}
 	err := activityClient.DeleteActivity(int(resp.UserId), actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
@@ -350,6 +380,10 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	_ = dao.DeleteActivity(actId)
+	c.JSON(http.StatusOK, map[string]string {
+		"message": "Delete successfully",
+	})
 }
 
 func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
