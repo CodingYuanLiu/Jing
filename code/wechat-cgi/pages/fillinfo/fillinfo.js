@@ -116,11 +116,13 @@ Page({
                                                 "id": app.globalData.userid,
                                                 "nickname": that.data.nickname,
                                                 "phone": that.data.phone,
-                                                "signature": "no implementation"
+                                                "signature": ""
                                             },
                                             success: function(res) {
                                                 console.log(99999);
-                                                wx.navigateBack();
+                                                wx.switchTab({
+                                                    url: '/pages/my/my',
+                                                })
                                             }
                                         })
                                     }

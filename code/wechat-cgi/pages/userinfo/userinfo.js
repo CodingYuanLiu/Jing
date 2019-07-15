@@ -126,16 +126,19 @@ Page({
                     'id': app.globalData.userid,
                     'phone': that.data.phone,
                     'nickname': that.data.nickname,
-                    "signature": "no implementation"
+                    "signature": that.data.signature,
                 },
                 success: function(res) {
                     if (res.statusCode !== 200) {
                         console.log("error");
+                        // todo: 错误提示
                     } else {
                         app.globalData.userInfo.phone = that.data.phone;
                         app.globalData.userInfo.nickname = that.data.nickname;
-                        app.globalData.userInfo.signature ="no implementation";
-
+                        app.globalData.userInfo.signature = that.data.signature;
+                        wx.switchTab({
+                            url: '/pages/my/my',
+                        })
                     }
                 }
             })

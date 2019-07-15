@@ -123,10 +123,11 @@ Page({
             url: 'https://sebastianj1wzyd.xyz/api/public/act/findall',
             method: 'GET',
             success: function (res) {
+                console.log(res);
                 next_data = res.data;
                 that.setData({
-                    feed: this.data.feed.concat(next_data),
-                    feed_length: this.data.feed_length + next_data.length
+                    feed: that.data.feed.concat(next_data),
+                    feed_length: that.data.feed_length + next_data.length
                 });
             }
         })

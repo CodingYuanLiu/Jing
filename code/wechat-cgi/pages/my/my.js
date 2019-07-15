@@ -72,7 +72,8 @@ Page({
                                                 "Authorization": "Bearer " +app.globalData.jwt,
                                             },
                                             success: function(res) {
-                                                console.log(123);
+                                                console.log(res);
+                                                console.log(111);
                                                 app.globalData.userInfo = res.data;
                                                 that.setData({ log: true });
                                                 that.setData({userInfo: res.data});
@@ -97,7 +98,7 @@ Page({
         //调用应用实例的方法获取全局数据
         if (app.globalData.userInfo !== null) {
             that.setData({
-                user: app.globalData.userInfo
+                userInfo: app.globalData.userInfo
             });
             that.setData({
                 log: true
@@ -115,5 +116,15 @@ Page({
     },
     add: function(a, b) {
         return a + b;
-    }
+    },
+    handlePub: function () {
+        wx.navigateTo({
+            url: '/pages/my/mypublish/mypublish',
+        })
+    },
+    handleJoin: function () {
+        wx.navigateTo({
+            url: '/pages/my/myjoin/myjoin',
+        })
+    },
 })

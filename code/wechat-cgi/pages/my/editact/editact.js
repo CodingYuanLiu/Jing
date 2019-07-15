@@ -1,30 +1,48 @@
-// pages/newact/newact.js
+// pages/my/editact/editact.js
 let app = getApp();
-// import {
-//     $init,
-//     $digest
-// } from '../../utils/util.js'
-
 Page({
 
     /**
      * 页面的初始数据
      */
     data: {
+        content: {},
         title: '',
         end_time: '',
         depart_time: '',
         origin: '',
         dest: '',
         details: '',
-        images: []
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad: function(options) {
-        // $init(this)
+        var that = this
+        //调用应用实例的方法获取全局数据
+        // app.getUserInfo(function(userInfo){
+        //   //更新数据
+        //   that.setData({
+        //     userInfo:userInfo
+        //   })
+        // })
+        this.setData({
+            act_id: options.id
+        });
+        console.log("id是" + options.id);
+        wx.request({
+            url: 'https://sebastianj1wzyd.xyz/api/public/act/query?act_id=' + that.data.act_id,
+            method: 'GET',
+            success: function(res) {
+                that.setData({
+                    content: res.data
+                });
+                that.setData({
+                    comment_length: res.data.comments.length
+                })
+            }
+        });
     },
 
     /**
@@ -81,14 +99,14 @@ Page({
         let date = new Date();
         let dateString = date.toDateString();
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/user/act/publish',
+            url: 'https://sebastianj1wzyd.xyz/api/user/act/modify',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,
             },
             method: 'POST',
             data: {
-                "title": that.data.title,
-                "type": "taxi",
+                "act_id": parseInt(that.data.act_id),
+                "type": that.data.content.type,
                 "create_time": dateString,
                 "end_time": that.data.end_time,
                 "description": that.data.details,
@@ -100,41 +118,27 @@ Page({
             success: function() {
                 console.log("naviback")
                 wx.switchTab({
-                    url: '/pages/index/index',
+                    url: '/pages/my/my',
                 })
             }
-        })
-    },
-    chooseImage(e) {
-        wx.chooseImage({
-            sizeType: ['original', 'compressed'], //可选择原图或压缩后的图片
-            sourceType: ['album', 'camera'], //可选择性开放访问相册、相机
-            success: res => {
-                const images = this.data.images.concat(res.tempFilePaths)
-                // 限制最多只能留下3张照片
-                // this.data.images = images.length <= 3 ? images : images.slice(0, 3)
-                this.setData({
-                    images: images.length <= 3 ? images : images.slice(0, 3)
-                })
-            }
-        })
-    },
-    removeImage(e) {
-        const idx = e.target.dataset.idx
-        let that = this;
-        this.setData({
-            images: that.data.images.slice(idx, 1)
         })
     },
 
-    handleImagePreview(e) {
-        const idx = e.target.dataset.idx
-        const images = this.data.images
-        wx.previewImage({
-            current: images[idx], //当前预览的图片
-            urls: images, //所有要预览的图片
+    handleDelete: function() {
+        let that = this;
+        wx.request({
+            url: 'https://sebastianj1wzyd.xyz/api/user/act/delete?act_id=' + that.data.act_id,
+            method: 'POST',
+            header: {
+                "Authorization": "Bearer " + app.globalData.jwt,
+            },
+            success: function(res) {
+                console.log(res);
+                wx.navigateBack({})
+            }
         })
     },
+
     handleTitleInput: function(event) {
         this.setData({
             title: event.detail.detail.value

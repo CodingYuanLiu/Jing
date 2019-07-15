@@ -40,10 +40,10 @@
                         </view> -->
                         <view class="answer-actions">
                             <view class="like dot">
-                                <a>👍 {{item.good_num}} 无 </a>
+                                <a>👍 {{item.good_num}} </a>
                             </view>
                             <view class="comments dot">
-                                <a>{{item.comment_num}} 无 评论 </a>
+                                <a>{{item.comments.length}} 评论 </a>
                             </view>
                             <!-- <view class="follow-it">
                                 <a>{{item.comment_num}} 关注</a>
