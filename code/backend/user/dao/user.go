@@ -59,7 +59,7 @@ func DeleteActivity(actId int) error {
 
 func GetJoinedActivity(userId int) (acts []int) {
 	var joins []Join
-	db.Where("user_id = ?", userId).Find(&joins)
+	db.Where("user_id = ? and is_admin = ?", userId, false).Find(&joins)
 	for _, v := range joins {
 		acts = append(acts, v.ActID)
 	}
