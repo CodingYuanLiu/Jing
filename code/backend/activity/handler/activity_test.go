@@ -51,7 +51,7 @@ func Before() ActivitySrv{
 	}
 	return actSrv
 }
-func TestActivitySrv_Taxi(t *testing.T) {
+func TestActivitySrv_TaxiAndComment(t *testing.T) {
 	a := assert.New(t)
 	actSrv := Before()
 	taxiPubReq := 	&activity.PubReq{
@@ -75,6 +75,29 @@ func TestActivitySrv_Taxi(t *testing.T) {
 	a.Equal("OK", taxiPubResp.Description)
 	a.Equal(int32(1), taxiPubResp.ActId)
 
+	//Test comment part
+	cmtResp := &activity.CmtResp{}
+	_ = actSrv.Comment(context.TODO(), &activity.CmtReq{
+		ActId:1,
+		UserId:1,
+		ReceiverId:2,
+		Time: "2019-10-13 12:32:21",
+		Content:"Second Comment",
+	},cmtResp)
+	a.Equal(int32(200),cmtResp.Status)
+	a.Equal("OK",cmtResp.Description)
+
+	_ = actSrv.Comment(context.TODO(), &activity.CmtReq{
+		ActId:2,
+		UserId:1,
+		ReceiverId:2,
+		Time: "2019-10-13 12:32:21",
+		Content:"Second Comment",
+	},cmtResp)
+	a.Equal(int32(404),cmtResp.Status)
+	a.Equal("Not Found",cmtResp.Description)
+
+	//Test query part
 	taxiQryReq := &activity.QryReq{
 		ActId:1,
 	}
