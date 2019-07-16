@@ -27,6 +27,7 @@ func CallUpdateUser(id int32, phone string, signature string,
 
 	req := new(userProto.UpdateReq)
 	req.Id = id
+
 	if phone != "" {
 		req.Phone = phone
 	}

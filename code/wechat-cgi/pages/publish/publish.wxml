@@ -4,7 +4,7 @@
         <block wx:for="{{category}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <view class="flex-wrp" style="display: block; width: 100%; float: top ;background: white">
                 <block wx:for="{{item.r}}" wx:for-index="idx" wx:for-item="item_r" data-idx="{{idx}}">
-                    <view class="feed-item" style="width:17%; float: left;  background: white">
+                    <view bindtap="handleClick" class="feed-item" style="width:17%; float: left;  background: white">
                         <view class="feed-source" style="border-radius: 13px">
                             <a class=""  style="border-radius: 3px; background: white">
                                 <view class="avatar">

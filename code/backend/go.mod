@@ -21,10 +21,13 @@ require (
 	github.com/micro/go-web v0.6.0
 	github.com/micro/kubernetes v0.7.0
 	github.com/nats-io/nats-server/v2 v2.0.0 // indirect
+	github.com/qiniu/api.v7 v7.2.5+incompatible
+	github.com/qiniu/x v7.0.8+incompatible // indirect
 	github.com/skip2/go-qrcode v0.0.0-20190110000554-dc11ecdae0a9
 	github.com/stretchr/testify v1.3.0
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	google.golang.org/grpc v1.22.0 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
+	qiniupkg.com/x v7.0.8+incompatible // indirect
 )

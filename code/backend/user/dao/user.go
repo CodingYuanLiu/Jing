@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"jing/app/user/model"
+	"jing/app/json"
 )
 
 var db *gorm.DB
@@ -19,6 +19,75 @@ type User struct {
 	Signature string
 	OpenId string
 	Jaccount string
+}
+
+type Join struct {
+	ID 		int 		`gorm:"primary_key;auto_increment"`
+	UserID	int
+	ActID	int
+	IsAdmin bool
+}
+
+// TODO: let lqy implement these more functionally
+func GetAllActId() []int {
+	var joins []Join
+	db.Find(&joins)
+	actIds := map[int]int{}
+	for _, v := range joins {
+		actIds[v.ActID] = 1
+	}
+	var acts []int
+	for k := range actIds {
+		acts = append(acts, k)
+	}
+	return acts
+}
+
+func GetManagingActivity(userId int) (acts []int) {
+	var joins []Join
+	db.Where("user_id = ? and is_admin = ?", userId, true).Find(&joins)
+	for _, v := range joins {
+		acts = append(acts, v.ActID)
+	}
+	return
+}
+
+func DeleteActivity(actId int) error {
+	db.Where("act_id = ?", actId).Delete(Join{})
+	return nil
+}
+
+func GetJoinedActivity(userId int) (acts []int) {
+	var joins []Join
+	db.Where("user_id = ? and is_admin = ?", userId, false).Find(&joins)
+	for _, v := range joins {
+		acts = append(acts, v.ActID)
+	}
+	return
+}
+
+func GetActivityAdmin(actId int) int {
+	join := Join{}
+	db.Where("act_id = ? and is_admin = ?", actId, true).First(&join)
+	return join.UserID
+}
+
+func PublishActivity(userId int, actId int) error {
+	join := Join{}
+	join.UserID = userId
+	join.ActID = actId
+	join.IsAdmin = true
+	db.Create(&join)
+	return nil
+}
+
+func JoinActivity(userId int, actId int) error {
+	join := Join{}
+	join.UserID = userId
+	join.ActID = actId
+	join.IsAdmin = false
+	db.Create(&join)
+	return nil
 }
 
 func FindUserById(id int) (User, error) {
@@ -49,7 +118,7 @@ func UpdateUserById(id int, column string, value interface{}) error {
 	return nil
 }
 
-func CreateUser(json model.JSON) error {
+func CreateUser(json json.JSON) error {
 	user := User{}
 	user.Username = json["username"].(string)
 	_, err := FindUserByUsername(user.Username)
@@ -68,12 +137,15 @@ func init()  {
 	var err error
 	//db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
 	//db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
-	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}
 	if !db.HasTable(&User{}) {
 		db.CreateTable(&User{})
+	}
+	if !db.HasTable(&Join{}) {
+		db.CreateTable(&Join{})
 	}
 	return
 }

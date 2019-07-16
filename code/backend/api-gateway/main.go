@@ -1,6 +1,7 @@
 package main
 
 import (
+	"jing/app/api-gateway/controller/activity"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
 	"jing/app/api-gateway/filter"
@@ -36,16 +37,21 @@ func setupRouter() *gin.Engine {
 	lc := new(loginController.Controller)
 	// user service
 	uc := new(userController.Controller)
+	// activity service
+	ac := new(activity.Controller)
 
 	publicRouter := router.Group("/api/public")
 	{
 		publicRouter.GET("/status", lc.GetUserStatus)
+		// TODO: Confirm register's security
 		publicRouter.POST("/register", uc.Register)
 		publicRouter.POST("/login/jaccount", lc.OAuthLogin)
 		publicRouter.POST("/login/native", lc.NativeLogin)
 		publicRouter.GET("/detail/:id", uc.QueryUser)
 		publicRouter.POST("/login/wx", lc.GetWXCode)
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
+		publicRouter.GET("/act/query", ac.QueryActivity)
+		publicRouter.GET("/act/findall", ac.FindAllActivity)
 		//publicRouter.GET("/activity", )
 	}
 	/*
@@ -57,6 +63,14 @@ func setupRouter() *gin.Engine {
 	*/
 	userRouter := router.Group("/api/user")
 	{
+		// TODO: Privilege & Request activity
+		userRouter.GET("/act/myact", ac.MyAct)
+		userRouter.GET("/act/manageact", ac.ManageAct)
+		userRouter.POST("/act/publish", ac.PublishActivity)
+		userRouter.POST("/act/modify", ac.ModifyActivity)
+		userRouter.POST("/act/join", ac.JoinActivity)
+		userRouter.POST("/act/delete", ac.DeleteActivity)
+		userRouter.POST("/act/comment", ac.Comment)
 		userRouter.PUT("/info/update", uc.UpdateUser)
 	}
 

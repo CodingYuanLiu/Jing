@@ -117,20 +117,28 @@ Page({
             });
             // console.log(that.data);
             wx.request({
-                url: 'https://sebastianj1wzyd.xyz/updateuser',
-                method: 'POST',
+                url: 'https://sebastianj1wzyd.xyz/api/user/info/update',
+                method: 'PUT',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
                 data: {
-                    'id': that.data.user.id,
+                    'id': app.globalData.userid,
                     'phone': that.data.phone,
-                    'nickname': that.data.nickname
+                    'nickname': that.data.nickname,
+                    "signature": that.data.signature,
                 },
                 success: function(res) {
                     if (res.statusCode !== 200) {
                         console.log("error");
+                        // todo: 错误提示
                     } else {
                         app.globalData.userInfo.phone = that.data.phone;
                         app.globalData.userInfo.nickname = that.data.nickname;
-
+                        app.globalData.userInfo.signature = that.data.signature;
+                        wx.switchTab({
+                            url: '/pages/my/my',
+                        })
                     }
                 }
             })

@@ -9,10 +9,10 @@ import (
 )
 
 func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp *activity.DltResp) error {
-	err := actSrv.Collection.Remove(bson.M{"actid": req.Actid})
+	err := actSrv.Collection.Remove(bson.M{"actid": req.ActId})
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
-		resp.Status = 500
+		resp.Status = 404
 		resp.Description = "Not Found"
 		return err
 	} else if err!=nil{

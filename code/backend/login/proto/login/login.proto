@@ -42,7 +42,6 @@ message AuthReq {
 message AuthResp {
     int32 status = 1; // success = 0, expired = -1, error = -2
     int32 user_id = 2;
-    string username = 6;
     bool admin = 3;
 }
 

@@ -1,0 +1,8 @@
+<!--pages/scan/scan.wxml-->
+<view class="main">
+    <view class="content" style="margin: 70rpx">
+        <label style="margin-left: 14rpx;align: center;display:block">首次登陆请扫描二维码绑定jaccount</label>
+        <image src="{{qr_code}}" style="margin-left: 8rpx;width: 600rpx; height: 600rpx"></image>
+        <i-button type="primary" bind:click="handleClick">已绑定，修改信息</i-button>
+    </view>
+</view>

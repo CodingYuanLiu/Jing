@@ -1,0 +1,31 @@
+<!--pages/newact/newact.wxml-->
+<form bindsubmit="handleClick" report-submit='true'>
+    <i-panel title="基本信息">
+        <i-input value="{{title}}" bind:blur="handleTitleInput" type="text" maxlength="20" title="标题" placeholder="活动标题" />
+        <i-input value="{{end_time}}" bind:blur="handleEndTimeInput" type="text" maxlength="20 " title="报名截止" placeholder="截止日期" />
+        <i-input value="{{depart_time}}" bind:blur="handleDepartTimeInput" type="text" maxlength="20 " title="出发时间" placeholder="出发日期时间" />
+        <i-input value="{{origin}}" bind:blur="handleOriginInput" type="text" maxlength="20 " title="起点" placeholder="出发点" />
+        <i-input value="{{dest}}" bind:blur="handleDestInput" type="text" maxlength="20 " title="终点" placeholder="终点" />
+    </i-panel>
+    <i-panel title="详细说明">
+        <textarea placeholder="详细描述您的活动" bindblur="bindTextAreaBlur" value="{{details}}" class="textinput" />
+    </i-panel>
+    <i-panel title="添加图片">
+        <block class="q-image-block" wx:for="{{images}}" wx:key="*this">
+            <view style="float: left">
+                <!-- 图片缩略图  -->
+                <image class="q-image" src="{{item}}" data-idx="{{index}}" bindtap="handleImagePreview"></image>
+                <!-- 移除图片的按钮  -->
+                <i-button type="error" data-idx="{{index}}" bindtap="removeImage">删除</i-button>
+            </view>
+        </block>
+        <view style="float: left" bindtap="chooseImage" wx:if="{{images.length < 3}}">
+            <!-- 图片缩略图  -->
+            <image class="q-image" src="../../images/icons/icon_add.png" data-idx="{{index}}"></image>
+            <!-- 移除图片的按钮  -->
+        </view>
+        <!-- <button type="default" size="mini" >添加图片</button> -->
+    </i-panel>
+
+    <button form-type="submit">提交</button>
+</form>
