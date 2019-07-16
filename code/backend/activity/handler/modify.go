@@ -11,46 +11,62 @@ import (
 
 func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
 	var act map[string]interface{}
-	err := actSrv.Collection.Find(bson.M{"actid": req.Actid}).One(&act)
+	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
+		resp.Status=404
+		resp.Description="Not Found"
 		return err
 	}
-	mapBasicinfo :=act["basicinfo"].(map[string]interface{})
-	fetchType := mapBasicinfo["type"].(string)
+	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
+	fetchType:= mapBasicInfo["type"].(string)
 
-	basicinfo:=model.BasicInfo{
+	basicInfo:=model.BasicInfo{
 		Type:        fetchType,
-		Title:       mapBasicinfo["title"].(string),
+		Title:       mapBasicInfo["title"].(string),
 		CreateTime:  req.CreateTime,
 		EndTime:     req.EndTime,
 		Description: req.Description,
 		Tag:         req.Tag,
 	}
 
-	switch fetchType {
-	case "Taxi":
-		taxiinfo := model.TaxiInfo{
-			DepartTime:req.Taxiinfo.DepartTime,
-			Origin:req.Taxiinfo.Origin,
-			Destination:req.Taxiinfo.Destination,
-		}
-
-		err = actSrv.Collection.Update(
-		bson.M{"actid":req.Actid},
-		bson.M{"$set":bson.M{"basicinfo":basicinfo,"taxiinfo":taxiinfo}})
-	case "Takeout":
-		takeoutinfo:=model.TakeoutInfo{
-			Store:req.Takeoutinfo.Store,
-			OrderTime:req.Takeoutinfo.Ordertime,
+	switch fetchType{
+	case "taxi":
+		taxiInfo := model.TaxiInfo{
+			DepartTime:req.TaxiInfo.DepartTime,
+			Origin:req.TaxiInfo.Origin,
+			Destination:req.TaxiInfo.Destination,
 		}
 		err = actSrv.Collection.Update(
-			bson.M{"actid":req.Actid},
-			bson.M{"$set":bson.M{"basicinfo":basicinfo,"takeoutinfo":takeoutinfo}})
+		bson.M{"actid":req.ActId},
+		bson.M{"$set":bson.M{"basicinfo":basicInfo,"taxiinfo":taxiInfo}})
+	case "takeout":
+		takeoutInfo:=model.TakeoutInfo{
+			Store:req.TakeoutInfo.Store,
+			OrderTime:req.TakeoutInfo.OrderTime,
+		}
+		err = actSrv.Collection.Update(
+			bson.M{"actid":req.ActId},
+			bson.M{"$set":bson.M{"basicinfo":basicInfo,"takeoutinfo":takeoutInfo}})
+	case "order":
+		orderInfo := model.OrderInfo{
+			Store:req.OrderInfo.Store,
+		}
+		err = actSrv.Collection.Update(
+			bson.M{"actid":req.ActId},
+			bson.M{"$set":bson.M{"basicinfo":basicInfo,"orderinfo":orderInfo}})
+	case "other":
+		otherInfo := model.OtherInfo{
+			ActivityTime:req.OtherInfo.ActivityTime,
+		}
+		err = actSrv.Collection.Update(
+			bson.M{"actid":req.ActId},
+			bson.M{"$set":bson.M{"basicinfo":basicInfo,"otherinfo":otherInfo}})
+		/*
 	default:
 		resp.Status=500
 		resp.Description="Undefined Type"
-		return nil
+		return nil*/
 	}
 	if err!=nil{
 		fmt.Println(err)

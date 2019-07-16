@@ -38,6 +38,7 @@ type ActivitySrvService interface {
 	Modify(ctx context.Context, in *MdfReq, opts ...client.CallOption) (*MdfResp, error)
 	Delete(ctx context.Context, in *DltReq, opts ...client.CallOption) (*DltResp, error)
 	Query(ctx context.Context, in *QryReq, opts ...client.CallOption) (*QryResp, error)
+	Comment(ctx context.Context, in *CmtReq, opts ...client.CallOption) (*CmtResp, error)
 }
 
 type activitySrvService struct {
@@ -98,6 +99,16 @@ func (c *activitySrvService) Query(ctx context.Context, in *QryReq, opts ...clie
 	return out, nil
 }
 
+func (c *activitySrvService) Comment(ctx context.Context, in *CmtReq, opts ...client.CallOption) (*CmtResp, error) {
+	req := c.c.NewRequest(c.name, "ActivitySrv.Comment", in)
+	out := new(CmtResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ActivitySrv service
 
 type ActivitySrvHandler interface {
@@ -105,6 +116,7 @@ type ActivitySrvHandler interface {
 	Modify(context.Context, *MdfReq, *MdfResp) error
 	Delete(context.Context, *DltReq, *DltResp) error
 	Query(context.Context, *QryReq, *QryResp) error
+	Comment(context.Context, *CmtReq, *CmtResp) error
 }
 
 func RegisterActivitySrvHandler(s server.Server, hdlr ActivitySrvHandler, opts ...server.HandlerOption) error {
@@ -113,6 +125,7 @@ func RegisterActivitySrvHandler(s server.Server, hdlr ActivitySrvHandler, opts .
 		Modify(ctx context.Context, in *MdfReq, out *MdfResp) error
 		Delete(ctx context.Context, in *DltReq, out *DltResp) error
 		Query(ctx context.Context, in *QryReq, out *QryResp) error
+		Comment(ctx context.Context, in *CmtReq, out *CmtResp) error
 	}
 	type ActivitySrv struct {
 		activitySrv
@@ -139,4 +152,8 @@ func (h *activitySrvHandler) Delete(ctx context.Context, in *DltReq, out *DltRes
 
 func (h *activitySrvHandler) Query(ctx context.Context, in *QryReq, out *QryResp) error {
 	return h.ActivitySrvHandler.Query(ctx, in, out)
+}
+
+func (h *activitySrvHandler) Comment(ctx context.Context, in *CmtReq, out *CmtResp) error {
+	return h.ActivitySrvHandler.Comment(ctx, in, out)
 }

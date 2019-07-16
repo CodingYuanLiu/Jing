@@ -1,4 +1,4 @@
-package cli_login
+package login
 
 import (
 	"context"
@@ -13,10 +13,11 @@ import (
 )
 
 var (
-	LoginClient loginProto.LoginService
+	Client loginProto.LoginService
 )
 
 func init() {
+
 	os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
@@ -25,7 +26,7 @@ func init() {
 }
 
 func CallAuth(jwt string) (*loginProto.AuthResp, error) {
-	resp, err := LoginClient.Auth(context.TODO(), &loginProto.AuthReq{
+	resp, err := Client.Auth(context.TODO(), &loginProto.AuthReq{
 		Jwt: jwt,
 	})
 	if err != nil {
@@ -35,7 +36,7 @@ func CallAuth(jwt string) (*loginProto.AuthResp, error) {
 }
 
 func CallLoginByJaccount(accessToken string) (*loginProto.TokenResp, error) {
-	resp, err := LoginClient.LoginByJaccount(context.TODO(), &loginProto.LJReq{
+	resp, err := Client.LoginByJaccount(context.TODO(), &loginProto.LJReq{
 		AccessToken: accessToken,
 	})
 	if err != nil {
@@ -83,8 +84,6 @@ func CallGetJac(code string, redirectUri string) (*loginProto.JaccResp, error) {
 		Code:        code,
 		RedirectUri: redirectUri,
 	})
-	fmt.Println(code)
-	fmt.Println(redirectUri)
 	if err != nil {
 		// ...
 	}

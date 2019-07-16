@@ -440,7 +440,6 @@ github.com/micro/go-plugins v0.24.1/go.mod h1:D3aeqkF6t2bIc4W7QPAs/g4c3fJXV+V7KF
 github.com/micro/go-proxy v0.1.0/go.mod h1:atFueQm7iDQY1JBJsIV4vbnN/Rqdge6zE6AjZMqvXgk=
 github.com/micro/go-rcache v0.1.0 h1:YTIgANVHgBe1XOQ/yLICL+s2gbZCAdW+c2ckhekjkuc=
 github.com/micro/go-rcache v0.1.0/go.mod h1:INzyZjXO5M+PmN2A33YxD4TaOY61xjFIM4CfSHv+At8=
-github.com/micro/go-web v0.6.0 h1:Lfj9rpp0R0rVNet489Q0fTF0ixUoq3MvVA2XuYpXzWM=
 github.com/micro/go-web v0.6.0/go.mod h1:d7+RTjvq5mvsIq55hq1/84kbYBbvJKrcUcBxBbQR5Nc=
 github.com/micro/h2c v1.0.0/go.mod h1:54sOOQW/GRlHhH43vKwOhUb+kHaXhVxR0d3CJhn9alE=
 github.com/micro/hipchat v0.0.0-20160328000638-4c67119ac956/go.mod h1:9LPnmAqs2JarMBCqn4eUNkATVCsGQFphxNoQEi28uLU=

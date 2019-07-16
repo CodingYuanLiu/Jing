@@ -10,7 +10,7 @@ import (
 func main(){
 	service :=micro.NewService()
 	service.Init()
-	c1 := activity.NewActivitySrvService("Jing.handler.act",service.Client())
+	c1 := activity.NewActivitySrvService("go.micro.handler.act",service.Client())
 	rsp,err:= c1.Modify(context.TODO(), &activity.MdfReq{
 		/*
 		Actid:5,
@@ -23,14 +23,32 @@ func main(){
 			Origin:"ModifiedOrigin",
 			Destination:"ModifiedDest",
 		},*/
-		Actid:6,
+		/*
+		ActId:7,
 		CreateTime:"2075-7-7",
 		EndTime:"2075-7-17",
 		Description:"Modified takeout description",
-		Tag: []string{"KFC","Element"},
-		Takeoutinfo:&activity.TakeoutInfo{
+		Tag: []string{"BurgerKing","Element"},
+		TakeoutInfo:&activity.TakeoutInfo{
 			Store:"Burger King",
-			Ordertime:"2077-7-7",
+			OrderTime:"2077-7-7",
+		},*/
+		/*
+		ActId:7,
+		CreateTime:"2015-7-7",
+		EndTime:"2015-7-17",
+		Description:"Modified order description",
+		Tag: []string{"Dior","Taobao"},
+		OrderInfo:&activity.OrderInfo{
+			Store:"Taobao Dior",
+		},*/
+		ActId:1,
+		CreateTime:"2025-7-7",
+		EndTime:"2025-7-17",
+		Description:"Modified other description",
+		Tag: []string{"Dior","Taobao"},
+		OtherInfo:&activity.OtherInfo{
+			ActivityTime:"2025-11-11",
 		},
 	})
 	if err != nil {

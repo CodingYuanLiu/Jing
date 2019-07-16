@@ -22,7 +22,7 @@ func AuthFilter(c *gin.Context) {
 
 		if !verified {
 			c.JSON(http.StatusUnauthorized, map[string]string {
-				"message" : "You don't have access to this page",
+				"message" : "You need login to do this",
 			})
 			c.Abort()
 			return
@@ -33,7 +33,7 @@ func AuthFilter(c *gin.Context) {
 			return
 		} else {
 			c.JSON(http.StatusUnauthorized, map[string]string {
-				"message" : "You don't have access to this page",
+				"message" : "You need login to do this",
 			})
 			c.Abort()
 			return
