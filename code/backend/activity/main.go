@@ -4,7 +4,7 @@ import (
 	"jing/app/activity/handler"
 	activity "jing/app/activity/proto"
 	"log"
-
+	"time"
 	"github.com/micro/go-micro"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
