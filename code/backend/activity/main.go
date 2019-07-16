@@ -17,8 +17,8 @@ type autoid struct {
 
 func main() {
 	service := k8s.NewService(
-		micro.Name("go-micro-srv-act"),
-		micro.Address("127.0.0.1:50010"),
+		micro.Name("act"),
+		micro.Address(":8080"),
 	)
 	session, err := mgo.Dial("127.0.0.1:27017")
 	if err != nil {
