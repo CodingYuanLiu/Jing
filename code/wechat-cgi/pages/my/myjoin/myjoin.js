@@ -15,7 +15,7 @@ Page({
     onLoad: function (options) {
         let that = this;
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/user/act/myact',
+            url: 'https://jing855.cn/api/user/act/myact',
             method: 'GET',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,

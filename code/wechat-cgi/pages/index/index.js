@@ -100,7 +100,7 @@ Page({
         let that = this;
         var feed_data = null;
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/public/act/findall',
+            url: 'https://jing855.cn/api/public/act/findall',
             method: 'GET',
             success: function (res) {
                 feed_data = res.data;
@@ -120,7 +120,7 @@ Page({
         var next_data = null;
         let that = this;
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/public/act/findall',
+            url: 'https://jing855.cn/api/public/act/findall',
             method: 'GET',
             success: function (res) {
                 console.log(res);
