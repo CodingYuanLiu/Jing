@@ -27,7 +27,6 @@ func main() {
 	)
 	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
 	if err != nil { 
-		log.Fatal("mg")
 		log.Fatal(err)
 	}
 	defer session.Close()
