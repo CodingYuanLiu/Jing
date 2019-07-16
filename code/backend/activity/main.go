@@ -21,7 +21,7 @@ func main() {
 		micro.Name("act"),
 		micro.Address(":8080"),
 	)
-	session, err := mgo.Dial("mongo.database:27017")
+	session, err := mgo.Dial("mongodb://jing:jing@mongo.database:27017/Jing")
 	if err != nil {
 		log.Fatal(err)
 	}
