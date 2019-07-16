@@ -5,12 +5,16 @@ import (
 	"fmt"
 	activity "jing/app/activity/proto"
 	"github.com/micro/go-micro"
+	b64 "encoding/base64"
+	"os"
 )
 
 func main(){
 	service :=micro.NewService()
 	service.Init()
 	c1 := activity.NewActivitySrvService("go.micro.handler.act",service.Client())
+	img1,_:=file2Bytes("./testqiniu1.png")
+	img2,_:=file2Bytes("./testqiniu2.png")
 	rsp,err:= c1.Publish(context.TODO(), &activity.PubReq{
 		/*
 		Info: &activity.BasicInfo{
@@ -58,6 +62,7 @@ func main(){
 			Title:"Basketball this afternoon",
 			Description:"description",
 			Tag: []string{"Basketball"},
+			Images:[]string{b64.StdEncoding.EncodeToString(img1),b64.StdEncoding.EncodeToString(img2)},
 		},
 		OtherInfo: &activity.OtherInfo{
 			ActivityTime:"2022-11-11 11:11:21",
@@ -69,4 +74,30 @@ func main(){
 	}
 
 	fmt.Println(rsp)
+}
+
+
+func file2Bytes(filename string) ([]byte, error) {
+
+	// File
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	// FileInfo:
+	stats, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	// []byte
+	data := make([]byte, stats.Size())
+	count, err := file.Read(data)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("read file %s len: %d \n", filename, count)
+	return data, nil
 }

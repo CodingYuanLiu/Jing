@@ -116,7 +116,7 @@ func uploadImg(base64Img string) string{
 	accessKey := "XjJVXANFlU4XnSFgKmUdJWxx2GEzM_ftCVOvsorP"
 	secretKey := "OrpJx83zmG6PPgV1e0D-j7wkhuykOxHB5-GdcENT"
 	/* Auto generated key by qiniuyun, which is available in only 30 days.*/
-	domain := "puo7Itwok.bkt.clouddn.com"
+	domain := "puo7ltwok.bkt.clouddn.com"
 	bucket := "jing"
 	mac := qbox.NewMac(accessKey, secretKey)
 	putPolicy := storage.PutPolicy{
@@ -138,7 +138,7 @@ func uploadImg(base64Img string) string{
 			"x:name": "github logo",
 		},
 	}
-	data,_ := b64.URLEncoding.DecodeString(base64Img)
+	data,_ := b64.StdEncoding.DecodeString(base64Img)
 	dataLen := int64(len(data))
 
 	ret := storage.PutRet{}
@@ -146,6 +146,6 @@ func uploadImg(base64Img string) string{
 	if err!=nil{
 		log.Fatal(err)
 	}
-	url := "http://" + domain + ret.Key
+	url := "http://" + domain + "/"+ret.Key
 	return url
 }

@@ -64,7 +64,7 @@ func main() {
 	fmt.Println(ret.Key,ret.Hash)
 	fmt.Println(ret)
 }
-
+/*
 func file2Bytes(filename string) ([]byte, error) {
 
 	// File
@@ -88,4 +88,4 @@ func file2Bytes(filename string) ([]byte, error) {
 	}
 	fmt.Printf("read file %s len: %d \n", filename, count)
 	return data, nil
-}
+}*/
