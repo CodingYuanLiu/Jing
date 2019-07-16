@@ -25,7 +25,7 @@ func main() {
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*10),
 	)
-	session, err := mgo.Dial("mongodb://jing:jing@mongo.database:27017/Jing")
+	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
 	if err != nil { 
 		log.Fatal("mg")
 		log.Fatal(err)
