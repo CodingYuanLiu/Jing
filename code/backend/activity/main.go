@@ -20,6 +20,8 @@ func main() {
 	service := k8s.NewService(
 		micro.Name("act"),
 		micro.Address(":8080"),
+		micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*10),
 	)
 	session, err := mgo.Dial("mongodb://jing:jing@mongo.database:27017/Jing")
 	if err != nil {
