@@ -1,13 +1,15 @@
 package main
 
 import (
-	"jing/app/activity/handler"
-	activity "jing/app/activity/proto"
 	"log"
 	"time"
-	"github.com/micro/go-micro"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
+	"jing/app/activity/handler"
+	activity "jing/app/activity/proto"
+
+	"github.com/micro/go-micro"
 	k8s "github.com/micro/kubernetes/go/micro"
 )
 
@@ -24,7 +26,8 @@ func main() {
 		micro.RegisterInterval(time.Second*10),
 	)
 	session, err := mgo.Dial("mongodb://jing:jing@mongo.database:27017/Jing")
-	if err != nil {
+	if err != nil { 
+		log.Fatal("mg")
 		log.Fatal(err)
 	}
 	defer session.Close()
@@ -43,6 +46,7 @@ func main() {
 			log.Fatal(insertErr)
 		}
 	}else if err !=nil{
+		log.Fatal("not mg")
 		log.Fatal(err)
 	}else {
 		/* The fetchId["autoid"] can only be converted to int, not int32.*/
@@ -57,6 +61,7 @@ func main() {
 		log.Fatal(err)
 	}
 	if err := service.Run(); err != nil {
+		log.Fatal("end")
 		log.Fatal(err)
 	}
 }
