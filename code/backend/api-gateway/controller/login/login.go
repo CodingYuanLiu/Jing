@@ -3,12 +3,16 @@ package login
 import "C"
 import (
 	"encoding/base64"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/skip2/go-qrcode"
+	"io/ioutil"
 	loginClient "jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
 	"log"
 	"net/http"
+	myjson "jing/app/json"
+
 )
 
 type Controller struct {
@@ -50,12 +54,38 @@ func (lc *Controller) GetUserStatus (c *gin.Context) {
 	}
 }
 
-func (lc *Controller) OAuthLogin (c *gin.Context) {
-
-}
-
-func (lc *Controller) OAuthRedirect (c *gin.Context) {
-
+func (lc *Controller) JaccountLogin (c *gin.Context) {
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
+	if err!=nil{
+		c.JSON(http.StatusBadRequest,map[string] string{
+			"message" : "JSON parse error",
+		})
+		c.Abort()
+		return
+	}
+	code := jsonForm["code"]
+	redirectUri := jsonForm["redirect_uri"]
+	if code ==nil || redirectUri ==nil{
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Miss some field",
+		})
+		c.Abort()
+		return
+	}
+	resp,err := loginClient.CallGetAccessToken(redirectUri.(string),code.(string))
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError,map[string] string{
+			"message": "GetAccessToken Error",
+		})
+		c.Abort()
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{
+		"message": "Get access token from Jaccount successfully",
+		"access_token" : resp.AccessToken,
+	})
 }
 
 
@@ -152,5 +182,3 @@ func (lc *Controller) NativeLogin (c *gin.Context) {
 		})
 	}
 }
-
-
