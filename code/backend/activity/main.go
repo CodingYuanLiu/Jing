@@ -8,6 +8,7 @@ import (
 	"github.com/micro/go-micro"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	k8s "github.com/micro/kubernetes/go/micro"
 )
 
 //The struct is used to store stylistic id in MongoDB.
@@ -16,7 +17,7 @@ type id struct{
 }
 
 func main() {
-	service := micro.NewService(
+	service := k8s.NewService(
 		micro.Name("act"),
 		micro.Address(":8080"),
 	)
