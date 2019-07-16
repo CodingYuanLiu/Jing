@@ -8,6 +8,7 @@ import (
 	"github.com/micro/go-micro"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	k8s "github.com/micro/kubernetes/go/web"
 )
 
 type autoid struct {
@@ -15,7 +16,7 @@ type autoid struct {
 }
 
 func main() {
-	service := micro.NewService(
+	service := k8s.NewService(
 		micro.Name("go-micro-srv-act"),
 		micro.Address("127.0.0.1:50010"),
 	)
