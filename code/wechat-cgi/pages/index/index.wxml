@@ -17,37 +17,37 @@
             <view class="feed-item">
                 <view class="feed-source">
                     <a class="">
-                        <view class="avatar">
+                        <!-- <view class="avatar">
                             <image src="{{item.feed_source_img}}"></image>
-                        </view>
-                        <text>{{item.feed_source_name}} · </text>
-                        <text>信用分 {{item.credit}} · </text>
-                        <text>{{item.date}}</text>
+                        </view> -->
+                        <!-- <text>{{item.feed_source_name}} · </text> -->
+                        <text>{{item.sponsor_username}} · {{item.type}} · </text>
+                        <text>{{item.create_time}}</text>
                     </a>
                 </view>
-                <view class="feed-content">
-                    <view class="question" qid="{{question_id}}" bindtap="bindQueTap">
+                <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                    <view class="question">
                         <a class="question-link">
-                            <text>{{item.question}}</text>
+                            <text>【{{item.depart_time}}】 {{item.title}}</text>
                         </a>
                     </view>
                     <view class="answer-body">
-                        <view bindtap="bindItemTap">
-                            <text class="answer-txt" aid="{{answer_id}}">{{item.answer_ctnt}}</text>
+                        <view  data-id="{{act_id}}">
+                            <text class="answer-txt" aid="{{act_id}}">{{item.description}}</text>
                         </view>
-                        <view>
+                        <!-- <view>
                             <image src="{{item.feed_img}}"></image>
-                        </view>
-                        <view class="answer-actions" bindtap="bindItemTap">
+                        </view> -->
+                        <view class="answer-actions">
                             <view class="like dot">
                                 <a>👍 {{item.good_num}} </a>
                             </view>
                             <view class="comments dot">
-                                <a>{{item.comment_num}} 评论 </a>
+                                <a>{{item.comments.length}} 评论 </a>
                             </view>
-                            <view class="follow-it">
+                            <!-- <view class="follow-it">
                                 <a>{{item.comment_num}} 关注</a>
-                            </view>
+                            </view> -->
                         </view>
                     </view>
                 </view>

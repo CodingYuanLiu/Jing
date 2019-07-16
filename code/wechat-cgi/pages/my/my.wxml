@@ -12,13 +12,13 @@
             <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
         </view>
         <view class="user-info flex-item">
-            <text class="userinfo-nickname">{{user.nickname}}</text>
+            <text class="userinfo-nickname">{{userInfo.nickname}}</text>
             <text class="edit">查看或编辑个人主页</text>
         </view>
     </view>
 
     <view class="my">
-        <view class="my-item flex-wrp">
+        <view class="my-item flex-wrp" bindtap="handlePub">
             <view class="myitem-icon flex-item">
                 <image src="../../images/icons/pubed_line.png"></image>
             </view>
@@ -26,7 +26,7 @@
                 <text>我发布的</text>
             </view>
         </view>
-        <view class="my-item flex-wrp">
+        <view class="my-item flex-wrp" bindtap="handleJoin">
             <view class="myitem-icon flex-item">
                 <image src="../../images/icons/add_line.png"></image>
             </view>

@@ -26,6 +26,9 @@ App({
     }
   },
   globalData:{
-    userInfo:null
+    userInfo:null,
+    qrcode: null,
+    jwt: null,
+    userid: null,
   }
 })

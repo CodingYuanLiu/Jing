@@ -3,8 +3,11 @@ package user
 import (
 	"context"
 	"github.com/micro/go-micro/client"
+	"github.com/micro/go-plugins/client/grpc"
+	"github.com/micro/go-plugins/registry/kubernetes"
 	userProto "jing/app/user/proto/user"
 	"log"
+	"os"
 )
 
 var (
@@ -12,7 +15,11 @@ var (
 )
 
 func init() {
-	Client = userProto.NewUserService("go.micro.handler.user", client.DefaultClient)
+	os.Setenv("MICRO_REGISTRY", "kubernetes")
+	client.DefaultClient = grpc.NewClient(
+		client.Registry(kubernetes.NewRegistry()),
+	)
+	Client = userProto.NewUserService("user", client.DefaultClient)
 }
 
 func CallUpdateUser(id int32, phone string, signature string,
@@ -20,9 +27,17 @@ func CallUpdateUser(id int32, phone string, signature string,
 
 	req := new(userProto.UpdateReq)
 	req.Id = id
-	req.Phone = phone
-	req.Signature = signature
-	req.Nickname = nickname
+
+	if phone != "" {
+		req.Phone = phone
+	}
+	if signature != "" {
+		req.Signature = signature
+	}
+	if nickname != "" {
+		req.Nickname = nickname
+	}
+
 	rsp, err := Client.Update(context.TODO(), req)
 
 	if err != nil {
@@ -34,13 +49,13 @@ func CallUpdateUser(id int32, phone string, signature string,
 
 func CallRegister(username string, password string,
 	phone string, nickname string, jaccount string,
-	)(*userProto.RegResp, error){
+) (*userProto.RegResp, error) {
 	rsp, err := Client.Register(context.TODO(), &userProto.RegReq{
-		Username:username,
-		Password:password,
-		Phone:phone,
-		Nickname:nickname,
-		Jaccount:jaccount,
+		Username: username,
+		Password: password,
+		Phone:    phone,
+		Nickname: nickname,
+		Jaccount: jaccount,
 	})
 
 	if err != nil {
@@ -51,7 +66,7 @@ func CallRegister(username string, password string,
 
 func CallQueryUser(id int32) (*userProto.FindResp, error) {
 	rsp, err := Client.FindUser(context.TODO(), &userProto.FindReq{
-		Id:id,
+		Id: id,
 	})
 	if err != nil {
 		// ...

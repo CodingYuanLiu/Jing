@@ -1,0 +1,15 @@
+<!--pages/my/editact/editact.wxml-->
+<form bindsubmit="handleClick" report-submit='true'>
+<i-panel title="基本信息">
+    <i-input value="{{content.title}}" bind:blur="handleTitleInput" type="text" maxlength="20" title="标题" placeholder="活动标题" />
+    <i-input value="{{content.end_time}} " bind:blur="handleEndTimeInput" type="text" maxlength="20 " title="报名截止" placeholder="截止日期"/>
+    <i-input value="{{content.depart_time}} " bind:blur="handleDepartTimeInput" type="text" maxlength="20 " title="出发时间" placeholder="出发日期时间"/>
+    <i-input value="{{content.origin}} " bind:blur="handleOriginInput" type="text" maxlength="20 " title="起点" placeholder="出发点"/>
+    <i-input value="{{content.destination}} " bind:blur="handleDestInput" type="text" maxlength="20 " title="终点" placeholder="终点"/>
+</i-panel>
+<i-panel title="详细说明 ">
+    <textarea placeholder="详细描述您的活动" bindblur="bindTextAreaBlur" value="{{content.description}} " class="textinput " />
+</i-panel>
+<button style="margin-left: 20rpx; margin-right: 18rpx" form-type="submit">提交</button>
+<i-button type="error" bindtap="handleDelete">删除活动</i-button>
+</form>

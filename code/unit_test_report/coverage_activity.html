@@ -1,0 +1,464 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">jing/app/activity/handler/activity.go (100.0%)</option>
+				
+				<option value="file1">jing/app/activity/handler/comment.go (76.9%)</option>
+				
+				<option value="file2">jing/app/activity/handler/delete.go (90.9%)</option>
+				
+				<option value="file3">jing/app/activity/handler/modify.go (92.0%)</option>
+				
+				<option value="file4">jing/app/activity/handler/publish.go (94.1%)</option>
+				
+				<option value="file5">jing/app/activity/handler/query.go (97.4%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package handler
+
+import (
+        "gopkg.in/mgo.v2"
+        "sync/atomic"
+)
+
+type ActivitySrv struct{
+        Collection *mgo.Collection
+        IdCollection *mgo.Collection
+}
+
+var Id int32
+func GetId() int32 <span class="cov8" title="1">{
+        return atomic.AddInt32(&amp;Id,1)
+}</pre>
+		
+		<pre class="file" id="file1" style="display: none">package handler
+
+import (
+        "context"
+        "gopkg.in/mgo.v2"
+        "gopkg.in/mgo.v2/bson"
+        "jing/app/activity/model"
+        activity "jing/app/activity/proto"
+)
+
+func (actSrv *ActivitySrv) Comment(ctx context.Context,req *activity.CmtReq,resp *activity.CmtResp) error <span class="cov8" title="1">{
+        comment := model.Comment{
+                UserId:req.UserId,
+                ReceiverId:req.ReceiverId,
+                Content:req.Content,
+                Time:req.Time,
+        }
+        err := actSrv.Collection.Update(
+                bson.M{"actid":req.ActId},
+                bson.M{"$push":bson.M{"comments":comment}})
+        if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
+                resp.Status = 404
+                resp.Description = "Not Found"
+                return err
+        }</span>        else<span class="cov8" title="1"> if err!=nil</span><span class="cov0" title="0">{
+                resp.Status = 500
+                resp.Description = "Comment Error"
+                return err
+        }</span>        else<span class="cov8" title="1">{
+                resp.Status = 200
+                resp.Description = "OK"
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "gopkg.in/mgo.v2"
+        "gopkg.in/mgo.v2/bson"
+        activity "jing/app/activity/proto"
+)
+
+func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp *activity.DltResp) error <span class="cov8" title="1">{
+        err := actSrv.Collection.Remove(bson.M{"actid": req.ActId})
+        if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
+                fmt.Println(err)
+                resp.Status = 404
+                resp.Description = "Not Found"
+                return err
+        }</span> else<span class="cov8" title="1"> if err!=nil</span><span class="cov0" title="0">{
+                return err
+        }</span> else<span class="cov8" title="1">{
+                resp.Status = 200
+                resp.Description = "OK"
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "gopkg.in/mgo.v2"
+        "gopkg.in/mgo.v2/bson"
+        "jing/app/activity/model"
+        activity "jing/app/activity/proto"
+)
+
+func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error <span class="cov8" title="1">{
+        var act map[string]interface{}
+        err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&amp;act)
+        if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
+                fmt.Println(err)
+                resp.Status=404
+                resp.Description="Not Found"
+                return err
+        }</span>
+        <span class="cov8" title="1">mapBasicInfo :=act["basicinfo"].(map[string]interface{})
+        fetchType:= mapBasicInfo["type"].(string)
+
+        basicInfo:=model.BasicInfo{
+                Type:        fetchType,
+                Title:       mapBasicInfo["title"].(string),
+                CreateTime:  req.CreateTime,
+                EndTime:     req.EndTime,
+                Description: req.Description,
+                Tag:         req.Tag,
+        }
+
+        switch fetchType</span>{
+        case "taxi":<span class="cov8" title="1">
+                taxiInfo := model.TaxiInfo{
+                        DepartTime:req.TaxiInfo.DepartTime,
+                        Origin:req.TaxiInfo.Origin,
+                        Destination:req.TaxiInfo.Destination,
+                }
+                err = actSrv.Collection.Update(
+                bson.M{"actid":req.ActId},
+                bson.M{"$set":bson.M{"basicinfo":basicInfo,"taxiinfo":taxiInfo}})</span>
+        case "takeout":<span class="cov8" title="1">
+                takeoutInfo:=model.TakeoutInfo{
+                        Store:req.TakeoutInfo.Store,
+                        OrderTime:req.TakeoutInfo.OrderTime,
+                }
+                err = actSrv.Collection.Update(
+                        bson.M{"actid":req.ActId},
+                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"takeoutinfo":takeoutInfo}})</span>
+        case "order":<span class="cov8" title="1">
+                orderInfo := model.OrderInfo{
+                        Store:req.OrderInfo.Store,
+                }
+                err = actSrv.Collection.Update(
+                        bson.M{"actid":req.ActId},
+                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"orderinfo":orderInfo}})</span>
+        case "other":<span class="cov8" title="1">
+                otherInfo := model.OtherInfo{
+                        ActivityTime:req.OtherInfo.ActivityTime,
+                }
+                err = actSrv.Collection.Update(
+                        bson.M{"actid":req.ActId},
+                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"otherinfo":otherInfo}})</span>
+                /*
+        default:
+                resp.Status=500
+                resp.Description="Undefined Type"
+                return nil*/
+        }
+        <span class="cov8" title="1">if err!=nil</span><span class="cov0" title="0">{
+                fmt.Println(err)
+                return err
+        }</span>
+        <span class="cov8" title="1">resp.Status=200
+        resp.Description="OK"
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package handler
+
+import (
+        "jing/app/activity/model"
+        activity "jing/app/activity/proto"
+        "context"
+        "fmt"
+        "gopkg.in/mgo.v2"
+        "gopkg.in/mgo.v2/bson"
+        "log"
+)
+
+func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error <span class="cov8" title="1">{
+        //fmt.Println(req)
+        id := insert(req, actSrv.Collection, actSrv.IdCollection)
+        if id == -1</span><span class="cov8" title="1">{
+                resp.Status = 500
+                resp.Description = "Undefined Type"
+                resp.ActId = -1
+                return nil
+        }</span>
+        <span class="cov8" title="1">resp.Status = 200
+        resp.Description = "OK"
+        resp.ActId = id
+        return nil</span>
+}
+
+func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Collection) int32 <span class="cov8" title="1">{
+        var id int32
+        basicInfo := model.BasicInfo{
+                //Actid:id,
+                Type:req.Info.Type,
+                CreateTime:req.Info.CreateTime,
+                EndTime:req.Info.EndTime,
+                Title:req.Info.Title,
+                Description:req.Info.Description,
+                Tag:req.Info.Tag,
+        }
+        var err error
+        switch basicInfo.Type</span>{
+        case "taxi":<span class="cov8" title="1">
+                id = GetId()
+                newAct := model.TaxiAct{
+                        ActId:     id,
+                        BasicInfo: basicInfo,
+                        TaxiInfo: model.TaxiInfo{
+                                DepartTime:req.TaxiInfo.DepartTime,
+                                Origin:req.TaxiInfo.Origin,
+                                Destination:req.TaxiInfo.Destination,
+                        },
+                Comments: []model.Comment{},
+                }
+                err = collection.Insert(newAct)</span>
+        case "takeout":<span class="cov8" title="1">
+                id = GetId()
+                newAct := model.TakeoutAct{
+                        ActId:      id,
+                        BasicInfo: basicInfo,
+                        TakeoutInfo:model.TakeoutInfo{
+                                Store:req.TakeoutInfo.Store,
+                                OrderTime:req.TakeoutInfo.OrderTime,
+                        },
+                Comments: []model.Comment{},
+                }
+                err = collection.Insert(newAct)</span>
+        case "order":<span class="cov8" title="1">
+                id = GetId()
+                newAct := model.OrderAct{
+                        ActId: id,
+                        BasicInfo:basicInfo,
+                        OrderInfo:model.OrderInfo{
+                                Store:req.OrderInfo.Store,
+                        },
+                Comments: []model.Comment{},
+                }
+                err = collection.Insert(newAct)</span>
+        case "other":<span class="cov8" title="1">
+                id = GetId()
+                newAct := model.OtherAct{
+                        ActId: id,
+                        BasicInfo:basicInfo,
+                        OtherInfo:model.OtherInfo{
+                                ActivityTime:req.OtherInfo.ActivityTime,
+                        },
+                Comments: []model.Comment{},
+                }
+                err = collection.Insert(newAct)</span>
+        default:<span class="cov8" title="1">
+                fmt.Println("Undefined Type.")
+                return -1</span>
+        }
+        <span class="cov8" title="1">if err!=nil</span><span class="cov0" title="0">{
+                fmt.Println("Insert Fail!")
+        }</span>
+        <span class="cov8" title="1">err = idCollection.Update(
+                bson.M{"autoid": id-1},
+                bson.M{"$inc": bson.M{ "autoid": 1 }})
+        if err!=nil</span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+        <span class="cov8" title="1">return id</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "gopkg.in/mgo.v2"
+        "gopkg.in/mgo.v2/bson"
+        activity "jing/app/activity/proto"
+        "log"
+)
+
+func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error <span class="cov8" title="1">{
+        //fmt.Println(req)
+        var result map[string] interface{}
+        err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&amp;result)
+        if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
+                fmt.Println(err)
+                resp.Status = 404
+                return err
+        }</span>else<span class="cov8" title="1"> if err != nil</span><span class="cov0" title="0">{
+                log.Fatal(err)
+        }</span>
+        //Use map to fetch the result.
+        <span class="cov8" title="1">mapBasicInfo := result["basicinfo"].(map[string] interface{})
+        basicInfo := activity.BasicInfo{
+                Type:        mapBasicInfo["type"].(string),
+                Description: mapBasicInfo["description"].(string),
+                Title:       mapBasicInfo["title"].(string),
+                CreateTime : mapBasicInfo["createtime"].(string),
+                EndTime :    mapBasicInfo["endtime"].(string),
+        }
+        for _,param := range mapBasicInfo["tag"].([]interface{})</span><span class="cov8" title="1">{
+                basicInfo.Tag = append(basicInfo.Tag,param.(string))
+        }</span>
+        <span class="cov8" title="1">var comments []*activity.Comment
+        for _,param := range result["comments"].([]interface{})</span><span class="cov8" title="1">{
+                //Need a intermediate map tp transfer map to comment
+                mapParam := param.(map[string] interface{})
+
+                //Need a intermediate variable to transfer int to int32
+                intUserId := mapParam["userid"].(int)
+                intReceiverId := mapParam["receiverid"].(int)
+                comment := activity.Comment{
+                        UserId:int32(intUserId),
+                        ReceiverId:int32(intReceiverId),
+                        Content:mapParam["content"].(string),
+                        Time:mapParam["time"].(string),
+                }
+                comments = append(comments,&amp;comment)
+        }</span>
+        <span class="cov8" title="1">resp.BasicInfo = &amp;basicInfo
+        resp.Comments = comments
+        switch basicInfo.Type </span>{
+        case "taxi":<span class="cov8" title="1">
+                mapTaxiInfo := result["taxiinfo"].(map[string] interface{})
+                taxiInfo := activity.TaxiInfo{
+                        DepartTime:  mapTaxiInfo["departtime"].(string),
+                        Origin:      mapTaxiInfo["origin"].(string),
+                        Destination: mapTaxiInfo["destination"].(string),
+                }
+                resp.TaxiInfo = &amp;taxiInfo
+                resp.Status = 200</span>
+        case "takeout":<span class="cov8" title="1">
+                mapTakeoutInfo :=result["takeoutinfo"].(map[string] interface{})
+                takeoutInfo := activity.TakeoutInfo{
+                        Store:     mapTakeoutInfo["store"].(string),
+                        OrderTime: mapTakeoutInfo["ordertime"].(string),
+                }
+                resp.TakeoutInfo = &amp;takeoutInfo
+                resp.Status = 200</span>
+        case "order":<span class="cov8" title="1">
+                mapOrderInfo := result["orderinfo"].(map[string] interface{})
+                orderInfo := activity.OrderInfo{
+                        Store: mapOrderInfo["store"].(string),
+                }
+                resp.OrderInfo = &amp;orderInfo
+                resp.Status = 200</span>
+
+        case "other":<span class="cov8" title="1">
+                mapOtherInfo := result["otherinfo"].(map[string] interface{})
+                otherInfo := activity.OtherInfo{
+                        ActivityTime:mapOtherInfo["activitytime"].(string),
+                }
+                resp.OtherInfo = &amp;otherInfo
+                resp.Status = 200</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

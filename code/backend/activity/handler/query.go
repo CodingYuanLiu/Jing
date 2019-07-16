@@ -84,6 +84,7 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 		mapOtherInfo := result["otherinfo"].(map[string] interface{})
 		otherInfo := activity.OtherInfo{
 			ActivityTime:mapOtherInfo["activitytime"].(string),
+
 		}
 		resp.OtherInfo = &otherInfo
 		resp.Status = 200

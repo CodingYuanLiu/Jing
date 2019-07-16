@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/micro/go-micro"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 	"jing/app/activity/handler"
 	activity "jing/app/activity/proto"
 	"log"
+
+	"github.com/micro/go-micro"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 //The struct is used to store stylistic id in MongoDB.
@@ -14,11 +15,12 @@ type id struct{
 	AutoId int32
 }
 func main(){
-	service:=micro.NewService(
+	service:=k8s.NewService(
 		micro.Name("go.micro.handler.act"),
-		micro.Address("127.0.0.1:50010"),
+		micro.Address(":8080"),
 		)
 	session, err := mgo.Dial("mongodb://jing:jing@127.0.0.1:27017/Jing")
+
 	if err != nil {
 		log.Fatal(err)
 	}

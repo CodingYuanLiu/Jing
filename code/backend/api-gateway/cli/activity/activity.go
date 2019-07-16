@@ -7,6 +7,7 @@ import (
 	activityProto "jing/app/activity/proto"
 	"jing/app/json"
 	"jing/app/user/dao"
+
 )
 
 var (

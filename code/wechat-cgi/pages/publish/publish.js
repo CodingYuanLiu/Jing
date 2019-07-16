@@ -55,5 +55,10 @@ Page({
     this.setData({
       currentNavtab: e.currentTarget.dataset.idx
     });
+  },
+  handleClick: function() {
+      wx.navigateTo({
+          url: '/pages/newact/newact',
+      })
   }
 })

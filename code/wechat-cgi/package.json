@@ -1,0 +1,24 @@
+{
+  "name": "wechat-cgi",
+  "version": "1.0.0",
+  "description": "微信中的知乎--微信小程序 demo // Zhihu in Wechat",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.5.0",
+    "@babel/core": "^7.5.0",
+    "@babel/preset-env": "^7.5.0",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^24.8.0",
+    "babel-loader": "^8.0.6",
+    "babel-preset-env": "^1.7.0",
+    "jest": "^24.8.0",
+    "miniprogram-simulate": "^1.0.2",
+    "regenerator-runtime": "^0.13.2"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC"
+}

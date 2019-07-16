@@ -83,6 +83,7 @@
 }
 .answer-content{
     padding: 30rpx 40rpx;
+    width: 90%;
     background: #ffffff;
 }
 .answer-content text{
@@ -281,4 +282,15 @@
 .placehold{
   padding: 80rpx 0;
   font-size: 28rpx
+}
+
+
+.textinput {
+    flex: 1;
+    width: 94%;
+    padding: 20rpx;
+    height: 225rpx;
+    line-height: 26px;
+    color: #000;
+    background: rgb(243, 243, 243);
 }
