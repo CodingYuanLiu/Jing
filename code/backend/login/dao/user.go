@@ -60,7 +60,7 @@ func init()  {
 	var err error
 	//db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
 	//db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
-	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(10.106.141.77:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}
