@@ -1,7 +1,7 @@
 package main
 
 import (
-
+	"jing/app/api-gateway/controller/activity"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
 	"jing/app/api-gateway/filter"
