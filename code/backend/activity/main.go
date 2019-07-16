@@ -1,13 +1,16 @@
 package main
 
 import (
-	"jing/app/activity/handler"
-	activity "jing/app/activity/proto"
 	"log"
-
-	"github.com/micro/go-micro"
+	"time"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+
+	"jing/app/activity/handler"
+	activity "jing/app/activity/proto"
+
+	"github.com/micro/go-micro"
+	k8s "github.com/micro/kubernetes/go/micro"
 )
 
 //The struct is used to store stylistic id in MongoDB.
@@ -16,12 +19,14 @@ type id struct{
 }
 
 func main() {
-	service := micro.NewService(
+	service := k8s.NewService(
 		micro.Name("act"),
 		micro.Address(":8080"),
+		micro.RegisterTTL(time.Second*30),
+		micro.RegisterInterval(time.Second*10),
 	)
-	session, err := mgo.Dial("127.0.0.1:27017")
-	if err != nil {
+	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
+	if err != nil { 
 		log.Fatal(err)
 	}
 	defer session.Close()
@@ -40,6 +45,7 @@ func main() {
 			log.Fatal(insertErr)
 		}
 	}else if err !=nil{
+		log.Fatal("not mg")
 		log.Fatal(err)
 	}else {
 		/* The fetchId["autoid"] can only be converted to int, not int32.*/
@@ -54,6 +60,7 @@ func main() {
 		log.Fatal(err)
 	}
 	if err := service.Run(); err != nil {
+		log.Fatal("end")
 		log.Fatal(err)
 	}
 }
