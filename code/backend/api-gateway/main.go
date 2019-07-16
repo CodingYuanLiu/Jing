@@ -45,7 +45,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/status", lc.GetUserStatus)
 		// TODO: Confirm register's security
 		publicRouter.POST("/register", uc.Register)
-		publicRouter.POST("/login/jaccount", lc.OAuthLogin)
+		publicRouter.POST("/login/jaccount", lc.JaccountLogin)
 		publicRouter.POST("/login/native", lc.NativeLogin)
 		publicRouter.GET("/detail/:id", uc.QueryUser)
 		publicRouter.POST("/login/wx", lc.GetWXCode)
