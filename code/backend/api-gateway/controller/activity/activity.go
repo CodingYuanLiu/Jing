@@ -205,6 +205,7 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	/* tag cannot be nil but images can.*/
 	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
 		jsonForm["title"] == nil || jsonForm["description"] == nil || jsonForm["tag"] == nil) ||
 		jsonForm["type"].(string) == "taxi" && (jsonForm["depart_time"] == nil || jsonForm["origin"] == nil || jsonForm["destination"] == nil) ||

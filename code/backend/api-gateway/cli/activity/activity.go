@@ -100,9 +100,14 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 func PublishActivity(userId int, jsonForm json.JSON) error {
 	actType := jsonForm["type"].(string)
 	var tags []string
+	var images []string
 	for _, v := range jsonForm["tag"].([]interface{}) {
 		tags = append(tags, v.(string))
 	}
+	for _,image := range jsonForm["images"].([]interface {}){
+		images = append(images,image.(string))
+	}
+
 	pubReq := activityProto.PubReq{
 		Info: &activityProto.BasicInfo{
 			Type:        actType,
@@ -111,6 +116,7 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 			Title:       jsonForm["title"].(string),
 			Description: jsonForm["description"].(string),
 			Tag:         tags,
+			Images:		 images,
 		},
 	}
 	if actType == "takeout" {
