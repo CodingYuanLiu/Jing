@@ -68,7 +68,7 @@ func (lc *Controller) GetWXCode (c *gin.Context) {
 		return
 	}
 	rsp, _ := loginClient.CallGetWXOpenId(codeBody.Code)
-
+	log.Println(rsp.Status)
 	if rsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]interface{} {
 			"status": 0,
