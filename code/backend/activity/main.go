@@ -8,6 +8,7 @@ import (
 	"github.com/micro/go-micro"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	k8s "github.com/micro/kubernetes/go/web"
 )
 
 //The struct is used to store stylistic id in MongoDB.
@@ -21,6 +22,13 @@ func main(){
 		)
 	session, err := mgo.Dial("mongodb://jing:jing@127.0.0.1:27017/Jing")
 
+
+func main() {
+	service := k8s.NewService(
+		micro.Name("act"),
+		micro.Address(":8080"),
+	)
+	session, err := mgo.Dial("127.0.0.1:27017")
 	if err != nil {
 		log.Fatal(err)
 	}
