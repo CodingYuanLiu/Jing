@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	userClient "jing/app/api-gateway/cli/user"
 	myjson "jing/app/json"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -25,28 +24,20 @@ type RegisterBody struct {
 	Jaccount string `json:"jaccount" binding:"required"`
 }
 
-type UpdateBody struct {
-	Id int `json:"id" binding:"required"`
-	Phone string `json:"phone" binding:"optional"`
-	Signature string `json:"signature" binding:"optional"`
-	Nickname string `json:"nickname" binding:"optional"`
-}
-
-
 func (uc *Controller) Register (c *gin.Context) {
-	// TODO: duplicate user
-	reqBody := new(RegisterBody)
-	err := c.ShouldBindJSON(reqBody)
-	if err != nil {
-		log.Println(err)
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	err = json.Unmarshal(jsonStr, &jsonForm)
+
+	if jsonForm["username"] == nil || jsonForm["password"] == nil || jsonForm["phone"] == nil || jsonForm["nickname"] == nil || jsonForm["jwt"] == nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message" : "Miss some field",
 		})
 		c.Abort()
 		return
 	}
-	rsp, err := userClient.CallRegister(reqBody.Username, reqBody.Password,
-			reqBody.Phone, reqBody.Nickname, reqBody.Jaccount)
+
+	rsp, err := userClient.CallRegister(jsonForm["username"].(string), jsonForm["password"].(string), jsonForm["phone"].(string), jsonForm["nickname"].(string), jsonForm["jwt"].(string))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string {

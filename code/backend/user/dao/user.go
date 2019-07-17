@@ -118,21 +118,27 @@ func UpdateUserById(id int, column string, value interface{}) error {
 	return nil
 }
 
-func CreateUser(json json.JSON) error {
-	user := User{}
+func CreateUser(json json.JSON, id int) error {
+	user, _ := FindUserById(id)
 	user.Username = json["username"].(string)
 	_, err := FindUserByUsername(user.Username)
 	if err == nil {
-		return errors.New("user already exists")
-	}
-	user.Jaccount = json["jaccount"].(string)
-	_, err = FindUserByJaccount(user.Jaccount)
-	if err == nil {
-		return errors.New("jaccount has been already bound")
+		return errors.New("username already exists")
 	}
 	user.Password = json["password"].(string)
 	user.Phone = json["phone"].(string)
 	user.Nickname = json["nickname"].(string)
+	db.Save(&user)
+	return nil
+}
+
+func CreateUserByJaccount(jaccount string) error {
+	user := User{}
+	_, err := FindUserByJaccount(jaccount)
+	if err == nil {
+		return errors.New("jaccount has been already bound")
+	}
+	user.Jaccount = jaccount
 	db.Create(&user)
 	return nil
 }
