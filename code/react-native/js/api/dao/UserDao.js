@@ -1,21 +1,24 @@
 import AsyncStorage from "@react-native-community/async-storage";
 
 export default class UserDao {
-    static save = async (key, data) => {
+    static saveJson = async (key, data) => {
         try {
             await AsyncStorage.setItem(key, JSON.stringify(data))
+            return
         } catch (err) {
             throw new Error(err)
         }
     }
 
-    static saveOrUpdate(key, data) {
-
+    static saveString = async (key, data) => {
+        try {
+            await AsyncStorage.setItem(key, data)
+            return
+        } catch (err) {
+            throw new Error(err)
+        }
     }
 
-    static update(key, data) {
-
-    }
 
     static get = async (key) => {
         try {
@@ -31,6 +34,7 @@ export default class UserDao {
     static remove = async (key) => {
         try {
             await AsyncStorage.removeItem(key)
+            return
         } catch (err) {
             throw new Error(err)
         }

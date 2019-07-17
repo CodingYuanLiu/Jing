@@ -11,7 +11,6 @@ export default class Api {
 
     static AUTH_TOKEN = null
     static login(username, password) {
-        console.log(username, password)
         return new Promise(
             (resolve, reject) => {
                 axios.post("/api/public/login/native", qs.stringify({
@@ -26,11 +25,19 @@ export default class Api {
                     .then(res => {
                         const data = res.data
                         this.AUTH_TOKEN = `Bearer ${data.jwt_token}`
-                        console.log(this.AUTH_TOKEN)
                         resolve(data.jwt_token)
                     })
                     .catch( err => {
-                        reject(err)
+                        /* Response is Ok */
+                        if (err.response) {
+                            reject(err.response)
+                        } else if (err.request) {
+                            /* Request is being dealt with */
+                        } else {
+                            /* Respone throw error */
+                            console.log(err)
+                            throw err
+                        }
                     })
             }
         )
@@ -45,28 +52,74 @@ export default class Api {
             }).then(res => {
                 resolve(res)
             }).catch(err => {
-                reject(err)
+                /* Response is Ok */
+                if (err.response) {
+                    reject(err.response)
+                } else if (err.request) {
+                    /* Request is being dealt with */
+                } else {
+                    /* Respone throw error */
+                    console.log(err)
+                    throw err
+                }
             })
         })
     }
 
     static loginWithJaccount(code, redirectUri) {
-        console.log(code, redirectUri)
         return new Promise((resolve, reject) => {
             axios.post("/api/public/login/jaccount", {
                 code: code,
                 redirect_uri: redirectUri
             })
                 .then(res => {
-                    console.log(res)
                     resolve(res.data)
                 })
                 .catch(err => {
-                    reject(err)
+                    /* Response is Ok */
+                    if (err.response) {
+                        reject(err.response)
+                    } else if (err.request) {
+                        /* Request is being dealt with */
+                    } else {
+                        /* Respone throw error */
+                        console.log(err)
+                        throw err
+                    }
                 })
         })
     }
 
+    static register = (data, jwt) => {
+        return new Promise((resolve, reject) => {
+            axios.post("/api/public/register", data, {
+                headers: {
+                    "Authorization": `Bearer ${jwt}`
+                }
+            })
+                .then(res => {
+                    resolve(res.data)
+                })
+                .catch(err => {
+                    /* Response is Ok */
+                    if (err.response) {
+                        reject(err.response)
+                    } else if (err.request) {
+                        /* Request is being dealt with */
+                    } else {
+                        /* Respone throw error */
+                        console.log(err)
+                        throw err
+                    }
+                })
+        })
+    }
+
+    static getUser = (jwt) => {
+        return new Promise((resolve, reject) => {
+            axios
+        })
+    }
 
     static modifyInfo() {
 

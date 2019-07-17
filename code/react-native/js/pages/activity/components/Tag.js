@@ -14,7 +14,7 @@ class Tag extends React.PureComponent {
         const color = this.props.color ? this.props.color : "#0084ff";
         return (
             <View style={[styles.container, this.props.style]}>
-                <Text style={[styles.text, {color: color}]}></Text>
+                <Text style={[styles.text, {color: color}]}>{title}</Text>
             </View>
         )
     }

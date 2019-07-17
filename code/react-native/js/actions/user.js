@@ -13,11 +13,7 @@ export const logout = () => ({
 
 export const setUserInfo = user => ({
         type: actionTypes.SET_USER,
-        user: {
-            username: user.username,
-            signature: user.signature,
-            credit: user.credit,
-        },
+        user: user
     }
 )
 

@@ -14,28 +14,33 @@ import {login, logout, setUserInfo} from '../../actions/user';
 class MeScreen extends React.PureComponent{
     constructor(props) {
         super(props);
-
     }
 
     componentDidMount() {
-        UserDao.get("@user")
-            .then(data => {
-                let user = JSON.parse(data)
-                Api.isOnline(user.jwt)
-                    .then(res => {
-                        this.props.onLogin(user.jwt)
-                        this.props.setUser({
-                            username: user.username,
-                            signature: user.signature,
-                            credit: user.credit,
-                        })
+        UserDao.get("@jwt")
+            .then(jwt => {
+                Api.isOnline(jwt)
+                    .then(() => {
+                        UserDao.get("@user")
+                            .then(data => {
+                                console.log(data)
+                            })
+                            .catch(err => {
+                                Api.getUser(jwt)
+                                    .then(data => {
+                                        console.log(data)
+                                    })
+                                    .catch(err => {
+                                        console.log("Err, in Me getUser", err)
+                                    })
+                            })
                     })
                     .catch(err => {
-                        console.log(err)
+                        console.log("Err, in Me isOnline judge",err)
                     })
             })
             .catch(err => {
-                console.log(err)
+                console.log( "Err, in Me, get jwt", err)
             })
     }
 
@@ -61,7 +66,6 @@ class MeScreen extends React.PureComponent{
     render() {
         const user = this.props.user.user;
         const {logged} = this.props.user;
-        console.log(this.props.user)
         const dataList = [
             {data:7, label: "关注"},
             {data:8, label: "粉丝"},
@@ -111,6 +115,7 @@ class MeScreen extends React.PureComponent{
 const mapStateToProps = state => ({
     user: state.user
 })
+
 const mapDispatchToProps = dispatch => ({
     onLogin: (jwt) => dispatch(login(jwt)),
     setUser: (user) => dispatch(setUserInfo(user)),
