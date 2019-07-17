@@ -8,6 +8,7 @@ import (
 	"github.com/skip2/go-qrcode"
 	"io/ioutil"
 	loginClient "jing/app/api-gateway/cli/login"
+	user "jing/app/api-gateway/cli/user"
 	srv "jing/app/api-gateway/service"
 	"log"
 	"net/http"
@@ -43,9 +44,13 @@ func (lc *Controller) GetUserStatus (c *gin.Context) {
 			"message" : "Account expired",
 		})
 	} else if rsp.Status == 0{
+		resp, _ := user.CallQueryUser(rsp.UserId)
 		c.JSON(http.StatusOK, map[string]interface {}{
 			"message" : "You are online",
 			"id" : rsp.UserId,
+			"nickname": resp.Nickname,
+			"signature": resp.Signature,
+			"phone": resp.Phone,
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, map[string]string {
