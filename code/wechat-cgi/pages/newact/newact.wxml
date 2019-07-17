@@ -2,8 +2,18 @@
 <form bindsubmit="handleClick" report-submit='true'>
     <i-panel title="基本信息">
         <i-input value="{{title}}" bind:blur="handleTitleInput" type="text" maxlength="20" title="标题" placeholder="活动标题" />
-        <i-input value="{{end_time}}" bind:blur="handleEndTimeInput" type="text" maxlength="20 " title="报名截止" placeholder="截止日期" />
-        <i-input value="{{depart_time}}" bind:blur="handleDepartTimeInput" type="text" maxlength="20 " title="出发时间" placeholder="出发日期时间" />
+        <picker mode="date" value="{{date}}" bindchange="bindEDateChange">
+            <i-input value="{{end_time}}" disabled="true" bind:blur="handleEndTimeInput" type="text" maxlength="20 " title="报名截止" placeholder="截止日期" />
+        </picker>
+        <picker mode="time" value="{{date}}" bindchange="bindETimeChange">
+            <i-input value="{{end_time_t}}" disabled="true"  type="text" maxlength="20 " title="    " placeholder="时间" />
+        </picker>
+        <picker mode="date" value="{{date}}" bindchange="bindSDateChange">
+            <i-input value="{{depart_time}}" disabled="true" bind:blur="handleDepartTimeInput" type="text" maxlength="20 " title="出发时间" placeholder="出发日期" />
+        </picker>
+        <picker mode="time" value="{{date}}" bindchange="bindSTimeChange">
+            <i-input value="{{depart_time_t}}" disabled="true"  type="text" maxlength="20 " title="    " placeholder="时间" />
+        </picker>
         <i-input value="{{origin}}" bind:blur="handleOriginInput" type="text" maxlength="20 " title="起点" placeholder="出发点" />
         <i-input value="{{dest}}" bind:blur="handleDestInput" type="text" maxlength="20 " title="终点" placeholder="终点" />
     </i-panel>

@@ -13,22 +13,7 @@ Page({
         autoplay: true,
         interval: 5000,
         duration: 1000,
-        feed: [{
-            "act_id": 2,
-            "create_time": "2019-1-1",
-            "depart_time": "2019-7-31 12:30",
-            "description": "sima windows",
-            "destination": "HongQiao Airport",
-            "end_time": "2019-1-2",
-            "origin": "sjtu",
-            "tag": [
-                "cao",
-                "ni",
-                "ma"
-            ],
-            "title": "Pin taxi to airport",
-            "type": "taxi"
-        }],
+        feed: [],
         feed_length: 0
     },
     onLoad: function() {
@@ -103,6 +88,7 @@ Page({
             url: 'https://jing855.cn/api/public/act/findall',
             method: 'GET',
             success: function (res) {
+                console.log(res);
                 feed_data = res.data;
                 that.setData({
                     feed: feed_data,

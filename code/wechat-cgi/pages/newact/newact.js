@@ -14,10 +14,13 @@ Page({
         title: '',
         end_time: '',
         depart_time: '',
+        end_time_t: '',
+        depart_time_t: '',
         origin: '',
         dest: '',
         details: '',
-        images: []
+        images: [],
+        base: []
     },
 
     /**
@@ -80,6 +83,7 @@ Page({
         let that = this;
         let date = new Date();
         let dateString = date.toDateString();
+        // if (title === '' || end_time === '' || end_time_t === '' || depart_time === '' || depart_time_t == '') return;
         wx.request({
             url: 'https://jing855.cn/api/user/act/publish',
             header: {
@@ -90,12 +94,13 @@ Page({
                 "title": that.data.title,
                 "type": "taxi",
                 "create_time": dateString,
-                "end_time": that.data.end_time,
+                "end_time": that.data.end_time + " " + that.data.end_time_t,
                 "description": that.data.details,
                 "origin": that.data.origin,
                 "destination": that.data.dest,
-                "depart_time": that.data.depart_time,
-                "tag": ["default"]
+                "depart_time": that.data.depart_time + " " + that.data.depart_time_t,
+                "tag": ["default"],
+                "images": that.data.base,
             },
             success: function() {
                 console.log("naviback")
@@ -110,11 +115,16 @@ Page({
             sizeType: ['original', 'compressed'], //可选择原图或压缩后的图片
             sourceType: ['album', 'camera'], //可选择性开放访问相册、相机
             success: res => {
-                const images = this.data.images.concat(res.tempFilePaths)
+                console.log(res);
+                const images = this.data.images.concat(res.tempFilePaths);
+                const base64 = this.data.base.concat(wx.getFileSystemManager().readFileSync(res.tempFilePaths[0], "base64"));
                 // 限制最多只能留下3张照片
                 // this.data.images = images.length <= 3 ? images : images.slice(0, 3)
                 this.setData({
                     images: images.length <= 3 ? images : images.slice(0, 3)
+                })
+                this.setData({
+                    base: base64.length <= 3 ? base64 : base64.slice(0, 3)
                 })
             }
         })
@@ -123,7 +133,8 @@ Page({
         const idx = e.target.dataset.idx
         let that = this;
         this.setData({
-            images: that.data.images.slice(idx, 1)
+            images: that.data.images.slice(idx, 1),
+            base: that.data.base.slice(idx,1)
         })
     },
 
@@ -164,6 +175,26 @@ Page({
         this.setData({
             details: event.detail.value
         });
+    },
+    bindSDateChange: function(event) {
+        this.setData({
+            depart_time: event.detail.value
+        })
+    },
+    bindEDateChange: function(event) {
+        this.setData({
+            end_time: event.detail.value
+        })
+    },
+    bindSTimeChange: function(event) {
+        this.setData({
+            depart_time_t: event.detail.value
+        })
+    },
+    bindETimeChange: function(event) {
+        this.setData({
+            end_time_t: event.detail.value
+        })
     }
 
 })

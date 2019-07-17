@@ -55,4 +55,5 @@
     <view  hidden="{{!log}}" style="width: 100%; background: white">
         <i-button style="width: 100%" type="error" bind:click="handleLogout">退出登录</i-button>
     </view>
+    <i-toast id="toast" />
 </view>

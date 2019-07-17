@@ -7,17 +7,17 @@
 <scroll-view scroll-y="true" class="container notify withtab" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
     <view class="ctnt0" hidden="{{currentNavtab==0 ? '' : true}}">
         <view class="unread">
-            <text>{{notify.unread}} 条未读</text>
+            <text>{{notify_length}} 条未读</text>
             <image src="../../images/allread.png"></image>
         </view>
-        <block wx:for="{{notify.content}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
-            <view class="notify-item flex-wrp">
+        <block wx:for="{{applicant}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="notify-item flex-wrp" bindtap="handleToAccept" data-aid="{{item.act_id}}" data-uid="{{item.applicant_id}}" data-nick="{{item.app_nick}}">
                 <view class="avatar flex-item">
                     <image src="{{item.avatar}}"></image>
                 </view>
                 <view class="notify-content flex-item">
-                    <text class="notify-source">{{item.nickname}} {{item.title}}</text>
-                    <text class="notify-title">{{item.content}}</text>
+                    <text class="notify-source">{{item.app_nick}} 申请加入 </text>
+                    <text class="notify-title">{{item.title}}</text>
                 </view>
             </view>
         </block>
@@ -101,3 +101,6 @@
         <!-- </view> -->
     </view>
 </scroll-view>
+    <i-modal title="" visible="{{ visible }}" bind:ok="handleOk" bind:cancel="handleCancel">
+        <view>{{message}}</view>
+    </i-modal>
