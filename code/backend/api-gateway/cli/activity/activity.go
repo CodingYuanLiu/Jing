@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/client/grpc"
+	"github.com/micro/go-plugins/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/json"
