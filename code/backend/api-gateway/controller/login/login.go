@@ -82,9 +82,16 @@ func (lc *Controller) JaccountLogin (c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.JSON(http.StatusOK, map[string]string{
+	accessToken := resp.AccessToken
+	resp2,err := loginClient.CallLoginByJaccount(accessToken)
+	if err!=nil{
+		log.Print("Get jwtToken by access token error")
+		log.Fatal(err)
+	}
+	c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Get access token from Jaccount successfully",
-		"access_token" : resp.AccessToken,
+		"access_token" : resp2.JwtToken,
+		"status": resp2.Status,
 	})
 }
 
