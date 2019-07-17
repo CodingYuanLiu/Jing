@@ -1,6 +1,6 @@
 import React from "react";
 import {View, Text} from "react-native"
-
+import NavigationBar from "../../common/components/NavigationBar"
 
 export default class DetailScreen extends React.Component {
     constructor(props) {
@@ -9,12 +9,19 @@ export default class DetailScreen extends React.Component {
 
     render() {
         return(
-            <View>
-                <Text>
-                    This is Detail!
-                </Text>
+            <View style={[{flex: 1}, styles.container]}>
+                <NavigationBar
+
+                />
             </View>
         )
     }
 
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "#eeeeee",
+    }
+})

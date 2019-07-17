@@ -1,8 +1,7 @@
 import React from "react";
-import {Text, View, ViewPropTypes} from "react-native";
+import {Text, View, ViewPropTypes, StyleSheet} from "react-native";
 import { PropTypes } from "prop-types";
 import { Icon } from "react-native-elements";
-import styles from "react-native-webview/lib/WebView.styles";
 
 class TaxiSpecEntry extends React.PureComponent {
     constructor(props) {
@@ -13,24 +12,24 @@ class TaxiSpecEntry extends React.PureComponent {
         let leftText=this.props.leftText;
         let rightText = this.props.rightText;
 
-        let divider = this.props.divider ? this.props.divider : "rocket";
+        let type = this.props.type ? this.props.type : "rocket";
         let dividerMargin = this.props.dividerMargin ?
             this.props.dividerMargin : 8
             / 2;
         return (
             <View style={[entryStyles.container, this.props.style]}>
-                <View style={entryStyles.textContainer}>
+                <View style={[entryStyles.textContainer, {justifyContent: "flex-end"}]}>
                     <Text style={entryStyles.text}>{leftText}</Text>
                 </View>
                 <Icon
                     type={"material-community"}
-                    name={divider}
+                    name={type}
                     size={15}
                     color={"#50a1ff"}
                     containerStyle={[{margin: dividerMargin}]}
 
                 />
-                <View style={entryStyles.textContainer}>
+                <View style={[entryStyles.textContainer, {justifyContent: "flex-start"}]}>
                     <Text style={entryStyles.text}>{rightText}</Text>
                 </View>
             </View>
@@ -50,10 +49,11 @@ const entryStyles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         height: 24,
+        margin: 5,
     },
     textContainer: {
         flex: 1,
-        justifyContent: "center",
+        flexDirection: "row",
         alignItems: "center",
     },
     text: {
@@ -130,3 +130,10 @@ export {
     OnlineShopSpec,
     TakeoutSpec,
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        height: 60,
+    },
+})

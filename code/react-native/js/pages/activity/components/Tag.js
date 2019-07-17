@@ -10,11 +10,15 @@ export default class Tag extends React.PureComponent {
     }
 
     render() {
-        const title = this.props.title ? this.props.title : "标签";
-        const color = this.props.color ? this.props.color : "#0084ff";
+        const title = this.props.title;
+        const color = this.props.color;
         return (
             <View style={[styles.container, this.props.style]}>
-                <Text style={[styles.text, {color: color}]}>{title}</Text>
+                <Text
+                    style={[styles.text, {color: color}]}
+                    numberOfLines={1}
+                    ellipsizeMode={"tail"}
+                >{title}</Text>
             </View>
         )
     }
@@ -28,15 +32,21 @@ Tag.propTypes = {
 
 Tag.defaultProps = {
     title: "标签",
-    color: "#0084ff",
+    color: "#fff",
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        backgroundColor: "#6fb1ff",
+        marginLeft: 2,
+        borderWidth: 2,
+        borderColor: "#62b2ff",
+        borderRadius: 4,
     },
     text: {
-        padding: 4,
-        color: "#0084ff",
+        padding: 2,
+        color: "#fff",
+        fontSize: 12,
+        maxWidth: 100,
     },
 })

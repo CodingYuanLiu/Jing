@@ -3,11 +3,11 @@ import { View, Text, ViewPropTypes, StyleSheet } from 'react-native';
 import { PropTypes } from "prop-types";
 import Default from "../../../constant/Default"
 import {Avatar, } from "react-native-elements";
-import styles from "react-native-webview/lib/WebView.styles";
 
 export default class UserBar extends React.PureComponent{
     constructor(props) {
         super(props);
+        console.log(props)
     }
 
     render() {
@@ -15,17 +15,18 @@ export default class UserBar extends React.PureComponent{
         let signature = this.props.signature;
         let avatarUri = this.props.avatarUri;
         return(
-            <View style={[styles.container, {height: this.props.height}]}>
+            <View style={[styles.container]}>
                 <Avatar
                     rounded
                     source={{uri: avatarUri}}
-                    size={10}
+                    size={26}
+                    containerStyle={styles.avatar}
                 />
-                <View style={styles.nickname}>
-                    <Text style={styles.text}>{nickname}</Text>
+                <View style={styles.nicknameContainer}>
+                    <Text style={styles.nickname}>{nickname}</Text>
                 </View>
-                <View style={styles.signature}>
-                    <Text style={styles.text}>{signature}</Text>
+                <View style={styles.signatureContainer}>
+                    <Text style={styles.signature}>{signature}</Text>
                 </View>
 
             </View>
@@ -45,25 +46,33 @@ UserBar.defaultProps = {
     height: Default.USERBAR_HEIGHT,
 }
 
-styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
-        flexDirection: "row",
+        width: "100%",
         flex: 1,
-        height: 10,
+        flexDirection: "row",
+        alignItems: "center",
         justifyContent: "flex-start",
     },
-    nickname: {
-        marginLeft: 3,
+    avatar:{
+        marginLeft: 8,
+    },
+    nicknameContainer: {
+        marginLeft: 12,
         justifyContent: "center",
         alignItems: "center",
     },
-    signature: {
+    signatureContainer: {
         marginLeft: 4,
         justifyContent: "center",
         alignItems: "center",
     },
-    text: {
-      fontSize: 10,
-        flex: 1,
+    nickname: {
+        fontSize: 16,
+        color: "#525252",
+    },
+    signature: {
+        fontSize: 12,
+        color: "#a9a9a9",
     },
 })

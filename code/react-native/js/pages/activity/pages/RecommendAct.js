@@ -1,54 +1,82 @@
 import React from "react"
-import { View, Text, FlatList } from 'react-native';
-import { Button } from 'react-native-elements';
-import NavigationUtil from '../../../navigator/NavUtil';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
 import Api from '../../../api/Api';
+import Default from "../../../constant/Default";
+import ActItem from "../components/ActItem";
+import NavigationUtil from "../../../navigator/NavUtil";
 
 
-export default class HomeScreen extends React.PureComponent{
+export default class RecommendAct extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            activities: [
-                {
-                    title: "测试",
-                    bodyText: "这个是一个测试，用来验证是不是可以渲染出想要的效果",
-                    departTime: "2019-07-09",
-                    endTime: "2019-07-10",
-                    source: "上海交大",
-                    dest: "闵行小区",
-                    tag: ["测试", "更长的测试", "超级超级超级超级长的测试"]
-                }
-            ]
+            activities: [],
+            isLoading: true
         }
     }
 
-    componentDidMount(){
-        /*
+    componentDidMount() {
         Api.getAllAct()
             .then(data => {
-                this,this.setState({activities: data})
+                console.log(data)
+                console.log(this.state.activities)
+                this.setState({activities: data})
+                console.log(this.state.activities)
             })
             .catch(err => {
                 console.log(err)
             })
-
-         */
     }
 
-    rederItem = (item) => {
+    renderItem = ({item}) => {
+        return (
+        <ActItem
+            id={item.act_id}
+            bodyText={item.description}
+            user={{
+                id: item.sponsor_id,
+                nickname: item.sponsor_username,
+                signature: Default.DEFAULT_SIGNATURE,
+                avatarUri: Default.DEFAULT_AVATAR,
+            }}
+            title={item.title}
+            tags={item.tag}
+            type={item.type}
+            taxiMeta={item.type==="taxi"
+                ? {
+                    departTime: item.depart_time,
+                    endTime: item.end_time,
+                    source: item.origin,
+                    dest: item.destination,
+                } : null}
+            shopMeta={null}
+            takeoutMeta={null}
+            onPress={() => {this._onPressItem(item.act_id)}}
+        />)
+    }
 
+    _onPressItem = (id: number) => {
+        NavigationUtil.toPage({id:id}, "ActDetail")
     }
 
     render() {
-        const actList = this.state.activities
-
+        console.log(this.state.activities)
         return(
-            <View>
+            <View style={styles.container}>
                 <FlatList
-
+                    data={this.state.activities}
+                    renderItem={this.renderItem}
+                    extraData={this.state}
+                    keyExtractor={(item, index) => (item.id)}
                 />
             </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    container:{
+        flex: 1,
+        backgroundColor: "#eeeeee"
+    }
+})
