@@ -55,7 +55,7 @@ func (uc *Controller) Register (c *gin.Context) {
 }
 
 
-func (uc *Controller) UpdateUser (c *gin.Context) {
+func (uc *Controller) kUpdateUser (c *gin.Context) {
 
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
