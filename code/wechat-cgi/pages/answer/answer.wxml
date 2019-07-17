@@ -6,14 +6,14 @@
     </view>
     <view class="answerer-wrp">
         <view class="bg-half"></view>
-        <view class="answerer flex-wrp">
+        <view class="answerer flex-wrp" bindtap="handleToShowInfo" data-id="{{content.sponsor_id}}">
             <view class="avatar flex-item">
-                <image src="{{content.useravatar}}"></image>
+                <image src="../../images/icons/timg.jpg"></image>
             </view>
             <view class="answerer-info flex-item">
                 <text class="answerer-name">{{content.sponsor_username}}</text>
                 <text class="answerer-des">{{content.signature}}</text>
-            </view>
+            </view> 
             <!-- <view class="follow flex-item">
                 <text>十 关注</text>
             </view> -->
@@ -24,7 +24,7 @@
         </text>
         <!-- <image src="../../images/1444983318907-_DSC1826.jpg"></image>
         <image src="../../images/1444983318907-_DSC1826.jpg"></image> -->
-        <block wx:for="{{images}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+        <block wx:for="{{content.images}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <image src="{{item}}"></image>
         </block>
     </view>
