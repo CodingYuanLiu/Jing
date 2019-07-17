@@ -30,7 +30,7 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 		"description": resp.BasicInfo.Description,
 		"title": resp.BasicInfo.Title,
 		"tag": resp.BasicInfo.Tag,
-		"images":resp.BasicInfo.Images
+		"images":resp.BasicInfo.Images,
 		"create_time": resp.BasicInfo.CreateTime,
 		"end_time": resp.BasicInfo.EndTime,
 	}
