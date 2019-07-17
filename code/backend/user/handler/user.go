@@ -2,10 +2,13 @@ package handler
 
 import (
 	"context"
+	"errors"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/jameskeane/bcrypt"
 	json2 "jing/app/json"
 )
 import user "jing/app/user/proto/user"
+import handler "jing/app/login/handler"
 import "jing/app/user/dao"
 
 type UserService struct {
@@ -19,7 +22,7 @@ func (h *UserService) Update(ctx context.Context, in *user.UpdateReq, out *user.
 	}
 	if err != nil {
 		out.Status = 400
-		return nil
+		return err
 	}
 	if in.Nickname != "" {
 		_ = dao.UpdateUserById(int(in.Id), "nickname", in.Nickname)
@@ -39,12 +42,26 @@ func (h *UserService) Register(ctx context.Context, in *user.RegReq, out *user.R
 		"password": password,
 		"nickname": in.Nickname,
 		"phone": in.Phone,
-		"jaccount": in.Jaccount,
 	}
-	err := dao.CreateUser(json)
+	token, st := handler.ParseToken(in.Jwt)
+	if st != 0 {
+		out.Status = 400
+		return errors.New("invalid token")
+	}
+	userID := int(token.Claims.(jwt.MapClaims)["userId"].(float64))
+	user, err := dao.FindUserById(userID)
 	if err != nil {
 		out.Status = 400
-		return nil
+		return err
+	}
+	if user.Username != "" {
+		out.Status = 400
+		return errors.New("you've already registered")
+	}
+	err = dao.CreateUser(json, userID)
+	if err != nil {
+		out.Status = 400
+		return err
 	}
 	out.Status = 200
 	return nil
@@ -54,7 +71,7 @@ func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.
 	user2, err := dao.FindUserById(int(in.Id))
 	if err != nil {
 		out.Id = -1
-		return nil
+		return err
 	} else {
 		out.Id = int32(user2.ID)
 		out.Username = user2.Username

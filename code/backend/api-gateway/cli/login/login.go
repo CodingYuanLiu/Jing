@@ -39,7 +39,7 @@ func CallLoginByJaccount(accessToken string) (*loginProto.TokenResp, error) {
 		AccessToken: accessToken,
 	})
 	if err != nil {
-		//...
+		return resp, err
 	}
 	return resp, nil
 }

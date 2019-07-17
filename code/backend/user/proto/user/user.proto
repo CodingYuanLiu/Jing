@@ -24,7 +24,7 @@ message RegReq {
     string password = 5;
     string phone = 6;
     string nickname = 7;
-    string jaccount = 8;
+    string jwt = 8;
 }
 
 message RegResp {

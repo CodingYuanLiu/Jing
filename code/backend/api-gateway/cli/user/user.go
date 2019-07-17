@@ -6,7 +6,6 @@ import (
 	"github.com/micro/go-plugins/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	userProto "jing/app/user/proto/user"
-	"log"
 	"os"
 )
 
@@ -41,7 +40,7 @@ func CallUpdateUser(id int32, phone string, signature string,
 	rsp, err := Client.Update(context.TODO(), req)
 
 	if err != nil {
-		log.Println(err)
+		return rsp, err
 	}
 
 	return rsp, nil
@@ -55,11 +54,11 @@ func CallRegister(username string, password string,
 		Password: password,
 		Phone:    phone,
 		Nickname: nickname,
-		Jaccount: jaccount,
+		Jwt: jaccount,
 	})
 
 	if err != nil {
-		// ...
+		return rsp, err
 	}
 	return rsp, nil
 }
@@ -69,7 +68,7 @@ func CallQueryUser(id int32) (*userProto.FindResp, error) {
 		Id: id,
 	})
 	if err != nil {
-		// ...
+		return rsp, err
 	}
 	return rsp, err
 }

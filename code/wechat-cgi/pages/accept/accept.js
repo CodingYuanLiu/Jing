@@ -1,4 +1,4 @@
-// pages/my/myjoin/myjoin.js
+// pages/accept/accept.js
 let app = getApp();
 Page({
 
@@ -6,29 +6,19 @@ Page({
      * 页面的初始数据
      */
     data: {
-        acts: [],
-        no_content: false
+        id: '',
+        usr_id: ''
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad: function (options) {
-        let that = this;
-        wx.request({
-            url: 'https://jing855.cn/api/user/act/myact',
-            method: 'GET',
-            header: {
-                "Authorization": "Bearer " + app.globalData.jwt,
-            },
-            success: function (res) {
-                if (res.data === null) {
-                    that.setData({no_content: true});
-                }
-                console.log(res);
-                that.setData({ acts: res.data })
-            }
+        this.setData({
+            id: options.id,
+            usr_id: options.uid
         })
+        console.log(this.data);
     },
 
     /**
@@ -79,12 +69,19 @@ Page({
     onShareAppMessage: function () {
 
     },
-    bindQueTap: function (event) {
-        let actid = event.currentTarget.dataset.id
-        console.log(actid);
-        console.log(23);
-        wx.navigateTo({
-            url: '/pages/answer/answer?id=' + actid
+    handleClick: function () {
+        let that = this;
+        wx.request({
+            url: 'https://jing855.cn/api/user/act/acceptjoin?act_id='+that.data.id+'&user_id='+that.data.usr_id,
+            method: 'POST',
+            header: {
+                "Authorization": "Bearer " + app.globalData.jwt,
+            },
+            success: function () {
+                wx.switchTab({
+                    url: '/pages/notify/notify',
+                })
+            }
         })
-    },
+    }
 })

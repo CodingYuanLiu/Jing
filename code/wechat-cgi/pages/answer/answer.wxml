@@ -1,4 +1,5 @@
 <!--answer.wxml-->
+<i-toast id="toast" />
 <view class="container">
     <view class="question">
         <text class="question-title">{{content.title}}</text>
@@ -23,6 +24,9 @@
         </text>
         <!-- <image src="../../images/1444983318907-_DSC1826.jpg"></image>
         <image src="../../images/1444983318907-_DSC1826.jpg"></image> -->
+        <block wx:for="{{images}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <image src="{{item}}"></image>
+        </block>
     </view>
     <view class="ctnt0">
         <view class="unread">

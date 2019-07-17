@@ -47,7 +47,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.POST("/register", uc.Register)
 		publicRouter.POST("/login/jaccount", lc.JaccountLogin)
 		publicRouter.POST("/login/native", lc.NativeLogin)
-		publicRouter.GET("/detail/:id", uc.QueryUser)
+		publicRouter.GET("/detail", uc.QueryUser)
 		publicRouter.POST("/login/wx", lc.GetWXCode)
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
 		publicRouter.GET("/act/query", ac.QueryActivity)
@@ -69,8 +69,11 @@ func setupRouter() *gin.Engine {
 		userRouter.POST("/act/publish", ac.PublishActivity)
 		userRouter.POST("/act/modify", ac.ModifyActivity)
 		userRouter.POST("/act/join", ac.JoinActivity)
+		userRouter.GET("/act/getjoinapp",ac.GetJoinApplication)
+		userRouter.POST("/act/acceptjoin",ac.AcceptJoinActivity)
 		userRouter.POST("/act/delete", ac.DeleteActivity)
 		userRouter.POST("/act/comment", ac.Comment)
+		userRouter.GET("/act/status", ac.Status)
 		userRouter.PUT("/info/update", uc.UpdateUser)
 	}
 

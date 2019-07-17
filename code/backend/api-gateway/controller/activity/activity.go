@@ -30,6 +30,7 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 		"description": resp.BasicInfo.Description,
 		"title": resp.BasicInfo.Title,
 		"tag": resp.BasicInfo.Tag,
+		"images":resp.BasicInfo.Images,
 		"create_time": resp.BasicInfo.CreateTime,
 		"end_time": resp.BasicInfo.EndTime,
 	}
@@ -66,6 +67,36 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 		returnJson["comments"] = append(returnJson["comments"].([]myjson.JSON), comment)
 	}
 	return
+}
+
+func (activityController *Controller) Status(c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+	userId := resp.UserId
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
+		})
+	}
+	c.JSON(http.StatusOK, map[string]int {
+		"status": dao.CheckStatus(int(userId), actId),
+	})
 }
 
 func (activityController *Controller) Comment(c *gin.Context) {
@@ -231,8 +262,8 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 	}
 	err = activityClient.PublishActivity(int(resp.UserId), jsonForm)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": fmt.Sprintf("%v", err),
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 		c.Abort()
 		return
@@ -265,6 +296,66 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{
 		"message": "Join activity successfully",
 	})
+}
+
+//TODO:Finish it at 7.17 morning
+func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+	actId, _ := strconv.Atoi(c.Query("act_id"))
+	userId,_ := strconv.Atoi(c.Query("user_id"))
+	err := dao.AcceptJoinActivity(userId,actId)
+	if err!= nil{
+		log.Print("Accept join activity application error")
+		log.Fatal(err)
+	}
+	c.JSON(http.StatusOK,map[string]string{
+		"message":"Accept successfully",
+	})
+}
+
+//TODO:
+func (activityController *Controller) GetJoinApplication(c *gin.Context){
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+	applications := dao.GetJoinApplication(int(resp.UserId))
+	var appJSONs []myjson.JSON
+	for _, v := range applications{
+		application,_ := getActivityJson(v["act_id"])
+		application["applicant_id"] = v["user_id"]
+		appJSONs = append(appJSONs,application)
+	}
+	c.JSON(http.StatusOK,appJSONs)
 }
 
 func (activityController *Controller) ModifyActivity(c *gin.Context) {
@@ -328,8 +419,8 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 	}
 	err = activityClient.ModifyActivity(int(resp.UserId), jsonForm)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": fmt.Sprintf("%v", err),
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 		c.Abort()
 		return
@@ -375,8 +466,8 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 	}
 	err := activityClient.DeleteActivity(int(resp.UserId), actId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": fmt.Sprintf("%v", err),
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 		c.Abort()
 		return

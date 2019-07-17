@@ -1,6 +1,7 @@
 //logs.js
 var util = require('../../utils/util.js')
 var app = getApp()
+const { $Toast } = require('../../dist/base/index');
 Page({
     data: {
         motto: 'Hello World',
@@ -25,6 +26,11 @@ Page({
         //     url: '/pages/login/login',
         // })
         let that = this;
+        $Toast({
+            content: '正在加载',
+            type: 'loading',
+            duration: 0
+        });
         wx.login({
             success: res => {
                 // ------ 获取凭证 ------
@@ -66,7 +72,7 @@ Page({
                                     success: function(res) {
                                         app.globalData.userid = res.data.id;
                                         wx.request({
-                                            url: 'https://jing855.cn/api/public/detail/' + res.data.id,
+                                            url: 'https://jing855.cn/api/public/detail?id=' + res.data.id,
                                             method: 'GET',
                                             header: {
                                                 "Authorization": "Bearer " +app.globalData.jwt,
@@ -77,6 +83,12 @@ Page({
                                                 app.globalData.userInfo = res.data;
                                                 that.setData({ log: true });
                                                 that.setData({userInfo: res.data});
+                                                $Toast.hide();
+                                                $Toast({
+                                                    content: '登录成功',
+                                                    type: 'success',
+                                                    duration: 1
+                                                });
                                             }
                                         })
                                     }

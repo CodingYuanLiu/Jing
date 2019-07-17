@@ -1,5 +1,9 @@
 //logs.js
+let app = getApp();
 var util = require('../../utils/util.js')
+const {
+    $Message
+} = require('../../dist/base/index');
 // Page({
 //  data: {
 //    logs: []
@@ -17,28 +21,17 @@ Page({
     data: {
         focus: false,
         inputValue: '',
+        aid: 0,
+        uid: 0,
+        applicant: [],
+        notify_length: 0,
         navTab: ["通知", "私信", "群聊"],
         currentNavtab: "0",
-        notify: {
-            unread: 0,
-            length: 2,
-            content: [{
-                avatar: "../../images/icon1.jpeg",
-                nickname: "Rabecca",
-                title: "发送了加入活动请求",
-                content: "保证不鸽！ 求通过！",
-            }, {
-                avatar: "../../images/icon9.jpeg",
-                nickname: "Coccc",
-                title: "发送了加入活动请求",
-                content: "不鸽！给通过！快点！",
-            }]
-        },
+        visible: false,
         message: {
             unread: 0,
             length: 2,
-            content: [
-                {
+            content: [{
                     avatar: "../../images/icon8.jpg",
                     nickname: "Alex",
                     lasttime: "1 月前",
@@ -51,12 +44,11 @@ Page({
                     lasttext: "在吗！",
                 }
             ]
-        },  
+        },
         groupchat: {
             unread: 0,
             length: 4,
-            content: [
-                {
+            content: [{
                     avatar: "../../images/icon1.jpeg",
                     title: "肯德基拼单",
                     lasttime: "1 月前",
@@ -128,5 +120,91 @@ Page({
         this.setData({
             currentNavtab: e.currentTarget.dataset.idx
         });
+    },
+    handleToAccept: function(event) {
+        let aid = event.currentTarget.dataset.aid;
+        let uid = event.currentTarget.dataset.uid;
+        let nick = event.currentTarget.dataset.nick;
+        // wx.navigateTo({
+        //     url: '/pages/accept/accept?id='+aid + '&uid='+uid,
+        // })
+        this.setData({
+            aid: aid,
+            uid: uid
+        });
+        this.setData({
+            message: "是否接受" + nick + "的请求？"
+        })
+        this.setData({
+            visible: true
+        });
+    },
+    handleOk: function() {
+        let that = this;
+        wx.request({
+            url: 'https://jing855.cn/api/user/act/acceptjoin?act_id=' + that.data.aid + '&user_id=' + that.data.uid,
+            method: 'POST',
+            header: {
+                "Authorization": "Bearer " + app.globalData.jwt,
+            },
+            success: function() {
+                // wx.switchTab({
+                //     url: '/pages/notify/notify',
+                // })
+                that.onShow();
+            }
+        })
+        this.setData({
+            visible: false
+        });
+
+    },
+    handleCancel: function() {
+        this.setData({
+            visible: false
+        });
+
+    },
+    onLoad: function(res) {
+        let that = this;
+        wx.request({
+            url: 'https://jing855.cn/api/user/act/getjoinapp',
+            method: 'GET',
+            header: {
+                "Authorization": "Bearer " + app.globalData.jwt,
+            },
+            success: function(res) {
+                if (res.data === null) {
+                    that.setData({
+                        applicant: [],
+                        notify_length: 0
+                    });
+                    return;
+                }
+                console.log(1);
+                console.log(res);
+                console.log(2);
+                let applicant = res.data;
+                that.setData({
+                    notify_length: applicant.length
+                })
+                for (let i = 0; i < applicant.length; i++) {
+                    wx.request({
+                        url: 'https://jing855.cn/api/public/detail?id=' + applicant[i].applicant_id,
+                        method: 'GET',
+                        success: function(res) {
+                            console.log(res);
+                            applicant[i].app_nick = res.data.nickname;
+                            that.setData({
+                                applicant: applicant
+                            });
+                        }
+                    })
+                }
+            }
+        })
+    },
+    onShow: function() {
+        this.onLoad();
     }
 })

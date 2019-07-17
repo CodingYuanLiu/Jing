@@ -8,10 +8,9 @@ import (
 	"github.com/jameskeane/bcrypt"
 	"io/ioutil"
 	json2 "jing/app/json"
-	"jing/app/login/dao"
 	"jing/app/login/model"
 	login "jing/app/login/proto/login"
-	userDao "jing/app/user/dao"
+	"jing/app/user/dao"
 	"net/http"
 	"strconv"
 	"time"
@@ -21,7 +20,7 @@ type LoginService struct {
 
 }
 
-func BuildToken(user userDao.User) (tokenString string) {
+func BuildToken(user dao.User) (tokenString string) {
 	claims := make(jwt.MapClaims)
 	claims["userId"] = user.ID
 	claims["admin"] = "false"
@@ -50,6 +49,12 @@ func (s *LoginService) LoginByJaccount(ctx context.Context, in *login.LJReq, out
 	user, err := dao.FindUserByJaccount(jaccount)
 	if err != nil {
 		out.Status = 12
+		_ = dao.CreateUserByJaccount(jaccount)
+		user, _ = dao.FindUserByJaccount(jaccount)
+		out.JwtToken = BuildToken(user)
+	} else if user.Nickname == "" {
+		out.Status = 12
+		out.JwtToken = BuildToken(user)
 	} else {
 		out.Status = 0
 		out.JwtToken = BuildToken(user)
@@ -115,7 +120,7 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 }
 
 func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq, out *login.BindResp) error {
-	token, status := parseToken(in.Jwt)
+	token, status := ParseToken(in.Jwt)
 	if status == 0 {
 		claims := token.Claims.(jwt.MapClaims)
 		userId := int(claims["userId"].(float64))
@@ -146,7 +151,7 @@ func (s *LoginService) GetJaccount(ctx context.Context, in *login.CodeReq, out *
 }
 
 func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login.AuthResp) error {
-	token, status := parseToken(req.Jwt)
+	token, status := ParseToken(req.Jwt)
 	resp.Status = status
 	if status == 0 {
 		claims := token.Claims.(jwt.MapClaims)
@@ -159,7 +164,7 @@ func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login
 	return nil
 }
 
-func parseToken(tokenString string) (t *jwt.Token, status int32) {
+func ParseToken(tokenString string) (t *jwt.Token, status int32) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte("lqynb"), nil
 	})

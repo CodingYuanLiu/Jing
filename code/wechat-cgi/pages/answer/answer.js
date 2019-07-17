@@ -1,5 +1,6 @@
 //answer.js
 var util = require('../../utils/util.js')
+const { $Toast } = require('../../dist/base/index');
 
 Date.prototype.toString = function() {
     return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + (this.getHours() >= 10 ? "" + this.getHours() : "0" + this.getHours()) + ':' + (this.getMinutes() >= 10 ? "" + this.getMinutes() : "0" + this.getMinutes());
@@ -24,6 +25,7 @@ Page({
                 color: '#2d8cf0',
             }
         ],
+        images: ["http://puo7ltwok.bkt.clouddn.com/Fj0kHQJU5c_EiVQAJy_vrsCosnSZ"]
     },
     //事件处理函数
     toQuestion: function() {
@@ -37,6 +39,7 @@ Page({
             url: 'https://jing855.cn/api/public/act/query?act_id=' + that.data.act_id,
             method: 'GET',
             success: function (res) {
+                console.log(res);
                 that.setData({
                     content: res.data
                 });
@@ -109,6 +112,11 @@ Page({
     handleJoin: function() {
         // wx request join
         let that = this;
+        $Toast({
+            content: '加载中',
+            type: 'loading',
+            duration: 0
+        });
         wx.request({
             url: 'https://jing855.cn/api/user/act/join?act_id=' + that.data.act_id,
             method: 'POST',
@@ -117,6 +125,12 @@ Page({
             },
             success: function (res) {
                 console.log(res);
+                $Toast.hide();
+                $Toast({
+                    content: '成功!',
+                    type: 'success',
+                    duration: 0.7
+                });
             }
         })
     },

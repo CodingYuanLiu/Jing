@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	userClient "jing/app/api-gateway/cli/user"
+	srv "jing/app/api-gateway/service"
 	myjson "jing/app/json"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -15,48 +15,41 @@ import (
 type Controller struct {
 }
 
-
-type RegisterBody struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Phone string `json:"phone" binding:"required"`
-	Nickname string `json:"nickname" binding:"required"`
-	Jaccount string `json:"jaccount" binding:"required"`
-}
-
-type UpdateBody struct {
-	Id int `json:"id" binding:"required"`
-	Phone string `json:"phone" binding:"optional"`
-	Signature string `json:"signature" binding:"optional"`
-	Nickname string `json:"nickname" binding:"optional"`
-}
-
-
 func (uc *Controller) Register (c *gin.Context) {
-	reqBody := new(RegisterBody)
-	err := c.ShouldBindJSON(reqBody)
-	if err != nil {
-		log.Println(err)
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	err = json.Unmarshal(jsonStr, &jsonForm)
+
+	if jsonForm["username"] == nil || jsonForm["password"] == nil || jsonForm["phone"] == nil || jsonForm["nickname"] == nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message" : "Miss some field",
 		})
 		c.Abort()
 		return
 	}
-	rsp, _ := userClient.CallRegister(reqBody.Username, reqBody.Password,
-			reqBody.Phone, reqBody.Nickname, reqBody.Jaccount)
 
-	if rsp.Status == 400 {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Bad request",
+	rsp, err := userClient.CallRegister(jsonForm["username"].(string), jsonForm["password"].(string), jsonForm["phone"].(string), jsonForm["nickname"].(string), jwt)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Register ok",
 		})
 	} else {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
+		c.JSON(http.StatusInternalServerError, map[string]interface{} {
+			"error": err,
 		})
 	}
 }
@@ -93,37 +86,37 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 		jsonForm["nickname"] = ""
 	}
 
-	rsp, _ := userClient.CallUpdateUser(int32(jsonForm["id"].(float64)),
+	rsp, err := userClient.CallUpdateUser(int32(jsonForm["id"].(float64)),
 		jsonForm["phone"].(string), jsonForm["signature"].(string), jsonForm["nickname"].(string))
 
 	// All field update, rely on the frontend
-	if rsp.Status == 400 {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Bad request",
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Update ok",
 		})
 	} else {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
+		c.JSON(http.StatusInternalServerError, map[string]interface{} {
+			"error": err,
 		})
 	}
 }
 
 func (uc *Controller) QueryUser (c *gin.Context) {
-	id := c.Param("id")
+	id := c.Query("id")
 	intId, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string] string{
-			"message" : "Bad request",
+			"message" : "Param id is not correct",
 		})
 	}
 	rsp, err := userClient.CallQueryUser(int32(intId))
-	if rsp.Id < 0 {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Bad request",
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 	} else if rsp.Id > 0 {
 		c.JSON(http.StatusOK, map[string]interface {}{
@@ -135,8 +128,8 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 			"signature" : rsp.Signature,
 		})
 	} else {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Bad request",
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 	}
 }
