@@ -232,7 +232,7 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 	err = activityClient.PublishActivity(int(resp.UserId), jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't publish such activity",
+			"message": fmt.Sprintf("%v", err),
 		})
 		c.Abort()
 		return
@@ -329,7 +329,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 	err = activityClient.ModifyActivity(int(resp.UserId), jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't modify such activity",
+			"message": fmt.Sprintf("%v", err),
 		})
 		c.Abort()
 		return
@@ -376,7 +376,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 	err := activityClient.DeleteActivity(int(resp.UserId), actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't delete such activity",
+			"message": fmt.Sprintf("%v", err),
 		})
 		c.Abort()
 		return
