@@ -1,5 +1,6 @@
 import React from "react"
 import { View, Text } from 'react-native';
+import NoticeHeader from '../components/NoticeHeader';
 
 
 export default class PrivateMsgScreen extends React.PureComponent{
@@ -10,9 +11,10 @@ export default class PrivateMsgScreen extends React.PureComponent{
     render() {
         return(
             <View>
-                <Text>
-                    This is 私信!
-                </Text>
+                <NoticeHeader
+                    title="私信列表"
+                    onPress={() => {alert("clear")}}
+                />
             </View>
         )
     }

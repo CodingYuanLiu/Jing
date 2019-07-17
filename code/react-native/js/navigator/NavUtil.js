@@ -18,10 +18,28 @@ export default class NavigationUtil {
             console.log("No navigation found!")
         } else {
             try {
-                navigation.navigate(page)
+                navigation.navigate(page, params)
             } catch (e) {
                 console.warn(e)
             }
+        }
+    }
+    static replacePage(params, page) {
+        const navigation = this.Navigation;
+        if (!navigation) {
+            console.log("No navigation found!")
+        } else {
+            try {
+                navigation.replace(page)
+            } catch (e) {
+                console.warn(e)
+            }
+        }
+    }
+    static backNStep(params, step) {
+        const { navigation } = params
+        for (i = 0; i < step; i++ ){
+            navigation.goBack()
         }
     }
 }

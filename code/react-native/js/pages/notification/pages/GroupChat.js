@@ -1,5 +1,6 @@
 import React from "react"
 import { View, Text } from 'react-native';
+import NoticeHeader from '../components/NoticeHeader';
 
 
 export default class GroupChatScreen extends React.PureComponent{
@@ -10,9 +11,10 @@ export default class GroupChatScreen extends React.PureComponent{
     render() {
         return(
             <View>
-                <Text>
-                    This is 群聊通知 screen!
-                </Text>
+                <NoticeHeader
+                    title="群聊列表"
+                    onPress={() => {alert("clear")}}
+                />
             </View>
         )
     }

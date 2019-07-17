@@ -7,6 +7,7 @@ import { View } from "react-native"
 export default class HomeScreen extends React.Component<Props>{
     constructor(props) {
         super(props);
+        console.disableYellowBox = true
     }
 
     render() {

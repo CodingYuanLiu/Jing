@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text } from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 import { Button } from 'react-native-elements';
 
 export default class DiscoverScreen extends React.PureComponent{
@@ -10,10 +10,12 @@ export default class DiscoverScreen extends React.PureComponent{
     render() {
         return(
             <View>
-                <Button title={"顶部"}></Button>
-                <Text>
-                    This is discover!
-                </Text>
+
+                <View>
+                    <Text>
+                        这里是主页面
+                    </Text>
+                </View>
             </View>
         )
     }

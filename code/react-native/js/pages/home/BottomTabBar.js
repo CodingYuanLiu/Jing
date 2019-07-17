@@ -1,6 +1,6 @@
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
-
-import React, {Component} from 'react';
+import React from 'react';
+import { StatusBar } from "react-native";
 import NotificationScreen from '../notification/Notification';
 import PublishScreen from '../publish/Publish';
 import DiscoverScreen from '../discover/Discover';
@@ -10,6 +10,7 @@ import FontAwesome5  from "react-native-vector-icons/FontAwesome5"
 import AntDesign from "react-native-vector-icons/AntDesign"
 import Ionicons from "react-native-vector-icons/Ionicons"
 import ActivityScreen from '../activity/Activity';
+import NavigationUtil from '../../navigator/NavUtil';
 
 
 const BottomTab = createBottomTabNavigator(
@@ -94,6 +95,17 @@ const BottomTab = createBottomTabNavigator(
         tabBarOptions: {
             inactiveTintColor: "#bfbfbf",
             activeTintColor: "#0084ff",
+        },
+        defaultNavigationOptions:{
+            tabBarOnPress: ({navigation, defaultHandler}) => {
+                if (navigation.state.routeName === "Publish") {
+                    StatusBar.setHidden(true, "fade")
+                    NavigationUtil.toPage(navigation, "Publish")
+                } else {
+                    StatusBar.setHidden(false, "fade")
+                    defaultHandler()
+                }
+            }
         }
     }
 )

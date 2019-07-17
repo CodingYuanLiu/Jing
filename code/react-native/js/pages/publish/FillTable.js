@@ -1,8 +1,8 @@
 import React from "react"
 import { View, Text } from 'react-native';
-import { Input } from "react-native-elements"
 
-export default class RegisterScreen extends React.PureComponent{
+
+export default class FillTable extends React.PureComponent{
     constructor(props) {
         super(props);
     }
@@ -10,7 +10,9 @@ export default class RegisterScreen extends React.PureComponent{
     render() {
         return(
             <View>
-
+                <Text>
+                    Fill table
+                </Text>
             </View>
         )
     }

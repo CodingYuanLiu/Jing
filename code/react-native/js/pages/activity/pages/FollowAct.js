@@ -12,10 +12,6 @@ export default class FollowActScreen extends React.PureComponent{
     render() {
         return(
             <View>
-                <Text>
-                    你关注的用户和话题动态都在这里!
-                </Text>
-                <Button onPress={() => {NavigationUtil.toPage(this.props, "ActDetail")}} title="查看详情"/>
             </View>
         )
     }
