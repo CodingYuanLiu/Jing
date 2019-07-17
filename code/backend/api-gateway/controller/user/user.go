@@ -15,15 +15,6 @@ import (
 type Controller struct {
 }
 
-
-type RegisterBody struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Phone string `json:"phone" binding:"required"`
-	Nickname string `json:"nickname" binding:"required"`
-	Jaccount string `json:"jaccount" binding:"required"`
-}
-
 func (uc *Controller) Register (c *gin.Context) {
 	auth := c.Request.Header.Get("Authorization")
 	verified, jwt := srv.VerifyAuthorization(auth)
@@ -50,7 +41,7 @@ func (uc *Controller) Register (c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"message" : err,
+			"error": err,
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
@@ -58,7 +49,7 @@ func (uc *Controller) Register (c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, map[string]interface{} {
-			"message" : err,
+			"error": err,
 		})
 	}
 }
@@ -101,7 +92,7 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 	// All field update, rely on the frontend
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"message" : err,
+			"error": err,
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
@@ -109,7 +100,7 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, map[string]interface{} {
-			"message" : err,
+			"error": err,
 		})
 	}
 }
@@ -125,7 +116,7 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 	rsp, err := userClient.CallQueryUser(int32(intId))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"message" : err,
+			"error": err,
 		})
 	} else if rsp.Id > 0 {
 		c.JSON(http.StatusOK, map[string]interface {}{
@@ -138,7 +129,7 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"message" : err,
+			"error": err,
 		})
 	}
 }

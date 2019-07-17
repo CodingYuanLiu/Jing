@@ -90,7 +90,7 @@ func (lc *Controller) JaccountLogin (c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Get access token from Jaccount successfully",
-		"access_token" : resp2.JwtToken,
+		"jwt_token" : resp2.JwtToken,
 		"status": resp2.Status,
 	})
 }
@@ -156,8 +156,6 @@ func (lc *Controller) BindJaccountAndWX(c *gin.Context) {
 		})
 	}
 }
-
-
 
 
 func (lc *Controller) NativeLogin (c *gin.Context) {

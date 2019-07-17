@@ -54,7 +54,7 @@ func (h *UserService) Register(ctx context.Context, in *user.RegReq, out *user.R
 		out.Status = 400
 		return err
 	}
-	if user.Nickname != "" {
+	if user.Username != "" {
 		out.Status = 400
 		return errors.New("you've already registered")
 	}
