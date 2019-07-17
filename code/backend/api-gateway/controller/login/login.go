@@ -116,7 +116,7 @@ func (lc *Controller) GetWXCode (c *gin.Context) {
 
 		url := "https://jaccount.sjtu.edu.cn/oauth2/authorize" +
 			"?response_type=code&client_id=KIr40g1K90EObtNARwda" +
-			"&scope=basic&redirect_uri=https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + rsp.JwtToken
+			"&scope=basic&redirect_uri=https://jing855.cn/api/public/wx/redirect?jwt=" + rsp.JwtToken
 
 		var png []byte
 		png, err := qrcode.Encode(url, qrcode.Medium, 256)
@@ -142,7 +142,7 @@ func (lc *Controller) GetWXCode (c *gin.Context) {
 func (lc *Controller) BindJaccountAndWX(c *gin.Context) {
 	code := c.Query("code")
 	jwt := c.Query("jwt")
-	jacRsp, _ := loginClient.CallGetJac(code, "https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + jwt)
+	jacRsp, _ := loginClient.CallGetJac(code, "https://jing855.cn/api/public/wx/redirect?jwt=" + jwt)
 
 	jac := jacRsp.Jaccount
 

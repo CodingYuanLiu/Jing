@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	userClient "jing/app/api-gateway/cli/user"
+	srv "jing/app/api-gateway/service"
 	myjson "jing/app/json"
 	"net/http"
 	"strconv"
@@ -24,11 +25,20 @@ type RegisterBody struct {
 }
 
 func (uc *Controller) Register (c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	err = json.Unmarshal(jsonStr, &jsonForm)
 
-	if jsonForm["username"] == nil || jsonForm["password"] == nil || jsonForm["phone"] == nil || jsonForm["nickname"] == nil || jsonForm["jwt"] == nil {
+	if jsonForm["username"] == nil || jsonForm["password"] == nil || jsonForm["phone"] == nil || jsonForm["nickname"] == nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message" : "Miss some field",
 		})
@@ -36,7 +46,7 @@ func (uc *Controller) Register (c *gin.Context) {
 		return
 	}
 
-	rsp, err := userClient.CallRegister(jsonForm["username"].(string), jsonForm["password"].(string), jsonForm["phone"].(string), jsonForm["nickname"].(string), jsonForm["jwt"].(string))
+	rsp, err := userClient.CallRegister(jsonForm["username"].(string), jsonForm["password"].(string), jsonForm["phone"].(string), jsonForm["nickname"].(string), jwt)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
