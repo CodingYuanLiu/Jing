@@ -9,7 +9,9 @@ Page({
         content: {},
         title: '',
         end_time: '',
+        end_time_t: '',
         depart_time: '',
+        depart_time_t: '',
         origin: '',
         dest: '',
         details: '',
@@ -36,7 +38,15 @@ Page({
             method: 'GET',
             success: function(res) {
                 that.setData({
-                    content: res.data
+                    content: res.data,
+                    title: res.data.title,
+                    end_time: res.data.end_time,
+                    end_time_t: '',
+                    depart_time: res.data.depart_time,
+                    depart_time_t: '',
+                    origin: res.data.origin,
+                    dest: res.data.destination,
+                    details: res.data.description,
                 });
                 that.setData({
                     comment_length: res.data.comments.length
@@ -108,11 +118,11 @@ Page({
                 "act_id": parseInt(that.data.act_id),
                 "type": that.data.content.type,
                 "create_time": dateString,
-                "end_time": that.data.end_time,
+                "end_time": that.data.end_time + " " + that.data.end_time_t,
                 "description": that.data.details,
                 "origin": that.data.origin,
                 "destination": that.data.dest,
-                "depart_time": that.data.depart_time,
+                "depart_time": that.data.depart_time + " " + that.data.depart_time_t,
                 "tag": ["default"]
             },
             success: function() {
@@ -168,6 +178,26 @@ Page({
         this.setData({
             details: event.detail.value
         });
+    },
+    bindSDateChange: function (event) {
+        this.setData({
+            depart_time: event.detail.value
+        })
+    },
+    bindEDateChange: function (event) {
+        this.setData({
+            end_time: event.detail.value
+        })
+    },
+    bindSTimeChange: function (event) {
+        this.setData({
+            depart_time_t: event.detail.value
+        })
+    },
+    bindETimeChange: function (event) {
+        this.setData({
+            end_time_t: event.detail.value
+        })
     }
 
 })
