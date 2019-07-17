@@ -288,7 +288,8 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 		return
 	}
 	actId, _ := strconv.Atoi(c.Query("act_id"))
-	err := dao.AcceptJoinActivity(int(resp.UserId),actId)
+	userId,_ := strconv.Atoi(c.Query("user_id"))
+	err := dao.AcceptJoinActivity(userId,actId)
 	if err!= nil{
 		log.Print("Accept join activity application error")
 		log.Fatal(err)
