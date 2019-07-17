@@ -9,6 +9,7 @@ import Api from "../../api/Api";
 import UserDao from "../../api/dao/UserDao"
 import {login, setUserInfo} from '../../actions/user';
 import {connect} from "react-redux";
+import defaults from "../../constant/Default"
 
 class LoginScreen extends React.PureComponent {
     constructor(props) {
@@ -24,29 +25,39 @@ class LoginScreen extends React.PureComponent {
         this.setState({isLoading: true})
         Api.login(name, pwd)
             .then(jwt => {
-                UserDao.save("@user", {
-                    username: this.state.username,
-                    signature: "这里一无所有，知道遇见你",
-                    credit: "小白",
-                    jwt: jwt,
-                })
+                UserDao.saveString("@jwt", jwt)
                     .then(() => {
-                        this.setState({
-                            isLoading: false,
-                        })
+                        Api.isOnline(jwt)
+                            .then(data => {
+                                console.log(data)
+                                UserDao.saveJson("@user", {
+                                    nickname: data.nickname,
+                                    signature: data.signature === "" ? defaults.DEFAULT_SIGNATURE : data.signature,
+                                    credit: defaults.DEFAULT_CREDIT,
+                                })
+                                    .then(savedUser => {
+                                        this.setState({
+                                            isLoading: false,
+                                        })
 
-                        // dispatch login action
-
-                        this.props.onLogin(jwt)
-                        this.props.setUser({
-                            username: name,
-                            signature: "这里一无所有，直到遇见你",
-                            credit: "小白",
-                        })
-                        NavigationUtil.back(this.props)
+                                        this.props.onLogin(jwt)
+                                        this.props.setUser({
+                                            nickname: savedUser.nickname,
+                                            signature: savedUser.signature,
+                                            credit: "小白",
+                                        })
+                                        NavigationUtil.back(this.props)
+                                    })
+                                    .catch(err => {
+                                        console.log("Err: saveUser error",err)
+                                    })
+                            })
+                            .catch(err => {
+                                  console.log("Err: get status, error", err)
+                            })
                     })
                     .catch(err => {
-                        console.log(err)
+                        console.log("Err: save jwt error", err)
                     })
             }).catch(err => {
                 this.setState({

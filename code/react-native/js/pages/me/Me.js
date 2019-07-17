@@ -10,6 +10,7 @@ import { Button } from 'react-native-elements';
 import UserDao from '../../api/dao/UserDao';
 import Api from "../../api/Api"
 import {login, logout, setUserInfo} from '../../actions/user';
+import defaults from "../../constant/Default";
 
 class MeScreen extends React.PureComponent{
     constructor(props) {
@@ -20,19 +21,20 @@ class MeScreen extends React.PureComponent{
         UserDao.get("@jwt")
             .then(jwt => {
                 Api.isOnline(jwt)
-                    .then(() => {
-                        UserDao.get("@user")
+                    .then(data => {
+                        this.props.onLogin(jwt)
+                        let user = {
+                            nickname: data.nickname,
+                            signature: data.signature === "" ? defaults.DEFAULT_SIGNATURE : data.signature,
+                            credit: data.credit && data.credit !== "" ? data.credit : defaults.DEFAULT_CREDIT,
+                        }
+                        this.props.setUser(user)
+                        UserDao.saveJson("@user", user)
                             .then(data => {
-                                console.log(data)
+                                // ...
                             })
                             .catch(err => {
-                                Api.getUser(jwt)
-                                    .then(data => {
-                                        console.log(data)
-                                    })
-                                    .catch(err => {
-                                        console.log("Err, in Me getUser", err)
-                                    })
+                                console.log("Err, in Me", err)
                             })
                     })
                     .catch(err => {

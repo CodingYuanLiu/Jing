@@ -6,6 +6,8 @@ import {login, setUserInfo} from "../../actions/user";
 import {connect} from "react-redux";
 import Api from "../../api/Api"
 import NavigationUtil from "../../navigator/NavUtil";
+import defaults from "../../constant/Default"
+
 
 const errors = {
     passwordNotMatch: "两次密码不一致哦～",
@@ -53,22 +55,23 @@ class RegisterScreen extends React.PureComponent{
             this.setState({error: true, errorMessage: errors.incomplete})
         } else {
             Api.register(data, jwt)
-                .then(res => {
-                    console.log("In Register Api res:",res)
-                    UserDao.save("@user", {
-                        jwt: jwt,
-                        user: {
+                .then( res => {
+                    UserDao.saveString("@jwt", jwt)
+                        .then(saveStatus => {})
+                        .catch(err => {})
+                    UserDao.saveJson("@user", {
                             username: data.username,
                             nickname: data.nickname,
-                            signature: "这里一无所有，直到遇见你",
-                            credit: "小白",
-                        }
+                            signature: defaults.DEFAULT_SIGNATURE,
+                            credit: defaults.DEFAULT_CREDIT,
                     })
+                        .then(saveStatus => {})
+                        .catch(err => {})
                     this.props.onLogin(jwt)
                     this.props.setUser({
                         username: this.state.nickname,
-                        signature: "这里一无所有，直到遇见你",
-                        credit: "小白",
+                        signature: defaults.DEFAULT_SIGNATURE,
+                        credit: defaults.DEFAULT_CREDIT,
                     })
 
                     NavigationUtil.toPage(null, "Home")

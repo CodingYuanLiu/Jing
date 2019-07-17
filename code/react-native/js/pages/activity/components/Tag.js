@@ -4,7 +4,7 @@ import { PropTypes } from "prop-types";
 
 
 
-class Tag extends React.PureComponent {
+export default class Tag extends React.PureComponent {
     constructor(props) {
         super(props)
     }

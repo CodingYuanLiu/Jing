@@ -4,7 +4,7 @@ export default class UserDao {
     static saveJson = async (key, data) => {
         try {
             await AsyncStorage.setItem(key, JSON.stringify(data))
-            return
+            return data
         } catch (err) {
             throw new Error(err)
         }
@@ -13,7 +13,7 @@ export default class UserDao {
     static saveString = async (key, data) => {
         try {
             await AsyncStorage.setItem(key, data)
-            return
+            return data
         } catch (err) {
             throw new Error(err)
         }

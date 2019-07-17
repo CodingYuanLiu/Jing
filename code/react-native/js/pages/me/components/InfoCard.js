@@ -11,7 +11,7 @@ const avatarParamsShape = {
 }
 
 const userShape={
-    username: PropTypes.string,
+    nickname: PropTypes.string,
     credit: PropTypes.string,
     signature: PropTypes.string,
     avatarUri: PropTypes.string,
@@ -24,7 +24,7 @@ export default class InfoCard extends React.PureComponent{
 
     render() {
 
-        const username = this.props.user.username;
+        const nickname = this.props.user.nickname;
         const credit = this.props.user.credit;
         const signature = this.props.user.signature;
         const avatarUri = this.props.user.avatarUri;
@@ -38,7 +38,7 @@ export default class InfoCard extends React.PureComponent{
                 </View>
                 <View style={styles.information}>
                     <View style={styles.infoBar}>
-                        <Text style={styles.username}>{username}</Text>
+                        <Text style={styles.nickname}>{nickname}</Text>
                         <View style={[styles.credit, this.props.creditStyle]}>
                             {creditComponent}
                         </View>
@@ -82,7 +82,7 @@ InfoCard.defaultProps = {
         size: 70,
     },
     user: {
-        username: "用户名",
+        nickname: "用户名",
         credit: "小白",
         signature: "这里一无所有在，直到遇见你",
         avatarUri: ""
@@ -116,13 +116,12 @@ const styles = StyleSheet.create({
         backgroundColor: "red",
         alignItems: "center",
     },
-    username: {
+    nickname: {
         flex: 1,
         fontSize: 21,
         fontWeight: "300",
     },
     credit: {
-        flex: 1,
         marginLeft: 16,
         height: 32,
         justifyContent: "center",

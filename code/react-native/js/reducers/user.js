@@ -7,7 +7,9 @@ import {
 const initialState = {
     logged: false,
     user: {
+        id: "",
         username: "",
+        nickname: "",
         signature: "",
         credit: "",
     },
