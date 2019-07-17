@@ -45,10 +45,10 @@ func (uc *Controller) Register (c *gin.Context) {
 		c.Abort()
 		return
 	}
-	rsp, _ := userClient.CallRegister(reqBody.Username, reqBody.Password,
+	rsp, err := userClient.CallRegister(reqBody.Username, reqBody.Password,
 			reqBody.Phone, reqBody.Nickname, reqBody.Jaccount)
 
-	if rsp.Status == 400 {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string {
 			"message" : fmt.Sprintf("%v", err),
 		})
@@ -95,7 +95,7 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 		jsonForm["nickname"] = ""
 	}
 
-	rsp, _ := userClient.CallUpdateUser(int32(jsonForm["id"].(float64)),
+	rsp, err := userClient.CallUpdateUser(int32(jsonForm["id"].(float64)),
 		jsonForm["phone"].(string), jsonForm["signature"].(string), jsonForm["nickname"].(string))
 
 	// All field update, rely on the frontend
