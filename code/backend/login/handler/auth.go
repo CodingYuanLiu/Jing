@@ -8,10 +8,9 @@ import (
 	"github.com/jameskeane/bcrypt"
 	"io/ioutil"
 	json2 "jing/app/json"
-	"jing/app/login/dao"
 	"jing/app/login/model"
 	login "jing/app/login/proto/login"
-	userDao "jing/app/user/dao"
+	"jing/app/user/dao"
 	"net/http"
 	"strconv"
 	"time"
@@ -21,7 +20,7 @@ type LoginService struct {
 
 }
 
-func BuildToken(user userDao.User) (tokenString string) {
+func BuildToken(user dao.User) (tokenString string) {
 	claims := make(jwt.MapClaims)
 	claims["userId"] = user.ID
 	claims["admin"] = "false"

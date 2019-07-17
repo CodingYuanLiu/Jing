@@ -125,11 +125,52 @@ func CreateUser(json json.JSON) error {
 	if err == nil {
 		return errors.New("user already exists")
 	}
+	user.Jaccount = json["jaccount"].(string)
+	_, err = FindUserByJaccount(user.Jaccount)
+	if err == nil {
+		return errors.New("jaccount has been already bound")
+	}
 	user.Password = json["password"].(string)
 	user.Phone = json["phone"].(string)
 	user.Nickname = json["nickname"].(string)
-	user.Jaccount = json["jaccount"].(string)
 	db.Create(&user)
+	return nil
+}
+
+func FindUserByJaccount(jaccount string) (User, error) {
+	user := User{}
+	db.Where("jaccount = ?", jaccount).First(&user)
+	if user.ID == 0 {
+		return user, errors.New("user not found")
+	}
+	return user, nil
+}
+
+func FindUserByOpenId(openId string) (User, error) {
+	user := User{}
+	db.Where("open_id = ?", openId).First(&user)
+	if user.ID == 0 {
+		return user, errors.New("user not found")
+	}
+	return user, nil
+}
+
+func CreateUserByOpenId(openId string) error {
+	user := User{}
+	user.OpenId = openId
+	db.Create(&user)
+	return nil
+}
+
+func BindJaccountById(id int, jaccount string) error {
+	user := User{}
+	db.First(&user, id)
+	if user.Jaccount != "" {
+		return errors.New("jaccount has been bound")
+	} else {
+		user.Jaccount = jaccount
+		db.Save(&user)
+	}
 	return nil
 }
 

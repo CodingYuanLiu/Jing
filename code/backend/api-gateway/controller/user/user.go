@@ -3,6 +3,7 @@ package user
 import "C"
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	userClient "jing/app/api-gateway/cli/user"
@@ -33,6 +34,7 @@ type UpdateBody struct {
 
 
 func (uc *Controller) Register (c *gin.Context) {
+	// TODO: duplicate user
 	reqBody := new(RegisterBody)
 	err := c.ShouldBindJSON(reqBody)
 	if err != nil {
@@ -48,7 +50,7 @@ func (uc *Controller) Register (c *gin.Context) {
 
 	if rsp.Status == 400 {
 		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Bad request",
+			"message" : fmt.Sprintf("%v", err),
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
@@ -56,7 +58,7 @@ func (uc *Controller) Register (c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
+			"message" : fmt.Sprintf("%v", err),
 		})
 	}
 }
@@ -99,7 +101,7 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 	// All field update, rely on the frontend
 	if rsp.Status == 400 {
 		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Bad request",
+			"message" : fmt.Sprintf("%v", err),
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
@@ -107,7 +109,7 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
+			"message" : fmt.Sprintf("%v", err),
 		})
 	}
 }
@@ -123,7 +125,7 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 	rsp, err := userClient.CallQueryUser(int32(intId))
 	if rsp.Id < 0 {
 		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Bad request",
+			"message" : fmt.Sprintf("%v", err),
 		})
 	} else if rsp.Id > 0 {
 		c.JSON(http.StatusOK, map[string]interface {}{

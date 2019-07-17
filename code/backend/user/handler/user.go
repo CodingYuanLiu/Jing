@@ -19,7 +19,7 @@ func (h *UserService) Update(ctx context.Context, in *user.UpdateReq, out *user.
 	}
 	if err != nil {
 		out.Status = 400
-		return nil
+		return err
 	}
 	if in.Nickname != "" {
 		_ = dao.UpdateUserById(int(in.Id), "nickname", in.Nickname)
@@ -44,7 +44,7 @@ func (h *UserService) Register(ctx context.Context, in *user.RegReq, out *user.R
 	err := dao.CreateUser(json)
 	if err != nil {
 		out.Status = 400
-		return nil
+		return err
 	}
 	out.Status = 200
 	return nil
@@ -54,7 +54,7 @@ func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.
 	user2, err := dao.FindUserById(int(in.Id))
 	if err != nil {
 		out.Id = -1
-		return nil
+		return err
 	} else {
 		out.Id = int32(user2.ID)
 		out.Username = user2.Username
