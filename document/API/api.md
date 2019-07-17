@@ -9,7 +9,7 @@ Find a user's id by its jwt.
 #### Request
 ```json
 GET /api/public/status HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 ```
 
 #### Response
@@ -35,7 +35,7 @@ Register a new user by username, password, phone, nickname and jwt.
 ```json
 POST /api/public/register HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 
 {
     "username": "username",
@@ -128,7 +128,7 @@ Status OK - 200
 
 ```json
 {
-    "jwt_token": "{jwt}",
+    "jwt_token": "jwt",
     "message": "Login success"
 }
 ```
@@ -162,7 +162,7 @@ Status OK - 200
 {
     "status": 0,
     "message": "Login success",
-    "jwt": "{jwt}",
+    "jwt": "jwt",
 }
 ```
 
@@ -176,7 +176,7 @@ Need update info - 200
 {
     "message" : "Need update user info",
     "status": 22,
-    "jwt": "{jwt}",
+    "jwt": "jwt",
 }
 ```
 
@@ -196,7 +196,7 @@ Bind wechat and jaccount. (used for redirecting)
 #### Request
 
 ```json
-POST /api/public/wx/redirect?code={code}&jwt={jwt} HTTP/1.1
+POST /api/public/wx/redirect?code={code}&jwt=jwt HTTP/1.1
 ```
 
 #### Response
@@ -313,7 +313,7 @@ Get all acts a user joins.
 
 ```
 GET /api/user/act/myact HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 ```
 
 #### Response
@@ -389,7 +389,7 @@ Get all acts a user manages.
 
 ```
 GET /api/user/act/manageact HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 ```
 
 #### Response
@@ -431,10 +431,10 @@ Publish an activity, its type can be taxi, takeout, order and other.
 
 ```json
 POST /api/user/act/publish HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 
 {
-    "type": "taxi", // takeout, order, other
+    "type": "taxi", 
     "create_time": "2019-7-15 15:17",
     "end_time": "2019-7-17 15:17",
     "title": "title",
@@ -442,19 +442,15 @@ Authorization: Bearer {jwt}
     "tag": ["t", "a", "g"],
     "images": [],
 
-    // if taxi
     "depart_time": "2019-7-16 15:17",
     "origin": "ori",
     "destination": "dest",
 
-    // if takeout
     "order_time": "2019-7-16 15:17",
     "store": "store",
 
-    // if order
     "store": "store",
 
-    // if other
     "activity_time": "2019-7-16 15:17"
 }
 ```
@@ -483,30 +479,26 @@ Modify an activity, but can't modify title and type.
 
 ```json
 POST /api/user/act/modify HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 
 {
     "act_id": 6,
-    "type": "taxi", // takeout, order, other
+    "type": "taxi",
     "create_time": "2019-7-15 15:17",
     "end_time": "2019-7-17 15:17",
     "description": "desc",
     "tag": ["g", "a", "t"],
     "images": [],
 
-    // if taxi
     "depart_time": "2019-7-16 15:17",
     "origin": "dest",
     "destination": "ori",
 
-    // if takeout
     "order_time": "2019-7-16 15:17",
     "store": "store",
 
-    // if order
     "store": "store",
 
-    // if other
     "activity_time": "2019-7-16 15:17"
 }
 ```
@@ -540,7 +532,7 @@ Delete an activity.
 #### Request
 ```json
 POST /api/user/act/delete?act_id={act_id} HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 ```
 
 #### Response
@@ -573,7 +565,7 @@ Send a comment under an activity.
 
 ```json
 POST /api/user/act/comment HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 
 {
     "receiver_id": 1,
@@ -606,7 +598,7 @@ Join an act.
 #### Request
 ```json
 POST /api/user/act/join?act_id={act_id} HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 ```
 
 #### Response
@@ -624,7 +616,7 @@ Get an activity's applicants.
 #### Request
 ```json
 GET /api/user/act/getjoinapp HTTP/1.1
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 ```
 
 #### Response
@@ -665,7 +657,7 @@ Accept an application.
 #### Request
 ```json
 POST /api/user/act/acceptjoin?act_id={act_id}&user_id={user_id}
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 ```
 
 #### Response
@@ -673,6 +665,26 @@ Status OK - 200
 ```json
 {
     "message": "Accept successfully"
+}
+```
+
+## Get Status
+
+#### Description
+
+Get an activity status to a user. -1: need acception, 0: joined, 1: admin, -2: not joined
+
+#### Request
+```
+GET /api/user/act/status?act_id=7 HTTP/1.1
+Authorization: Bearer jwt
+```
+
+#### Response
+Status OK - 200
+```
+{
+    "status": -2
 }
 ```
 
@@ -686,7 +698,7 @@ Update a user's information. If phone, signature, nickname is not provided, thes
 
 ```json
 POST /api/user/info/update
-Authorization: Bearer {jwt}
+Authorization: Bearer jwt
 
 {
     "id": 1,

@@ -74,7 +74,7 @@ func GetActivityAdmin(actId int) int {
 
 func CheckStatus(userId int, actId int) int {
 	join := Join{}
-	db.Where("act_id = ? and user_id = ?", actId, userId)
+	db.Where("act_id = ? and user_id = ?", actId, userId).First(&join)
 	if join.ID == 0 {
 		return -2
 	} else {
