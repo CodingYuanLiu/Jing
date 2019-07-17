@@ -69,6 +69,36 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	return
 }
 
+func (activityController *Controller) Status(c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+	userId := resp.UserId
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
+		})
+	}
+	c.JSON(http.StatusOK, map[string]int {
+		"status": dao.CheckStatus(int(userId), actId),
+	})
+}
+
 func (activityController *Controller) Comment(c *gin.Context) {
 	auth := c.Request.Header.Get("Authorization")
 	verified, jwt := srv.VerifyAuthorization(auth)
