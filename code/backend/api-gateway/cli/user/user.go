@@ -54,7 +54,7 @@ func CallRegister(username string, password string,
 		Password: password,
 		Phone:    phone,
 		Nickname: nickname,
-		Jaccount: jaccount,
+		Jwt: jaccount,
 	})
 
 	if err != nil {
