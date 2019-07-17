@@ -40,8 +40,8 @@ func (uc *Controller) Register (c *gin.Context) {
 	rsp, err := userClient.CallRegister(jsonForm["username"].(string), jsonForm["password"].(string), jsonForm["phone"].(string), jsonForm["nickname"].(string), jsonForm["jwt"].(string))
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : fmt.Sprintf("%s", err.Error()),
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"message" : err,
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
