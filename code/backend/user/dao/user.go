@@ -25,7 +25,7 @@ type Join struct {
 	ID 		int 		`gorm:"primary_key;auto_increment"`
 	UserID	int
 	ActID	int
-	IsAdmin bool
+	IsAdmin int
 }
 
 // TODO: let lqy implement these more functionally
@@ -59,7 +59,7 @@ func DeleteActivity(actId int) error {
 
 func GetJoinedActivity(userId int) (acts []int) {
 	var joins []Join
-	db.Where("user_id = ? and is_admin = ?", userId, false).Find(&joins)
+	db.Where("user_id = ? and is_admin = ?", userId, 0).Find(&joins)
 	for _, v := range joins {
 		acts = append(acts, v.ActID)
 	}
@@ -68,7 +68,7 @@ func GetJoinedActivity(userId int) (acts []int) {
 
 func GetActivityAdmin(actId int) int {
 	join := Join{}
-	db.Where("act_id = ? and is_admin = ?", actId, true).First(&join)
+	db.Where("act_id = ? and is_admin = ?", actId, 1).First(&join)
 	return join.UserID
 }
 
@@ -76,18 +76,51 @@ func PublishActivity(userId int, actId int) error {
 	join := Join{}
 	join.UserID = userId
 	join.ActID = actId
-	join.IsAdmin = true
+	join.IsAdmin = 1
 	db.Create(&join)
 	return nil
 }
+
 
 func JoinActivity(userId int, actId int) error {
 	join := Join{}
 	join.UserID = userId
 	join.ActID = actId
-	join.IsAdmin = false
+	join.IsAdmin = -1
 	db.Create(&join)
 	return nil
+}
+
+func AcceptJoinActivity(userId int, actId int) error{
+	join := Join{}
+	db.Where("user_id = ? and act_id=?",userId,actId).First(&join)
+	if join.ID == 0{
+		err := errors.New("application not found")
+		return err
+	}
+	if join.IsAdmin != -1{
+		err := errors.New("application status error: not unaccepted")
+		return err
+	}
+	db.Model(&join).Update("is_admin",0)
+	return nil
+}
+
+func GetJoinApplication(userId int) []map[string]int{
+	myActs := GetManagingActivity(userId)
+	var applications []map[string] int
+	var joins []Join
+	for _,act := range myActs{
+		db.Where("act_id=? and is_admin=?",act,-1).Find(&joins)
+		for _,join := range joins{
+			var application map[string] int
+			application = make(map[string]int)
+			application["user_id"] = join.UserID
+			application["act_id"] = join.ActID
+			applications = append(applications,application)
+		}
+	}
+	return applications
 }
 
 func FindUserById(id int) (User, error) {
