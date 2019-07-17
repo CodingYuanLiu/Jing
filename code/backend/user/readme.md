@@ -1,4 +1,4 @@
-# Docker
+Docker
 
 Build mysql docker with `create_table.sql`
 ```

@@ -80,7 +80,7 @@ Page({
                     console.log('获取用户登录凭证：' + code);
                     //------ 发送凭证 ------
                     wx.request({
-                        url: 'https://sebastianj1wzyd.xyz/api/public/login/wx',
+                        url: 'https://jing855.cn/api/public/login/wx',
                         data: {
                             code: code
                         },
@@ -99,7 +99,7 @@ Page({
                                 app.globalData.jwt = res.data.jwt;
                                 console.log(app.globalData.jwt);
                                 wx.request({
-                                    url: 'https://sebastianj1wzyd.xyz/api/public/status',
+                                    url: 'https://jing855.cn/api/public/status',
                                     method: 'GET',
                                     header: {
                                         "Authorization": "Bearer " + res.data.jwt,
@@ -107,7 +107,7 @@ Page({
                                     success: function(res) {
                                         app.globalData.userid = res.data.id;
                                         wx.request({
-                                            url: 'https://sebastianj1wzyd.xyz/api/user/info/update',
+                                            url: 'https://jing855.cn/api/user/info/update',
                                             method: 'PUT',
                                             header: {
                                                 "Authorization": "Bearer " + app.globalData.jwt,

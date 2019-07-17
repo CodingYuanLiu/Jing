@@ -32,7 +32,7 @@ Page({
         });
         console.log("id是" + options.id);
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/public/act/query?act_id=' + that.data.act_id,
+            url: 'https://jing855.cn/api/public/act/query?act_id=' + that.data.act_id,
             method: 'GET',
             success: function(res) {
                 that.setData({
@@ -99,7 +99,7 @@ Page({
         let date = new Date();
         let dateString = date.toDateString();
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/user/act/modify',
+            url: 'https://jing855.cn/api/user/act/modify',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,
             },
@@ -127,7 +127,7 @@ Page({
     handleDelete: function() {
         let that = this;
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/user/act/delete?act_id=' + that.data.act_id,
+            url: 'https://jing855.cn/api/user/act/delete?act_id=' + that.data.act_id,
             method: 'POST',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,

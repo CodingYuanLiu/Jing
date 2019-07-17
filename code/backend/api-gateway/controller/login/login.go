@@ -3,12 +3,16 @@ package login
 import "C"
 import (
 	"encoding/base64"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/skip2/go-qrcode"
+	"io/ioutil"
 	loginClient "jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
 	"log"
 	"net/http"
+	myjson "jing/app/json"
+
 )
 
 type Controller struct {
@@ -50,12 +54,45 @@ func (lc *Controller) GetUserStatus (c *gin.Context) {
 	}
 }
 
-func (lc *Controller) OAuthLogin (c *gin.Context) {
-
-}
-
-func (lc *Controller) OAuthRedirect (c *gin.Context) {
-
+func (lc *Controller) JaccountLogin (c *gin.Context) {
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
+	if err!=nil{
+		c.JSON(http.StatusBadRequest,map[string] string{
+			"message" : "JSON parse error",
+		})
+		c.Abort()
+		return
+	}
+	code := jsonForm["code"]
+	redirectUri := jsonForm["redirect_uri"]
+	if code ==nil || redirectUri ==nil{
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Miss some field",
+		})
+		c.Abort()
+		return
+	}
+	resp,err := loginClient.CallGetAccessToken(redirectUri.(string),code.(string))
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError,map[string] string{
+			"message": "GetAccessToken Error",
+		})
+		c.Abort()
+		return
+	}
+	accessToken := resp.AccessToken
+	resp2,err := loginClient.CallLoginByJaccount(accessToken)
+	if err!=nil{
+		log.Print("Get jwtToken by access token error")
+		log.Fatal(err)
+	}
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Get access token from Jaccount successfully",
+		"access_token" : resp2.JwtToken,
+		"status": resp2.Status,
+	})
 }
 
 
@@ -68,7 +105,7 @@ func (lc *Controller) GetWXCode (c *gin.Context) {
 		return
 	}
 	rsp, _ := loginClient.CallGetWXOpenId(codeBody.Code)
-	log.Println(rsp.Status)
+
 	if rsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]interface{} {
 			"status": 0,
@@ -79,7 +116,7 @@ func (lc *Controller) GetWXCode (c *gin.Context) {
 
 		url := "https://jaccount.sjtu.edu.cn/oauth2/authorize" +
 			"?response_type=code&client_id=KIr40g1K90EObtNARwda" +
-			"&scope=basic&redirect_uri=https://jing855.cn/api/public/wx/redirect?jwt=" + rsp.JwtToken
+			"&scope=basic&redirect_uri=https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + rsp.JwtToken
 
 		var png []byte
 		png, err := qrcode.Encode(url, qrcode.Medium, 256)
@@ -105,7 +142,7 @@ func (lc *Controller) GetWXCode (c *gin.Context) {
 func (lc *Controller) BindJaccountAndWX(c *gin.Context) {
 	code := c.Query("code")
 	jwt := c.Query("jwt")
-	jacRsp, _ := loginClient.CallGetJac(code, "https://jing855.cn/api/public/wx/redirect?jwt=" + jwt)
+	jacRsp, _ := loginClient.CallGetJac(code, "https://sebastianj1wzyd.xyz/api/public/wx/redirect?jwt=" + jwt)
 
 	jac := jacRsp.Jaccount
 
@@ -152,5 +189,3 @@ func (lc *Controller) NativeLogin (c *gin.Context) {
 		})
 	}
 }
-
-

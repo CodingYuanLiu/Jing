@@ -81,7 +81,7 @@ Page({
         let date = new Date();
         let dateString = date.toDateString();
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/user/act/publish',
+            url: 'https://jing855.cn/api/user/act/publish',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,
             },

@@ -15,7 +15,7 @@ Page({
     onLoad: function (options) {
         let that = this;
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/user/act/manageact',
+            url: 'https://jing855.cn/api/user/act/manageact',
             method: 'GET',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,
@@ -40,7 +40,7 @@ Page({
     onShow: function () {
         let that = this;
         wx.request({
-            url: 'https://sebastianj1wzyd.xyz/api/user/act/manageact',
+            url: 'https://jing855.cn/api/user/act/manageact',
             method: 'GET',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,

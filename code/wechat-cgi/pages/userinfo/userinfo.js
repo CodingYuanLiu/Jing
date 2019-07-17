@@ -117,7 +117,7 @@ Page({
             });
             // console.log(that.data);
             wx.request({
-                url: 'https://sebastianj1wzyd.xyz/api/user/info/update',
+                url: 'https://jing855.cn/api/user/info/update',
                 method: 'PUT',
                 header: {
                     "Authorization": "Bearer " + app.globalData.jwt,

@@ -3,11 +3,14 @@ package activity
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/micro/go-micro/client"
+	"github.com/micro/go-plugins/client/grpc"
+	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/json"
 	"jing/app/user/dao"
-
+	"os"
 )
 
 var (
@@ -15,7 +18,11 @@ var (
 )
 
 func init()  {
-	Client = activityProto.NewActivitySrvService("go.micro.handler.act", client.DefaultClient)
+	os.Setenv("MICRO_REGISTRY", "kubernetes")
+	client.DefaultClient = grpc.NewClient(
+		client.Registry(kubernetes.NewRegistry()),
+	)
+	Client = activityProto.NewActivitySrvService("act", client.DefaultClient)
 }
 
 func AddComment(actId int, userId int, receiverId int, content string, time string) error {
@@ -28,7 +35,7 @@ func AddComment(actId int, userId int, receiverId int, content string, time stri
 	}
 	resp, _ := Client.Comment(context.TODO(), &req)
 	if resp.Status != 200 {
-		return errors.New("can't comment")
+		return errors.New(fmt.Sprintf("error, status %d, msg: %s", resp.Status, resp.Description))
 	}
 	return nil
 }
@@ -39,7 +46,7 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	}
 	resp, _ := Client.Query(context.TODO(), &qryReq)
 	if resp.Status != 200 {
-		return nil, errors.New("no such activity")
+		return nil, errors.New(fmt.Sprintf("error, status %d", resp.Status))
 	}
 	return resp, nil
 }
@@ -50,7 +57,7 @@ func DeleteActivity(userId int, actId int) error {
 	}
 	resp, _ := Client.Delete(context.TODO(), &dltReq)
 	if resp.Status != 200 {
-		return errors.New("can not modify")
+		return errors.New(fmt.Sprintf("error, status %d, msg: %s", resp.Status, resp.Description))
 	}
 	return nil
 }
@@ -93,7 +100,7 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 		return err
 	}
 	if resp2.Status != 200 {
-		return errors.New("can not modify")
+		return errors.New(fmt.Sprintf("error, status %d, msg: %s", resp2.Status, resp2.Description))
 	}
 	return nil
 }
@@ -145,7 +152,7 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 		return err
 	}
 	if resp2.Status != 200 {
-		return errors.New("can not publish")
+		return errors.New(fmt.Sprintf("error, status %d, msg: %s", resp2.Status, resp2.Description))
 	}
 	_ = dao.PublishActivity(userId, int(resp2.ActId))
 	return nil

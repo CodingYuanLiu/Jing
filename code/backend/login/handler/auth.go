@@ -80,11 +80,13 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 		"wx5bd0c2b91b75fd41", "d074420c87722879111087314aa4b17d", code))
 	if err != nil {
 		out.Status = -1
+		fmt.Println("Wx can't request token")
 		return nil
 	}
 	respJson, _ := ioutil.ReadAll(resp.Body)
 	j := json2.JSON{}
 	_ = json.Unmarshal(respJson, &j)
+	fmt.Println(respJson)
 	if j["errcode"] != nil {
 		errcode := int(j["errcode"].(float64))
 		if errcode == 40029 {
