@@ -50,7 +50,7 @@ func (uc *Controller) Register (c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : fmt.Sprintf("%v", err),
+			"message" : fmt.Sprintf("%s", err.Error()),
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
@@ -58,7 +58,7 @@ func (uc *Controller) Register (c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : fmt.Sprintf("%v", err),
+			"message" : fmt.Sprintf("%s", err.Error()),
 		})
 	}
 }
@@ -99,9 +99,9 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 		jsonForm["phone"].(string), jsonForm["signature"].(string), jsonForm["nickname"].(string))
 
 	// All field update, rely on the frontend
-	if rsp.Status == 400 {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : fmt.Sprintf("%v", err),
+			"message" : fmt.Sprintf("%s", err.Error()),
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
@@ -109,7 +109,7 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : fmt.Sprintf("%v", err),
+			"message" : fmt.Sprintf("%s", err.Error()),
 		})
 	}
 }
@@ -123,9 +123,9 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 		})
 	}
 	rsp, err := userClient.CallQueryUser(int32(intId))
-	if rsp.Id < 0 {
+	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : fmt.Sprintf("%v", err),
+			"message" : fmt.Sprintf("%s", err.Error()),
 		})
 	} else if rsp.Id > 0 {
 		c.JSON(http.StatusOK, map[string]interface {}{
