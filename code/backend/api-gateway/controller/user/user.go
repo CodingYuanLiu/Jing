@@ -115,11 +115,11 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 }
 
 func (uc *Controller) QueryUser (c *gin.Context) {
-	id := c.Param("id")
+	id := c.Query("id")
 	intId, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string] string{
-			"message" : "Bad request",
+			"message" : "Param id is not correct",
 		})
 	}
 	rsp, err := userClient.CallQueryUser(int32(intId))
