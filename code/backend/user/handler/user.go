@@ -48,7 +48,17 @@ func (h *UserService) Register(ctx context.Context, in *user.RegReq, out *user.R
 		out.Status = 400
 		return errors.New("invalid token")
 	}
-	err := dao.CreateUser(json, int(token.Claims.(jwt.MapClaims)["userId"].(float64)))
+	userID := int(token.Claims.(jwt.MapClaims)["userId"].(float64))
+	user, err := dao.FindUserById(userID)
+	if err != nil {
+		out.Status = 400
+		return err
+	}
+	if user.Nickname != "" {
+		out.Status = 400
+		return errors.New("you've already registered")
+	}
+	err = dao.CreateUser(json, userID)
 	if err != nil {
 		out.Status = 400
 		return err
