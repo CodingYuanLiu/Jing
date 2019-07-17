@@ -73,6 +73,7 @@ func setupRouter() *gin.Engine {
 		userRouter.POST("/act/acceptjoin",ac.AcceptJoinActivity)
 		userRouter.POST("/act/delete", ac.DeleteActivity)
 		userRouter.POST("/act/comment", ac.Comment)
+		userRouter.GET("/act/status", ac.Status)
 		userRouter.PUT("/info/update", uc.UpdateUser)
 	}
 

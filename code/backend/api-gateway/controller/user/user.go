@@ -3,10 +3,10 @@ package user
 import "C"
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	userClient "jing/app/api-gateway/cli/user"
+	srv "jing/app/api-gateway/service"
 	myjson "jing/app/json"
 	"net/http"
 	"strconv"
@@ -15,21 +15,21 @@ import (
 type Controller struct {
 }
 
-
-type RegisterBody struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
-	Phone string `json:"phone" binding:"required"`
-	Nickname string `json:"nickname" binding:"required"`
-	Jaccount string `json:"jaccount" binding:"required"`
-}
-
 func (uc *Controller) Register (c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	err = json.Unmarshal(jsonStr, &jsonForm)
 
-	if jsonForm["username"] == nil || jsonForm["password"] == nil || jsonForm["phone"] == nil || jsonForm["nickname"] == nil || jsonForm["jwt"] == nil {
+	if jsonForm["username"] == nil || jsonForm["password"] == nil || jsonForm["phone"] == nil || jsonForm["nickname"] == nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message" : "Miss some field",
 		})
@@ -37,19 +37,19 @@ func (uc *Controller) Register (c *gin.Context) {
 		return
 	}
 
-	rsp, err := userClient.CallRegister(jsonForm["username"].(string), jsonForm["password"].(string), jsonForm["phone"].(string), jsonForm["nickname"].(string), jsonForm["jwt"].(string))
+	rsp, err := userClient.CallRegister(jsonForm["username"].(string), jsonForm["password"].(string), jsonForm["phone"].(string), jsonForm["nickname"].(string), jwt)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"message" : err,
+			"error": err,
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Register ok",
 		})
 	} else {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : fmt.Sprintf("%s", err.Error()),
+		c.JSON(http.StatusInternalServerError, map[string]interface{} {
+			"error": err,
 		})
 	}
 }
@@ -91,16 +91,16 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 
 	// All field update, rely on the frontend
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : fmt.Sprintf("%s", err.Error()),
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 	} else if rsp.Status == 200 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Update ok",
 		})
 	} else {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : fmt.Sprintf("%s", err.Error()),
+		c.JSON(http.StatusInternalServerError, map[string]interface{} {
+			"error": err,
 		})
 	}
 }
@@ -115,8 +115,8 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 	}
 	rsp, err := userClient.CallQueryUser(int32(intId))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : fmt.Sprintf("%s", err.Error()),
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 	} else if rsp.Id > 0 {
 		c.JSON(http.StatusOK, map[string]interface {}{
@@ -128,8 +128,8 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 			"signature" : rsp.Signature,
 		})
 	} else {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Bad request",
+		c.JSON(http.StatusBadRequest, map[string]interface{} {
+			"error": err,
 		})
 	}
 }

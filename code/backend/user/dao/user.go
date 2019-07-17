@@ -72,6 +72,16 @@ func GetActivityAdmin(actId int) int {
 	return join.UserID
 }
 
+func CheckStatus(userId int, actId int) int {
+	join := Join{}
+	db.Where("act_id = ? and user_id = ?", actId, userId).First(&join)
+	if join.ID == 0 {
+		return -2
+	} else {
+		return join.IsAdmin
+	}
+}
+
 func PublishActivity(userId int, actId int) error {
 	join := Join{}
 	join.UserID = userId
