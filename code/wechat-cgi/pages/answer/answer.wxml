@@ -1,0 +1,115 @@
+<!--answer.wxml-->
+<i-toast id="toast" />
+<view class="container">
+    <view class="question">
+        <text class="question-title">{{content.title}}</text>
+    </view>
+    <view class="answerer-wrp">
+        <view class="bg-half"></view>
+        <view class="answerer flex-wrp">
+            <view class="avatar flex-item">
+                <image src="{{content.useravatar}}"></image>
+            </view>
+            <view class="answerer-info flex-item">
+                <text class="answerer-name">{{content.sponsor_username}}</text>
+                <text class="answerer-des">{{content.signature}}</text>
+            </view>
+            <!-- <view class="follow flex-item">
+                <text>十 关注</text>
+            </view> -->
+        </view>
+    </view>
+    <view class="answer-content">
+        <text>{{content.description}}
+        </text>
+        <!-- <image src="../../images/1444983318907-_DSC1826.jpg"></image>
+        <image src="../../images/1444983318907-_DSC1826.jpg"></image> -->
+        <block wx:for="{{images}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <image src="{{item}}"></image>
+        </block>
+    </view>
+    <view class="ctnt0">
+        <view class="unread">
+            <text>{{comment_length}} 条评论</text>
+            <image src="../../images/allread.png"></image>
+        </view>
+        <block wx:for="{{content.comments}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="chat-item flex-wrp" bindtap="handleCommentToUser" data-id="{{item.user_id}}" data-nick="{{item.title}}">
+                <view class="avatar flex-item">
+                    <image src="{{item.avatar}}"></image>
+                </view>
+                <view class="chat-content flex-item">
+                    <view class="chat-source">
+                        <text class="chatmate">{{item.title}}</text>
+                        <text class="lasttime">{{item.time}}</text>
+                    </view>
+                    <text class="chat-txt">{{item.content}}</text>
+                </view>
+            </view>
+        </block>
+        <view class="chat-item flex-wrp">
+            <view class="avatar flex-item">
+                <image src=""></image>
+            </view>
+            <view class="chat-content flex-item">
+                <view class="chat-source">
+                    <text class="chatmate"> </text>
+                    <text class="lasttime"> </text>
+                </view>
+                <text class="chat-txt"> </text>
+            </view>
+        </view>
+
+        <!-- </view> -->
+    </view>
+
+    <view class="answer-footer flex-wrp">
+        <view class="operation ">
+
+
+            <view class="operation-btn flex-item" style="float: left" bindtap="handleJoin">
+                <image src="../../images/icons/add_line.png"></image>
+                <text>加入</text>
+            </view>
+            <view class="operation-btn flex-item" style="float: left">
+                <image src="../../images/icons/good.png"></image>
+                <text>302</text>
+            </view>
+            <view class="search flex-wrp">
+                <view class="search-left flex-item">
+                    <input value="{{ your_comment }}" bind:change="handleCommentInput" placeholder="添加评论" placeholder-class="search-placeholder" />
+                </view>
+                <view class="search-right flex-item" bindtap="upper" bindtap="handleAddComment">
+                    <image src="../../images/icons/icon_community_line.png"></image>
+                </view>
+            </view>
+        </view>
+        <!-- <view class="good" style="width: 50rpx">
+            <!-- <view class="good-bad">
+                <image src="../../images/icons/good.png"></image>
+                <view class="good-num">2.1k</view>
+            </view> -->
+        <!-- <view class="good-bad">
+                <image src="../../images/good-bad.png"></image>
+            </view>
+        </view> -->
+
+
+
+    </view>
+    <!-- <i-modal title="{{place_holder}}" visible="{{ visible1 }}" bind:ok="handleConfirmComment" bind:cancel="handleCancel">
+        <textarea bindblur="bindTextAreaBlur" value="{{ your_comment }} " class="textinput" />
+    </i-modal> -->
+    <i-action-sheet visible="{{ visible1 }}" actions="{{ actions2 }}" show-cancel bind:cancel="handleCancel" bind:click="handleClickItem2" mask-closable="{{ false }}">
+
+        <view slot="header" style="padding: 16px">
+            <form bindsubmit="handleConfirmComment" report-submit='true'>
+                <!-- <view style="color: #444;font-size: 16px">确定吗？</view> -->
+                <view>{{place_holder}}</view>
+                <textarea bindblur="bindTextAreaBlur" value="{{ your_comment }} " class="textinput" />
+                <button style="margin-left: 3rpx; margin-right:5rpx" form-type="submit">提交</button>
+            </form>
+        </view>
+
+    </i-action-sheet>
+</view>

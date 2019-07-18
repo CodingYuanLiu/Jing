@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">jing/app/login/handler/auth.go (33.7%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package handler
+
+import (
+        "context"
+        "encoding/json"
+        "fmt"
+        "github.com/dgrijalva/jwt-go"
+        "github.com/jameskeane/bcrypt"
+        "io/ioutil"
+        "jing/app/login/dao"
+        "jing/app/login/model"
+        login "jing/app/login/proto/login"
+        userDao "jing/app/user/dao"
+        "net/http"
+        "strconv"
+        "time"
+)
+
+type LoginService struct {
+
+}
+
+func BuildToken(user userDao.User) (tokenString string) <span class="cov8" title="1">{
+        claims := make(jwt.MapClaims)
+        claims["userId"] = user.ID
+        claims["admin"] = "false"
+        claims["exp"] = time.Now().Add(time.Hour).Unix()
+        claims["iat"] = time.Now().Unix()
+        token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+        tokenString, _ = token.SignedString([]byte("lqynb"))
+        return
+}</span>
+
+func (s *LoginService) GetAccessToken(ctx context.Context, in *login.CodeReq, out *login.AccessResp) error <span class="cov0" title="0">{
+        code := in.Code
+        redirectUri := in.RedirectUri
+        out.AccessToken = model.GetAccessToken(code, "KIr40g1K90EObtNARwda", "16BA4A646213794CD6C72F32F219D37A4AE51345897AC889", redirectUri)
+        return nil
+}</span>
+
+func (s *LoginService) LoginByJaccount(ctx context.Context, in *login.LJReq, out *login.TokenResp) error <span class="cov0" title="0">{
+        profile := model.GetProfile(in.AccessToken)
+        e := int(profile["errno"].(float64))
+        if e != 0 </span><span class="cov0" title="0">{
+                out.Status = 11
+                return nil
+        }</span>
+        <span class="cov0" title="0">jaccount := profile["entities"].([]interface {})[0].(map[string]interface {})["account"].(string)
+        user, err := dao.FindUserByJaccount(jaccount)
+        if err != nil </span><span class="cov0" title="0">{
+                out.Status = 12
+        }</span> else<span class="cov0" title="0"> {
+                out.Status = 0
+                out.JwtToken = BuildToken(user)
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *login.TokenResp) error <span class="cov8" title="1">{
+        user, err := dao.FindUserByUsername(in.Username)
+        if err != nil </span><span class="cov8" title="1">{
+                out.Status = 1
+                return nil
+        }</span> else<span class="cov8" title="1"> {
+                if bcrypt.Match(in.Password, user.Password) </span><span class="cov8" title="1">{
+                        out.Status = 0
+                        out.JwtToken = BuildToken(user)
+                        return nil
+                }</span> else<span class="cov8" title="1"> {
+                        out.Status = 1
+                        return nil
+                }</span>
+        }
+}
+
+func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *login.TokenResp) error <span class="cov0" title="0">{
+        code := in.Code
+        resp, err := http.Get(fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&amp;secret=%s&amp;js_code=%s&amp;grant_type=authorization_code",
+                "wx5bd0c2b91b75fd41", "d074420c87722879111087314aa4b17d", code))
+        if err != nil </span><span class="cov0" title="0">{
+                out.Status = -1
+                return nil
+        }</span>
+        <span class="cov0" title="0">respJson, _ := ioutil.ReadAll(resp.Body)
+        j := model.JSON{}
+        _ = json.Unmarshal(respJson, &amp;j)
+        if j["errcode"] != nil </span><span class="cov0" title="0">{
+                errcode := int(j["errcode"].(float64))
+                if errcode == 40029 </span><span class="cov0" title="0">{
+                        out.Status = 1
+                        return nil
+                }</span> else<span class="cov0" title="0"> if errcode != 0 </span><span class="cov0" title="0">{
+                        out.Status = -1
+                        return nil
+                }</span>
+        }
+        <span class="cov0" title="0">openId := j["openid"].(string)
+        user, err := dao.FindUserByOpenId(openId)
+        if err != nil </span><span class="cov0" title="0">{
+                _ = dao.CreateUserByOpenId(openId)
+                user, _ = dao.FindUserByOpenId(openId)
+                out.Status = 21
+        }</span> else<span class="cov0" title="0"> if user.Jaccount == "" </span><span class="cov0" title="0">{
+                out.Status = 21
+        }</span> else<span class="cov0" title="0"> if user.Nickname == "" </span><span class="cov0" title="0">{
+                out.Status = 22
+        }</span> else<span class="cov0" title="0"> {
+                out.Status = 0
+        }</span>
+        <span class="cov0" title="0">out.JwtToken = BuildToken(user)
+        return nil</span>
+}
+
+func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq, out *login.BindResp) error <span class="cov0" title="0">{
+        token, status := parseToken(in.Jwt)
+        if status == 0 </span><span class="cov0" title="0">{
+                claims := token.Claims.(jwt.MapClaims)
+                userId := int(claims["userId"].(float64))
+                fmt.Println(userId)
+                fmt.Println(in.Jaccount)
+                _, err := dao.FindUserByJaccount(in.Jaccount)
+                if err != nil </span><span class="cov0" title="0">{
+                        err2 := dao.BindJaccountById(userId, in.Jaccount)
+                        if err2 != nil </span><span class="cov0" title="0">{
+                                out.Status = 1
+                        }</span>
+                        <span class="cov0" title="0">out.Status = 0</span>
+                } else<span class="cov0" title="0"> {
+                        out.Status = 2
+                }</span>
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (s *LoginService) GetJaccount(ctx context.Context, in *login.CodeReq, out *login.JaccResp) error <span class="cov0" title="0">{
+        code := in.Code
+        redirectUri := in.RedirectUri
+        accessToken := model.GetAccessToken(code, "KIr40g1K90EObtNARwda", "16BA4A646213794CD6C72F32F219D37A4AE51345897AC889", redirectUri)
+        profile := model.GetProfile(accessToken)
+        jaccount := profile["entities"].([]interface {})[0].(map[string]interface {})["account"].(string)
+        out.Jaccount = jaccount
+        return nil
+}</span>
+
+func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login.AuthResp) error <span class="cov8" title="1">{
+        token, status := parseToken(req.Jwt)
+        resp.Status = status
+        if status == 0 </span><span class="cov8" title="1">{
+                claims := token.Claims.(jwt.MapClaims)
+                resp.UserId = int32(claims["userId"].(float64))
+                resp.Admin, _ = strconv.ParseBool(claims["admin"].(string))
+        }</span> else<span class="cov8" title="1"> {
+                resp.UserId = -1
+                resp.Username = ""
+                resp.Admin = false
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func parseToken(tokenString string) (t *jwt.Token, status int32) <span class="cov8" title="1">{
+        token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) </span><span class="cov8" title="1">{
+                return []byte("lqynb"), nil
+        }</span>)
+        <span class="cov8" title="1">if err != nil </span><span class="cov8" title="1">{
+                return nil, -2
+        }</span>
+        <span class="cov8" title="1">if !token.Valid </span><span class="cov0" title="0">{
+                return nil, -1
+        }</span>
+        <span class="cov8" title="1">return token, 0</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

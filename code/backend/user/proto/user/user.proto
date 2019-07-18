@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package go.micro.srv.user;
+
+service User {
+    rpc Update(UpdateReq) returns (UpdateResp) {}
+    rpc Register(RegReq) returns (RegResp) {}
+    rpc FindUser(FindReq) returns (FindResp) {}
+}
+
+message UpdateReq {
+    int32 id = 10;
+    string phone = 1;
+    string signature = 2;
+    string nickname = 3;
+}
+
+message UpdateResp {
+    int32 status = 1;
+}
+
+message RegReq {
+    string username = 4;
+    string password = 5;
+    string phone = 6;
+    string nickname = 7;
+    string jwt = 8;
+}
+
+message RegResp {
+    int32 status = 2;
+}
+
+message FindReq {
+    int32 id = 9;
+}
+
+message FindResp {
+    int32 id = 3;
+    string username = 4;
+    string phone = 5;
+    string nickname = 6;
+    string jaccount = 7;
+    string signature = 8;
+}

@@ -1,0 +1,10 @@
+/* pages/my/editact/editact.wxss */
+
+.textinput {
+    flex: 1;
+    width: 100%;
+    padding: 20rpx;
+    height: 425rpx;
+    line-height: 26px;
+    color: #000;
+}

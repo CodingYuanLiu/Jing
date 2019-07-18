@@ -1,0 +1,10 @@
+mode: set
+jing/app/user/handler/user.go:15.99,17.16 2 1
+jing/app/user/handler/user.go:21.2,24.12 4 1
+jing/app/user/handler/user.go:17.16,20.3 2 1
+jing/app/user/handler/user.go:27.95,38.16 5 1
+jing/app/user/handler/user.go:42.2,43.12 2 1
+jing/app/user/handler/user.go:38.16,41.3 2 1
+jing/app/user/handler/user.go:46.97,48.16 2 1
+jing/app/user/handler/user.go:48.16,51.3 2 1
+jing/app/user/handler/user.go:51.8,59.3 7 1

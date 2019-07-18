@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+package activity;
+
+service ActivitySrv{
+    rpc Publish(PubReq) returns (PubResp){}
+    rpc Modify(MdfReq) returns (MdfResp){}
+    rpc Delete(DltReq) returns (DltResp){}
+    rpc Query(QryReq) returns (QryResp){}
+    rpc Comment(CmtReq) returns (CmtResp) {}
+}
+
+message BasicInfo{
+    string type = 2;
+    string createTime = 3;
+    string endTime = 4;
+    string title = 5;
+    string description = 6;
+    repeated string tag = 7;
+    repeated string images = 8;
+}
+
+message PubReq{
+    BasicInfo info = 3;
+
+    TaxiInfo taxiInfo = 4;
+    TakeoutInfo takeoutInfo = 5;
+    OrderInfo orderInfo = 6;
+    OtherInfo otherInfo = 7;
+
+}
+
+message PubResp{
+    int32 status = 1;
+    string description = 2;
+    int32 actId = 3;
+}
+
+message MdfReq{
+    int32 actId = 1;
+    string createTime = 2;
+    string endTime = 3;
+    string description = 4;
+    repeated string tag = 5;
+
+    TaxiInfo taxiInfo=6;
+    TakeoutInfo takeoutInfo = 7;
+    OrderInfo orderInfo = 8;
+    OtherInfo otherInfo = 9;
+}
+message MdfResp{
+    int32 status = 1;
+    string description = 2;
+}
+
+message DltReq{
+    int32 actId = 1;
+}
+
+message DltResp{
+    int32 status = 1;
+    string description = 2;
+}
+
+message QryReq{
+    int32 actId = 1;
+}
+
+message QryResp{
+    int32 status = 6;
+    BasicInfo basicInfo = 1;
+    TaxiInfo taxiInfo = 2;
+    TakeoutInfo takeoutInfo = 3;
+    OrderInfo orderInfo = 4;
+    OtherInfo otherInfo = 5;
+    repeated Comment comments = 7;
+}
+
+message TaxiInfo{
+    string departTime = 1;
+    string origin = 2;
+    string destination = 3;
+}
+
+message TakeoutInfo{
+    string store = 1;
+    string orderTime = 2;
+}
+
+message OrderInfo{
+    string store = 1;
+}
+
+message OtherInfo{
+    string activityTime = 1;
+}
+
+message CmtReq{
+    int32 actId = 1;
+    int32 userId = 2;
+    int32 receiverId = 4;
+    string content = 3;
+    string time = 5;
+}
+
+message CmtResp{
+    int32 status = 1;
+    string description = 2;
+}
+
+message Comment{
+    int32 userId = 1;
+    int32 receiverId = 2;
+    string content = 3;
+    string time = 4;
+}

@@ -1,0 +1,3 @@
+<!--pages/accept/accept.wxml-->
+<text>pages/accept/accept.wxml</text>
+<view bindtap="handleClick">接受</view>
