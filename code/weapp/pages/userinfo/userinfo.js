@@ -78,7 +78,7 @@ Page({
                 that.setData({
                     // phone: that.data.user.phone,
                     // nickname: that.data.user.nickname,
-                    gendershow: that.data.genders[that.data.user.gender].name,
+                    gendershow: that.data.genders[res.data.gender].name,
                     levelshow: that.data.levels[that.data.user.privacy + 1].name,
                     birthday: that.data.user.birthday,
                     level: that.data.user.privacy + 1
