@@ -135,7 +135,7 @@ func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq
 			out.Status = 0
 		} else if user.OpenId == "" {
 			user2, _ := dao.FindUserById(userId)
-			dao.CopyUser(user, user2)
+			dao.CopyUser(user2, user)
 			out.Status = 0
 		} else {
 			out.Status = 2

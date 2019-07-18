@@ -735,6 +735,7 @@ base64
 
 ```json
 {
-    "message": "Upload avatar successfully"
+    "message": "Upload avatar successfully",
+    "url": "http://...."
 }
 ```
