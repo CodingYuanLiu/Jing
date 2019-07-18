@@ -8,8 +8,8 @@ import (
 	"github.com/micro/go-plugins/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
+	"jing/app/dao"
 	"jing/app/json"
-	"jing/app/user/dao"
 	"os"
 )
 

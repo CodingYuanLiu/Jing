@@ -8,8 +8,8 @@ import (
 	json2 "jing/app/json"
 )
 import user "jing/app/user/proto/user"
-import handler "jing/app/login/handler"
-import "jing/app/user/dao"
+import "jing/app/login/handler"
+import "jing/app/dao"
 
 type UserService struct {
 

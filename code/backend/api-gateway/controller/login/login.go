@@ -10,10 +10,9 @@ import (
 	loginClient "jing/app/api-gateway/cli/login"
 	user "jing/app/api-gateway/cli/user"
 	srv "jing/app/api-gateway/service"
+	myjson "jing/app/json"
 	"log"
 	"net/http"
-	myjson "jing/app/json"
-
 )
 
 type Controller struct {

@@ -9,16 +9,14 @@ import (
 	activityClient "jing/app/api-gateway/cli/activity"
 	"jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
+	"jing/app/dao"
 	myjson "jing/app/json"
-	"jing/app/user/dao"
 	"log"
 	"net/http"
 	"strconv"
 )
 
 type Controller struct{}
-
-// TODO: confirm whether user is admin
 
 func generateJSON(actId int, userId int, userName string, userSignature string, resp *activityProto.QryResp) (returnJson myjson.JSON) {
 	returnJson = myjson.JSON{
