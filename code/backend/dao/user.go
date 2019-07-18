@@ -189,6 +189,17 @@ func CreateUser(json json.JSON, id int) error {
 	return nil
 }
 
+func CopyUser(src User, dest User) {
+	dest.AvatarKey = src.AvatarKey
+	dest.Phone = src.Phone
+	dest.Username = src.Username
+	dest.Password = src.Password
+	dest.Jaccount = src.Jaccount
+	dest.Nickname = src.Nickname
+	db.Delete(&src)
+	db.Save(&dest)
+}
+
 func CreateUserByJaccount(jaccount string) error {
 	user := User{}
 	_, err := FindUserByJaccount(jaccount)

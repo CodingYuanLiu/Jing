@@ -126,12 +126,16 @@ func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq
 		userId := int(claims["userId"].(float64))
 		fmt.Println(userId)
 		fmt.Println(in.Jaccount)
-		_, err := dao.FindUserByJaccount(in.Jaccount)
+		user, err := dao.FindUserByJaccount(in.Jaccount)
 		if err != nil {
 			err2 := dao.BindJaccountById(userId, in.Jaccount)
 			if err2 != nil {
 				out.Status = 1
 			}
+			out.Status = 0
+		} else if user.OpenId == "" {
+			user2, _ := dao.FindUserById(userId)
+			dao.CopyUser(user, user2)
 			out.Status = 0
 		} else {
 			out.Status = 2

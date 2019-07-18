@@ -715,3 +715,26 @@ Status OK - 200
     "message" : "Update ok",
 }
 ```
+
+## Upload Avatar
+
+#### Description
+
+Upload a user's avatar.
+
+#### Request 
+
+```
+POST /api/user/avatar/upload
+Authorization: Bearer jwt
+
+base64
+```
+
+#### Response
+
+```json
+{
+    "message": "Upload avatar successfully"
+}
+```
