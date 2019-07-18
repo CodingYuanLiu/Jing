@@ -10,7 +10,7 @@ import { Button } from 'react-native-elements';
 import UserDao from '../../api/dao/UserDao';
 import Api from "../../api/Api"
 import {login, logout, setUserInfo} from '../../actions/user';
-import defaults from "../../constant/Default";
+import Default from "../../constant/Default";
 
 class MeScreen extends React.PureComponent{
     constructor(props) {
@@ -25,9 +25,11 @@ class MeScreen extends React.PureComponent{
                         this.props.onLogin(jwt)
                         let user = {
                             nickname: data.nickname,
-                            signature: data.signature === "" ? defaults.DEFAULT_SIGNATURE : data.signature,
-                            credit: data.credit && data.credit !== "" ? data.credit : defaults.DEFAULT_CREDIT,
+                            signature: data.signature === "" ? Default.DEFAULT_SIGNATURE : data.signature,
+                            credit: data.credit && data.credit !== "" ? data.credit : Default.DEFAULT_CREDIT,
+                            avatarUri: Default.DEFAULT_AVATAR,
                         }
+                        console.log(data)
                         this.props.setUser(user)
                         UserDao.saveJson("@user", user)
                             .then(data => {

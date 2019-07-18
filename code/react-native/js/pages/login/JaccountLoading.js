@@ -6,7 +6,7 @@ import {login, setUserInfo} from '../../actions/user';
 import {connect} from 'react-redux';
 import UserDao from '../../api/dao/UserDao';
 import NavigationUtil from '../../navigator/NavUtil';
-import defaults from "../../constant/Default";
+import Default from "../../constant/Default";
 
 class JaccountLoadingScreen extends React.PureComponent{
     constructor(props) {
@@ -33,11 +33,12 @@ class JaccountLoadingScreen extends React.PureComponent{
                                 .then(state => {
                                     let user = {
                                         nickname: state.nickname,
-                                        signature: state.signature === "" ? defaults.DEFAULT_SIGNATURE : state.signature,
-                                        credit: state.credit && state !== "" ? state.credit : defaults.DEFAULT_CREDIT,
+                                        signature: state.signature === "" ? Default.DEFAULT_SIGNATURE : state.signature,
+                                        credit: state.credit && state !== "" ? state.credit : Default.DEFAULT_CREDIT,
+                                        avatarUri: Default.DEFAULT_AVATAR,
                                     }
                                     this.props.onLogin(data.jwt_token)
-                                    this.props.setUser()
+                                    this.props.setUser(user)
                                 })
                                 .catch(err => {
                                     console.log("Err: in jaccount login", err)

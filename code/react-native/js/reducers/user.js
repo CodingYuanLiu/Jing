@@ -19,7 +19,7 @@ const initialState = {
 const user = (state=initialState, action) => {
     switch (action.type) {
         case LOGIN:
-            return Object.assign({}, state, {logged: true})
+            return Object.assign({}, state, {logged: true, jwt: action.jwt})
         case LOGOUT:
             return initialState
         case SET_USER:

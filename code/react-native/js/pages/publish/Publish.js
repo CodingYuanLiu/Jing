@@ -2,8 +2,9 @@ import React from "react"
 import {View, Text, StyleSheet, StatusBar } from 'react-native';
 import { Icon } from "react-native-elements";
 import NavigationUtil from '../../navigator/NavUtil';
+import {connect} from "react-redux";
 
-export default class PublishScreen extends React.PureComponent{
+class PublishScreen extends React.PureComponent{
     constructor(props) {
         super(props);
     }
@@ -12,6 +13,13 @@ export default class PublishScreen extends React.PureComponent{
         StatusBar.setHidden(false, "fade")
         NavigationUtil.back(this.props)
     }
+    toTable = () => {
+        if (this.props.logged) {
+            console.log("pressing!")
+            NavigationUtil.toPage(this.props, "FillTable");
+        } else {
+            alert("Need login")}
+        }
     render() {
         const taxi =
             <Icon
@@ -19,7 +27,7 @@ export default class PublishScreen extends React.PureComponent{
             type={"font-awesome"}
             name={"taxi"}
             color={"#0072ff"}
-            onPress={() => {NavigationUtil.toPage(this.props, "FillTable")}}
+            onPress={() => {this.toTable()}}
             />;
         const taxiTitle = "发起拼车"
         const shopping =
@@ -28,7 +36,7 @@ export default class PublishScreen extends React.PureComponent{
                  type={"font-awesome"}
                  name={"shopping-bag"}
                  color={"#007bff"}
-                 onPress={() => {NavigationUtil.toPage(this.props, "FillTable")}}
+                 onPress={() => {this.toTable()}}
             />;
         const shoppingTitle = "拼网购"
         const takeOut =
@@ -37,7 +45,7 @@ export default class PublishScreen extends React.PureComponent{
                 type={"material-community"}
                 name={"food"}
                 color={"#0090ff"}
-                onPress={() => {NavigationUtil.toPage(this.props, "FillTable")}}
+                onPress={() => {this.toTable()}}
             />;
         const takeOutTitle = "拼外卖"
         const activity =
@@ -46,7 +54,7 @@ export default class PublishScreen extends React.PureComponent{
                 type={"ionicon"}
                 name={"md-contacts"}
                 color={"#009eff"}
-                onPress={() => {NavigationUtil.toPage(this.props, "FillTable")}}
+                onPress={() => {this.toTable()}}
             />;
         const activityTitle = "发起活动"
         return(
@@ -91,6 +99,11 @@ export default class PublishScreen extends React.PureComponent{
     }
 }
 
+const mapStateToProps = state => ({
+    logged: state.user.logged,
+    jwt: state.user.jwt,
+})
+export default connect(mapStateToProps, null)(PublishScreen)
 const styles = StyleSheet.create({
     container: {
         flex: 1,

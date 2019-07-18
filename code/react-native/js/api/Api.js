@@ -112,6 +112,20 @@ export default class Api {
                 })
         })
     }
+    static getActDetail(actId) {
+        let id = actId
+        console.log(id)
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/public/act/query?act_id=${id}`)
+                .then(res => {
+                    resolve(res.data)
+                })
+                .catch(err => {
+                    Reject(err, reject)
+                })
+        })
+    }
+
     static getMyAct(jwt) {
         return new Promise((resolve, reject) => {
             axios.get("/api/user/act/myact", {

@@ -14,7 +14,6 @@ import PublishScreen from '../pages/publish/Publish';
 import FillTable from '../pages/publish/FillTable';
 import PersonalHome from '../pages/me/PersonalHome';
 import JaccountLoading from '../pages/login/JaccountLoading';
-import {default} from "react-redux/es/utils/Subscription";
 
 
 const StartNav = createStackNavigator(
