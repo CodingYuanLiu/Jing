@@ -5,11 +5,15 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"jing/app/api-gateway/cli/login"
 	userClient "jing/app/api-gateway/cli/user"
 	srv "jing/app/api-gateway/service"
+	"jing/app/dao"
 	myjson "jing/app/json"
+	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Controller struct {
@@ -52,6 +56,36 @@ func (uc *Controller) Register (c *gin.Context) {
 			"error": err,
 		})
 	}
+}
+
+
+func (uc *Controller) UploadAvatar (c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+	imageStr, _ := ioutil.ReadAll(c.Request.Body)
+	base64 := string(imageStr[:])
+	url := dao.ReplaceImg(base64, dao.GetAvatarKey(int(resp.UserId)))
+	log.Println(url)
+	key := url[strings.LastIndex(url, "/")+1:]
+	dao.SetAvatarKey(int(resp.UserId), key)
+	c.JSON(http.StatusOK, map[string]string {
+		"message": "Upload avatar successfully",
+	})
 }
 
 
@@ -126,6 +160,7 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 			"phone" : rsp.Phone,
 			"nickname" : rsp.Nickname,
 			"signature" : rsp.Signature,
+			"avatar_url": rsp.AvatarUrl,
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {

@@ -19,6 +19,7 @@ type User struct {
 	Signature string
 	OpenId string
 	Jaccount string
+	AvatarKey string
 }
 
 type Join struct {
@@ -26,6 +27,19 @@ type Join struct {
 	UserID	int
 	ActID	int
 	IsAdmin int
+}
+
+func SetAvatarKey(Id int, key string) {
+	user := User{}
+	db.Where("id = ?", Id).First(&user)
+	user.AvatarKey = key
+	db.Save(&user)
+}
+
+func GetAvatarKey(Id int) string {
+	user := User{}
+	db.Where("id = ?", Id).First(&user)
+	return user.AvatarKey
 }
 
 // TODO: let lqy implement these more functionally
@@ -225,9 +239,9 @@ func BindJaccountById(id int, jaccount string) error {
 
 func init()  {
 	var err error
-	//db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
+	db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
 	//db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
-	db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
+	//db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -1,15 +1,14 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/micro/go-web"
+	k8s "github.com/micro/kubernetes/go/web"
 	"jing/app/api-gateway/controller/activity"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
 	"jing/app/api-gateway/filter"
 	"log"
-
-	"github.com/gin-gonic/gin"
-	"github.com/micro/go-web"
-	k8s "github.com/micro/kubernetes/go/web"
 )
 
 func main() {
@@ -75,6 +74,7 @@ func setupRouter() *gin.Engine {
 		userRouter.POST("/act/comment", ac.Comment)
 		userRouter.GET("/act/status", ac.Status)
 		userRouter.PUT("/info/update", uc.UpdateUser)
+		userRouter.POST("/avatar/upload", uc.UploadAvatar)
 	}
 
 	return router

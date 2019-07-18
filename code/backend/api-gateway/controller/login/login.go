@@ -50,6 +50,7 @@ func (lc *Controller) GetUserStatus (c *gin.Context) {
 			"nickname": resp.Nickname,
 			"signature": resp.Signature,
 			"phone": resp.Phone,
+			"avatar_url": resp.AvatarUrl,
 		})
 	} else {
 		c.JSON(http.StatusInternalServerError, map[string]string {

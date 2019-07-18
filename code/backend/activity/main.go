@@ -1,16 +1,15 @@
 package main
 
 import (
-	"log"
-	"time"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
-	"jing/app/activity/handler"
-	activity "jing/app/activity/proto"
+	"log"
+	"time"
 
 	"github.com/micro/go-micro"
 	k8s "github.com/micro/kubernetes/go/micro"
+	"jing/app/activity/handler"
+	activity "jing/app/activity/proto"
 )
 
 //The struct is used to store stylistic id in MongoDB.
