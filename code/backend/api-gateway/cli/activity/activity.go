@@ -5,12 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/micro/go-micro/client"
-	"github.com/micro/go-plugins/client/grpc"
-	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/dao"
 	"jing/app/json"
-	"os"
 )
 
 var (
@@ -18,10 +15,11 @@ var (
 )
 
 func init()  {
+	/*
 	os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
-	)
+	)*/
 	Client = activityProto.NewActivitySrvService("act", client.DefaultClient)
 }
 

@@ -29,7 +29,9 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		Description: req.Description,
 		Tag:         req.Tag,
 	}
-
+	for _,param := range mapBasicInfo["images"].([]interface{}){
+		basicInfo.Images = append(basicInfo.Images,param.(string))
+	}
 	switch fetchType{
 	case "taxi":
 		taxiInfo := model.TaxiInfo{
