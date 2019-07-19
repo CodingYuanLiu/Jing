@@ -25,8 +25,8 @@ func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp 
 	for i:=0;i<imagesLen;i++{
 		name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
 		dao.DeleteImgWithName(name)
+		log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)
 	}
-	log.Println("Deleted pictures.")
 	err = actSrv.Collection.Remove(bson.M{"actid": req.ActId})
 
 	if err == mgo.ErrNotFound{
