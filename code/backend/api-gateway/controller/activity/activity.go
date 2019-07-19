@@ -162,11 +162,11 @@ func getPages(index int, size int, acts []int) (retActs []int, status int) {
 		return
 	}
 	for i := size*index; i < (index+1) * size; i++ {
-		retActs = append(retActs, acts[i])
 		if i == len(acts) {
 			status = 1
 			return
 		}
+		retActs = append(retActs, acts[i])
 	}
 	return
 }
