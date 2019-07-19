@@ -611,7 +611,7 @@ Status OK - 200
 
 ## Get Activity Applicants
 
-Get an activity's applicants.
+Get an activity along with its applicants.
 
 #### Request
 ```json
