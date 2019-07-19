@@ -95,6 +95,10 @@
     width: 100%;
     margin: 20rpx 0;
 }
+.answer-content label{
+    width: 100%;
+    margin: 20rpx 0;
+}
 .answer-footer{
     position: fixed;
     bottom: 0;

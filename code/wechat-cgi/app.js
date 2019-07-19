@@ -1,4 +1,11 @@
 //app.js
+
+import GlobalConfig from './config/index'
+
+const globalConfig = new GlobalConfig()
+
+globalConfig.init()
+
 App({
   onLaunch: function () {
     //调用API从本地缓存中获取数据
@@ -30,5 +37,6 @@ App({
     qrcode: null,
     jwt: null,
     userid: null,
+    config: globalConfig
   }
 })

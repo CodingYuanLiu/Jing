@@ -3,13 +3,13 @@
     <view class="search flex-wrp">
         <view class="search-left flex-item">
             <image src="../../images/search.png"></image>
-            <input placeholder="搜索活动, 商家或用户" placeholder-class="search-placeholder" />
+            <input placeholder="搜索活动, 商家或用户" bind:change="handleInput" placeholder-class="search-placeholder" />
         </view>
         <view class="search-right flex-item" bindtap="upper">
             <image src="../../images/lighting.png"></image>
         </view>
     </view>
-    <view >
+    <!-- <view >
         <block wx:for="{{category}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <view class="flex-wrp" style="display: block; width: 100%; float: top">
                 <block wx:for="{{item.r}}" wx:for-index="idx" wx:for-item="item_r" data-idx="{{idx}}">
@@ -26,43 +26,45 @@
                 </block>
             </view>
         </block>
-    </view>
-    <!-- <view class="ctnt0" >
+    </view> -->
         <block wx:for="{{feed}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <view class="feed-item">
                 <view class="feed-source">
                     <a class="">
-                        <view class="avatar">
+                        <!-- <view class="avatar">
                             <image src="{{item.feed_source_img}}"></image>
-                        </view>
-                        <text>{{item.feed_source_name}}{{item.feed_source_txt}}</text>
+                        </view> -->
+                        <!-- <text>{{item.feed_source_name}} · </text> -->
+                        <text>{{item.sponsor_username}} · {{item.type}} · </text>
+                        <text>{{item.create_time}}</text>
                     </a>
-                    <image class="item-more" mode="aspectFit" src="../../images/more.png"></image>
                 </view>
-                <view class="feed-content">
-                    <view class="question" qid="{{question_id}}" bindtap="bindQueTap">
+                <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                    <view class="question">
                         <a class="question-link">
-                            <text>{{item.question}}</text>
+                            <text>【{{item.depart_time}}】 {{item.title}}</text>
                         </a>
                     </view>
                     <view class="answer-body">
-                        <view bindtap="bindItemTap">
-                            <text class="answer-txt" aid="{{answer_id}}">{{item.answer_ctnt}}</text>
+                        <view  data-id="{{act_id}}">
+                            <text class="answer-txt" aid="{{act_id}}">{{item.description}}</text>
                         </view>
-                        <view class="answer-actions" bindtap="bindItemTap">
+                        <!-- <view>
+                            <image src="{{item.feed_img}}"></image>
+                        </view> -->
+                        <view class="answer-actions">
                             <view class="like dot">
-                                <a>{{item.good_num}} 赞同 </a>
+                                <a>👍 {{item.good_num}} </a>
                             </view>
                             <view class="comments dot">
-                                <a>{{item.comment_num}} 评论 </a>
+                                <a>{{item.comments.length}} 评论 </a>
                             </view>
-                            <view class="follow-it">
-                                <a>关注问题</a>
-                            </view>
+                            <!-- <view class="follow-it">
+                                <a>{{item.comment_num}} 关注</a>
+                            </view> -->
                         </view>
                     </view>
                 </view>
             </view>
         </block>
-    </view> -->
 </scroll-view>

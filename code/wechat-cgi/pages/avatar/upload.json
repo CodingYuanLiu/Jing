@@ -1,0 +1,9 @@
+{
+  "backgroundTextStyle":"dark",
+  "navigationBarBackgroundColor": "#000",
+  "navigationBarTitleText": "裁剪头像",
+  "navigationBarTextStyle": "white",
+    "usingComponents": {
+        "i-toast": "../../dist/toast/index"
+    }
+}
