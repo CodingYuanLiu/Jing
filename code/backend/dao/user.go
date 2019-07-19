@@ -189,6 +189,12 @@ func CreateUser(json json.JSON, id int) error {
 	return nil
 }
 
+func CopyUser(src User, dest User) {
+	dest.OpenId = src.OpenId
+	db.Delete(&src)
+	db.Save(&dest)
+}
+
 func CreateUserByJaccount(jaccount string) error {
 	user := User{}
 	_, err := FindUserByJaccount(jaccount)
@@ -239,9 +245,7 @@ func BindJaccountById(id int, jaccount string) error {
 
 func init()  {
 	var err error
-	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
-	//db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
-	//db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}

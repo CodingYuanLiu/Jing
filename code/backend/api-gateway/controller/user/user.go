@@ -85,6 +85,7 @@ func (uc *Controller) UploadAvatar (c *gin.Context) {
 	dao.SetAvatarKey(int(resp.UserId), key)
 	c.JSON(http.StatusOK, map[string]string {
 		"message": "Upload avatar successfully",
+		"url": url,
 	})
 }
 
