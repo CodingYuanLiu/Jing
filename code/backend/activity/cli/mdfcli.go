@@ -10,7 +10,7 @@ import (
 func main(){
 	service :=micro.NewService()
 	service.Init()
-	c1 := activity.NewActivitySrvService("go.micro.handler.act",service.Client())
+	c1 := activity.NewActivitySrvService("act",service.Client())
 	rsp,err:= c1.Modify(context.TODO(), &activity.MdfReq{
 		/*
 		Actid:5,

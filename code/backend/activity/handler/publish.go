@@ -9,6 +9,7 @@ import (
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
 	"log"
+	"strconv"
 )
 
 func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
@@ -39,14 +40,28 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		//Store the images into the mongoDB. Discard it now.
 		//Images:req.Info.Images,
 	}
-	/* Upload the pictures and return the url */
-	for _,param := range req.Info.Images{
-		basicInfo.Images = append(basicInfo.Images, dao.UploadImg(param))
+	fetchId := bson.M{}
+	err := idCollection.Find(nil).One(&fetchId)
+	log.Println("Get autoid from mongoDB.")
+	if err!=nil {
+		log.Println("Get autoId error.")
+		log.Fatal(err)
 	}
-	var err error
+
+	intId := fetchId["autoid"].(int)
+	id = int32(intId)
+	check := basicInfo.Type == "taxi" || basicInfo.Type == "takeout" || basicInfo.Type == "order" || basicInfo.Type == "other"
+	if check{
+		/* Upload the pictures and return the url */
+		for i:=0;i<len(req.Info.Images);i++{
+			name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(intId+1),strconv.Itoa(i))
+			basicInfo.Images = append(basicInfo.Images, dao.UploadImgWithName(req.Info.Images[i],name))
+		}
+	}
+
 	switch basicInfo.Type{
 	case "taxi":
-		id = GetId()
+		id = id+1
 		newAct := model.TaxiAct{
 			ActId:     id,
 			BasicInfo: basicInfo,
@@ -59,7 +74,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		}
 		err = collection.Insert(newAct)
 	case "takeout":
-		id = GetId()
+		id = id+1
 		newAct := model.TakeoutAct{
 			ActId:      id,
 			BasicInfo: basicInfo,
@@ -71,7 +86,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		}
 		err = collection.Insert(newAct)
 	case "order":
-		id = GetId()
+		id = id+1
 		newAct := model.OrderAct{
 			ActId: id,
 			BasicInfo:basicInfo,
@@ -82,7 +97,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		}
 		err = collection.Insert(newAct)
 	case "other":
-		id = GetId()
+		id = id+1
 		newAct := model.OtherAct{
 			ActId: id,
 			BasicInfo:basicInfo,
@@ -93,17 +108,19 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		}
 		err = collection.Insert(newAct)
 	default:
-		fmt.Println("Undefined Type.")
+		log.Println("Undefined Type.")
 		return -1
 	}
 	if err!=nil{
-		fmt.Println("Insert Fail!")
+		log.Println("Insert Fail!")
 	}
 	err = idCollection.Update(
 		bson.M{"autoid": id-1},
 		bson.M{"$inc": bson.M{ "autoid": 1 }})
+	log.Println("Inserted autoid.")
 	if err!=nil{
 		log.Fatal(err)
 	}
+	log.Println("Publish activity successfully")
 	return id
 }

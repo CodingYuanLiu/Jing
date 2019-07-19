@@ -35,9 +35,9 @@ func Before() ActivitySrv{
 	fetchId := bson.M{}
 	err = idCollection.Find(nil).One(&fetchId)
 	if err == mgo.ErrNotFound{
-		Id = 0
-		id := new(id)
+		id := new(Id)
 		id.AutoId = int32(0)
+		id.Lock = false
 		insertErr := idCollection.Insert(id)
 		if insertErr !=nil{
 			log.Fatal(insertErr)
@@ -46,9 +46,12 @@ func Before() ActivitySrv{
 		log.Fatal(err)
 	}else {
 		/* The fetchId["autoid"] can only be converted to int, not int32.*/
+		/*
 		intId := fetchId["autoid"].(int)
 		Id = int32(intId)
+		*/
 	}
+
 	return actSrv
 }
 func TestActivitySrv_TaxiAndComment(t *testing.T) {

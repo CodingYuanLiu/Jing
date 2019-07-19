@@ -12,7 +12,7 @@ import (
 func main(){
 	service :=micro.NewService()
 	service.Init()
-	c1 := activity.NewActivitySrvService("go.micro.handler.act",service.Client())
+	c1 := activity.NewActivitySrvService("act",service.Client())
 	img1,_:=file2Bytes("./testqiniu1.png")
 	img2,_:=file2Bytes("./testqiniu2.png")
 	rsp,err:= c1.Publish(context.TODO(), &activity.PubReq{
