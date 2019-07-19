@@ -77,7 +77,7 @@ func (activityController *Controller) Status(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, map[string]int {
-		"status": dao.CheckStatus(int(userId), actId),
+		"status": dao.CheckStatus(userId, actId),
 	})
 }
 
@@ -102,7 +102,7 @@ func (activityController *Controller) Comment(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.AddComment(int(jsonForm["act_id"].(float64)), int(userId), int(jsonForm["receiver_id"].(float64)),
+	err = activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, int(jsonForm["receiver_id"].(float64)),
 		jsonForm["content"].(string), jsonForm["time"].(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
@@ -158,7 +158,7 @@ func (activityController *Controller) FindAllActivity(c *gin.Context) {
 func (activityController *Controller) MyAct(c *gin.Context) {
 	userId := c.GetInt("userId")
 	var actJSONs []myjson.JSON
-	acts := dao.GetJoinedActivity(int(userId))
+	acts := dao.GetJoinedActivity(userId)
 	index, _ := strconv.Atoi(c.Query("index"))
 	size, _ := strconv.Atoi(c.Query("size"))
 	retActs, status := getPages(index, size, acts)
@@ -177,7 +177,7 @@ func (activityController *Controller) MyAct(c *gin.Context) {
 func (activityController *Controller) ManageAct(c *gin.Context) {
 	userId := c.GetInt("userId")
 	var actJSONs []myjson.JSON
-	acts := dao.GetManagingActivity(int(userId))
+	acts := dao.GetManagingActivity(userId)
 	index, _ := strconv.Atoi(c.Query("index"))
 	size, _ := strconv.Atoi(c.Query("size"))
 	retActs, status := getPages(index, size, acts)
@@ -254,7 +254,7 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 func (activityController *Controller) JoinActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
 	actId, _ := strconv.Atoi(c.Query("act_id"))
-	_ = dao.JoinActivity(int(userId), actId)
+	_ = dao.JoinActivity(userId, actId)
 	c.JSON(http.StatusOK, map[string]string{
 		"message": "Join activity successfully",
 	})
@@ -294,7 +294,7 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 
 func (activityController *Controller) GetJoinApplication(c *gin.Context){
 	userId := c.GetInt("userId")
-	applications := dao.GetJoinApplication(int(userId))
+	applications := dao.GetJoinApplication(userId)
 	var appJSONs []myjson.JSON
 	for _, v := range applications{
 		application,_ := getActivityJson(v["act_id"])
@@ -378,7 +378,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 
 func (activityController Controller) DeleteActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
-	acts := dao.GetManagingActivity(int(userId))
+	acts := dao.GetManagingActivity(userId)
 	actId, _ := strconv.Atoi(c.Query("act_id"))
 	flag := false
 	for _, v := range acts {
@@ -394,7 +394,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err := activityClient.DeleteActivity(int(userId), actId)
+	err := activityClient.DeleteActivity(userId, actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
 			"error": err,
