@@ -74,6 +74,8 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/act/status", ac.Status)
 		userRouter.PUT("/info/update", uc.UpdateUser)
 		userRouter.POST("/avatar/upload", uc.UploadAvatar)
+		userRouter.GET("/act/gettag",ac.GetTags)
+		userRouter.POST("/act/addtag",ac.AddTags)
 	}
 
 	return router

@@ -14,12 +14,10 @@ var (
 )
 
 func init() {
-
 	os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
 	)
-
 	Client = userProto.NewUserService("user", client.DefaultClient)
 }
 

@@ -496,3 +496,96 @@ func (activityController Controller) QueryActivity(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, returnJson)
 }
+
+func (activityController *Controller) GetTags(c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Json parse error",
+		})
+		c.Abort()
+		return
+	}
+	check := jsonForm["title"] == nil || jsonForm["description"] == nil
+	if check{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message":"Miss some field",
+		})
+		c.Abort()
+		return
+	}
+
+	tags := activityClient.GenerateTags(jsonForm["title"].(string),jsonForm["description"].(string))
+	c.JSON(http.StatusOK,map[string][]string{
+		"tags":tags,
+	})
+}
+
+func (activityController *Controller) AddTags(c *gin.Context) {
+	auth := c.Request.Header.Get("Authorization")
+	verified, jwt := srv.VerifyAuthorization(auth)
+	if !verified {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Need Authorization field",
+		})
+		c.Abort()
+		return
+	}
+	resp, _ := login.CallAuth(jwt)
+	if resp.UserId == -1 {
+		c.JSON(http.StatusUnauthorized, map[string]string{
+			"message": "Invalid jwt",
+		})
+		c.Abort()
+		return
+	}
+
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Json parse error",
+		})
+		c.Abort()
+		return
+	}
+	if jsonForm["tags"] == nil{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message":"Miss some field",
+		})
+		c.Abort()
+		return
+	}
+	/* transform []interface{} to []string*/
+	var tags []string
+	for _,param := range jsonForm["tags"].([]interface{}){
+		tags = append(tags,param.(string))
+	}
+	num := activityClient.AddTags(tags,resp.UserId)
+	c.JSON(http.StatusOK,map[string]int32{
+		"num":num,
+	})
+}

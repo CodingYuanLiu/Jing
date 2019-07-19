@@ -146,6 +146,7 @@ func DeleteImgWithName(name string){
 	err := bucketManager.Delete(bucket,name)
 	if err != nil{
 		log.Printf("Dao error: delete image %s from qiniu error.\n",name)
+		log.Println(err)
 		return
 	}
 	log.Printf("Delete image %s from qiniu successfully\n",name)

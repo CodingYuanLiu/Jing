@@ -687,6 +687,8 @@ github.com/xanzy/ssh-agent v0.2.1/go.mod h1:mLlQY/MoOhWBj+gOGMQkOeiEvkx+8pJSI+0B
 github.com/xiang90/probing v0.0.0-20160813154853-07dd2e8dfe18/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xlab/treeprint v0.0.0-20181112141820-a009c3971eca/go.mod h1:ce1O1j6UtZfjr22oyGxGLbauSBp2YVXpARAosm7dHBg=
+github.com/yanyiwu/gojieba v1.0.0 h1:0yAHD2rFffVXtjVG71cFyrhP8c/z7SGRAgNk4EJMIdY=
+github.com/yanyiwu/gojieba v1.0.0/go.mod h1:0AAj9tOG6WWXQ5FNffl4ruBy/hP7bHl2gs+YiDi1aYs=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/etcd v0.0.0-20190130112157-46e23b233c18/go.mod h1:RutfZdQAP913VY0GI8/Mjwf50+IZ7Mpg2zt3SDs17/g=
 go.etcd.io/etcd v3.3.11+incompatible/go.mod h1:yaeTdrJi5lOmYerz05bd8+V7KubZs8YSFZfzsF9A6aI=

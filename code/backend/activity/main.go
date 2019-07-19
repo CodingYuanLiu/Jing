@@ -23,6 +23,7 @@ func main() {
 		micro.RegisterInterval(time.Second*10),
 	)
 	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
+	//session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")
 	if err != nil { 
 		log.Fatal(err)
 	}

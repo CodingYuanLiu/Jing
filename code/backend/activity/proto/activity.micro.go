@@ -39,6 +39,8 @@ type ActivitySrvService interface {
 	Delete(ctx context.Context, in *DltReq, opts ...client.CallOption) (*DltResp, error)
 	Query(ctx context.Context, in *QryReq, opts ...client.CallOption) (*QryResp, error)
 	Comment(ctx context.Context, in *CmtReq, opts ...client.CallOption) (*CmtResp, error)
+	GenTags(ctx context.Context, in *TagReq, opts ...client.CallOption) (*TagResp, error)
+	AddTags(ctx context.Context, in *AddTagsReq, opts ...client.CallOption) (*AddTagsResp, error)
 }
 
 type activitySrvService struct {
@@ -109,6 +111,26 @@ func (c *activitySrvService) Comment(ctx context.Context, in *CmtReq, opts ...cl
 	return out, nil
 }
 
+func (c *activitySrvService) GenTags(ctx context.Context, in *TagReq, opts ...client.CallOption) (*TagResp, error) {
+	req := c.c.NewRequest(c.name, "ActivitySrv.GenTags", in)
+	out := new(TagResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *activitySrvService) AddTags(ctx context.Context, in *AddTagsReq, opts ...client.CallOption) (*AddTagsResp, error) {
+	req := c.c.NewRequest(c.name, "ActivitySrv.AddTags", in)
+	out := new(AddTagsResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ActivitySrv service
 
 type ActivitySrvHandler interface {
@@ -117,6 +139,8 @@ type ActivitySrvHandler interface {
 	Delete(context.Context, *DltReq, *DltResp) error
 	Query(context.Context, *QryReq, *QryResp) error
 	Comment(context.Context, *CmtReq, *CmtResp) error
+	GenTags(context.Context, *TagReq, *TagResp) error
+	AddTags(context.Context, *AddTagsReq, *AddTagsResp) error
 }
 
 func RegisterActivitySrvHandler(s server.Server, hdlr ActivitySrvHandler, opts ...server.HandlerOption) error {
@@ -126,6 +150,8 @@ func RegisterActivitySrvHandler(s server.Server, hdlr ActivitySrvHandler, opts .
 		Delete(ctx context.Context, in *DltReq, out *DltResp) error
 		Query(ctx context.Context, in *QryReq, out *QryResp) error
 		Comment(ctx context.Context, in *CmtReq, out *CmtResp) error
+		GenTags(ctx context.Context, in *TagReq, out *TagResp) error
+		AddTags(ctx context.Context, in *AddTagsReq, out *AddTagsResp) error
 	}
 	type ActivitySrv struct {
 		activitySrv
@@ -156,4 +182,12 @@ func (h *activitySrvHandler) Query(ctx context.Context, in *QryReq, out *QryResp
 
 func (h *activitySrvHandler) Comment(ctx context.Context, in *CmtReq, out *CmtResp) error {
 	return h.ActivitySrvHandler.Comment(ctx, in, out)
+}
+
+func (h *activitySrvHandler) GenTags(ctx context.Context, in *TagReq, out *TagResp) error {
+	return h.ActivitySrvHandler.GenTags(ctx, in, out)
+}
+
+func (h *activitySrvHandler) AddTags(ctx context.Context, in *AddTagsReq, out *AddTagsResp) error {
+	return h.ActivitySrvHandler.AddTags(ctx, in, out)
 }
