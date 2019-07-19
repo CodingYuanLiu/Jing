@@ -2,18 +2,18 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"jing/app/activity/model"
 	activity "jing/app/activity/proto"
+	"log"
 )
 
 func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
 	var act map[string]interface{}
 	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
 	if err == mgo.ErrNotFound{
-		fmt.Println(err)
+		log.Println(err)
 		resp.Status=404
 		resp.Description="Not Found"
 		return err
@@ -71,10 +71,11 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		return nil*/
 	}
 	if err!=nil{
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 	resp.Status=200
 	resp.Description="OK"
+	log.Println("Modify successfully")
 	return nil
 }

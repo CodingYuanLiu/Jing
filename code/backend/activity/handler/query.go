@@ -89,5 +89,6 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 		resp.OtherInfo = &otherInfo
 		resp.Status = 200
 	}
+	log.Println("Query successfully.")
 	return nil
 }

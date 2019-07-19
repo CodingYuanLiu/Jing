@@ -42,6 +42,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 	}
 	fetchId := bson.M{}
 	err := idCollection.Find(nil).One(&fetchId)
+	log.Println("Get autoid from mongoDB.")
 	if err!=nil {
 		log.Println("Get autoId error.")
 		log.Fatal(err)
@@ -107,17 +108,19 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		}
 		err = collection.Insert(newAct)
 	default:
-		fmt.Println("Undefined Type.")
+		log.Println("Undefined Type.")
 		return -1
 	}
 	if err!=nil{
-		fmt.Println("Insert Fail!")
+		log.Println("Insert Fail!")
 	}
 	err = idCollection.Update(
 		bson.M{"autoid": id-1},
 		bson.M{"$inc": bson.M{ "autoid": 1 }})
+	log.Println("Inserted autoid.")
 	if err!=nil{
 		log.Fatal(err)
 	}
+	log.Println("Publish activity successfully")
 	return id
 }
