@@ -148,4 +148,5 @@ func DeleteImgWithName(name string){
 		log.Println("Dao error: delete images from qiniu error.")
 		return
 	}
+	log.Printf("Delete image %s from qiniu successfully",name)
 }
