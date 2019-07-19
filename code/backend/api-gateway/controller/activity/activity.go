@@ -13,6 +13,7 @@ import (
 	myjson "jing/app/json"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 )
 
@@ -149,10 +150,39 @@ func (activityController *Controller) Comment(c *gin.Context) {
 	})
 }
 
+// 0: correct,  1: not complete,  -1: error / can't get such pages
+func getPages(index int, size int, acts []int) (retActs []int, status int) {
+	sort.Sort(sort.Reverse(sort.IntSlice(acts)))
+	if size == 0 {
+		retActs = acts
+		return
+	}
+	if size*index >= len(acts) {
+		status = -1
+		return
+	}
+	for i := size*index; i < (index+1) * size; i++ {
+		retActs = append(retActs, acts[i])
+		if i == len(acts) {
+			status = 1
+			return
+		}
+	}
+	return
+}
+
 func (activityController *Controller) FindAllActivity(c *gin.Context) {
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
 	acts := dao.GetAllActId()
 	var actJSONs []myjson.JSON
-	for _, v := range acts {
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+	}
+	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
@@ -179,7 +209,15 @@ func (activityController *Controller) MyAct(c *gin.Context) {
 	}
 	var actJSONs []myjson.JSON
 	acts := dao.GetJoinedActivity(int(resp.UserId))
-	for _, v := range acts {
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+	}
+	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
@@ -206,7 +244,15 @@ func (activityController *Controller) ManageAct(c *gin.Context) {
 	}
 	var actJSONs []myjson.JSON
 	acts := dao.GetManagingActivity(int(resp.UserId))
-	for _, v := range acts {
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+	}
+	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}

@@ -3,7 +3,7 @@ package login
 import (
 	"context"
 	"github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/client/grpc"
+	"github.com/micro/go-plugins/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	loginProto "jing/app/login/proto/login"
 	"log"
