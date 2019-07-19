@@ -1,13 +1,13 @@
 package main
 
 import (
-	"bytes"
 	//"bytes"
-	"context"
-	"github.com/qiniu/api.v7/auth/qbox"
-	"github.com/qiniu/api.v7/storage"
+	//"context"
 	"fmt"
-	"os"
+	//"github.com/qiniu/api.v7/auth/qbox"
+	//"github.com/qiniu/api.v7/storage"
+	"github.com/yanyiwu/gojieba"
+	dao "jing/app/dao"
 )
 
 var (
@@ -22,8 +22,8 @@ type PutRet struct {
 }
 
 
-
-func main() {
+/*
+func uploadFile() {
 	//初始化AK，SK
 	accessKey := "XjJVXANFlU4XnSFgKmUdJWxx2GEzM_ftCVOvsorP"
 	secretKey := "OrpJx83zmG6PPgV1e0D-j7wkhuykOxHB5-GdcENT"
@@ -89,3 +89,23 @@ func file2Bytes(filename string) ([]byte, error) {
 	fmt.Printf("read file %s len: %d \n", filename, count)
 	return data, nil
 }*/
+
+func testGoJieba(){
+	s:="虹桥机场，虹桥火车站,浦东机场，早上去莘庄，去大悦城，去静安，去杨浦，去黄埔，去苏州，去颛桥，去颛桥龙胜万达看电影，周六上午10点出" +
+		"租车，早上坐出租从徐汇校区到闵行校区出发，到东川路地铁站，到剑川路地铁站，到人民广场站，打滴滴到上海南站去,一起打车过去,"
+	x:=gojieba.NewJieba()
+	defer x.Free()
+	tags := dao.GetAllTags()
+	for _,param := range tags{
+		x.AddWord(param)
+	}
+	x.AddWord("滴滴")
+	x.AddWord("打车")
+	words := x.Cut(s,true)
+	fmt.Println(words)
+
+}
+
+func main(){
+	testGoJieba()
+}

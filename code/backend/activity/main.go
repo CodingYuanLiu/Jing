@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/micro/go-micro"
-	k8s "github.com/micro/kubernetes/go/micro"
+	//k8s "github.com/micro/kubernetes/go/micro"
 	"jing/app/activity/handler"
 	activity "jing/app/activity/proto"
 )
@@ -16,13 +16,13 @@ import (
 
 
 func main() {
-	service := k8s.NewService(
+	service := micro.NewService(
 		micro.Name("act"),
-		micro.Address(":8080"),
+		micro.Address("127.0.0.1:10080"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*10),
 	)
-	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
+	session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")
 	if err != nil { 
 		log.Fatal(err)
 	}

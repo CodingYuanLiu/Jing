@@ -8,6 +8,8 @@ service ActivitySrv{
     rpc Delete(DltReq) returns (DltResp){}
     rpc Query(QryReq) returns (QryResp){}
     rpc Comment(CmtReq) returns (CmtResp) {}
+    rpc GenTags(TagReq) returns (TagResp) {}
+    rpc AddTags(AddTagsReq) returns (AddTagsResp){}
 }
 
 message BasicInfo{
@@ -113,4 +115,23 @@ message Comment{
     int32 receiverId = 2;
     string content = 3;
     string time = 4;
+}
+
+message TagReq{
+    string title = 1;
+    string description = 2;
+}
+
+message TagResp{
+    int32 status = 1;
+    repeated string tag = 2;
+}
+
+message AddTagsReq{
+    repeated string tags = 1;
+    int32 userId = 2;
+}
+
+message AddTagsResp{
+    int32 num = 1; // The number of added tags into the candidate database.
 }

@@ -145,7 +145,9 @@ func DeleteImgWithName(name string){
 	bucketManager := storage.NewBucketManager(mac, &cfg)
 	err := bucketManager.Delete(bucket,name)
 	if err != nil{
-		log.Println("Dao error: delete images from qiniu error.")
+		log.Printf("Dao error: delete image %s from qiniu error.\n",name)
+		log.Println(err)
 		return
 	}
+	log.Printf("Delete image %s from qiniu successfully\n",name)
 }

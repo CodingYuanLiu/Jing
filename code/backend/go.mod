@@ -26,6 +26,7 @@ require (
 	github.com/skip2/go-qrcode v0.0.0-20190110000554-dc11ecdae0a9
 	github.com/stretchr/testify v1.3.0
 	github.com/ugorji/go/codec v1.1.7 // indirect
+	github.com/yanyiwu/gojieba v1.0.0
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	google.golang.org/grpc v1.22.0 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20160818020120-3f83fa500528
