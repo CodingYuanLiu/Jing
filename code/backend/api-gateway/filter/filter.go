@@ -29,6 +29,7 @@ func AuthFilter(c *gin.Context) {
 		}
 
 		if rsp, _ := loginClient.CallAuth(jwt); rsp.Status == 0 {
+			c.Set("userId", int(rsp.UserId))
 			c.Next()
 			return
 		} else {

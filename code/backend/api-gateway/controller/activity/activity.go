@@ -13,6 +13,7 @@ import (
 	myjson "jing/app/json"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
 )
 
@@ -68,24 +69,7 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 }
 
 func (activityController *Controller) Status(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-	userId := resp.UserId
+	userId := c.GetInt("userId")
 	actId, err := strconv.Atoi(c.Query("act_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
@@ -93,29 +77,12 @@ func (activityController *Controller) Status(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, map[string]int {
-		"status": dao.CheckStatus(int(userId), actId),
+		"status": dao.CheckStatus(userId, actId),
 	})
 }
 
 func (activityController *Controller) Comment(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-	userId := resp.UserId
+	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -135,7 +102,7 @@ func (activityController *Controller) Comment(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.AddComment(int(jsonForm["act_id"].(float64)), int(userId), int(jsonForm["receiver_id"].(float64)),
+	err = activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, int(jsonForm["receiver_id"].(float64)),
 		jsonForm["content"].(string), jsonForm["time"].(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{
@@ -149,10 +116,39 @@ func (activityController *Controller) Comment(c *gin.Context) {
 	})
 }
 
+// 0: correct,  1: not complete,  -1: error / can't get such pages
+func getPages(index int, size int, acts []int) (retActs []int, status int) {
+	sort.Sort(sort.Reverse(sort.IntSlice(acts)))
+	if size == 0 {
+		retActs = acts
+		return
+	}
+	if size*index >= len(acts) {
+		status = -1
+		return
+	}
+	for i := size*index; i < (index+1) * size; i++ {
+		if i == len(acts) {
+			status = 1
+			return
+		}
+		retActs = append(retActs, acts[i])
+	}
+	return
+}
+
 func (activityController *Controller) FindAllActivity(c *gin.Context) {
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
 	acts := dao.GetAllActId()
 	var actJSONs []myjson.JSON
-	for _, v := range acts {
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+	}
+	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
@@ -160,26 +156,18 @@ func (activityController *Controller) FindAllActivity(c *gin.Context) {
 }
 
 func (activityController *Controller) MyAct(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
+	userId := c.GetInt("userId")
 	var actJSONs []myjson.JSON
-	acts := dao.GetJoinedActivity(int(resp.UserId))
-	for _, v := range acts {
+	acts := dao.GetJoinedActivity(userId)
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+	}
+	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
@@ -187,26 +175,18 @@ func (activityController *Controller) MyAct(c *gin.Context) {
 }
 
 func (activityController *Controller) ManageAct(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
+	userId := c.GetInt("userId")
 	var actJSONs []myjson.JSON
-	acts := dao.GetManagingActivity(int(resp.UserId))
-	for _, v := range acts {
+	acts := dao.GetManagingActivity(userId)
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+	}
+	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
@@ -272,25 +252,9 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 }
 
 func (activityController *Controller) JoinActivity(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
+	userId := c.GetInt("userId")
 	actId, _ := strconv.Atoi(c.Query("act_id"))
-	_ = dao.JoinActivity(int(resp.UserId), actId)
+	_ = dao.JoinActivity(userId, actId)
 	c.JSON(http.StatusOK, map[string]string{
 		"message": "Join activity successfully",
 	})
@@ -298,55 +262,39 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 
 //TODO:Finish it at 7.17 morning
 func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
+	userId := c.GetInt("userId")
+	acts := dao.GetManagingActivity(userId)
 	actId, _ := strconv.Atoi(c.Query("act_id"))
-	userId,_ := strconv.Atoi(c.Query("user_id"))
-	err := dao.AcceptJoinActivity(userId,actId)
-	if err!= nil{
-		log.Print("Accept join activity application error")
-		log.Fatal(err)
+	flag := false
+	for _, v := range acts {
+		if actId == v {
+			flag = true
+		}
+	}
+	if !flag {
+		c.JSON(http.StatusForbidden, map[string]string {
+			"message": "403 Forbidden",
+		})
+		c.Abort()
+		return
+	}
+	acceptId, _ := strconv.Atoi(c.Query("user_id"))
+	err := dao.AcceptJoinActivity(acceptId, actId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "Accept join activity application error",
+		})
+		c.Abort()
+		return
 	}
 	c.JSON(http.StatusOK,map[string]string{
 		"message":"Accept successfully",
 	})
 }
 
-//TODO:
 func (activityController *Controller) GetJoinApplication(c *gin.Context){
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-	applications := dao.GetJoinApplication(int(resp.UserId))
+	userId := c.GetInt("userId")
+	applications := dao.GetJoinApplication(userId)
 	var appJSONs []myjson.JSON
 	for _, v := range applications{
 		application,_ := getActivityJson(v["act_id"])
@@ -429,24 +377,8 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 }
 
 func (activityController Controller) DeleteActivity(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-	acts := dao.GetManagingActivity(int(resp.UserId))
+	userId := c.GetInt("userId")
+	acts := dao.GetManagingActivity(userId)
 	actId, _ := strconv.Atoi(c.Query("act_id"))
 	flag := false
 	for _, v := range acts {
@@ -462,7 +394,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err := activityClient.DeleteActivity(int(resp.UserId), actId)
+	err := activityClient.DeleteActivity(userId, actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
 			"error": err,

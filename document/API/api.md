@@ -421,6 +421,9 @@ Status OK - 200
 ]
 ```
 
+### PS:
+For `myact`,`manageact` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
+
 ## Publish Activity
 
 #### Description
