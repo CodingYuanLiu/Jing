@@ -3,7 +3,10 @@ package user
 import (
 	"context"
 	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/client/grpc"
+	"github.com/micro/go-plugins/registry/kubernetes"
 	userProto "jing/app/user/proto/user"
+	"os"
 )
 
 var (
@@ -11,12 +14,10 @@ var (
 )
 
 func init() {
-	/*
 	os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
 	)
-	 */
 	Client = userProto.NewUserService("user", client.DefaultClient)
 }
 
