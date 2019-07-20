@@ -6,7 +6,7 @@ import {login, setUserInfo} from "../../actions/user";
 import {connect} from "react-redux";
 import Api from "../../api/Api"
 import NavigationUtil from "../../navigator/NavUtil";
-import defaults from "../../constant/Default"
+import defaults from "../../common/constant/Default"
 
 
 const errors = {
@@ -63,7 +63,6 @@ class RegisterScreen extends React.PureComponent{
                             username: data.username,
                             nickname: data.nickname,
                             signature: defaults.DEFAULT_SIGNATURE,
-                            credit: defaults.DEFAULT_CREDIT,
                     })
                         .then(saveStatus => {})
                         .catch(err => {})
@@ -71,7 +70,6 @@ class RegisterScreen extends React.PureComponent{
                     this.props.setUser({
                         username: this.state.nickname,
                         signature: defaults.DEFAULT_SIGNATURE,
-                        credit: defaults.DEFAULT_CREDIT,
                     })
 
                     NavigationUtil.toPage(null, "Home")

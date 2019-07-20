@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, StyleSheet} from 'react-native';
 import {Avatar, Button, Icon} from 'react-native-elements';
 import { PropTypes } from "prop-types";
-import Default from "../../../constant/Default";
+import Default from "../../../common/constant/Default";
 
 export default class Comment extends React.PureComponent{
     constructor(props) {

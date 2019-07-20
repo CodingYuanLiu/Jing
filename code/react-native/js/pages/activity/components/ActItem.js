@@ -3,7 +3,7 @@ import { View, Text, ViewPropTypes, StyleSheet, TouchableNativeFeedback } from '
 import { PropTypes } from "prop-types";
 import {TaxiSpec} from "./SpecInfo";
 import UserBar from "./UserBar";
-import Default from "../../../constant/Default";
+import Default from "../../../common/constant/Default";
 import Tag from "./Tag";
 
 export default class ActItem extends React.PureComponent{
@@ -141,7 +141,6 @@ const styles = StyleSheet.create({
     },
     tagContainer:{
         flex: 1,
-        //backgroundColor: "blue",
         flexDirection: "row",
         alignItems: "center",
     },

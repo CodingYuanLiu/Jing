@@ -5,7 +5,7 @@ import Api from "../../api/Api"
 import {Button, Icon, Image} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
 import UserCard from "./components/UserCard";
-import Default from "../../constant/Default";
+import Default from "../../common/constant/Default";
 import {TaxiSpec} from "../activity/components/SpecInfo";
 import Comment from "./components/Comment";
 import NoComment from "./components/NoComment";

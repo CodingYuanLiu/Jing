@@ -1,4 +1,4 @@
-import * as actionTypes from "../constant/ActionTypes"
+import * as actionTypes from "../common/constant/ActionTypes"
 
 export const login = jwt => ({
     type: actionTypes.LOGIN,

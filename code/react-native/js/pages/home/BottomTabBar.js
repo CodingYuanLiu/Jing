@@ -96,17 +96,6 @@ const BottomTab = createBottomTabNavigator(
             inactiveTintColor: "#bfbfbf",
             activeTintColor: "#0084ff",
         },
-        defaultNavigationOptions:{
-            tabBarOnPress: ({navigation, defaultHandler}) => {
-                if (navigation.state.routeName === "Publish") {
-                    StatusBar.setHidden(true, "fade")
-                    NavigationUtil.toPage(navigation, "Publish")
-                } else {
-                    StatusBar.setHidden(false, "fade")
-                    defaultHandler()
-                }
-            }
-        }
     }
 )
 

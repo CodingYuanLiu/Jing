@@ -10,17 +10,19 @@ export default class DataSegment extends React.PureComponent{
         data: PropTypes.number,
         label: PropTypes.string,
         style: ViewPropTypes.style,
-        labelStyle: ViewPropTypes.style,
-        dataStyle: ViewPropTypes.style,
+        labelContainer: ViewPropTypes.style,
+        dataContainer: ViewPropTypes.style,
     }
     render() {
         const data = this.props.data ? this.props.data : 0
         const label = this.props.label ? this.props.label : "错误"
         return (
             <View style={[styles.dataSegment, this.props.style]}>
-                <Text style={[styles.dataStyle, this.props.dataStyle]}>{data}</Text>
-                <View style={[styles.labelStyle, this.props.labelStyle]}>
-                    <Text>{label}</Text>
+                <View style={[styles.dataContainer, this.props.dataContainer]}>
+                    <Text style={styles.data}>{data}</Text>
+                </View>
+                <View style={[styles.labelContainer, this.props.labelContainer]}>
+                    <Text style={styles.label}>{label}</Text>
                 </View>
             </View>
         )
@@ -34,17 +36,22 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-    dataStyle: {
+    dataContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    data: {
         fontWeight: "600",
         fontSize: 24,
-        flex: 1,
-        backgroundColor: "purple",
     },
-    labelStyle: {
+    labelContainer: {
         fontSize: 16,
         flex: 1,
-        backgroundColor: "white",
         alignSelf: "center",
         justifyContent: "center",
+    },
+    label: {
+        fontSize: 12,
     },
 })

@@ -6,14 +6,13 @@ import {login, setUserInfo} from '../../actions/user';
 import {connect} from 'react-redux';
 import UserDao from '../../api/dao/UserDao';
 import NavigationUtil from '../../navigator/NavUtil';
-import Default from "../../constant/Default";
+import Default from "../../common/constant/Default";
 
 class JaccountLoadingScreen extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
-            error: false,
+            isError: false,
         }
     }
 
@@ -24,37 +23,33 @@ class JaccountLoadingScreen extends React.PureComponent{
         Api.loginWithJaccount(code, redirectUri)
             .then(data => {
                 UserDao.saveString("@jwt", data.jwt_token)
-                    .then((saceStatus) => {
-                        console.log(data)
+                    .then((saveStatus) => {
+
+                        // status = 12, first login with our app, redirect to register page
                         if (data.status == 12) {
                             NavigationUtil.toPage({jwt:data.jwt_token}, "Register")
+                        // status = 0, login success, redirect to home page
                         } else if (data.status == 0) {
+                            // get user information, is there anyway that
+                            // don't get user status in this page, but in userinfo page
                             Api.isOnline(data.jwt_token)
                                 .then(state => {
                                     let user = {
                                         nickname: state.nickname,
                                         signature: state.signature === "" ? Default.DEFAULT_SIGNATURE : state.signature,
-                                        credit: state.credit && state !== "" ? state.credit : Default.DEFAULT_CREDIT,
                                         avatarUri: Default.DEFAULT_AVATAR,
                                     }
                                     this.props.onLogin(data.jwt_token)
                                     this.props.setUser(user)
+                                    NavigationUtil.toPage(null, "Home")
                                 })
-                                .catch(err => {
-                                    console.log("Err: in jaccount login", err)
-                                })
-                            NavigationUtil.toPage(null, "Home")
                         } else {
-                            console.log("Err: In JaccountLoading, saveItem")
+                            throw new Error("In jaccount loading, status is not 0 or 12")
                         }
-                    })
-                    .catch(err => {
-                        console.log("Err: In jaccount web view, save item", err)
-                        this.setState({error: true})
                     })
             })
             .catch(err => {
-                console.log("Err: In jaccount login, login",err)
+                console.log("In jaccount loading, ", err)
                 this.setState({error:true})
             })
     }
@@ -74,12 +69,10 @@ class JaccountLoadingScreen extends React.PureComponent{
             <View style={styles.container}>
                 <Text style={styles.text}>似乎出了点问题</Text>
             </View>
-        let isLoading = this.state.loading;
         let isError = this.state.error;
-        console.log(this.state)
         return(
             <View style={styles.container}>
-                {renderLoading}
+                {isError ? renderError : renderLoading}
             </View>
         )
     }

@@ -2,7 +2,7 @@ import {
     LOGIN,
     LOGOUT,
     SET_USER
-} from "../constant/ActionTypes"
+} from "../common/constant/ActionTypes"
 
 const initialState = {
     logged: false,

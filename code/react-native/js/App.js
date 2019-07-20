@@ -17,6 +17,12 @@ export default class App extends React.Component {
     constructor(props) {
         super(props)
     }
+
+    componentDidMount() {
+
+    }
+    componentWillUnmount() {}
+
     render() {
         const App = createAppContainer(AppNav);
         return (

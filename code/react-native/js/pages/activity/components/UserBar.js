@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, ViewPropTypes, StyleSheet } from 'react-native';
 import { PropTypes } from "prop-types";
-import Default from "../../../constant/Default"
+import Default from "../../../common/constant/Default"
 import {Avatar, } from "react-native-elements";
 
 export default class UserBar extends React.PureComponent{

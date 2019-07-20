@@ -1,10 +1,8 @@
 import { PropTypes } from "prop-types";
 import React from "react";
 import { ViewPropTypes, View, Text, TouchableNativeFeedback, StyleSheet, Platform } from "react-native";
-
-
-const SEARCH_BAR_HEIGHT = 32;
-
+import Theme from "../constant/Theme";
+import Default from "../constant/Default";
 
 export default class NavigationBar extends React.Component{
     constructor(props) {
@@ -55,11 +53,11 @@ NavigationBar.propTypes = {
 const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
-        backgroundColor: "#0077ff",
+        backgroundColor: Theme.DEEP_BLUE,
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 5,
-        height: SEARCH_BAR_HEIGHT,
+        height: Default.SEARCHBAR_HEIGHT,
     },
     iconContainerStyle: {
         alignItems: "center",

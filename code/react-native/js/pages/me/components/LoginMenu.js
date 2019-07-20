@@ -2,11 +2,10 @@ import React from "react"
 import { View, Text, StyleSheet, ViewPropTypes, FlatList } from 'react-native';
 import { PropTypes } from "prop-types";
 import { Icon } from 'react-native-elements';
-import Entypo from "react-native-vector-icons/Entypo";
 import NavigationUtil from '../../../navigator/NavUtil';
 
 
-export default class SignOutInfoCard extends React.PureComponent{
+export default class LoginMenu extends React.PureComponent{
     constructor(props) {
         super(props);
     }
@@ -37,7 +36,7 @@ export default class SignOutInfoCard extends React.PureComponent{
 }
 
 
-SignOutInfoCard.propTypes = {
+LoginMenu.propTypes = {
     style: ViewPropTypes.style,
     title: PropTypes.string,
     titleStyle: ViewPropTypes.style,
@@ -58,7 +57,7 @@ const LoginWithPassword =
         name={"key"}
         reverse
         color={"#0084ff"}
-        onPress={() => {NavigationUtil.toPage(null, "Login")}}
+        onPress={() => {NavigationUtil.toPage(null, "NativeLogin")}}
     />
 const LoginWithWechat =
     <Icon
@@ -73,10 +72,10 @@ const LoginWithJaccount =
         type={"foundation"}
         name={"key"}
         reverse
-        color={"#0084ff"}
-        onPress={() => {NavigationUtil.toPage(null, "Jaccount")}}
+        color={"#51dfff"}
+        onPress={() => {NavigationUtil.toPage(null, "JaccountLogin")}}
     />
-SignOutInfoCard.defaultProps = {
+LoginMenu.defaultProps = {
     title: "登录即应，体验更多功能",
     LoginMenu: [
         {
@@ -98,17 +97,15 @@ const styles = StyleSheet.create({
     container: {
         height: 100,
         width: "100%",
-        backgroundColor: "#a2bdff",
     },
     titleContainer: {
         flex: 1,
         width: "100%",
-        backgroundColor: "red",
         justifyContent: "center",
         alignItems: "center",
     },
     title: {
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: "600",
     },
     iconContainer: {

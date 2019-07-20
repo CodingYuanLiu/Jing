@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ToastAndroid } from "react-native";
 import {Button, Icon, Input, Text} from 'react-native-elements';
 import FontAwesome from "react-native-vector-icons/FontAwesome"
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -9,7 +9,8 @@ import Api from "../../api/Api";
 import UserDao from "../../api/dao/UserDao"
 import {login, setUserInfo} from '../../actions/user';
 import {connect} from "react-redux";
-import defaults from "../../constant/Default"
+import Default from "../../common/constant/Default";
+import Theme from "../../common/constant/Theme";
 
 class LoginScreen extends React.PureComponent {
     constructor(props) {
@@ -18,64 +19,57 @@ class LoginScreen extends React.PureComponent {
             username: "",
             password: "",
             isLoading: false,
+            isError: false,
+            btnDisabled: true,
         }
     }
 
     login = (name, pwd) => {
         this.setState({isLoading: true})
+        if (name === "" || pwd === "") {
+            this.setState({isLoading: false})
+        }
         Api.login(name, pwd)
             .then(jwt => {
                 UserDao.saveString("@jwt", jwt)
                     .then(() => {
                         Api.isOnline(jwt)
                             .then(data => {
-                                console.log(data)
-                                UserDao.saveJson("@user", {
+                                let user = {
                                     nickname: data.nickname,
-                                    signature: data.signature === "" ? defaults.DEFAULT_SIGNATURE : data.signature,
-                                    credit: defaults.DEFAULT_CREDIT,
+                                    signature: data.signature === "" ? Default.DEFAULT_SIGNATURE : data.signature,
+                                    avatarUri: Default.DEFAULT_AVATAR,
+                                }
+                                this.setState({
+                                    isLoading: false,
                                 })
-                                    .then(savedUser => {
-                                        this.setState({
-                                            isLoading: false,
-                                        })
 
-                                        this.props.onLogin(jwt)
-                                        this.props.setUser({
-                                            nickname: savedUser.nickname,
-                                            signature: savedUser.signature,
-                                            credit: "小白",
-                                        })
-                                        NavigationUtil.back(this.props)
-                                    })
-                                    .catch(err => {
-                                        console.log("Err: saveUser error",err)
-                                    })
+                                this.props.onLogin(jwt)
+                                this.props.setUser(user)
+                                NavigationUtil.toPage(null,"Home");
                             })
-                            .catch(err => {
-                                  console.log("Err: get status, error", err)
-                            })
-                    })
-                    .catch(err => {
-                        console.log("Err: save jwt error", err)
                     })
             }).catch(err => {
                 this.setState({
                     isLoading: false,
                 })
-                console.log(err)
-                alert("登录失败，用户名或密码错误")
+                if (err.status === 400 ) {
+                    ToastAndroid.show(Default.LOGIN_ERROR, ToastAndroid.SHORT)
+                } else {
+                    ToastAndroid.show(Default.UNKNOWN_ERROR_MESSAGE, ToastAndroid.SHORT)
+                }
         })
     }
     render() {
         return (
             <SafeAreaView style={{flex: 1}}>
+
                 <View style={styles.container}>
                     <View style={styles.header}>
                         <Icon
                             type={"AntDesign"}
                             name={"close"}
-                            onPress={() => {NavigationUtil.back(this.props)}}
+                            onPress={() => {NavigationUtil.toPage(null, "Home")}}
                             color={"#a3a3a3"}
                             size={32}
                             iconStyle={styles.headerLeft}
@@ -93,7 +87,7 @@ class LoginScreen extends React.PureComponent {
                                     <FontAwesome
                                         name={"user"}
                                         size={24}
-                                        color={"red"}
+                                        color={"#d3d3d3"}
                                     />
                                 }
                                 placeholder={"输入用户名"}
@@ -102,6 +96,11 @@ class LoginScreen extends React.PureComponent {
                                 keyboardType={"email-address"}
                                 onChangeText={(username) => {
                                     this.setState({username})
+                                    if(this.state.password.length >= 8 && username !== "") {
+                                        this.setState({btnDisabled: false})
+                                    } else {
+                                        this.setState({btnDisabled: true})
+                                    }
                                 }}
                                 value={this.state.username}
                             />
@@ -110,7 +109,7 @@ class LoginScreen extends React.PureComponent {
                                     <Fontisto
                                         name={"locked"}
                                         size={24}
-                                        color={"red"}
+                                        color={"#d3d3d3"}
                                     />
                                 }
                                 placeholder={"输入密码"}
@@ -119,6 +118,11 @@ class LoginScreen extends React.PureComponent {
                                 secureTextEntry={true}
                                 onChangeText={(password) => {
                                     this.setState({password})
+                                    if(password.length >= 8 && this.state.username !== "") {
+                                        this.setState({btnDisabled: false})
+                                    } else {
+                                        this.setState({btnDisabled: true})
+                                    }
                                 }}
                                 value={this.state.password}
                             />
@@ -133,16 +137,20 @@ class LoginScreen extends React.PureComponent {
                                     this.login(username, password)
                                 }}
                                 loading={this.state.isLoading}
+                                disabled={this.state.btnDisabled}
+                                disabledStyle={styles.buttonDisabled}
+                                titleStyle={styles.buttonTitle}
+                                disabledTitleStyle={styles.buttonTitleDisabled}
                             />
                         </View>
                         <View style={styles.tips}>
                             <Text
                                 style={styles.tipsLeft}
-                                onPress={() => {NavigationUtil.toPage(this.props, "Detail")}}
+                                onPress={() => {NavigationUtil.toPage(this.props, "ActDetail")}}
                             >忘记密码？</Text>
                             <Text
                                 style={styles.tipsRight}
-                                onPress={() => {NavigationUtil.toPage(this.props, "Jaccount")}}
+                                onPress={() => {NavigationUtil.toPage(this.props, "JaccountLogin")}}
                             >Jaccount登录</Text>
                         </View>
                     </View>
@@ -166,13 +174,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         position: "relative",
-        backgroundColor: "grey",
     },
     header: {
         marginTop:16,
         height: 48,
         width: "100%",
-        backgroundColor: "red",
         alignItems: "flex-start",
         justifyContent: "center",
     },
@@ -180,7 +186,6 @@ const styles = StyleSheet.create({
         marginLeft: 20,
     },
     title: {
-        backgroundColor: "blue",
         marginTop: 40,
         height: 28,
         width: "100%",
@@ -191,38 +196,44 @@ const styles = StyleSheet.create({
         width: "80%",
         alignSelf: "center",
         flex: 4,
-        backgroundColor: "purple",
     },
     inputContainer: {
         marginTop: 22
     },
     buttonContainer: {
         width: "93%",
-        marginTop: 10,
+        marginTop: 20,
         marginBottom: 8,
         alignSelf: "center",
     },
+    buttonTitle: {
+        color: Theme.WHITE,
+    },
     button: {
         flex: 1,
+    },
+    buttonDisabled: {
+        backgroundColor: "#bde3ff",
+    },
+    buttonTitleDisabled: {
+        color: Theme.WHITE,
     },
     tips: {
         alignSelf: "center",
         width: "93%",
         height: 20,
+        marginTop: 8,
         fontSize: 12,
-        backgroundColor: "orange",
         flexDirection: "row",
     },
     tipsLeft: {
-        color: "#064cff",
-        backgroundColor: "red",
+        color: "#0084ff",
         flex: 1,
     },
     tipsRight: {
-        color: "#064cff",
+        color: "#0084ff",
     },
     bottom: {
-        flex: 1,
-        backgroundColor: "green"
+        //flex: 1,
     }
 })

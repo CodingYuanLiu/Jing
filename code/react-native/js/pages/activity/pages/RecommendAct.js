@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import Api from '../../../api/Api';
-import Default from "../../../constant/Default";
+import Default from "../../../common/constant/Default";
 import ActItem from "../components/ActItem";
 import NavigationUtil from "../../../navigator/NavUtil";
 
@@ -18,10 +18,7 @@ export default class RecommendAct extends React.Component{
     componentDidMount() {
         Api.getAllAct()
             .then(data => {
-                console.log(data)
-                console.log(this.state.activities)
                 this.setState({activities: data})
-                console.log(this.state.activities)
             })
             .catch(err => {
                 console.log(err)

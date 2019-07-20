@@ -25,12 +25,10 @@ export default class InfoCard extends React.PureComponent{
     render() {
 
         const nickname = this.props.user.nickname;
-        const credit = this.props.user.credit;
         const signature = this.props.user.signature;
         const avatarUri = this.props.user.avatarUri;
         const avatarParams = this.props.avatarParams ? this.props.avatarParams : {};
 
-        const creditComponent = <Text ellipsizeMode={"tail"} numberOfLines={1}>{credit}</Text>;
         return(
             <View style={[styles.container, this.props.style]}>
                 <View style={styles.avatarContainerStyle}>
@@ -39,9 +37,6 @@ export default class InfoCard extends React.PureComponent{
                 <View style={styles.information}>
                     <View style={styles.infoBar}>
                         <Text style={styles.nickname}>{nickname}</Text>
-                        <View style={[styles.credit, this.props.creditStyle]}>
-                            {creditComponent}
-                        </View>
                     </View>
                     <View style={[styles.signature, this.props.signatureStyle]}>
                         <Text>{signature}</Text>
@@ -68,7 +63,6 @@ InfoCard.propTypes = {
     style: ViewPropTypes.style,
     topStyle: ViewPropTypes.style,
     avatarContainerStyle: ViewPropTypes.style,
-    creditStyle: ViewPropTypes.style,
     signatureStyle: ViewPropTypes.style,
     rightIconStyle: ViewPropTypes.style,
     user: PropTypes.shape(userShape),
@@ -83,7 +77,6 @@ InfoCard.defaultProps = {
     },
     user: {
         nickname: "用户名",
-        credit: "小白",
         signature: "这里一无所有在，直到遇见你",
         avatarUri: ""
     }
@@ -93,7 +86,6 @@ const styles = StyleSheet.create({
     container: {
         height: 100,
         width: "100%",
-        backgroundColor: "#a2bdff",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "row",
@@ -113,7 +105,6 @@ const styles = StyleSheet.create({
     infoBar:{
         flexDirection: "row",
         marginTop: 10,
-        backgroundColor: "red",
         alignItems: "center",
     },
     nickname: {
@@ -125,11 +116,9 @@ const styles = StyleSheet.create({
         marginLeft: 16,
         height: 32,
         justifyContent: "center",
-        backgroundColor: "green",
     },
     signature: {
         flex: 1,
-        backgroundColor: "blue",
         justifyContent: "center",
     },
     rightIcon: {

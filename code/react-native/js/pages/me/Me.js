@@ -4,13 +4,15 @@ import InfoCard from "./components/InfoCard"
 import { Divider, ListItem, Badge} from "react-native-elements";
 import DataSegment from "./components/DataSegment";
 import NavigationUtil from '../../navigator/NavUtil';
-import SignOutInfoCard from './components/SignOutInfoCard';
+import LoginMenu from './components/LoginMenu';
 import { connect } from "react-redux"
 import { Button } from 'react-native-elements';
 import UserDao from '../../api/dao/UserDao';
 import Api from "../../api/Api"
 import {login, logout, setUserInfo} from '../../actions/user';
-import Default from "../../constant/Default";
+import Default from "../../common/constant/Default";
+import LinearGradient from "react-native-linear-gradient";
+
 
 class MeScreen extends React.PureComponent{
     constructor(props) {
@@ -26,7 +28,6 @@ class MeScreen extends React.PureComponent{
                         let user = {
                             nickname: data.nickname,
                             signature: data.signature === "" ? Default.DEFAULT_SIGNATURE : data.signature,
-                            credit: data.credit && data.credit !== "" ? data.credit : Default.DEFAULT_CREDIT,
                             avatarUri: Default.DEFAULT_AVATAR,
                         }
                         console.log(data)
@@ -88,9 +89,15 @@ class MeScreen extends React.PureComponent{
                 style={{borderTopLeftRadius: 6, borderTopRightRadius: 6,}}
                 onPress={() => {NavigationUtil.toPage(this.props, "PersonalHome")}}
             /> :
-            <SignOutInfoCard/>
+            <LoginMenu/>
         return(
             <View style={styles.container}>
+                <LinearGradient
+                    start={{x:0, y:0}}
+                    end={{x:0, y:1}}
+                    colors={["#0084ff", "#0073ff"]}
+                    style={styles.cover}
+                />
                 <View style={styles.top}>
                     {topCard}
                     <Divider style={{height: 1, backgroundColor: "#d3d3d3", width:"92%"}}/>
@@ -127,10 +134,20 @@ const mapDispatchToProps = dispatch => ({
 })
 export default connect(mapStateToProps, mapDispatchToProps)(MeScreen)
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#ebebeb",
+    },
+    cover: {
+        position: "absolute",
+        top: 0,
+        backgroundColor: "#67bbff",
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        width: "100%",
+        height: 162,
     },
     top: {
         width: "92%",
@@ -138,20 +155,19 @@ const styles = StyleSheet.create({
         marginTop: 16,
         alignSelf: "center",
         alignItems: "center",
-        backgroundColor: "#62aaff",
-        borderRadius: 4,
+        borderRadius: 12,
+        backgroundColor: "#fff",
     },
     dataSegment: {
         width:"100%",
         flex: 1,
         flexDirection: "row",
         justifyContent: "space-evenly",
-        backgroundColor: "green",
         borderBottomLeftRadius: 6,
         borderBottomRightRadius: 6,
     },
     main: {
-        marginTop: 45,
+        marginTop: 15,
     },
     button: {
         height: 20,

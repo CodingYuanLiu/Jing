@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, StyleSheet, ViewPropTypes } from 'react-native';
 import { PropTypes } from "prop-types";
 import { Avatar } from 'react-native-elements';
-import Default from "../../../constant/Default";
+import Default from "../../../common/constant/Default";
 
 
 export default class InfoCard extends React.PureComponent{

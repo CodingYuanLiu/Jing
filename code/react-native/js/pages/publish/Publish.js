@@ -9,14 +9,23 @@ class PublishScreen extends React.PureComponent{
         super(props);
     }
 
+    componentDidMount(){
+        this._navListener = this.props.navigation.addListener('didFocus',() => {
+            StatusBar.setHidden(true, "fade")
+        })
+    }
+
+    componentWillUnmount(): void {
+        this._navListener.remove();
+    }
+
     fadeOut = () => {
         StatusBar.setHidden(false, "fade")
         NavigationUtil.back(this.props)
     }
-    toTable = () => {
+    toTaxiForm = () => {
         if (this.props.logged) {
-            console.log("pressing!")
-            NavigationUtil.toPage(this.props, "FillTable");
+            NavigationUtil.toPage(this.props, "TaxiForm");
         } else {
             alert("Need login")}
         }
@@ -27,7 +36,7 @@ class PublishScreen extends React.PureComponent{
             type={"font-awesome"}
             name={"taxi"}
             color={"#0072ff"}
-            onPress={() => {this.toTable()}}
+            onPress={() => {this.toTaxiForm()}}
             />;
         const taxiTitle = "发起拼车"
         const shopping =
@@ -36,7 +45,7 @@ class PublishScreen extends React.PureComponent{
                  type={"font-awesome"}
                  name={"shopping-bag"}
                  color={"#007bff"}
-                 onPress={() => {this.toTable()}}
+                 onPress={() => {this.toTaxiForm()}}
             />;
         const shoppingTitle = "拼网购"
         const takeOut =
@@ -45,7 +54,7 @@ class PublishScreen extends React.PureComponent{
                 type={"material-community"}
                 name={"food"}
                 color={"#0090ff"}
-                onPress={() => {this.toTable()}}
+                onPress={() => {this.toTaxiForm()}}
             />;
         const takeOutTitle = "拼外卖"
         const activity =
@@ -54,7 +63,7 @@ class PublishScreen extends React.PureComponent{
                 type={"ionicon"}
                 name={"md-contacts"}
                 color={"#009eff"}
-                onPress={() => {this.toTable()}}
+                onPress={() => {this.toTaxiForm()}}
             />;
         const activityTitle = "发起活动"
         return(
@@ -107,28 +116,26 @@ export default connect(mapStateToProps, null)(PublishScreen)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "rgba(255,255,255,0.4)",
+        backgroundColor: "#eeeeee",
     },
     header: {
         marginTop: 16,
         flex: 1,
         flexDirection: "row",
         justifyContent: "center",
-        backgroundColor: "grey",
     },
     main:{
         flex: 1,
         flexDirection: "row",
         justifyContent: "space-evenly",
         alignItems: "center",
-        backgroundColor: "blue",
     },
     iconContainer: {
         flex: 1,
-        backgroundColor: "green",
+        alignItems: "center",
+        justifyContent: "center",
     },
     textContainer: {
-        backgroundColor: "red",
         alignItems: "center",
     },
     text: {
