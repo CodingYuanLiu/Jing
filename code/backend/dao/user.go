@@ -19,6 +19,7 @@ type User struct {
 	Signature string
 	OpenId string
 	Jaccount string
+	AvatarKey string
 }
 
 type Join struct {
@@ -26,6 +27,28 @@ type Join struct {
 	UserID	int
 	ActID	int
 	IsAdmin int
+}
+
+type TagDict struct{
+	Tag string	`gorm:"unique"`
+}
+
+type CandidateTags struct {
+	Tag string 	`gorm:"unique"`
+	UserID int
+}
+
+func SetAvatarKey(Id int, key string) {
+	user := User{}
+	db.Where("id = ?", Id).First(&user)
+	user.AvatarKey = key
+	db.Save(&user)
+}
+
+func GetAvatarKey(Id int) string {
+	user := User{}
+	db.Where("id = ?", Id).First(&user)
+	return user.AvatarKey
 }
 
 // TODO: let lqy implement these more functionally
@@ -175,6 +198,12 @@ func CreateUser(json json.JSON, id int) error {
 	return nil
 }
 
+func CopyUser(src User, dest User) {
+	dest.OpenId = src.OpenId
+	db.Delete(&src)
+	db.Save(&dest)
+}
+
 func CreateUserByJaccount(jaccount string) error {
 	user := User{}
 	_, err := FindUserByJaccount(jaccount)
@@ -223,10 +252,66 @@ func BindJaccountById(id int, jaccount string) error {
 	return nil
 }
 
+func InsertNewTag(tag string){
+	var newTag TagDict
+	db.Find(&newTag,"tag=?",tag)
+	if newTag.Tag == ""{
+		newTag.Tag=tag
+		db.NewRecord(newTag)
+		db.Create(&newTag)
+	}else{
+		fmt.Printf("Existed tag %s\n",tag)
+	}
+}
+
+func GetAllTags() ([]string,error){
+	var tagFromDB []TagDict
+	db.Find(&tagFromDB)
+	var tags []string
+	for _,param := range tagFromDB{
+		tags = append(tags,param.Tag)
+	}
+	if len(tags) == 0{
+		err := errors.New("fetch tags error")
+		return tags,err
+	}
+	return tags,nil
+}
+
+func IsInTagDict(tag string) bool{
+	var tagFromDB []TagDict
+	db.Where("tag = ?",tag).Find(&tagFromDB)
+	if len(tagFromDB) == 0 {
+		return false
+	}else{
+		return true
+	}
+}
+
+func InsertCandidateTag(tag string,userId int) int32{
+	//return 1 for success, 0 for needlessness
+	var candidateTag CandidateTags
+	db.Find(&candidateTag,"tag=?",tag)
+	if candidateTag.Tag == "" {
+		candidateTag.Tag = tag
+		candidateTag.UserID = userId
+		db.NewRecord(candidateTag)
+		db.Create(&candidateTag)
+		return 1
+	}else{
+		if candidateTag.UserID == userId{
+			return 0
+		}else{
+			InsertNewTag(tag)
+			db.Where("tag=?",candidateTag.Tag).Delete(CandidateTags{})
+			return 1
+		}
+	}
+}
+
 func init()  {
 	var err error
-	//db, err = gorm.Open("mysql", "dfy:woshisb@tcp(localhost:3306)/jing")
-	//db, err = gorm.Open("mysql", "dragon:HXC19970129@tcp(localhost:3306)/jing")
+	//db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
 	db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
@@ -236,6 +321,26 @@ func init()  {
 	}
 	if !db.HasTable(&Join{}) {
 		db.CreateTable(&Join{})
+	}
+	if !db.HasTable(&TagDict{}){
+		db.CreateTable(&TagDict{})
+		tags := []string{"汉堡","机场","火车站","电影","会员","拼单",
+			"海淘","化妆品","鞋","潮流","冷吃肉","川菜","游戏", "篮球", "足球",
+			"羽毛球","乒乓球", "游泳", "跑步", "电竞", "图书馆", "约饭","旅游",
+			"拼多多", "拼车", "外卖","门票", "读书会", "线下", "课程","出租车","滴滴",
+			"图书", "家教",	"虹桥机场","虹桥火车站","闵行校区","徐汇校区","YSL",
+			"闵行","莘庄","黄埔","徐汇","徐家汇","美罗城","大悦城","浦东机场",
+			"动物园","水族馆","肯德基","麦当劳","汉堡王","饿了么","屈臣氏","口红",
+			"卸妆水","迪奥","面膜","眉笔","英雄联盟","五黑","三黑","四黑","打车",
+			"上分","王者荣耀","守望先锋","时代影城","欧尚","开黑","CSGO","DOTA",
+			"杨浦","苏州","静安","松江","宝山","嘉定","浦东","长宁","普陀","东川路",
+			"青浦","金山","奉贤","崇明","剑川路","IMAX","思源门","菁菁堂",}
+		for _,tag := range tags{
+			InsertNewTag(tag)
+		}
+	}
+	if !db.HasTable(&CandidateTags{}){
+		db.CreateTable(&CandidateTags{})
 	}
 	return
 }

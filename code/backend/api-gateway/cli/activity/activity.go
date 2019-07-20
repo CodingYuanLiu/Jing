@@ -8,8 +8,9 @@ import (
 	"github.com/micro/go-plugins/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
+	"jing/app/dao"
 	"jing/app/json"
-	"jing/app/user/dao"
+	"log"
 	"os"
 )
 
@@ -156,4 +157,23 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 	}
 	_ = dao.PublishActivity(userId, int(resp2.ActId))
 	return nil
+}
+
+func GenerateTags(title string,desc string) []string{
+	resp,err := Client.GenTags(context.TODO(),&activityProto.TagReq{
+		Title:title,
+		Description:desc,
+	})
+	if err!=nil{
+		log.Println(err)
+	}
+	return resp.Tag
+}
+
+func AddTags(tags []string, userId int32) int32{
+	resp,_ := Client.AddTags(context.TODO(),&activityProto.AddTagsReq{
+		Tags:tags,
+		UserId:userId,
+	})
+	return resp.Num
 }

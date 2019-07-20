@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"jing/app/activity/model"
 	activity "jing/app/activity/proto"
+	"log"
 )
 
 func (actSrv *ActivitySrv) Comment(ctx context.Context,req *activity.CmtReq,resp *activity.CmtResp) error {
@@ -21,14 +22,17 @@ func (actSrv *ActivitySrv) Comment(ctx context.Context,req *activity.CmtReq,resp
 	if err == mgo.ErrNotFound{
 		resp.Status = 404
 		resp.Description = "Not Found"
+		log.Println("Can't find the activity")
 		return err
 	}	else if err!=nil{
 		resp.Status = 500
 		resp.Description = "Comment Error"
+		log.Println("Comment Error")
 		return err
 	}	else{
 		resp.Status = 200
 		resp.Description = "OK"
+		log.Println("Comment successfully")
 	}
 	return nil
 }

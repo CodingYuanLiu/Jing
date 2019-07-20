@@ -421,6 +421,9 @@ Status OK - 200
 ]
 ```
 
+### PS:
+For `myact`,`manageact` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
+
 ## Publish Activity
 
 #### Description
@@ -611,7 +614,7 @@ Status OK - 200
 
 ## Get Activity Applicants
 
-Get an activity's applicants.
+Get an activity along with its applicants.
 
 #### Request
 ```json
@@ -655,6 +658,7 @@ Status OK - 200
 Accept an application.
 
 #### Request
+Accept the application of the designated user to the designated activity.
 ```json
 POST /api/user/act/acceptjoin?act_id={act_id}&user_id={user_id}
 Authorization: Bearer jwt
@@ -713,5 +717,74 @@ Status OK - 200
 ```json
 {
     "message" : "Update ok",
+}
+```
+
+## Upload Avatar
+
+#### Description
+
+Upload a user's avatar.
+
+#### Request 
+
+```
+POST /api/user/avatar/upload
+Authorization: Bearer jwt
+
+base64
+```
+
+#### Response
+
+```json
+{
+    "message": "Upload avatar successfully",
+    "url": "http://...."
+}
+```
+
+## Tag Management
+### Recommend tags
+#### Description
+Generate recommmended tags refering to the title and description of the very activity. 
+#### Request
+``` json
+GET /api/user/act/gettag
+Authorization: Bearer jwt
+
+{
+    "title":"活动的标题",
+    "description":"活动的描述"
+}
+```
+SSS
+#### Response
+Status OK - 200
+``` json
+{
+    "tags":["标签1","标签2"]
+}
+```
+
+### Add candidate tags
+#### Description
+When a user inputs a custom-defined tag, add it into candidate tags. If 2 different users append a same tag into candidate tag list, remove the tag from the candidate list and add it to the formal tag dictionary.
+#### Request
+``` json
+POST /api/user/act/addtag
+Authorization: Bearer jwt
+
+{
+    "tags":["新标签1","新标签2"]
+}
+```
+
+#### Response
+Return the number of tags that are added into the candidate list or formal tag dictionary successfully. If a tag is already in the formal tag dictionary, the addition is expected to fail consequentlyS.
+
+``` json
+{
+    "num":1
 }
 ```

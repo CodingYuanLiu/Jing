@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"jing/app/user/dao"
+	"jing/app/dao"
 	"testing"
 )
 import "github.com/stretchr/testify/assert"

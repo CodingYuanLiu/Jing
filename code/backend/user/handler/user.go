@@ -8,8 +8,8 @@ import (
 	json2 "jing/app/json"
 )
 import user "jing/app/user/proto/user"
-import handler "jing/app/login/handler"
-import "jing/app/user/dao"
+import "jing/app/login/handler"
+import "jing/app/dao"
 
 type UserService struct {
 
@@ -73,12 +73,14 @@ func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.
 		out.Id = -1
 		return err
 	} else {
+		domain := "puo7ltwok.bkt.clouddn.com"
 		out.Id = int32(user2.ID)
 		out.Username = user2.Username
 		out.Jaccount = user2.Jaccount
 		out.Phone = user2.Phone
 		out.Nickname = user2.Nickname
 		out.Signature = user2.Signature
+		out.AvatarUrl = "http://" + domain + "/" + user2.AvatarKey
 		return nil
 	}
 }

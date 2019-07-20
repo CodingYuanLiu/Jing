@@ -11,8 +11,6 @@ import (
 	k8s "github.com/micro/kubernetes/go/micro"
 )
 
-type Say struct{}
-
 func main() {
 	service := k8s.NewService(
 		micro.Name("auth-service"),

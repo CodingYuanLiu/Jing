@@ -42,4 +42,5 @@ message FindResp {
     string nickname = 6;
     string jaccount = 7;
     string signature = 8;
+    string avatar_url = 9;
 }

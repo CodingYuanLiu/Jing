@@ -10,9 +10,9 @@ import (
 func main(){
 	service :=micro.NewService()
 	service.Init()
-	c1 := activity.NewActivitySrvService("Jing.handler.act",service.Client())
+	c1 := activity.NewActivitySrvService("act",service.Client())
 	rsp,err:= c1.Delete(context.TODO(), &activity.DltReq{
-		ActId:8,
+		ActId:1,
 	})
 	if err != nil {
 		fmt.Println(err)
