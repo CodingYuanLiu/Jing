@@ -23,7 +23,7 @@ class PlusIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"feather"}
@@ -58,7 +58,7 @@ class FoodIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"material-community"}
@@ -190,6 +190,25 @@ class CloseIcon extends React.PureComponent{
             />)
     }
 }
+
+class CommentIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        let {size, color, style, onPress} = this.props
+        return (
+            <Icon
+                type={"material"}
+                name={"comment"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -203,4 +222,5 @@ export {
     LockIcon,
     GreaterIcon,
     CloseIcon,
+    CommentIcon,
 }

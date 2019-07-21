@@ -32,21 +32,22 @@ Tag.propTypes = {
 
 Tag.defaultProps = {
     title: "标签",
-    color: "#fff",
+    color: "#a4a4a4",
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: "#6fb1ff",
+        backgroundColor: "#efefef",
         marginLeft: 2,
         borderWidth: 2,
-        borderColor: "#62b2ff",
+        borderColor: "#eeeeee",
         borderRadius: 4,
+        maxWidth: 100,
     },
     text: {
         padding: 2,
-        color: "#fff",
+        color: "#a4a4a4",
         fontSize: 12,
-        maxWidth: 100,
+        maxWidth: "100%",
     },
 })

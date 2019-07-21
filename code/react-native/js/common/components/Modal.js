@@ -3,7 +3,7 @@ import React from "react";
 import { View, ViewPropTypes, Text } from "react-native";
 import { PropTypes } from "prop-types";
 import styles from "react-native-webview/lib/WebView.styles";
-import Theme from "../../../common/constant/Theme";
+import Theme from "../constant/Theme";
 
 class Confirm extends React.PureComponent {
     constructor(props) {

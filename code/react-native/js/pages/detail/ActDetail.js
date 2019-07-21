@@ -1,33 +1,21 @@
 import React from "react";
-import {View, Text, StyleSheet, ScrollView} from "react-native"
+import {View, Text, StyleSheet, ScrollView, TouchableHighlight} from "react-native"
 import NavigationBar from "../../common/components/NavigationBar"
 import Api from "../../api/Api"
-import {Button, Icon, Image} from "react-native-elements";
+import {Button, Icon, Image, ListItem, Avatar} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
-import UserCard from "./components/UserCard";
 import Default from "../../common/constant/Default";
-import {TaxiSpec} from "../activity/components/SpecInfo";
-import Comment from "./components/Comment";
-import NoComment from "./components/NoComment";
-
-
+import {CommentIcon, PlusIcon} from "../../common/components/Icons";
+import Tag from "../../common/components/Tag";
+import Modal from "react-native-modal";
+import CommentModal from "./CommentModal";
 export default class DetailScreen extends React.Component {
     constructor(props) {
         super(props)
         this.state= {
-            title: "",
-            act_id: "",
-            comments: [],
-            create_time: "019-07-19 23:55:59",
-            depart_time: "2019-07-19 23:55:59",
-            end_time: "2019-07-19 23:55:59",
-            description: "",
-            origin: "",
-            tag: [],
-            images: [],
-            nickname: "",
-            id: "",
-            signature: "",
+            activity: {},
+            commentVisible: false,
+            innerModalVisible: false,
         }
     }
 
@@ -35,8 +23,7 @@ export default class DetailScreen extends React.Component {
         let actId = this.props.navigation.getParam("id");
         Api.getActDetail(actId)
             .then(data => {
-                console.log(data)
-                this.setState({...data})
+                this.setState({activity: data})
                 console.log(this.state)
             })
             .catch(err => {
@@ -44,103 +31,215 @@ export default class DetailScreen extends React.Component {
             })
     }
 
-
-    render() {
-        let title=this.state.title;
-        let id = this.state.act_id;
-        let comments=this.state.comments;
-        let publishTime=this.state.create_time;
-        let departTime=this.state.depart_time;
-        let endTime=this.state.end_time;
-        let body=this.state.description;
-        let source=this.state.origin;
-        let tag=this.state.tag;
-        let destination=this.state.destination;
-        let images=this.state.images;
-        let user={
-            nickname: this.state.sponsor_username,
-            id: this.state.sponsor_id,
-            signature: this.state.signature,
-        }
+    renderNavBar = () => {
         let backBtn=
             <Icon
                 type={"material-community"}
                 name={"keyboard-backspace"}
                 color={"#d3d3d3"}
                 onPress={() => {NavigationUtil.back(this.props)}}
-            />
-
+            />;
         return(
-
-            <View style={{flex:1, alignItems:"center"}}>
-                <NavigationBar
-                    leftButton={backBtn}
-                    style={{backgroundColor: "#fff",
+            <NavigationBar
+                leftButton={backBtn}
+                style={
+                    {
+                        backgroundColor: "#fff",
                         alignSelf: "flex-start",
                         marginLeft: 12,
-                    }}
-                />
-                <ScrollView style={[{flex: 1}, styles.container]}>
-                    <View style={styles.header}>
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.title}>{title}</Text>
-                        </View>
-                        <View style={styles.userCard}>
-                            <UserCard
-                                avatarUri={Default.DEFAULT_AVATAR}
-                                avatarSize={Default.DEFAULT_AVATAR_SIZE}
-                                nickname={user.nickname}
-                                signature={user.signature}
-                                onPress={() => {this.toUserPersonalPage()}}
-                            />
-                        </View>
-                    </View>
-                    <View style={styles.bodyContainer}>
-                        <TaxiSpec departTime={departTime}
-                                  endTime={endTime} dest={destination} src={source}
-                            style={{flex: 0}}
-                        />
-                        <Text>{body}</Text>
-                        <View>
-                            {
-                                images && images.length > 0 && images.map((item, i) => (
-                                    <Image
-                                        source={{uri: item}}
-                                        placeholderContent={<View><Text>picture</Text></View>}
-                                    />
-                                ))
-                            }
-                        </View>
-                    </View>
+                    }
+                }
+            />
+        );
+    };
 
-                    <View style={styles.commentContainer}>
+    renderHeader = (title, tags) => {
+        return (
+            <View style={styles.header}>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.title}>{title}</Text>
+                </View>
+                <View style={styles.tagContainer}>
+                    {
+                        tags && tags.length > 0 ?
+                            tags.map((tag, i) => {
+                                return(
+                                <Tag
+                                title={tag}
+                                key={i}
+                                />);
+                            }) : null
+                    }
+                </View>
+            </View>
+        );
+    };
+    renderUser = user => {
+        let nickname = user.nickname;
+        let avatarUri = user.avatarUri;
+        let signature = user.signature;
+        let followBtn =
+            <Button
+                title={"关注"}
+                icon={
+                    <PlusIcon
+                        size={24}
+                        color={"#0084ff"}
+                    />
+                }
+                titleStyle={{color: "#0084ff"}}
+                buttonStyle={styles.followBtn}
+            />;
+        return (
+            <ListItem
+                leftAvatar={{
+                    source: {uri: avatarUri === "" ? Default.DEFAULT_AVATAR : avatarUri},
+                    size: 36
+                }}
+                title={nickname}
+                containerStyle={styles.userInfoContainer}
+                contentContainerStyle={{position: "relative", left: -5}}
+                titleStyle={styles.userInfoTitle}
+                subtitle={signature}
+                subtitleProps={{ellipsizeMode: "tail", numberOfLines: 1}}
+                subtitleStyle={styles.userInfoSubtitle}
+                titleProps={{numberOfLines: 1, ellipsizeMode: "tail"}}
+                rightElement={followBtn}
+            />
+        )
+    }
+    renderBody = (user, specInfo, bodyText, images, publishTime, comments) => {
+        let comment = this.renderComment(comments, user);
+        let userComponent = this.renderUser(user);
+        return (
+            <View style={styles.bodyContainer}>
+                <View style={styles.bodyContent}>
+                    {userComponent}
+                    <View style={styles.bodyTextContainer}>
+                        <Text style={styles.bodyText}>{bodyText}</Text>
+                    </View>
+                    <View style={styles.bodyImage}>
                         {
-                            comments.length > 0 ?
-                                comments.map((item, i) => (
-                                    <Comment
-                                        avatarUri={Default.DEFAULT_AVATAR}
-                                        avatarSize={24}
-                                        nickname={item.title}
-                                        comment={item.content}
-                                    />
-                                )) : null
-                        }
-                        {
-                            comments.length === 0 ?
-                                <NoComment
-                                /> : null
+                            images && images.length > 0 && images.map((item, i) => (
+                                <Image
+                                    source={{uri: item}}
+                                />
+                            ))
                         }
                     </View>
-                </ScrollView>
+                    <View style={styles.bodyBottomContainer}>
+                        <Text style={styles.metadata}>发布于{publishTime}</Text>
+                    </View>
+                </View>
+                <View>
+                    {comment}
+                </View>
+            </View>
+
+        )
+    };
+
+    renderCommentPreview = (comments) => {
+        return null
+    };
+    renderComment = (comments, author) => {
+        let commentPreview = this.renderCommentPreview(comments);
+        let commentButton =
+            <View style={styles.commentButton}>
+                <Text style={styles.commentButtonText}>添加评论...</Text>
+            </View>
+        return (
+            <View style={styles.commentContainer}>
+                <Text style={styles.commentTitle}>评论</Text>
+                {commentPreview}
+                <View style={styles.commentButtonContainer}>
+                    <Avatar
+                        source={{uri: author.avatarUri,}}
+                        rounded
+                        size={24}
+                    />
+                    {commentButton}
+                </View>
+            </View>
+        )
+    };
+
+    renderFooter = () => {
+        let commentIcon =
+            <CommentIcon
+                color={"#b4b4b4"}
+                size={24}
+            />
+        let joinIcon =
+            <PlusIcon
+                color={"#0084ff"}
+                size={24}
+            />
+        return (
+            <View style={styles.footer}>
+                <View style={styles.bottomLeftIconContainer}>
+                    <Button
+                        icon={joinIcon}
+                        title={"加入"}
+                        titleStyle={styles.bottomButtonText}
+                        contaienrStyle={styles.bottomButtonContainer}
+                        buttonStyle={styles.bottomButton}
+                    />
+                </View>
+                <View style={styles.bottomRightIconContainer}>
+                    <TouchableHighlight>
+                        <View>
+                            {commentIcon}
+                            <Text style={styles.bottomIconText}>评论</Text>
+                        </View>
+                    </TouchableHighlight>
+                </View>
             </View>
         )
     }
 
-    toUserPersonalPage = () => {
-        NavigationUtil.toPage({id:user.id}, "PersonalPage")
-    }
+    render() {
+        let activity = this.state.activity;
+        let title = activity.title;
+        let comments = activity.comments;
+        let bodyText = activity.description;
+        let tag = activity.tag;
+        let images = activity.images;
+        let publishTime = activity.create_time;
+        let user={
+            avatarUri: activity.sponsor_avatar ? activity.sponsor_avatar : Default.DEFAULT_AVATAR,
+            nickname: activity.sponsor_username,
+            id: activity.sponsor_id,
+            signature: activity.signature,
+        };
+        let specInfo = {};
+        let navBar = this.renderNavBar();
+        let header = this.renderHeader(title, tag);
+        let body = this.renderBody(user, specInfo, bodyText, images, publishTime, comments);
+        let footer = this.renderFooter();
+        return(
+            <View style={{flex:1, alignItems:"center"}}>
+                {navBar}
+                <ScrollView style={[{flex: 1}, styles.container]}>
+                    {header}
+                    {body}
+                </ScrollView>
+                {footer}
+                <Modal isVisible={this.state.commentVisible}>
+                    <CommentModal/>
+                </Modal>
+            </View>
+        );
+    };
 
-}
+    toUserPersonalPage = () => {
+        let id = this.state.activity.sponsor_id;
+        NavigationUtil.toPage({id:id}, "PersonalPage")
+    };
+
+};
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -148,6 +247,8 @@ const styles = StyleSheet.create({
         width:"100%",
         backgroundColor: "#eeeeee",
     },
+
+    // header style, including title, tags
     header:{
         backgroundColor: "#fff",
         paddingLeft:"6%",
@@ -162,20 +263,18 @@ const styles = StyleSheet.create({
 
     },
     title:{
-        fontSize: 22,
-        fontWeight: "700",
-        color: "#1a1a1a",
+        fontSize: 21,
+        fontWeight: "600",
+        color: "#2a2a2a",
     },
-    userCard: {
-        width: "100%",
-        flex: 1,
-        height: 80,
-        alignSelf: "center",
-        justifyContent: "center",
+    tagContainer: {
+        flexDirection: "row",
         alignItems: "center",
-        borderRadius: 8,
         marginBottom: 12,
+        marginTop: 10,
     },
+
+    // body style, including user info, text, images, metadata
     bodyContainer: {
         backgroundColor: "#fff",
         flex: 1,
@@ -183,11 +282,129 @@ const styles = StyleSheet.create({
         paddingLeft:"6%",
         paddingRight:"6%",
         marginBottom: 12,
-        minHeight: 250,
     },
+    userInfoContainer: {
+        width: "100%",
+        padding: 5,
+        marginTop: 5,
+        marginBottom: 10,
+    },
+    userInfoTitle: {
+        fontSize: 16,
+        fontWeight: "700",
+    },
+    userInfoSubtitle: {
+        color: "#bbbbbb",
+    },
+    followBtn: {
+        backgroundColor: "#efefef",
+        borderRadius: 6,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 5,
+        paddingBottom: 5
+    },
+    bodyContent: {
+        minHeight: 800,
+    },
+    bodyTextContainer: {
+    },
+    bodyText: {
+        fontSize: 14,
+        color: "#505050",
+    },
+    bodyImage: {
+
+    },
+
+    // publish time style
+    bodyBottomContainer: {
+        flexDirection: "row",
+        marginTop: 10,
+        marginBottom: 20,
+        alignItems: "center",
+    },
+    metadata: {
+        color: "#d3d3d3",
+        fontSize: 14,
+        padding: 8,
+    },
+
+    // comment style, including comment title, comment button, comment preview
     commentContainer: {
-        backgroundColor: "#fff",
-        paddingLeft:"6%",
-        paddingRight:"6%",
+        width: "100%",
+        marginTop: 5,
+        marginBottom: 15,
+    },
+    commentTitle: {
+        fontWeight: "800",
+        fontSize: 18,
+        color: "#1a1a1a",
+        marginBottom: 20,
+        marginTop: 20,
+    },
+    commentButtonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    commentButton: {
+        borderWidth: 1,
+        borderColor: "#efefef",
+        borderRadius: 30,
+        justifyContent: "center",
+        flex: 1,
+        marginLeft: 15
+    },
+    commentButtonText: {
+        fontSize: 14,
+        color: "#dadada",
+        flex: 1,
+        borderRadius: 30,
+        paddingTop: 5,
+        paddingBottom: 5,
+        paddingLeft: 15,
+    },
+
+    // footer style
+    footer: {
+        height: 48,
+        width: "100%",
+        borderTopWidth: 0.5,
+        borderTopColor: "#d3d3d3",
+        paddingLeft: "6%",
+        paddingRight: "6%",
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    bottomLeftIconContainer: {
+        flex: 2,
+    },
+    bottomRightIconContainer: {
+        flex: 5,
+        justifyContent: "flex-end",
+        flexDirection: "row",
+    },
+    bottomButtonContainer: {
+        padding: 0,
+        backgroundColor: "#b7e2ff",
+        borderRadius: 100,
+        marginBottom: 15,
+    },
+    bottomButton: {
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 5,
+        paddingBottom: 5,
+        borderRadius: 100,
+        backgroundColor: "#d3eeff",
+    },
+    bottomButtonText: {
+        color: "#0084ff",
+        fontSize: 13,
+        fontWeight: "700",
+    },
+    bottomIconText: {
+        fontSize: 12,
+        color: "#b7b7b7",
     },
 })
