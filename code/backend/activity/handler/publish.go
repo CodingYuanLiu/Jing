@@ -14,7 +14,7 @@ import (
 
 func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
 	//fmt.Println(req)
-	id := insert(req, actSrv.Collection, actSrv.IdCollection)
+	id := insert(req, dao.Collection, dao.IdCollection)
 	if id == -1{
 		resp.Status = 500
 		resp.Description = "Undefined Type"

@@ -5,13 +5,14 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"jing/app/activity/model"
+	"jing/app/dao"
 	activity "jing/app/activity/proto"
 	"log"
 )
 
 func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
 	var act map[string]interface{}
-	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
+	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
 	if err == mgo.ErrNotFound{
 		log.Println(err)
 		resp.Status=404
@@ -39,7 +40,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 			Origin:req.TaxiInfo.Origin,
 			Destination:req.TaxiInfo.Destination,
 		}
-		err = actSrv.Collection.Update(
+		err = dao.Collection.Update(
 		bson.M{"actid":req.ActId},
 		bson.M{"$set":bson.M{"basicinfo":basicInfo,"taxiinfo":taxiInfo}})
 	case "takeout":
@@ -47,21 +48,21 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 			Store:req.TakeoutInfo.Store,
 			OrderTime:req.TakeoutInfo.OrderTime,
 		}
-		err = actSrv.Collection.Update(
+		err = dao.Collection.Update(
 			bson.M{"actid":req.ActId},
 			bson.M{"$set":bson.M{"basicinfo":basicInfo,"takeoutinfo":takeoutInfo}})
 	case "order":
 		orderInfo := model.OrderInfo{
 			Store:req.OrderInfo.Store,
 		}
-		err = actSrv.Collection.Update(
+		err = dao.Collection.Update(
 			bson.M{"actid":req.ActId},
 			bson.M{"$set":bson.M{"basicinfo":basicInfo,"orderinfo":orderInfo}})
 	case "other":
 		otherInfo := model.OtherInfo{
 			ActivityTime:req.OtherInfo.ActivityTime,
 		}
-		err = actSrv.Collection.Update(
+		err = dao.Collection.Update(
 			bson.M{"actid":req.ActId},
 			bson.M{"$set":bson.M{"basicinfo":basicInfo,"otherinfo":otherInfo}})
 		/*

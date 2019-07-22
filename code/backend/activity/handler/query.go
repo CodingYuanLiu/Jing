@@ -6,13 +6,14 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
+	"jing/app/dao"
 	"log"
 )
 
 func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error {
 	//fmt.Println(req)
 	var result map[string] interface{}
-	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
+	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		resp.Status = 404
