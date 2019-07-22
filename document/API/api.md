@@ -823,7 +823,7 @@ base64
 Generate recommmended tags refering to the title and description of the very activity. 
 #### Request
 ``` json
-GET /api/user/act/gettag
+POST /api/user/act/gettag
 Authorization: Bearer jwt
 
 {
