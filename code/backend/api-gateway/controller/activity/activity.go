@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	activityProto "jing/app/activity/proto"
 	activityClient "jing/app/api-gateway/cli/activity"
-	"jing/app/api-gateway/cli/login"
-	srv "jing/app/api-gateway/service"
 	"jing/app/dao"
 	myjson "jing/app/json"
 	"log"
@@ -194,15 +192,7 @@ func (activityController *Controller) ManageAct(c *gin.Context) {
 }
 
 func (activityController *Controller) PublishActivity(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
+	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -229,16 +219,8 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		log.Println(err)
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-	err = activityClient.PublishActivity(int(resp.UserId), jsonForm)
+
+	err = activityClient.PublishActivity(int(userId), jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
 			"error": err,
@@ -305,15 +287,7 @@ func (activityController *Controller) GetJoinApplication(c *gin.Context){
 }
 
 func (activityController *Controller) ModifyActivity(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
+	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -339,16 +313,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		log.Println(err)
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-	acts := dao.GetManagingActivity(int(resp.UserId))
+	acts := dao.GetManagingActivity(userId)
 	flag := false
 	for _, v := range acts {
 		if int(jsonForm["act_id"].(float64)) == v {
@@ -363,7 +328,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.ModifyActivity(int(resp.UserId), jsonForm)
+	err = activityClient.ModifyActivity(userId, jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
 			"error": err,
@@ -430,24 +395,6 @@ func (activityController Controller) QueryActivity(c *gin.Context) {
 }
 
 func (activityController *Controller) GetTags(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -467,7 +414,6 @@ func (activityController *Controller) GetTags(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
 	tags := activityClient.GenerateTags(jsonForm["title"].(string),jsonForm["description"].(string))
 	c.JSON(http.StatusOK,map[string][]string{
 		"tags":tags,
@@ -475,24 +421,7 @@ func (activityController *Controller) GetTags(c *gin.Context) {
 }
 
 func (activityController *Controller) AddTags(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-
+	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -516,7 +445,7 @@ func (activityController *Controller) AddTags(c *gin.Context) {
 	for _,param := range jsonForm["tags"].([]interface{}){
 		tags = append(tags,param.(string))
 	}
-	num := activityClient.AddTags(tags,resp.UserId)
+	num := activityClient.AddTags(tags, int32(userId))
 	c.JSON(http.StatusOK,map[string]int32{
 		"num":num,
 	})
