@@ -3,7 +3,12 @@ def change_file1(path, mode):
         fr = open(path, 'r', encoding='utf-8')
         s = fr.read()
         fr.close()
-        s = s.replace('\t\tmicro.Address(":8080"),', '\t\t//micro.Address(":8080"),')
+        if path == "./user/user.go":
+            s = s.replace('\t\tmicro.Address(":8080"),', '\t\tmicro.Address("127.0.0.1:10080"),')
+        elif path == "./login/login.go":
+            s = s.replace('\t\tmicro.Address(":8080"),', '\t\tmicro.Address("127.0.0.1:10090"),')
+        else:
+            s = s.replace('\t\tmicro.Address(":8080"),', '\t\tmicro.Address("127.0.0.1:10180"),')
         s = s.replace('k8s.NewService(', 'micro.NewService(')
         s = s.replace('\tk8s "github.com/micro/kubernetes/go/micro"', '\t//k8s "github.com/micro/kubernetes/go/micro"')
         fw = open(path, 'w', encoding='utf-8')
@@ -13,7 +18,13 @@ def change_file1(path, mode):
         fr = open(path, 'r', encoding='utf-8')
         s = fr.read()
         fr.close()
-        s = s.replace('//micro.Address(":8080"),', 'micro.Address(":8080"),')
+        if path == "./user/user.go":
+            s = s.replace('\t\tmicro.Address("127.0.0.1:10080"),','\t\tmicro.Address(":8080"),')
+        elif path == "./login/login.go":
+            s = s.replace('\t\tmicro.Address("127.0.0.1:10090"),','\t\tmicro.Address(":8080"),')
+        else:
+            s = s.replace('\t\tmicro.Address("127.0.0.1:10180"),','\t\tmicro.Address(":8080"),')
+        #s = s.replace('micro.Address("127.0.0.1:10080"),', 'micro.Address(":8080"),')
         s = s.replace('micro.NewService(', 'k8s.NewService(')
         s = s.replace('\t//k8s "github.com/micro/kubernetes/go/micro"', '\tk8s "github.com/micro/kubernetes/go/micro"')
         fw = open(path, 'w', encoding='utf-8')
@@ -28,7 +39,7 @@ def change_file2(path, mode):
         fr.close()
         s = s.replace('\tos.Setenv("MICRO_REGISTRY", "kubernetes")\n\tclient.DefaultClient = grpc.NewClient(\n\t\tclient.Registry(kubernetes.NewRegistry()),\n\t)',
                       '\t/*os.Setenv("MICRO_REGISTRY", "kubernetes")\n\tclient.DefaultClient = grpc.NewClient(\n\t\tclient.Registry(kubernetes.NewRegistry()),\n\t)*/')
-        s = s.replace('\t"github.com/micro/go-plugins/client/grpc"', '\t//"github.com/micro/go-plugins/client/grpc"')
+        s = s.replace('\t"github.com/micro/go-micro/client/grpc"', '\t//"github.com/micro/go-micro/client/grpc"')
         s = s.replace('\t"github.com/micro/go-plugins/registry/kubernetes"', '\t//"github.com/micro/go-plugins/registry/kubernetes"')
         s = s.replace('\t"os"', '\t//"os"')
         fw = open(path, 'w', encoding='utf-8')
@@ -41,7 +52,7 @@ def change_file2(path, mode):
         s = s.replace(
             '\t/*os.Setenv("MICRO_REGISTRY", "kubernetes")\n\tclient.DefaultClient = grpc.NewClient(\n\t\tclient.Registry(kubernetes.NewRegistry()),\n\t)*/',
             '\tos.Setenv("MICRO_REGISTRY", "kubernetes")\n\tclient.DefaultClient = grpc.NewClient(\n\t\tclient.Registry(kubernetes.NewRegistry()),\n\t)')
-        s = s.replace('//"github.com/micro/go-plugins/client/grpc"','"github.com/micro/go-plugins/client/grpc"')
+        s = s.replace('//"github.com/micro/go-micro/client/grpc"','"github.com/micro/go-micro/client/grpc"')
         s = s.replace('//"github.com/micro/go-plugins/registry/kubernetes"',
                       '"github.com/micro/go-plugins/registry/kubernetes"')
         s = s.replace('//"os"', '"os"')
