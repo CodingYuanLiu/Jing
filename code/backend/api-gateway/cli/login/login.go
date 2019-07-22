@@ -3,8 +3,11 @@ package login
 import (
 	"context"
 	"github.com/micro/go-micro/client"
+	"github.com/micro/go-micro/client/grpc"
+	"github.com/micro/go-plugins/registry/kubernetes"
 	loginProto "jing/app/login/proto/login"
 	"log"
+	"os"
 )
 
 var (
@@ -12,11 +15,11 @@ var (
 )
 
 func init() {
-	/*os.Setenv("MICRO_REGISTRY", "kubernetes")
+	os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
 	)
-	*/
+
 	Client = loginProto.NewLoginService("auth-service", client.DefaultClient)
 }
 
