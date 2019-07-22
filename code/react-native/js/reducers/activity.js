@@ -22,20 +22,11 @@ import {
 
 const initialState = {
     currentAct: {
+
+        // actId for fetching act detail use,
         actId: "",
-        comments: [],
-        publishTime: "",
-        images: [],
-        type: "",
-        title: "",
-        tags: [],
-        sponsorName: "",
-        sponsorId: "",
-        sponsorSignature: "",
-        specInfo: {},
-    },
-    publishAct: {
-        actId: "",
+
+        // comments for current activity detail
         comments: [{
             id: "",
             content: "",
@@ -46,16 +37,72 @@ const initialState = {
             // activity publisher / the comment publish by ${replyTo}
             replyUnder: "",
         }],
+
+        // who publish this activity
+        sponsorName: "",
+        sponsorId: "",
+        sponsorSignature: "",
+
         publishTime: "",
         images: [],
         type: "",
         title: "",
         tags: [],
-        sponsorName: "",
-        sponsorId: "",
-        sponsorSignature: "",
-        specInfo: {},
+        spec: {},
     },
+    publishAct: {
+        // common field of activities
+        type: "",
+        title: "",
+        endTime: "",
+
+        // detail field for activity
+        images: [],
+        tags: [],
+        description: "",
+
+        /* spec for each activity,
+         * Taxi: {
+         *      departTime,
+         *      origin,
+         *      dest
+         * }
+         * Takeout: {
+         *      store,
+         *      orderTime,
+         * }
+         *
+         * activity: {
+         *      activityTime,
+         * }
+         * order: {
+         *      store,
+         * }
+         *
+         */
+        spec: {},
+    },
+};
+
+const getActSpec = (type, spec) => {
+    if (type === "taxi") {
+        return {
+            departTime: spec.departTime,
+            origin: spec.origin,
+            dest: spec.dest,
+        };
+    } else if (type === "takeout") {
+        return {
+            store: spec.store,
+            orderTime: spec.orderTime,
+        };
+    } else if (type === "order") {
+        return {
+            store: spec.store,
+        };
+    } else return {
+        activityTime: spec.activityTime,
+    };
 };
 
 const activity = (state=initialState, action) => {
@@ -79,7 +126,9 @@ const activity = (state=initialState, action) => {
             });
         case SET_PUBLISH_ACT_SPEC:
             return Object.assign({}, state, {
-                publishAct: getActSpec(state.publishAct.type, action.spec)
+                publishAct: {
+                    spec: getActSpec(state.publishAct.type, action.spec),
+                }
             });
         case SET_PUBLISH_ACT_DETAIL:
             return Object.assign({}, state, {

@@ -10,6 +10,12 @@ export default class CustomDatePicker extends React.PureComponent{
         super(props);
     }
 
+    componentDidMount() {
+        console.log(this.props.onShow);
+        console.log(this.props.onConfirm);
+        console.log(this.props.onCancel);
+    }
+
     render() {
         let leftIcon =
             <Icon
@@ -20,7 +26,7 @@ export default class CustomDatePicker extends React.PureComponent{
             />;
         let displayTextComponent =
             <Text
-                onPress={() => this.showDateTimePicker()}
+                onPress={this.props.onShow}
                 style={[styles.datePickerText, this.props.displayTextStyle]}
             >
                 {this.props.displayText}
@@ -30,7 +36,7 @@ export default class CustomDatePicker extends React.PureComponent{
                 {leftIcon}
                 {displayTextComponent}
                 <DateTimePicker
-                    isVisible={this.props.isDateTimePickerVisible}
+                    isVisible={this.props.visible}
                     onConfirm={this.props.onConfirm}
                     onCancel={this.props.onCancel}
                     mode={"datetime"}
@@ -47,6 +53,7 @@ CustomDatePicker.propTypes = {
     visible: PropTypes.bool.isRequired,
     onConfirm: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
+    onShow: PropTypes.func.isRequired,
     displayTextStyle: ViewPropTypes.style,
     displayText: PropTypes.string.isRequired,
 };

@@ -20,7 +20,7 @@ class PublishScreen extends React.PureComponent{
     }
 
     fadeOut = () => {
-        StatusBar.setHidden(false, "fade")
+        StatusBar.setHidden(false, "fade");
         NavigationUtil.back(this.props)
     };
     toPublishCommon = type => {

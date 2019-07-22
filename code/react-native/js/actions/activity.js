@@ -26,7 +26,7 @@ export const setPublishActCommon = (type, title, endTime) => ({
 export const setPublishActSpec = (spec) => ({
     type: actionTypes.SET_PUBLISH_ACT_SPEC,
     spec: spec,
-})
+});
 
 export const setPublishActDetail = (images, description) => ({
     type: actionTypes.SET_PUBLISH_ACT_DETAIL,
@@ -34,4 +34,4 @@ export const setPublishActDetail = (images, description) => ({
         images: images,
         description: description,
     }
-})
+});

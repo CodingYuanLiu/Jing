@@ -1,3 +1,4 @@
+/*
 import React from "react"
 import { View, Text, NativeModules } from 'react-native';
 import { Button, Input } from "react-native-elements";
@@ -27,11 +28,11 @@ export default class ChatTest extends React.PureComponent{
         });
 
         xmpp.on('stanza', async stanza => {
-            /*
+
             if (stanza.is('message')) {
                 await xmpp.send(xml('presence', {type: 'unavailable'}))
                 await xmpp.stop()
-            }*/
+            }
             console.log(stanza.toString());
             const message = xml('message', {
                     type: 'chat', to: recipient
@@ -107,3 +108,4 @@ export default class ChatTest extends React.PureComponent{
 
 }
 
+*/

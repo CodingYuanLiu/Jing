@@ -161,12 +161,13 @@ export default class ActItem extends React.PureComponent{
         )
     }
 }
-const item = <Icon
+const item =
+    <Icon
     type={"material-community"}
     name={"taxi"}
     size={24}
     color={"#bfbfbf"}
-/>
+/>;
 const TaxiSpecShape = {
     departTime: PropTypes.string,
     endTime: PropTypes.string,
@@ -190,7 +191,7 @@ const UserShape = {
 const normalSpecShape = {
     endTime: PropTypes.string,
     activityTime: PropTypes.string,
-}
+};
 ActItem.propTypes = {
     id: PropTypes.number.isRequired,
     user: PropTypes.shape(UserShape),

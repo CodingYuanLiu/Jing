@@ -59,9 +59,10 @@ const MainNav = createStackNavigator(
         ActComment: {
             screen: CommentModal,
         },
+        /*
         AnotherTest: {
             screen: Another,
-        },
+        },*/
     },
     {
         defaultNavigationOptions: {

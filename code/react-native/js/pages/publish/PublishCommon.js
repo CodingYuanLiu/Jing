@@ -37,7 +37,7 @@ class PublishCommon extends React.PureComponent{
     renderHeader = () => {
         return (
             <PublishHeader
-                onClose={() => {NavigationUtil.back(this.props)}}
+                onClose={() => {NavigationUtil.toPage(null, "Home")}}
                 onNext={this.toNextPage}
             />
             );
@@ -58,12 +58,15 @@ class PublishCommon extends React.PureComponent{
     };
 
     renderDateTimePicker = () => {
-        let datePickerDisplayText = "请选择";
-
+        let datePickerDisplayText = "请选择报名截止时间";
+        if (this.state.pickedDateTime || this.state.endTime !== ""){
+            datePickerDisplayText = this.state.endTime;
+        }
         return (
             <CustomDatePicker
                 onCancel={this.hideDateTimePicker}
                 onConfirm={this.handleDatePicked}
+                onShow={this.showDateTimePicker}
                 visible={this.state.isDateTimePickerVisible}
                 displayText={datePickerDisplayText}
             />
@@ -88,13 +91,16 @@ class PublishCommon extends React.PureComponent{
         this.setState({
             endTime: Util.dateTimeToString(this.state.pickedDateTime)
         });
+        console.log(this.state);
         this.hideDateTimePicker();
     };
     hideDateTimePicker = () => {
-        this.setState({isDateTimePickerVisible: false})
+        this.setState({isDateTimePickerVisible: false});
+        console.log(this.state)
     };
     showDateTimePicker = () => {
-        this.setState({isDateTimePickerVisible: true})
+        this.setState({isDateTimePickerVisible: true});
+        console.log(this.state)
     };
     toNextPage = () => {
         let type = this.state.type;
@@ -110,15 +116,15 @@ class PublishCommon extends React.PureComponent{
 
         let nextPage;
         if (type === "taxi")
-            nextPage = "TaxiSpec";
+            nextPage = "PublishTaxiSpec";
         else if (type === "order")
-            nextPage = "OrderSpec";
+            nextPage = "PublishOrderSpec";
         else if (type === "takeout")
-            nextPage = "TakeoutSpec";
+            nextPage = "PublishTakeoutSpec";
         else
-            nextPage = "ActivitySpec";
+            nextPage = "PublishActivitySpec";
         this.props.setPublishActCommon(type,title, endTime);
-        NavigationUtil.toPage(null, "PublishTaxiSpec")
+        NavigationUtil.toPage(null, nextPage);
     }
 
 }
