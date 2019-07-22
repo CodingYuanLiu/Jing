@@ -24,7 +24,7 @@ func BuildToken(user dao.User) (tokenString string) {
 	claims := make(jwt.MapClaims)
 	claims["userId"] = user.ID
 	claims["admin"] = "false"
-	claims["exp"] = time.Now().Add(time.Hour).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 	claims["iat"] = time.Now().Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ = token.SignedString([]byte("lqynb"))

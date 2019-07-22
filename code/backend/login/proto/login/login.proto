@@ -3,6 +3,7 @@ syntax = "proto3";
 package go.micro.srv.login;
 
 service Login {
+    rpc NewJwt(JwtReq) returns (JwtResp) {}
     rpc Auth(AuthReq) returns (AuthResp) {}
     rpc LoginByJaccount(LJReq) returns (TokenResp) {}
     rpc LoginByUP(UPReq) returns (TokenResp) {}
@@ -10,6 +11,14 @@ service Login {
     rpc GetAccessToken(CodeReq) returns (AccessResp) {}
     rpc GetJaccount(CodeReq) returns (JaccResp) {}
     rpc BindJwtAndJaccount(BindReq) returns (BindResp) {}
+}
+
+message JwtReq {
+    int32 userId = 1;
+}
+
+message JwtResp {
+    string jwtToken = 1;
 }
 
 message JaccResp {

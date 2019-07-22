@@ -41,7 +41,6 @@ func setupRouter() *gin.Engine {
 
 	publicRouter := router.Group("/api/public")
 	{
-		publicRouter.GET("/status", lc.GetUserStatus)
 		// TODO: Confirm register's security
 		publicRouter.POST("/register", uc.Register)
 		publicRouter.POST("/login/jaccount", lc.JaccountLogin)
@@ -62,7 +61,7 @@ func setupRouter() *gin.Engine {
 	*/
 	userRouter := router.Group("/api/user")
 	{
-		// TODO: Privilege & Request activity
+		publicRouter.GET("/status", lc.GetUserStatus)
 		userRouter.GET("/act/myact", ac.MyAct)
 		userRouter.GET("/act/manageact", ac.ManageAct)
 		userRouter.POST("/act/publish", ac.PublishActivity)

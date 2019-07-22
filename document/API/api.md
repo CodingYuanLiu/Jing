@@ -1,14 +1,14 @@
-# /api
+# Application Interface of Jing
 
 ## Get User Status
 
 #### Description
 
-Find a user's id by its jwt.
+Get a user's detail by its jwt.
 
 #### Request
 ```json
-GET /api/public/status HTTP/1.1
+GET /api/user/status HTTP/1.1
 Authorization: Bearer jwt
 ```
 
@@ -16,18 +16,63 @@ Authorization: Bearer jwt
 Status OK - 200
 ```json
 {
-    "id": 6,
-    "message": "You are online"
+    "avatar_url": "http://puo7ltwok.bkt.clouddn.com/Fse4b_C0cNTmFNftBXX3T-RQPMFo",
+    "id": 5,
+    "jwt_token": "new_jwt",
+    "jaccount": "jaccount",
+    "nickname": "nickname",
+    "phone": "12341825417",
+    "signature": "欧哈哈哈哈哈哈哈",
+    "username": "username"
 }
 ```
 Jwt is invalid - 401
 ```json
 {
-    "message": "Invaild token"
+    "message": "You need login to do this"
+}
+```
+
+## Get User Detail
+
+#### Description
+
+Get a user's detail by user id.
+
+#### Request
+
+```json
+GET /api/public/detail?id=1
+```
+
+#### Response
+
+Status OK - 200
+```json
+{
+    "avatar_url": "http://puo7ltwok.bkt.clouddn.com/Fse4b_C0cNTmFNftBXX3T-RQPMFo",
+    "id": 5,
+    "nickname": "nickname",
+    "phone": "12341825417",
+    "signature": "欧哈哈哈哈哈哈哈",
+}
+```
+
+User Not Found - 400
+```json
+{
+    "error": {
+        "id": "",
+        "code": 0,
+        "detail": "user not found",
+        "status": ""
+    }
 }
 ```
 
 ## Register
+
+#### Description
 
 Register a new user by username, password, phone, nickname and jwt.
 
@@ -263,6 +308,9 @@ GET /api/public/act/query?act_id={act_id} HTTP/1.1
 }
 ```
 
+## *Activity Pages*
+For `myact`,`manageact` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
+
 ## Find All Activity
 
 #### Description
@@ -420,9 +468,6 @@ Status OK - 200
     }
 ]
 ```
-
-### PS:
-For `myact`,`manageact` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
 
 ## Publish Activity
 
