@@ -58,7 +58,7 @@ class MeScreen extends React.PureComponent{
                            containerStyle={{position:"absolute", right: 40}} />}
             onPress={()=>{NavigationUtil.toPage(this.props, item.key)}}
         />
-    }
+    };
 
     logout = () => {
         this.props.onLogout()
@@ -66,7 +66,7 @@ class MeScreen extends React.PureComponent{
             .catch(err => {
                 //...
         })
-    }
+    };
 
     render() {
         const user = this.props.user.user;
@@ -76,12 +76,12 @@ class MeScreen extends React.PureComponent{
             {data:8, label: "粉丝"},
             {data:15, label: "活动"},
             {data:20, label: "点赞"},
-        ]
+        ];
         const itemList = [
             {title: "我发布的", key: "MyAct", data: 0},
             {title: "我参与的", key: "FinishAct", data: 0},
             {title: "我的群聊", key: "GroupChat", data: 0},
-        ]
+        ];
 
         const topCard = logged ?
             <InfoCard
@@ -125,13 +125,14 @@ class MeScreen extends React.PureComponent{
 }
 const mapStateToProps = state => ({
     user: state.user
-})
+});
 
 const mapDispatchToProps = dispatch => ({
     onLogin: (jwt) => dispatch(login(jwt)),
     setUser: (user) => dispatch(setUserInfo(user)),
     onLogout: () => dispatch(logout()),
-})
+});
+
 export default connect(mapStateToProps, mapDispatchToProps)(MeScreen)
 
 

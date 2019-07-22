@@ -22,13 +22,18 @@ class PublishScreen extends React.PureComponent{
     fadeOut = () => {
         StatusBar.setHidden(false, "fade")
         NavigationUtil.back(this.props)
-    }
-    toTaxiForm = () => {
+    };
+    toPublishCommon = type => {
+        NavigationUtil.toPage({actType: type}, "PublishCommon");
+        /*
         if (this.props.logged) {
-            NavigationUtil.toPage(this.props, "TaxiForm");
+            NavigationUtil.toPage({actType: type}, "PublishCommon");
         } else {
-            alert("Need login")}
+            alert("Need login")
         }
+
+         */
+    };
     render() {
         const taxi =
             <Icon
@@ -36,36 +41,36 @@ class PublishScreen extends React.PureComponent{
             type={"font-awesome"}
             name={"taxi"}
             color={"#0072ff"}
-            onPress={() => {this.toTaxiForm()}}
+            onPress={() => {this.toPublishCommon("taxi")}}
             />;
-        const taxiTitle = "发起拼车"
+        const taxiTitle = "发起拼车";
         const shopping =
             <Icon
                  reverse
                  type={"font-awesome"}
                  name={"shopping-bag"}
                  color={"#007bff"}
-                 onPress={() => {this.toTaxiForm()}}
+                 onPress={() => {this.toTaxiForm("order")}}
             />;
-        const shoppingTitle = "拼网购"
+        const shoppingTitle = "拼网购";
         const takeOut =
             <Icon
                 reverse
                 type={"material-community"}
                 name={"food"}
                 color={"#0090ff"}
-                onPress={() => {this.toTaxiForm()}}
+                onPress={() => {this.toTaxiForm("takeout")}}
             />;
-        const takeOutTitle = "拼外卖"
+        const takeOutTitle = "拼外卖";
         const activity =
             <Icon
                 reverse
                 type={"ionicon"}
                 name={"md-contacts"}
                 color={"#009eff"}
-                onPress={() => {this.toTaxiForm()}}
+                onPress={() => {this.toPublishCommon("activity")}}
             />;
-        const activityTitle = "发起活动"
+        const activityTitle = "发起活动";
         return(
             <View style={styles.container}>
                 <View style={styles.header}>

@@ -8,14 +8,12 @@ export default class NoXXX extends React.PureComponent{
     }
 
     render() {
-        let icon = this.props.icon;
-        let labelText = this.props.labelText;
-        let textSize = this.props.textSize;
+        let {icon, labelText, textSize, textColor } = this.props;
         return(
 
             <View style={styles.container}>
                 {icon}
-                <Text style={[styles.labelText, {fontSize: textSize}]}>
+                <Text style={[styles.labelText, {fontSize: textSize}, {color: textColor}]}>
                     {labelText}
                 </Text>
             </View>
@@ -26,10 +24,12 @@ NoXXX.propTypes = {
     labelText: PropTypes.string.isRequired,
     icon: PropTypes.element.isRequired,
     textSize: PropTypes.number,
+    textColor: PropTypes.string,
 };
 
 NoXXX.defaultProps = {
-    textSize: 32
+    textSize: 32,
+    textColor: "#d3d3d3",
 };
 
 const styles=StyleSheet.create({

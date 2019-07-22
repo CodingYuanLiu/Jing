@@ -14,8 +14,6 @@ export default class DetailScreen extends React.Component {
         super(props)
         this.state= {
             activity: {},
-            commentVisible: false,
-            innerModalVisible: false,
         }
     }
 
@@ -146,7 +144,10 @@ export default class DetailScreen extends React.Component {
         let commentPreview = this.renderCommentPreview(comments);
         let commentButton =
             <View style={styles.commentButton}>
-                <Text style={styles.commentButtonText}>添加评论...</Text>
+                <Text
+                    style={styles.commentButtonText}
+                    onPress={() => {NavigationUtil.toPage({comments: comments}, "ActComment")}}
+                >添加评论...</Text>
             </View>
         return (
             <View style={styles.commentContainer}>
@@ -196,8 +197,7 @@ export default class DetailScreen extends React.Component {
                 </View>
             </View>
         )
-    }
-
+    };
     render() {
         let activity = this.state.activity;
         let title = activity.title;
@@ -218,16 +218,13 @@ export default class DetailScreen extends React.Component {
         let body = this.renderBody(user, specInfo, bodyText, images, publishTime, comments);
         let footer = this.renderFooter();
         return(
-            <View style={{flex:1, alignItems:"center"}}>
+            <View style={{flex:1, alignItems:"center", width:"100%"}}>
                 {navBar}
-                <ScrollView style={[{flex: 1}, styles.container]}>
+                <ScrollView style={styles.container}>
                     {header}
                     {body}
                 </ScrollView>
                 {footer}
-                <Modal isVisible={this.state.commentVisible}>
-                    <CommentModal/>
-                </Modal>
             </View>
         );
     };
@@ -236,7 +233,6 @@ export default class DetailScreen extends React.Component {
         let id = this.state.activity.sponsor_id;
         NavigationUtil.toPage({id:id}, "PersonalPage")
     };
-
 };
 
 

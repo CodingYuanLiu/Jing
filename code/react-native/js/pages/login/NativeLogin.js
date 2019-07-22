@@ -166,7 +166,7 @@ class LoginScreen extends React.PureComponent {
 const mapDispatchToProps = dispatch => ({
     onLogin: (jwt) => dispatch(login(jwt)),
     setUser: (user) => dispatch(setUserInfo(user)),
-})
+});
 
 export default connect(null, mapDispatchToProps)(LoginScreen)
 

@@ -209,6 +209,25 @@ class CommentIcon extends React.PureComponent{
             />)
     }
 }
+
+class EmojiIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        let {size, color, style, onPress} = this.props
+        return (
+            <Icon
+                type={"material"}
+                name={"insert-emoticon"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -223,4 +242,5 @@ export {
     GreaterIcon,
     CloseIcon,
     CommentIcon,
+    EmojiIcon,
 }

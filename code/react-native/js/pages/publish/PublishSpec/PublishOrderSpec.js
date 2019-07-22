@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text } from 'react-native';
 
 
-export default class SearchScreen extends React.PureComponent{
+export default class PublishOrderSpec extends React.PureComponent{
     constructor(props) {
         super(props);
     }
@@ -11,7 +11,7 @@ export default class SearchScreen extends React.PureComponent{
         return(
             <View>
                 <Text>
-                    This is Search screen!
+                    This is Order 的专门页面
                 </Text>
             </View>
         )

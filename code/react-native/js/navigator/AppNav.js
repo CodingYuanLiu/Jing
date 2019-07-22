@@ -10,7 +10,8 @@ import SettingScreen from '../pages/setting/Setting';
 import SearchScreen from '../pages/search/Search';
 import PersonalHome from '../pages/me/PersonalHome';
 import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch"
-import TaxiStack from "../pages/publish/TaxiStack/TaxiStack";
+import PublishStack from "../pages/publish/PublishStack";
+import CommentModal from "../pages/detail/CommentModal";
 
 
 const StartNav = createStackNavigator(
@@ -48,12 +49,15 @@ const MainNav = createStackNavigator(
         Search: {
             screen: SearchScreen,
         },
-        TaxiForm: {
-            screen: TaxiStack,
+        PublishCommon: {
+            screen: PublishStack,
         },
         PersonalHome: {
             screen: PersonalHome,
         },
+        ActComment: {
+            screen: CommentModal,
+        }
     },
     {
         defaultNavigationOptions: {

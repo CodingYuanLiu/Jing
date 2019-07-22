@@ -11,7 +11,7 @@ const initialState = {
         username: "",
         nickname: "",
         signature: "",
-        credit: "",
+        avatarUri: "",
     },
     jwt: "",
 }
@@ -19,15 +19,15 @@ const initialState = {
 const user = (state=initialState, action) => {
     switch (action.type) {
         case LOGIN:
-            return Object.assign({}, state, {logged: true, jwt: action.jwt})
+            return Object.assign({}, state, {logged: true, jwt: action.jwt});
         case LOGOUT:
-            return initialState
+            return initialState;
         case SET_USER:
-            return Object.assign({}, state, {user:action.user})
+            return Object.assign({}, state, {user:action.user});
         default:
-            return state
+            return state;
     }
 
-}
+};
 
 export default user

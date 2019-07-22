@@ -1,3 +1,9 @@
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
-export const SET_USER = 'SET_USER'
+export const SET_USER = 'SET_USER';
+export const ADD_COMMENT = 'ADD_COMMENT';
+export const SET_CURRENT_ACT = 'SET_CURRENT_ACT';
+export const CLEAR_CURRENT_ACT = 'CLEAR_CURRENT_ACT';
+export const SET_PUBLISH_ACT_COMMON = 'SET_PUBLISH_ACT_COMMON';
+export const SET_PUBLISH_ACT_SPEC = 'SET_PUBLISH_ACT_SPEC';
+export const SET_PUBLISH_ACT_DETAIL = 'SET_PUBLISH_ACT_DETAIL';
