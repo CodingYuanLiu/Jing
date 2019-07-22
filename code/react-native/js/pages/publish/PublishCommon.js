@@ -4,7 +4,7 @@ import {Input, Button, Icon} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
 import CustomDatePicker from "./components/CustomDatePicker";
 import { connect } from "react-redux";
-import {setPublishActCommon} from "../../actions/activity";
+import {setPublishActCommon, setPublishActSpec} from "../../actions/activity";
 import Util from "../../common/util";
 import PublishHeader from "./components/PublishHeader";
 
@@ -17,12 +17,19 @@ class PublishCommon extends React.PureComponent{
             endTime: "",
             isDateTimePickerVisible: false,
             pickedDateTime: null,
+
+            specDateTime: "",
+            isSpecDatePickerVisible: false,
+            specPickedDateTime: null,
         }
     }
 
     componentDidMount() {
-        this.setState({type: this.props.navigation.getParam("actType")})
+        let type = this.props.navigation.getParam("actType");
+        this.setState({type: type});
 
+
+        // props redux state to component state
         if (this.props.type && this.props.type !== "") {
             this.setState({type: this.props.type});
         }
@@ -32,7 +39,9 @@ class PublishCommon extends React.PureComponent{
         if (this.props.endTime && this.props.endTime !== "") {
             this.setState({endTime: this.props.endTime})
         }
+        console.log(this.props.spec);
     }
+
 
     renderHeader = () => {
         return (
@@ -72,16 +81,79 @@ class PublishCommon extends React.PureComponent{
             />
         )
     };
+    // for taxi activity
+    renderDepartDatePicker = () => {
+        let datePickerDisplayText = "请选择出发时间";
+        if (this.state.specPickedDateTime || this.state.specDateTime !== ""){
+            datePickerDisplayText = this.state.specDateTime;
+        }
+        return (
+            <CustomDatePicker
+                onCancel={this.hideSpecDateTimePicker}
+                onShow={this.showSpecDateTimePicker}
+                onConfirm={this.handleSpecDatePicked}
+                displayText={datePickerDisplayText}
+                visible={this.state.isSpecDatePickerVisible}
+            />);
+    };
+
+    // for normal activity
+    renderActivityTimePicker = () => {
+        let datePickerDisplayText = "请选择活动开始时间";
+        if (this.state.specPickedDateTime || this.state.specDateTime !== ""){
+            datePickerDisplayText = this.state.specDateTime;
+        }
+
+        return (
+            <CustomDatePicker
+                onCancel={this.hideSpecDateTimePicker}
+                onShow={this.showSpecDateTimePicker}
+                onConfirm={this.handleSpecDatePicked}
+                displayText={datePickerDisplayText}
+                visible={this.state.isSpecDatePickerVisible}
+            />);
+    };
+
+    // for takeout activity
+    renderOrderTimePicker = () => {
+        let datePickerDisplayText = "请选择下单时间";
+        if (this.state.specPickedDateTime || this.state.specDateTime !== ""){
+            datePickerDisplayText = this.state.specDateTime;
+        }
+
+        return (
+            <CustomDatePicker
+                onCancel={this.hideSpecDateTimePicker}
+                onShow={this.showSpecDateTimePicker}
+                onConfirm={this.handleSpecDatePicked}
+                displayText={datePickerDisplayText}
+                visible={this.state.isSpecDatePickerVisible}
+            />);
+    };
+
     render() {
         let header = this.renderHeader();
         let titleInput = this.renderTitleInput();
         let dateTimePicker = this.renderDateTimePicker();
+
+        let componentByType;
+        if (this.state.type === "taxi") {
+            componentByType = this.renderDepartDatePicker();
+        } else if (this.state.type === "takeout") {
+            componentByType = this.renderOrderTimePicker();
+        } else if (this.state.type === "activity") {
+            componentByType = this.renderActivityTimePicker();
+        } else {
+            componentByType = null;
+        }
+
         return(
             <View style={styles.container}>
                 {header}
                 <View style={styles.bodyContainer}>
                     {titleInput}
                     {dateTimePicker}
+                    {componentByType}
                 </View>
             </View>
         )
@@ -91,17 +163,44 @@ class PublishCommon extends React.PureComponent{
         this.setState({
             endTime: Util.dateTimeToString(this.state.pickedDateTime)
         });
-        console.log(this.state);
         this.hideDateTimePicker();
     };
     hideDateTimePicker = () => {
         this.setState({isDateTimePickerVisible: false});
-        console.log(this.state)
     };
     showDateTimePicker = () => {
         this.setState({isDateTimePickerVisible: true});
-        console.log(this.state)
     };
+
+    // for act spec field
+    hideSpecDateTimePicker = () => {
+        this.setState({isSpecDatePickerVisible: false});
+    };
+    showSpecDateTimePicker = () => {
+        this.setState({isSpecDatePickerVisible: true});
+    };
+    handleSpecDatePicked = date => {
+        this.setState({specPickedDateTime: date});
+        let dateString = Util.dateTimeToString(this.state.specPickedDateTime);
+        this.setState({
+            specDateTime: dateString,
+        });
+        switch(this.state.type){
+            case "taxi":
+                this.props.setPublishActSpec({departTime: dateString});
+                break;
+            case "takeout" :
+                this.props.setPublishActSpec({orderTime: dateString});
+                break;
+            case "activity" :
+                this.setState({activityTime: dateString});
+                break;
+            default:
+                break;
+        }
+        this.hideSpecDateTimePicker();
+    };
+
     toNextPage = () => {
         let type = this.state.type;
         let endTime = this.state.endTime;
@@ -131,12 +230,14 @@ class PublishCommon extends React.PureComponent{
 
 // let the activity to be published managed by redux store
 const mapDispatchToProps = dispatch => ({
-    setPublishActCommon: (type, title, endTime) => dispatch(setPublishActCommon(type,title,endTime))
+    setPublishActCommon: (type, title, endTime) => dispatch(setPublishActCommon(type,title,endTime)),
+    setPublishActSpec: spec => dispatch(setPublishActSpec(spec)),
 });
 const mapStateToProps = state => ({
     type: state.activity.publishAct.type,
     title: state.activity.publishAct.title,
     endTime: state.activity.publishAct.endTime,
+    spec: state.activity.publishAct.spec,
 });
 export default connect(
     mapStateToProps,

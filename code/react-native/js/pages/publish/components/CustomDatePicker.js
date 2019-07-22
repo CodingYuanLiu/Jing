@@ -9,13 +9,6 @@ export default class CustomDatePicker extends React.PureComponent{
     constructor(props) {
         super(props);
     }
-
-    componentDidMount() {
-        console.log(this.props.onShow);
-        console.log(this.props.onConfirm);
-        console.log(this.props.onCancel);
-    }
-
     render() {
         let leftIcon =
             <Icon

@@ -1,12 +1,10 @@
 import React from "react"
-import { View, Text, StatusBar, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StatusBar, TextInput, StyleSheet, Dimensions } from 'react-native';
 import PublishHeader from "../components/PublishHeader";
-import NavigationUtil from "../../../navigator/NavUtil";
-import CustomDatePicker from "../components/CustomDatePicker";
-import Util from "../../../common/util";
 import {setPublishActSpec} from "../../../actions/activity";
 import {connect} from "react-redux";
-import {Icon} from "react-native-elements";
+import {Icon, Input} from "react-native-elements";
+import NavigationUtil from "../../../navigator/NavUtil";
 
 const {height, width} = Dimensions.get('window');
 
@@ -45,11 +43,20 @@ class PublishTaxiSpec extends React.PureComponent{
 
     renderLocationInput = () => {
         let leftInput =
-            <Input/>;
+            <TextInput
+                style={styles.locationInput}
+            />;
         let rightInput =
-            <Input/>;
+            <TextInput
+                style={styles.locationInput}
+            />;
         let middleIcon =
-            <Icon/>;
+            <Icon
+                type={"material-community"}
+                name={"car-side"}
+                size={20}
+                color={"#bfbfbf"}
+            />;
         return (
             <View style={styles.locationInputContainer}>
                 {leftInput}
@@ -57,23 +64,6 @@ class PublishTaxiSpec extends React.PureComponent{
                 {rightInput}
             </View>
         );
-    };
-
-    renderDepartDatePicker = () => {
-        let datePickerDisplayText = "请选择出发时间";
-        if (this.state.pickedDateTime || this.state.departTime !== ""){
-            datePickerDisplayText = this.state.departTime;
-        }
-
-        return (
-            <CustomDatePicker
-                containerStyle={styles.datePickerContainer}
-                onCancel={this.hideDateTimePicker}
-                onShow={this.showDateTimePicker}
-                onConfirm={this.handleDatePicked}
-                displayText={datePickerDisplayText}
-                visible={this.state.isDateTimePickerVisible}
-            />);
     };
 
     renderInputPromt = () => {
@@ -88,30 +78,15 @@ class PublishTaxiSpec extends React.PureComponent{
         let header = this.renderHeader();
         let mapView = this.renderMapView();
         let locationInput = this.renderLocationInput();
-        let datePicker = this.renderDepartDatePicker();
         return(
             <View style={styles.container}>
                 {header}
                 {mapView}
                 {locationInput}
-                {datePicker}
             </View>
         )
     };
 
-    handleDatePicked = date => {
-        this.setState({pickedDateTime: date});
-        this.setState({
-            departTime: Util.dateTimeToString(this.state.pickedDateTime)
-        });
-        this.hideDateTimePicker();
-    };
-    hideDateTimePicker = () => {
-        this.setState({isDateTimePickerVisible: false});
-    };
-    showDateTimePicker = () => {
-        this.setState({isDateTimePickerVisible: true});
-    };
     toNextPage = () => {
         this.props.setPublishActSpec();
         NavigationUtil.toPage({actType: "taxi"}, "PublishDetail")
@@ -126,6 +101,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PublishTaxiSpec);
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -144,5 +121,12 @@ const styles = StyleSheet.create({
     datePickerContainer: {
         borderRadius: 4,
         backgroundColor: "#eee",
+        marginTop: 0,
+    },
+    locationInput: {
+        flex: 1,
+        fontSize: 16,
+        color: "#5e5e5e",
+        backgroundColor: "yellow",
     },
 });

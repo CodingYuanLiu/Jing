@@ -24,7 +24,7 @@ class PublishScreen extends React.PureComponent{
         NavigationUtil.back(this.props)
     };
     toPublishCommon = type => {
-        NavigationUtil.toPage({actType: type}, "PublishTaxiSpec");
+        NavigationUtil.toPage({actType: type}, "PublishCommon");
         /*
         if (this.props.logged) {
             NavigationUtil.toPage({actType: type}, "PublishCommon");
@@ -50,7 +50,7 @@ class PublishScreen extends React.PureComponent{
                  type={"font-awesome"}
                  name={"shopping-bag"}
                  color={"#007bff"}
-                 onPress={() => {this.toTaxiForm("order")}}
+                 onPress={() => {this.toPublishCommon("order")}}
             />;
         const shoppingTitle = "拼网购";
         const takeOut =
@@ -59,7 +59,7 @@ class PublishScreen extends React.PureComponent{
                 type={"material-community"}
                 name={"food"}
                 color={"#0090ff"}
-                onPress={() => {this.toTaxiForm("takeout")}}
+                onPress={() => {this.toPublishCommon("takeout")}}
             />;
         const takeOutTitle = "拼外卖";
         const activity =

@@ -1,6 +1,16 @@
 import {
     SET_CURRENT_ACT,
-    ADD_COMMENT, CLEAR_CURRENT_ACT, SET_PUBLISH_ACT_COMMON, SET_PUBLISH_ACT_SPEC, SET_PUBLISH_ACT_DETAIL,
+    ADD_COMMENT,
+    CLEAR_CURRENT_ACT,
+    SET_PUBLISH_ACT_COMMON,
+    SET_PUBLISH_ACT_DETAIL,
+    SET_PUBLISH_TAXI_DEPART,
+    SET_PUBLISH_TAXI_DEST,
+    SET_PUBLISH_TAXI_ORIGIN,
+    SET_PUBLISH_ACTIVITY_TIME,
+    SET_PUBLISH_ORDER_STORE,
+    SET_PUBLISH_TAKEOUT_TIME,
+    SET_PUBLISH_TAKEOUT_STORE,
 } from "../common/constant/ActionTypes"
 
 
@@ -80,30 +90,15 @@ const initialState = {
          * }
          *
          */
-        spec: {},
+        departTime: "",
+        origin: "",
+        dest: "",
+        store: "",
+        orderTime: "",
+        activityTime: "",
     },
 };
 
-const getActSpec = (type, spec) => {
-    if (type === "taxi") {
-        return {
-            departTime: spec.departTime,
-            origin: spec.origin,
-            dest: spec.dest,
-        };
-    } else if (type === "takeout") {
-        return {
-            store: spec.store,
-            orderTime: spec.orderTime,
-        };
-    } else if (type === "order") {
-        return {
-            store: spec.store,
-        };
-    } else return {
-        activityTime: spec.activityTime,
-    };
-};
 
 const activity = (state=initialState, action) => {
     switch (action.type) {
@@ -124,10 +119,46 @@ const activity = (state=initialState, action) => {
                     type: action.act.type,
                 }
             });
-        case SET_PUBLISH_ACT_SPEC:
+        case SET_PUBLISH_TAXI_DEPART:
             return Object.assign({}, state, {
                 publishAct: {
-                    spec: getActSpec(state.publishAct.type, action.spec),
+                    departTime: action.departTime,
+                }
+            });
+        case SET_PUBLISH_TAXI_DEST:
+            return Object.assign({}, state, {
+                publishAct: {
+                    dest: action.dest,
+                }
+            });
+        case SET_PUBLISH_TAXI_ORIGIN:
+            return Object.assign({}, state, {
+                publishAct: {
+                    origin: action.origin,
+                }
+            });
+        case SET_PUBLISH_ACTIVITY_TIME:
+            return Object.assign({}, state, {
+                publishAct: {
+                    activityTime: action.activityTime,
+                }
+            });
+        case SET_PUBLISH_ORDER_STORE:
+            return Object.assign({}, state, {
+                publishAct: {
+                    orderStore: action.store,
+                }
+            });
+        case SET_PUBLISH_TAKEOUT_TIME:
+            return Object.assign({}, state, {
+                publishAct: {
+                    takeoutTime: action.takeoutTime,
+                }
+            });
+        case SET_PUBLISH_TAKEOUT_STORE:
+            return Object.assign({}, state, {
+                publishAct: {
+                    takeoutStore: action.store,
                 }
             });
         case SET_PUBLISH_ACT_DETAIL:
