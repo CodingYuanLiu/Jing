@@ -23,14 +23,14 @@ func init() {
 	Client = loginProto.NewLoginService("auth-service", client.DefaultClient)
 }
 
-func CallNewJwt(userId int) (string, error) {
+func CallNewJwt(userId int) string {
 	resp, err := Client.NewJwt(context.TODO(), &loginProto.JwtReq{
 		UserId: int32(userId),
 	})
 	if err != nil {
-		return "", nil
+		return ""
 	}
-	return resp.JwtToken, nil
+	return resp.JwtToken
 }
 
 func CallAuth(jwt string) (*loginProto.AuthResp, error) {
