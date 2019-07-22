@@ -1,12 +1,12 @@
 package main
 
 import (
-	k8s "github.com/micro/kubernetes/go/micro"
-	"log"
-	"time"
 	"github.com/micro/go-micro"
+	k8s "github.com/micro/kubernetes/go/micro"
 	"jing/app/activity/handler"
 	activity "jing/app/activity/proto"
+	"log"
+	"time"
 )
 
 //The struct is used to store stylistic id in MongoDB.

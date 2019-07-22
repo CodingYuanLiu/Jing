@@ -19,7 +19,6 @@ func init(){
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer session.Close()
 	/* Used to store id */
 	IdCollection = session.DB("Jing").C("AutoId")
 	Collection = session.DB("Jing").C("Activity")
