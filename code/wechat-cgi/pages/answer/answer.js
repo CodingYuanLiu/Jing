@@ -1,6 +1,8 @@
 //answer.js
 var util = require('../../utils/util.js')
-const { $Toast } = require('../../dist/base/index');
+const {
+    $Toast
+} = require('../../dist/base/index');
 
 Date.prototype.toString = function() {
     return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate() + " " + (this.getHours() >= 10 ? "" + this.getHours() : "0" + this.getHours()) + ':' + (this.getMinutes() >= 10 ? "" + this.getMinutes() : "0" + this.getMinutes());
@@ -10,6 +12,7 @@ Date.prototype.toString = function() {
 var app = getApp()
 Page({
     data: {
+        counter: 0,
         motto: '知乎--微信小程序版',
         userInfo: {},
         act_id: 0,
@@ -17,28 +20,28 @@ Page({
         comment_length: 0,
         your_comment: '',
         place_holder: '添加评论',
+        avatar_src: '../../images/icons/timg.jpg',
         to_user: -1,
         visible1: false,
-        actions3: [
-            {
-                name: '现金支付',
-                color: '#2d8cf0',
-            }
-        ],
+        actions3: [{
+            name: '现金支付',
+            color: '#2d8cf0',
+        }],
+        mode: "net",
         images: ["http://puo7ltwok.bkt.clouddn.com/Fj0kHQJU5c_EiVQAJy_vrsCosnSZ"]
     },
     //事件处理函数
-    toQuestion: function() {
-        wx.navigateTo({
-            url: '../question/question'
-        })
-    },
+    // toQuestion: function() {
+    //     wx.navigateTo({
+    //         url: '../question/question'
+    //     })
+    // },
     refresh: function() {
         let that = this;
         wx.request({
             url: 'https://jing855.cn/api/public/act/query?act_id=' + that.data.act_id,
             method: 'GET',
-            success: function (res) {
+            success: function(res) {
                 console.log(res);
                 that.setData({
                     content: res.data
@@ -74,8 +77,33 @@ Page({
                     comment_length: res.data.comments.length
                 });
                 console.log(res);
+                let d = res.data;
+                wx.request({
+                    url: 'https://jing855.cn/api/public/detail?id=' + res.data.sponsor_id,
+                    method: 'GET',
+                    success: function(res) {
+                        console.log(res);
+                        if (res.data.avatar_url !== 'http://puo7ltwok.bkt.clouddn.com/')
+                            that.setData({
+                                avatar_src: res.data.avatar_url
+                            })
+                    }
+                })
+                for (let i=0;i<res.data.comments.length;i++){
+                    wx.request({
+                        url: 'https://jing855.cn/api/public/detail?id=' + res.data.comments[i].user_id,
+                        method: 'GET',
+                        success: function(res) {
+                            d.comments[i].avatar_src = res.data.avatar_url;
+                            that.setData({
+                                content: d
+                            })
+                        }
+                    })
+                }
             }
         });
+
     },
     tapName: function(event) {
         console.log(event)
@@ -87,6 +115,35 @@ Page({
     },
     handleAddComment: function(event) {
         let that = this;
+        that.setData({
+            counter: that.data.counter + 1
+        })
+        if (that.data.counter > 3) {
+            that.setData({
+                counter: 0
+            })
+            $Toast({
+                content: '不能为空',
+                type: 'error',
+            });
+            return;
+        }
+        if (app.globalData.userInfo === null) {
+            $Toast({
+                content: '未登录',
+                type: 'warning',
+            });
+            return;
+        }
+        if (that.data.your_comment === '' || that.data.your_comment === null) {
+            setTimeout(that.handleAddComment, 200);
+            return;
+        }
+        $Toast({
+            content: '正在处理',
+            type: 'loading',
+            duration: 0
+        });
         let date = new Date();
         let dateString = date.toString();
         console.log(app.globalData.userInfo);
@@ -104,7 +161,14 @@ Page({
             },
             success: function(res) {
                 console.log(res);
-                that.setData({your_comment: ''})
+                that.setData({
+                    your_comment: ''
+                })
+                $Toast.hide();
+                $Toast({
+                    content: '评论成功',
+                    type: 'success',
+                });
                 that.refresh();
             }
         })
@@ -112,45 +176,104 @@ Page({
     handleJoin: function() {
         // wx request join
         let that = this;
-        $Toast({
-            content: '加载中',
-            type: 'loading',
-            duration: 0
-        });
+        if (app.globalData.userInfo === null) {
+            $Toast({
+                content: '未登录',
+                type: 'warning',
+            });
+            return;
+        }
         wx.request({
-            url: 'https://jing855.cn/api/user/act/join?act_id=' + that.data.act_id,
-            method: 'POST',
+            url: 'https://jing855.cn/api/user/act/status?act_id=' + that.data.act_id,
+            method: 'GET',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,
             },
-            success: function (res) {
+            success: function(res) {
                 console.log(res);
-                $Toast.hide();
+                if (res.data.status === 0) {
+                    $Toast({
+                        content: '已加入',
+                        type: 'warning',
+                    });
+                    return;
+                } else if (res.data.status === -1) {
+                    $Toast({
+                        content: '等待接受',
+                        type: 'warning',
+                    });
+                    return;
+                } else if (res.data.status === 1) {
+                    $Toast({
+                        content: '不能加入自己发起的活动',
+                        type: 'warning',
+                    });
+                    return;
+                }
                 $Toast({
-                    content: '成功!',
-                    type: 'success',
-                    duration: 0.7
+                    content: '加载中',
+                    type: 'loading',
+                    duration: 0
                 });
+                wx.request({
+                    url: 'https://jing855.cn/api/user/act/join?act_id=' + that.data.act_id,
+                    method: 'POST',
+                    header: {
+                        "Authorization": "Bearer " + app.globalData.jwt,
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        $Toast.hide();
+                        $Toast({
+                            content: '等待接收',
+                            type: 'success',
+                            duration: 0.7
+                        });
+                    }
+                })
             }
         })
+
     },
-    handleCommentToUser: function (event) {
+    handleCommentToUser: function(event) {
+        if (app.globalData.userInfo === null) {
+            $Toast({
+                content: '未登录',
+                type: 'warning',
+            });
+            return;
+        }
         let user_id = event.currentTarget.dataset.id;
         let user_nick = event.currentTarget.dataset.nick;
         console.log(user_nick);
-        this.setData({ to_user: user_id });
-        this.setData({place_holder: '回复： '+user_nick});
-        this.setData({visible1: true});
+        this.setData({
+            to_user: user_id
+        });
+        this.setData({
+            place_holder: '回复： ' + user_nick
+        });
+        this.setData({
+            visible1: true
+        });
     },
-    handleCancel: function () {
-        this.setData({visible1 : false});
+    handleCancel: function() {
+        this.setData({
+            visible1: false
+        });
     },
-    handleConfirmComment: function () {
-        this.setData({ visible1: false });
+    handleConfirmComment: function() {
+        this.setData({
+            visible1: false
+        });
+        $Toast({
+            content: '正在发送',
+            type: 'loading',
+            duration: 0
+        });
         let that = this;
         let date = new Date();
         let dateString = date.toString();
-        console.log("啊太容易");
+        // console.log("啊太容易");
         wx.request({
             url: 'https://jing855.cn/api/user/act/comment',
             header: {
@@ -163,17 +286,31 @@ Page({
                 "content": that.data.your_comment,
                 "time": dateString
             },
-            success: function (res) {
+            success: function(res) {
                 console.log(100000);
                 console.log(res);
-                that.setData({ your_comment: '' })
+                that.setData({
+                    your_comment: ''
+                })
+                $Toast.hide();
+                $Toast({
+                    content: '评论成功',
+                    type: 'success',
+                });
                 that.refresh();
             }
         })
     },
-    bindTextAreaBlur: function (event) {
+    bindTextAreaBlur: function(event) {
         this.setData({
             your_comment: event.detail.value
         });
+    },
+    handleToShowInfo: function(event) {
+        let id = event.currentTarget.dataset.id;
+        console.log(id);
+        wx.navigateTo({
+            url: '/pages/showuserinfo/showuserinfo?id=' + id,
+        })
     }
 })

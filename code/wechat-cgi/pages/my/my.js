@@ -1,7 +1,9 @@
 //logs.js
 var util = require('../../utils/util.js')
 var app = getApp()
-const { $Toast } = require('../../dist/base/index');
+const {
+    $Toast
+} = require('../../dist/base/index');
 Page({
     data: {
         motto: 'Hello World',
@@ -75,20 +77,29 @@ Page({
                                             url: 'https://jing855.cn/api/public/detail?id=' + res.data.id,
                                             method: 'GET',
                                             header: {
-                                                "Authorization": "Bearer " +app.globalData.jwt,
+                                                "Authorization": "Bearer " + app.globalData.jwt,
                                             },
                                             success: function(res) {
                                                 console.log(res);
                                                 console.log(111);
                                                 app.globalData.userInfo = res.data;
-                                                that.setData({ log: true });
-                                                that.setData({userInfo: res.data});
+                                                that.setData({
+                                                    log: true
+                                                });
+                                                that.setData({
+                                                    userInfo: res.data
+                                                });
                                                 $Toast.hide();
                                                 $Toast({
                                                     content: '登录成功',
                                                     type: 'success',
                                                     duration: 1
                                                 });
+                                                if (app.globalData.userInfo.avatar_url !== "http://puo7ltwok.bkt.clouddn.com/") {
+                                                    that.setData({
+                                                        avatar_src: app.globalData.userInfo.avatar_url
+                                                    })
+                                                }
                                             }
                                         })
                                     }
@@ -115,6 +126,11 @@ Page({
             that.setData({
                 log: true
             });
+            if (app.globalData.userInfo.avatar_url !== "http://puo7ltwok.bkt.clouddn.com/") {
+                that.setData({
+                    avatar_src: app.globalData.userInfo.avatar_url
+                })
+            }
         }
     },
     handleLogout: function() {
@@ -129,12 +145,12 @@ Page({
     add: function(a, b) {
         return a + b;
     },
-    handlePub: function () {
+    handlePub: function() {
         wx.navigateTo({
             url: '/pages/my/mypublish/mypublish',
         })
     },
-    handleJoin: function () {
+    handleJoin: function() {
         wx.navigateTo({
             url: '/pages/my/myjoin/myjoin',
         })

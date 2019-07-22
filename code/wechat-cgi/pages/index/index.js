@@ -4,17 +4,13 @@ Page({
     data: {
         navTab: ["推荐", "关注", "我的"],
         currentNavtab: "0",
-        imgUrls: [
-            '../../images/24213.jpg',
-            '../../images/24280.jpg',
-            '../../images/1444983318907-_DSC1826.jpg'
-        ],
         indicatorDots: false,
         autoplay: true,
         interval: 5000,
         duration: 1000,
         feed: [],
-        feed_length: 0
+        feed_length: 0,
+        typemap: {}
     },
     onLoad: function() {
         console.log('onLoad')
@@ -53,15 +49,15 @@ Page({
             wx.stopPullDownRefresh();
         }, 2000);
     },
-    lower: function(e) {
-        wx.showNavigationBarLoading();
-        var that = this;
-        setTimeout(function() {
-            wx.hideNavigationBarLoading();
-            that.nextLoad();
-        }, 1000);
-        console.log("lower")
-    },
+    // lower: function(e) {
+    //     wx.showNavigationBarLoading();
+    //     var that = this;
+    //     setTimeout(function() {
+    //         wx.hideNavigationBarLoading();
+    //         that.nextLoad();
+    //     }, 1000);
+    //     console.log("lower")
+    // },
     //scroll: function (e) {
     //  console.log("scroll")
     //},

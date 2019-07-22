@@ -6,9 +6,9 @@
     </view>
     <view class="answerer-wrp">
         <view class="bg-half"></view>
-        <view class="answerer flex-wrp">
+        <view class="answerer flex-wrp" bindtap="handleToShowInfo" data-id="{{content.sponsor_id}}">
             <view class="avatar flex-item">
-                <image src="{{content.useravatar}}"></image>
+                <image src="{{avatar_src}}"></image>
             </view>
             <view class="answerer-info flex-item">
                 <text class="answerer-name">{{content.sponsor_username}}</text>
@@ -20,11 +20,71 @@
         </view>
     </view>
     <view class="answer-content">
-        <text>{{content.description}}
+        <!-- <view>
+            <text>{{content.type}}: {{content.origin}} > {{content.destination}}</text>
+        </view> -->
+        <view wx:if="{{content.type === 'taxi'}}">
+            <i-alert>
+                {{content.depart_time}} : {{content.origin}} ---> {{content.destination}}
+                <view slot="desc">
+                    {{content.end_time}} 报名截止
+                    <text>\n</text>
+                    <i-tag wx:for="{{content.tag}}" wx:key="{{index}}" bindchange="onChange" checkable="{{false}}" name="{{item}}" color="green" type="border" style="margin-right:5px;">
+                        {{item}}
+                    </i-tag>
+                </view>
+            </i-alert>
+            <view style="margin-left:18rpx; margin-right:18rpx">
+            </view>
+        </view>
+        <view wx:if="{{content.type === 'takeout'}}">
+            <i-alert>
+                {{content.order_time}} 于 {{content.store}} 下单
+                <view slot="desc">
+                    {{content.end_time}} 报名截止
+                    <text>\n</text>
+                    <i-tag wx:for="{{content.tag}}" wx:key="{{index}}" bindchange="onChange" checkable="{{false}}" name="{{item}}" color="green" type="border" style="margin-right:5px;">
+                        {{item}}
+                    </i-tag>
+                </view>
+            </i-alert>
+            <view style="margin-left:18rpx; margin-right:18rpx">
+            </view>
+        </view>
+        <view wx:if="{{content.type === 'order'}}">
+            <i-alert>
+                店铺： {{content.store}}
+                <view slot="desc">
+                    {{content.end_time}} 报名截止
+                    <text>\n</text>
+                    <i-tag wx:for="{{content.tag}}" wx:key="{{index}}" bindchange="onChange" checkable="{{false}}" name="{{item}}" color="green" type="border" style="margin-right:5px;">
+                        {{item}}
+                    </i-tag>
+                </view>
+            </i-alert>
+            <view style="margin-left:18rpx; margin-right:18rpx">
+            </view>
+        </view>
+        <view wx:if="{{content.type === 'other'}}">
+            <i-alert>
+                活动时间: {{content.activity_time}}
+                <view slot="desc">
+                    {{content.end_time}} 报名截止
+                    <text>\n</text>
+                    <i-tag wx:for="{{content.tag}}" wx:key="{{index}}" bindchange="onChange" checkable="{{false}}" name="{{item}}" color="green" type="border" style="margin-right:5px;">
+                        {{item}}
+                    </i-tag>
+                </view>
+            </i-alert>
+            <view style="margin-left:18rpx; margin-right:18rpx">
+            </view>
+        </view>
+        <text>
+        {{content.description}}
         </text>
         <!-- <image src="../../images/1444983318907-_DSC1826.jpg"></image>
         <image src="../../images/1444983318907-_DSC1826.jpg"></image> -->
-        <block wx:for="{{images}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+        <block wx:for="{{content.images}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <image src="{{item}}"></image>
         </block>
     </view>
@@ -36,7 +96,8 @@
         <block wx:for="{{content.comments}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <view class="chat-item flex-wrp" bindtap="handleCommentToUser" data-id="{{item.user_id}}" data-nick="{{item.title}}">
                 <view class="avatar flex-item">
-                    <image src="{{item.avatar}}"></image>
+                    <!-- <image src="{{item.avatar}}"></image> -->
+                    <image src="{{item.avatar_src}}"></image>
                 </view>
                 <view class="chat-content flex-item">
                     <view class="chat-source">

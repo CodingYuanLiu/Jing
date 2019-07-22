@@ -14,7 +14,9 @@
         "pages/my/mypublish/mypublish",
         "pages/my/myjoin/myjoin",
         "pages/my/editact/editact",
-        "pages/accept/accept"
+        "pages/accept/accept",
+        "pages/showuserinfo/showuserinfo",
+        "pages/avatar/upload"
     ],
     "window": {
         "backgroundTextStyle": "light",

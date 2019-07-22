@@ -23,6 +23,7 @@ Page({
         inputValue: '',
         aid: 0,
         uid: 0,
+        loged: true,
         applicant: [],
         notify_length: 0,
         navTab: ["通知", "私信", "群聊"],
@@ -167,6 +168,15 @@ Page({
     },
     onLoad: function(res) {
         let that = this;
+        if (app.globalData.userInfo === null) {
+            that.setData({
+                loged: false
+            })
+        } else {
+            that.setData({
+                loged: true
+            })
+        }
         wx.request({
             url: 'https://jing855.cn/api/user/act/getjoinapp',
             method: 'GET',

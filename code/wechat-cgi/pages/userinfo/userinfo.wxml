@@ -1,8 +1,10 @@
 <!--pages/userinfo/userinfo.wxml-->
+<i-action-sheet visible="{{ visible }}" actions="{{ actions }}" show-cancel bind:cancel="handleCancel" bind:click="handleClickItem1" />
+<i-toast id="toast" />
 <view hidden="{{!error}}">network error</view>
 <view hidden="{{error}}">
     <view class="user flex-wrp">
-        <view class="avatar flex-item">
+        <view class="avatar flex-item" bindtap="handleChangeAvatar">
             <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
         </view>
         <view class="user-info flex-item">
@@ -13,7 +15,7 @@
 <view hidden="{{error}}">
     <i-panel title="个人信息">
         <i-input value="{{ user.username }}" type="text" maxlength="10" title="用户名" disabled/>
-        <i-input value="{{ user.nickname }}" bind:change="handleNickInput"  type="text" maxlength="10" title="昵称" disabled="{{!editing}}" />
+        <i-input value="{{ user.nickname }}" bind:change="handleNickInput" type="text" maxlength="10" title="昵称" disabled="{{!editing}}" />
 
         <i-input value="{{ user.signature }}" bind:change="handleSignInput" type="text" title="个性签名" maxlength="50" disabled="{{!editing}}" />
         <i-input value="{{ user.phone }}" bind:change="handlePhoneInput" type="number" title="联系电话" maxlength="11" disabled="{{!editing}}" />
