@@ -61,7 +61,7 @@ func setupRouter() *gin.Engine {
 	*/
 	userRouter := router.Group("/api/user")
 	{
-		publicRouter.GET("/status", lc.GetUserStatus)
+		userRouter.GET("/status", lc.GetUserStatus)
 		userRouter.GET("/act/myact", ac.MyAct)
 		userRouter.GET("/act/manageact", ac.ManageAct)
 		userRouter.POST("/act/publish", ac.PublishActivity)
