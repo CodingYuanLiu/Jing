@@ -357,7 +357,7 @@ Find activities of a designate type. If the user has already logined, a jwt is n
 
 #### Requests
 ```
-GET /api/user/act/findbytype?type=taxi HTTP/1.1
+GET /api/public/act/findbytype?type=taxi HTTP/1.1
 (Authorization: Bearer)
 ```
 
