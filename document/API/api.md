@@ -350,7 +350,35 @@ GET /api/public/act/findall HTTP/1.1
     }
 ]
 ```
+## Find Activity by Type
 
+#### Description
+Find activities of a designate type. If the user has already logined, a jwt is needed to carry the userid and help save the user's behavior.
+
+#### Requests
+```
+GET /api/user/act/findbytype?type=taxi HTTP/1.1
+(Authorization: Bearer)
+```
+
+Status OK - 200
+#### Response
+```json
+[
+    {
+        "act_id": 1,
+        ...
+        "type" : "taxi"
+    },
+    {
+        "act_id": 3,
+        ...
+        "type" : "taxi"
+    },
+]
+```
+
+####
 ## My Act
 
 #### Description

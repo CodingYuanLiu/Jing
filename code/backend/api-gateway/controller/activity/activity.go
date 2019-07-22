@@ -450,3 +450,41 @@ func (activityController *Controller) AddTags(c *gin.Context) {
 		"num":num,
 	})
 }
+
+func (activityController *Controller) FindActivityByType(c *gin.Context){
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	actType := c.Query("type")
+	if actType == ""{
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Miss type param",
+		})
+		c.Abort()
+		return
+	}
+
+	var actJSONs []myjson.JSON
+
+	acts,err := dao.GetActsByType(actType)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+		c.Abort()
+		return
+	}
+	for _, v := range retActs {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}

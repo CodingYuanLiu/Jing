@@ -4,14 +4,13 @@ import (
 	"context"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"jing/app/activity/model"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
 	"log"
 )
 
 func (actSrv *ActivitySrv) Comment(ctx context.Context,req *activity.CmtReq,resp *activity.CmtResp) error {
-	comment := model.Comment{
+	comment := dao.Comment{
 		UserId:req.UserId,
 		ReceiverId:req.ReceiverId,
 		Content:req.Content,
