@@ -12,6 +12,7 @@ import PersonalHome from '../pages/me/PersonalHome';
 import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch"
 import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
+import Another from "../pages/notification/pages/chatTest/Another";
 
 
 const StartNav = createStackNavigator(
@@ -57,7 +58,10 @@ const MainNav = createStackNavigator(
         },
         ActComment: {
             screen: CommentModal,
-        }
+        },
+        AnotherTest: {
+            screen: Another,
+        },
     },
     {
         defaultNavigationOptions: {

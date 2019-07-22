@@ -2,13 +2,11 @@ import React from "react"
 import {View, Text, StyleSheet, StatusBar} from 'react-native';
 import {Input, Button, Icon} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
-import Theme from "../../common/constant/Theme";
-import HeaderBar from "../../common/components/HeaderBar";
-import {CloseIcon} from "../../common/components/Icons";
-import DateTimePicker from "react-native-modal-datetime-picker";
+import CustomDatePicker from "./components/CustomDatePicker";
 import { connect } from "react-redux";
 import {setPublishActCommon} from "../../actions/activity";
 import Util from "../../common/util";
+import PublishHeader from "./components/PublishHeader";
 
 class PublishCommon extends React.PureComponent{
     constructor(props) {
@@ -37,28 +35,12 @@ class PublishCommon extends React.PureComponent{
     }
 
     renderHeader = () => {
-        let closeIcon =
-            <CloseIcon
-                color={Theme.BUTTON_GREY}
-                size={24}
-                onPress={() => {NavigationUtil.toPage(null, "Home")}}
-            />;
-        let rightBtn =
-            <Button
-                title={"下一步"}
-                type={"clear"}
-                color={Theme.TEXT_BUTTON_ENABLED}
-                onPress={this.toNextPage}
-            />;
         return (
-            <HeaderBar
-                style={{backgroundColor: Theme.BACKGROUND_GREY, marginTop: 20}}
-                leftButton={closeIcon}
-                rightButton={rightBtn}
-                rightBtnStyle={{marginRight: 12}}
-                leftBtnStyle={{marginLeft: 16}}
+            <PublishHeader
+                onClose={() => {NavigationUtil.back(this.props)}}
+                onNext={this.toNextPage}
             />
-        )
+            );
     };
 
     renderTitleInput = () => {
@@ -76,36 +58,15 @@ class PublishCommon extends React.PureComponent{
     };
 
     renderDateTimePicker = () => {
-        let datePickerDisplayText = "请选择报名截止时间";
-        // transfer "2019-07-22T01:47:36.412Z" -> "2019-07-22 01:47:36"
-        if (this.state.pickedDateTime || this.state.endTime !== "") {
-            datePickerDisplayText = this.state.endTime;
-        }
+        let datePickerDisplayText = "请选择";
 
         return (
-            <View style={styles.datePickerContainer}>
-                <Icon
-                    type={"font-awesome"}
-                    name={"calendar-check-o"}
-                    size={32}
-                    color={"#bbbbbb"}
-                />
-                <Text
-                    onPress={() => this.showDateTimePicker()}
-                    style={styles.datePickerText}
-                >
-                    {datePickerDisplayText}
-                </Text>
-                <DateTimePicker
-                    isVisible={this.state.isDateTimePickerVisible}
-                    onConfirm={this.handleDatePicked}
-                    onCancel={this.hideDateTimePicker}
-                    mode={"datetime"}
-                    minimumDate={new Date()}
-                    is24Hour={true}
-                    timePickerModeAndroid={"spinner"}
-                />
-            </View>
+            <CustomDatePicker
+                onCancel={this.hideDateTimePicker}
+                onConfirm={this.handleDatePicked}
+                visible={this.state.isDateTimePickerVisible}
+                displayText={datePickerDisplayText}
+            />
         )
     };
     render() {
@@ -194,15 +155,4 @@ const styles = StyleSheet.create({
     },
 
     // style for activity date picker
-    datePickerContainer: {
-        flexDirection: "row",
-        paddingLeft: "6%",
-        marginTop: 48,
-        paddingRight: "6%",
-    },
-    datePickerText: {
-        color: "#bbbbbb",
-        fontSize: 24,
-        marginLeft: 12,
-    },
-})
+});

@@ -47,9 +47,9 @@ export default class Api {
         )
     }
     static isOnline(jwt) {
-        console.log(jwt)
+        console.log(jwt);
         return new Promise((resolve, reject) => {
-            axios.get("/api/public/status", {
+            axios.get("/api/user/status", {
                 headers:{
                     "Authorization" : "Bearer " + jwt
                 }

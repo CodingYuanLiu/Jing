@@ -25,7 +25,7 @@ class LoginScreen extends React.PureComponent {
     }
 
     login = (name, pwd) => {
-        this.setState({isLoading: true})
+        this.setState({isLoading: true});
         if (name === "" || pwd === "") {
             this.setState({isLoading: false})
         }
@@ -39,27 +39,27 @@ class LoginScreen extends React.PureComponent {
                                     nickname: data.nickname,
                                     signature: data.signature === "" ? Default.DEFAULT_SIGNATURE : data.signature,
                                     avatarUri: Default.DEFAULT_AVATAR,
-                                }
+                                };
                                 this.setState({
                                     isLoading: false,
-                                })
+                                });
 
-                                this.props.onLogin(jwt)
-                                this.props.setUser(user)
+                                this.props.onLogin(jwt);
+                                this.props.setUser(user);
                                 NavigationUtil.toPage(null,"Home");
                             })
                     })
             }).catch(err => {
                 this.setState({
                     isLoading: false,
-                })
+                });
                 if (err.status === 400 ) {
                     ToastAndroid.show(Default.LOGIN_ERROR, ToastAndroid.SHORT)
                 } else {
                     ToastAndroid.show(Default.UNKNOWN_ERROR_MESSAGE, ToastAndroid.SHORT)
                 }
         })
-    }
+    };
     render() {
         return (
             <SafeAreaView style={{flex: 1}}>

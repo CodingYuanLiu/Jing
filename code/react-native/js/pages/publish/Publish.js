@@ -24,7 +24,7 @@ class PublishScreen extends React.PureComponent{
         NavigationUtil.back(this.props)
     };
     toPublishCommon = type => {
-        NavigationUtil.toPage({actType: type}, "PublishCommon");
+        NavigationUtil.toPage({actType: type}, "PublishTaxiSpec");
         /*
         if (this.props.logged) {
             NavigationUtil.toPage({actType: type}, "PublishCommon");
