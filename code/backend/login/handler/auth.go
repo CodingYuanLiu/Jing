@@ -31,6 +31,13 @@ func BuildToken(user dao.User) (tokenString string) {
 	return
 }
 
+func (s *LoginService) NewJwt(ctx context.Context, in *login.JwtReq, out *login.JwtResp) error {
+	id := in.UserId
+	user, _ := dao.FindUserById(int(id))
+	out.JwtToken = BuildToken(user)
+	return nil
+}
+
 func (s *LoginService) GetAccessToken(ctx context.Context, in *login.CodeReq, out *login.AccessResp) error {
 	code := in.Code
 	redirectUri := in.RedirectUri
