@@ -66,6 +66,16 @@ func GetAllActId() []int {
 	return acts
 }
 
+func GetAllUserId() []int {
+	var ids []int
+	var users []User
+	db.Find(&users)
+	for _, user := range users{
+		ids	= append(ids, user.ID)
+	}
+	return ids
+}
+
 func GetManagingActivity(userId int) (acts []int) {
 	var joins []Join
 	db.Where("user_id = ? and is_admin = ?", userId, true).Find(&joins)
