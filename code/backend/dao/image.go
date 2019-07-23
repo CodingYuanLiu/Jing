@@ -135,13 +135,13 @@ func DeleteImgWithName(name string){
 	/* Auto generated key by qiniuyun, which is available in only 30 days.*/
 	bucket := "jing"
 	mac := qbox.NewMac(accessKey, secretKey)
-	cfg := storage.Config{
-		// 是否使用https域名进行资源管理
-		UseHTTPS: false,
-	}
-	// 指定空间所在的区域，如果不指定将自动探测
-	// 如果没有特殊需求，默认不需要指定
-	//cfg.Zone=&storage.ZoneHuabei
+	cfg := storage.Config{}
+	// 空间对应的机房
+	cfg.Zone = &storage.ZoneHuadong
+	// 是否使用https域名
+	cfg.UseHTTPS = false
+	// 上传是否使用CDN上传加速
+	cfg.UseCdnDomains = false
 	bucketManager := storage.NewBucketManager(mac, &cfg)
 	err := bucketManager.Delete(bucket,name)
 	if err != nil{

@@ -861,3 +861,29 @@ Return the number of tags that are added into the candidate list or formal tag d
     "num":1
 }
 ```
+
+## Recommandation
+### Record user's behavior
+#### Description
+When a user interact with the application, his/her behaviors are expected to be sent to the database and stored there, which can be used to construct his/her personal portrait.
+</br>
+The type can be "taxi","takeout","order","other", and the behavior can be "search","scanning","join","publish"
+#### Request
+``` json
+POST /api/user/act/addbehavior
+Authorization:Bearer jwt
+
+{
+	"type":"taxi",
+	"behavior":"scanning"
+}
+```
+
+#### Response
+Status OK-200
+
+```json
+{
+    "message": "Add behavior succeed"
+}
+```
