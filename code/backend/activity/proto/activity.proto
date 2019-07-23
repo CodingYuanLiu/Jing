@@ -10,6 +10,7 @@ service ActivitySrv{
     rpc Comment(CmtReq) returns (CmtResp) {}
     rpc GenTags(TagReq) returns (TagResp) {}
     rpc AddTags(AddTagsReq) returns (AddTagsResp){}
+    rpc Recommendation(RecommendReq) returns (RecommendResp){}
 }
 
 message BasicInfo{
@@ -134,4 +135,13 @@ message AddTagsReq{
 
 message AddTagsResp{
     int32 num = 1; // The number of added tags into the candidate database.
+}
+
+message RecommendReq{
+    int32 userId = 1;
+}
+
+message RecommendResp{
+    int32 status = 2;
+    repeated int32 actId = 1;
 }

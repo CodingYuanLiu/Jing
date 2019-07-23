@@ -41,6 +41,7 @@ type ActivitySrvService interface {
 	Comment(ctx context.Context, in *CmtReq, opts ...client.CallOption) (*CmtResp, error)
 	GenTags(ctx context.Context, in *TagReq, opts ...client.CallOption) (*TagResp, error)
 	AddTags(ctx context.Context, in *AddTagsReq, opts ...client.CallOption) (*AddTagsResp, error)
+	Recommendation(ctx context.Context, in *RecommendReq, opts ...client.CallOption) (*RecommendResp, error)
 }
 
 type activitySrvService struct {
@@ -131,6 +132,16 @@ func (c *activitySrvService) AddTags(ctx context.Context, in *AddTagsReq, opts .
 	return out, nil
 }
 
+func (c *activitySrvService) Recommendation(ctx context.Context, in *RecommendReq, opts ...client.CallOption) (*RecommendResp, error) {
+	req := c.c.NewRequest(c.name, "ActivitySrv.Recommendation", in)
+	out := new(RecommendResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for ActivitySrv service
 
 type ActivitySrvHandler interface {
@@ -141,6 +152,7 @@ type ActivitySrvHandler interface {
 	Comment(context.Context, *CmtReq, *CmtResp) error
 	GenTags(context.Context, *TagReq, *TagResp) error
 	AddTags(context.Context, *AddTagsReq, *AddTagsResp) error
+	Recommendation(context.Context, *RecommendReq, *RecommendResp) error
 }
 
 func RegisterActivitySrvHandler(s server.Server, hdlr ActivitySrvHandler, opts ...server.HandlerOption) error {
@@ -152,6 +164,7 @@ func RegisterActivitySrvHandler(s server.Server, hdlr ActivitySrvHandler, opts .
 		Comment(ctx context.Context, in *CmtReq, out *CmtResp) error
 		GenTags(ctx context.Context, in *TagReq, out *TagResp) error
 		AddTags(ctx context.Context, in *AddTagsReq, out *AddTagsResp) error
+		Recommendation(ctx context.Context, in *RecommendReq, out *RecommendResp) error
 	}
 	type ActivitySrv struct {
 		activitySrv
@@ -190,4 +203,8 @@ func (h *activitySrvHandler) GenTags(ctx context.Context, in *TagReq, out *TagRe
 
 func (h *activitySrvHandler) AddTags(ctx context.Context, in *AddTagsReq, out *AddTagsResp) error {
 	return h.ActivitySrvHandler.AddTags(ctx, in, out)
+}
+
+func (h *activitySrvHandler) Recommendation(ctx context.Context, in *RecommendReq, out *RecommendResp) error {
+	return h.ActivitySrvHandler.Recommendation(ctx, in, out)
 }
