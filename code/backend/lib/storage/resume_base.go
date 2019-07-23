@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/qiniu/api.v7/client"
-	"github.com/qiniu/api.v7/conf"
-	"github.com/qiniu/api.v7/internal/log"
+	"jing/app/lib/client"
+	"jing/app/lib/conf"
+	"jing/app/lib/internal/log"
 )
 
 // ResumeUploader 表示一个分片上传的对象
