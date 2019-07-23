@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
-	"github.com/qiniu/api.v7/client"
+	"jing/app/lib/client"
 	"strings"
 	"sync"
 )

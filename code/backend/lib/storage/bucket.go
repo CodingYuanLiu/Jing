@@ -18,8 +18,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/qiniu/api.v7/auth"
-	"github.com/qiniu/api.v7/client"
+	"jing/app/lib/auth"
+	"jing/app/lib/client"
 )
 
 // 资源管理相关的默认域名

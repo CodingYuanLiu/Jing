@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/qiniu/api.v7/client"
+	"jing/app/lib/client"
 )
 
 // Base64Uploader 表示一个Base64上传对象

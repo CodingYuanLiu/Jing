@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/qiniu/api.v7/internal/log"
+	"jing/app/lib/internal/log"
 	"io"
 	"os"
 	"sync"

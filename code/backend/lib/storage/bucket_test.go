@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/qiniu/api.v7/auth"
-	"github.com/qiniu/api.v7/auth/qbox"
-	"github.com/qiniu/api.v7/client"
+	"jing/app/lib/auth"
+	"jing/app/lib/auth/qbox"
+	"jing/app/lib/client"
 )
 
 var (

@@ -4,8 +4,8 @@ import (
 	//"bytes"
 	//"context"
 	"fmt"
-	//"github.com/qiniu/api.v7/auth/qbox"
-	//"github.com/qiniu/api.v7/storage"
+	//"jing/app/lib/auth/qbox"
+	//"jing/app/lib/storage"
 	"github.com/yanyiwu/gojieba"
 	dao "jing/app/dao"
 )
