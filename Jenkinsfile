@@ -11,9 +11,7 @@ podTemplate(label: label, cloud: 'kubernetes') {
             sh "go version"
             sh """
             cd code/backend/activity
-            ls
             go build main.go
-            ls
             docker build -t jing855/activity:latest .
             """
             sh """
