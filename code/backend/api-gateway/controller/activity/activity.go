@@ -2,7 +2,6 @@ package activity
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	activityProto "jing/app/activity/proto"
@@ -46,20 +45,17 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	returnJson["comments"] = []myjson.JSON{}
 	comments := resp.Comments
 	for _, v := range comments {
-		var title string
 		user, _ := dao.FindUserById(int(v.UserId))
-		if v.ReceiverId != -1 {
-			receiver, _ := dao.FindUserById(int(v.ReceiverId))
-			title = fmt.Sprintf("%s -> %s", user.Nickname, receiver.Nickname)
-		} else {
-			title = fmt.Sprintf("%s", user.Nickname)
-		}
 		comment := myjson.JSON{
 			"user_id": v.UserId,
 			"receiver_id": v.ReceiverId,
 			"content": v.Content,
 			"time": v.Time,
-			"title": title,
+			"user_nickname": user.Nickname,
+		}
+		if v.ReceiverId != -1 {
+			receiver, _ := dao.FindUserById(int(v.ReceiverId))
+			comment["receiver_nickname"] = receiver.Nickname
 		}
 		returnJson["comments"] = append(returnJson["comments"].([]myjson.JSON), comment)
 	}
