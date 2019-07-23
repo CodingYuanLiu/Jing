@@ -139,7 +139,7 @@ func DeleteImgWithName(name string) error {
 	// 空间对应的机房
 	cfg.Zone = &storage.ZoneHuadong
 	// 是否使用https域名
-	cfg.UseHTTPS = false
+	cfg.UseHTTPS = true
 	// 上传是否使用CDN上传加速
 	cfg.UseCdnDomains = false
 	bucketManager := storage.NewBucketManager(mac, &cfg)
