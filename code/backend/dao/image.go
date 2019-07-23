@@ -5,7 +5,7 @@ import (
 	"context"
 	b64 "encoding/base64"
 	"github.com/qiniu/api.v7/auth/qbox"
-	"github.com/qiniu/api.v7/storage"
+	"jing/app/lib/storage"
 	"log"
 )
 
@@ -139,7 +139,7 @@ func DeleteImgWithName(name string){
 	// 空间对应的机房
 	cfg.Zone = &storage.ZoneHuadong
 	// 是否使用https域名
-	cfg.UseHTTPS = true
+	cfg.UseHTTPS = false
 	// 上传是否使用CDN上传加速
 	cfg.UseCdnDomains = false
 	bucketManager := storage.NewBucketManager(mac, &cfg)
