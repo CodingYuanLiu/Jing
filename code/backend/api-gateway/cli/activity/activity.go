@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/micro/go-micro/client"
+	"gopkg.in/mgo.v2/bson"
+
 	"github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
@@ -83,10 +85,12 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 			OrderTime: 	jsonForm["order_time"].(string),
 		}
 	} else if actType == "taxi" {
+		origin, _ := bson.Marshal(jsonForm["origin"])
+		dest, _ := bson.Marshal(jsonForm["destination"])
 		mdfReq.TaxiInfo = &activityProto.TaxiInfo{
 			DepartTime: 	jsonForm["depart_time"].(string),
-			Origin: 		jsonForm["origin"].(string),
-			Destination: 	jsonForm["destination"].(string),
+			Origin: 		origin,
+			Destination: 	dest,
 		}
 	} else if actType == "order" {
 		mdfReq.OrderInfo = &activityProto.OrderInfo{
@@ -135,10 +139,12 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 			OrderTime: 	jsonForm["order_time"].(string),
 		}
 	} else if actType == "taxi" {
+		origin, _ := bson.Marshal(jsonForm["origin"])
+		dest, _ := bson.Marshal(jsonForm["destination"])
 		pubReq.TaxiInfo = &activityProto.TaxiInfo{
 			DepartTime: 	jsonForm["depart_time"].(string),
-			Origin: 		jsonForm["origin"].(string),
-			Destination: 	jsonForm["destination"].(string),
+			Origin: 		origin,
+			Destination: 	dest,
 		}
 	} else if actType == "order" {
 		pubReq.OrderInfo = &activityProto.OrderInfo{

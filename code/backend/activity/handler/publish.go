@@ -60,14 +60,17 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 
 	switch basicInfo.Type{
 	case "taxi":
+		var ori, dest map[string]interface{}
+		_ = bson.Unmarshal(req.TaxiInfo.Origin, &ori)
+		_ = bson.Unmarshal(req.TaxiInfo.Destination, &dest)
 		id = id+1
 		newAct := dao.TaxiAct{
 			ActId:     id,
 			BasicInfo: basicInfo,
 			TaxiInfo: dao.TaxiInfo{
 				DepartTime:req.TaxiInfo.DepartTime,
-				Origin:req.TaxiInfo.Origin,
-				Destination:req.TaxiInfo.Destination,
+				Origin: ori,
+				Destination: dest,
 			},
 		Comments: []dao.Comment{},
 		}

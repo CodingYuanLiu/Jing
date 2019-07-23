@@ -48,8 +48,8 @@ type BasicInfo struct{
 
 type TaxiInfo struct{
 	DepartTime string
-	Origin string
-	Destination string
+	Origin map[string]interface{}
+	Destination map[string]interface{}
 }
 
 type TaxiAct struct{

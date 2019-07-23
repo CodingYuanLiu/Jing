@@ -58,10 +58,12 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	switch basicInfo.Type {
 	case "taxi":
 		mapTaxiInfo := result["taxiinfo"].(map[string] interface{})
+		origin, _ := bson.Marshal(mapTaxiInfo["origin"])
+		dest, _ := bson.Marshal(mapTaxiInfo["destination"])
 		taxiInfo := activity.TaxiInfo{
 			DepartTime:  mapTaxiInfo["departtime"].(string),
-			Origin:      mapTaxiInfo["origin"].(string),
-			Destination: mapTaxiInfo["destination"].(string),
+			Origin:      origin,
+			Destination: dest,
 		}
 		resp.TaxiInfo = &taxiInfo
 		resp.Status = 200
