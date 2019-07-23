@@ -100,6 +100,16 @@ if mode == '0':
     fw = open('./api-gateway/main.go', 'w', encoding='utf-8')
     fw.write(s)
     fw.close()
+    
+    fr = open('./activity/handler/tags.go', 'r', encoding='utf-8')
+    s = fr.read()
+    fr.close()
+    s = s.replace('\tx:=gojieba.NewJieba("/home/app/dict/jieba.dict.utf8","/home/app/dict/hmm_model.utf8","/home/app/dict/user.dict.utf8","/home/app/dict/idf.utf8","/home/app/dict/stop_words.utf8")',
+                  '\tx:=gojieba.NewJieba()')
+    fw = open('./activity/handler/tags.go', 'w', encoding='utf-8')
+    fw.write(s)
+    fw.close()
+
 else:
     fr = open('./dao/user.go', 'r', encoding='utf-8')
     s = fr.read()
@@ -127,5 +137,14 @@ else:
     s = s.replace('\t//k8s "github.com/micro/kubernetes/go/web"', '\tk8s "github.com/micro/kubernetes/go/web"')
     s = s.replace('web.NewService(', 'k8s.NewService(')
     fw = open('./api-gateway/main.go', 'w', encoding='utf-8')
+    fw.write(s)
+    fw.close()
+
+    fr = open('./activity/handler/tags.go', 'r', encoding='utf-8')
+    s = fr.read()
+    fr.close()
+    s = s.replace('\tx:=gojieba.NewJieba()',
+        '\tx:=gojieba.NewJieba("/home/app/dict/jieba.dict.utf8","/home/app/dict/hmm_model.utf8","/home/app/dict/user.dict.utf8","/home/app/dict/idf.utf8","/home/app/dict/stop_words.utf8")')
+    fw = open('./activity/handler/tags.go', 'w', encoding='utf-8')
     fw.write(s)
     fw.close()

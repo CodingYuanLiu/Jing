@@ -488,3 +488,48 @@ func (activityController *Controller) FindActivityByType(c *gin.Context){
 	}
 	c.JSON(http.StatusOK, actJSONs)
 }
+
+func (activityController *Controller) AddBehavior(c *gin.Context){
+	userId := c.GetInt("userId")
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Json parse error",
+		})
+		c.Abort()
+		return
+	}
+	if jsonForm["behavior"] == nil || jsonForm["type"] == nil{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message":"Miss some field",
+		})
+		c.Abort()
+		return
+	}
+	behavior := jsonForm["behavior"].(string)
+	type_ := jsonForm["type"].(string)
+	check := (behavior != "search" && behavior != "scanning" && behavior != "join" && behavior != "publish") ||
+		(type_ != "taxi" && type_ != "takeout" && type_ != "other" && type_ != "order")
+	if check{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message":"Wrong behavior or wrong type",
+		})
+		c.Abort()
+		return
+	}
+	err = dao.AddBehavior(behavior,userId,type_)
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError,map[string] string{
+			"message":error.Error(err),
+		})
+		c.Abort()
+		return
+	} 	else{
+		c.JSON(http.StatusOK,map[string] string{
+			"message":"Add behavior succeed",
+		})
+	}
+}

@@ -178,3 +178,4 @@ func AddTags(tags []string, userId int32) int32{
 	})
 	return resp.Num
 }
+
