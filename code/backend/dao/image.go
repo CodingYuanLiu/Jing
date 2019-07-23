@@ -129,7 +129,7 @@ func getUpToken() string{
 	return upToken
 }
 
-func DeleteImgWithName(name string){
+func DeleteImgWithName(name string) error {
 	accessKey := "XjJVXANFlU4XnSFgKmUdJWxx2GEzM_ftCVOvsorP"
 	secretKey := "OrpJx83zmG6PPgV1e0D-j7wkhuykOxHB5-GdcENT"
 	/* Auto generated key by qiniuyun, which is available in only 30 days.*/
@@ -147,7 +147,8 @@ func DeleteImgWithName(name string){
 	if err != nil{
 		log.Printf("Dao error: delete image %s from qiniu error.\n",name)
 		log.Println(err)
-		return
+		return err
 	}
 	log.Printf("Delete image %s from qiniu successfully\n",name)
+	return nil
 }
