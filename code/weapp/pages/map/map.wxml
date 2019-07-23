@@ -1,0 +1,21 @@
+<!--绑定点击事件-->
+<i-input style="width:100vw;" bind:change="getsuggest" type="text" maxlength="20" placeholder="输入来开始搜索" value="{{backfill}}"></i-input>
+<!--关键词输入提示列表渲染-->
+<view style="border:0.01px solid black;width:100vw;background:white;" wx:if="{{show_sug}}" wx:for="{{suggestion}}" wx:key="index">
+    <!--绑定回填事件-->
+    <view bindtap="handleClick" data-poi="{{item}}" id="{{index}}">
+    <!--根据需求渲染相应数据-->
+    <!--渲染地址title-->
+    <view style="text-align:center;" bindtap="backfill" id="{{index}}">{{item.title}}</view>
+    <!--渲染详细地址-->
+    <view style="font-size:12px;color:#666;text-align:center;">{{item.addr}}</view>
+    </view>
+</view>
+<!--地图容器-->
+<map wx:if="{{!show_sug}}" id="myMap"
+   markers="{{markers}}"
+   style="width:100%;height:83vh;position:absolute;top:7vh;z-index: 0"
+   longitude="{{longitude}}"
+   latitude="{{latitude}}" scale='18'>
+</map>
+<i-button wx:if="{{!show_sug}}" bindtap="handleConfirm" type="primary" style="height:7vh;width: 100vw;position: absolute; top:90vh">确定</i-button>

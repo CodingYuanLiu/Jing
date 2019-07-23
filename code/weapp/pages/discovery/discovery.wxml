@@ -1,0 +1,71 @@
+<!--index.wxml-->
+<scroll-view scroll-y="true" class="container" bindscrolltoupper="upper" upper-threshold="10" lower-threshold="5" bindscrolltolower="lower" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+    <view class="search flex-wrp">
+        <view class="search-left flex-item">
+            <image src="../../images/search.png"></image>
+            <input placeholder="{{placeholder_k}}" bind:change="handleInput" placeholder-class="search-placeholder" />
+        </view>
+        <view class="search-right flex-item" bindtap="upper">
+            <image src="../../images/lighting.png"></image>
+        </view>
+    </view>
+    <view style="flex: top; margin: 3rpx">
+        <block wx:for="{{category}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="flex-wrp" style="display: block; width: 100%; float: top">
+                <block wx:for="{{item.r}}" wx:for-index="idx" wx:for-item="item_r"  bindtap="bindChangeKind"  data-idx="{{idx}}">
+                    <view class="feed-item" style="width:17%; float: left"   bindtap="bindChangeKind"  data-idx="{{idx}}">
+                        <view class="feed-source">
+                            <a class="">
+                                <view class="avatar">
+                                    <image src="{{item_r.icon}}"></image>
+                                </view>
+                                <text>{{item_r.name}}</text>
+                            </a>
+                        </view>
+                    </view>
+                </block>
+            </view>
+        </block>
+    </view>
+    <view style="height: 100rpx"> </view>
+     <block wx:for="{{feed}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="feed-item">
+                <view class="feed-source">
+                    <a class="">
+                        <!-- <view class="avatar">
+                            <image src="{{item.feed_source_img}}"></image>
+                        </view> -->
+                        <!-- <text>{{item.feed_source_name}} · </text> -->
+                        <text>{{item.sponsor_username}} · {{item.type}} · </text>
+                        <text>{{item.create_time}}</text>
+                    </a>
+                </view>
+                <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                    <view class="question">
+                        <a class="question-link">
+                            <text>【{{item.type}}】 {{item.title}}</text>
+                        </a>
+                    </view>
+                    <view class="answer-body">
+                        <view data-id="{{act_id}}">
+                            <text class="answer-txt" aid="{{act_id}}">{{item.description}}</text>
+                        </view>
+                        <!-- <view>
+                            <image src="{{item.feed_img}}"></image>
+                        </view> -->
+                        <view class="answer-actions">
+                            <view class="like dot">
+                                <a>👍 {{item.good_num}} </a>
+                            </view>
+                            <view class="comments dot">
+                                <a>{{item.comments.length}} 评论 </a>
+                            </view>
+                            <!-- <view class="follow-it">
+                                <a>{{item.comment_num}} 关注</a>
+                            </view> -->
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </block>
+</scroll-view>
