@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	b64 "encoding/base64"
-	"github.com/qiniu/api.v7/auth/qbox"
+	"jing/app/lib/auth/qbox"
 	"jing/app/lib/storage"
 	"log"
 )
