@@ -10,6 +10,13 @@ podTemplate(label: label, cloud: 'kubernetes') {
             echo 'Building..'
             sh "go version"
             sh """
+            cd code/backend/activity
+            ls
+            go build main.go
+            ls
+            docker build -t jing855/activity:latest .
+            """
+            sh """
             cd code/backend/api-gateway             
             go build main.go
             docker build -t jing855/apigateway:latest .
@@ -24,11 +31,7 @@ podTemplate(label: label, cloud: 'kubernetes') {
             go build user.go
             docker build -t jing855/user:latest .
             """
-            sh """
-            cd code/backend/activity
-            go build main.go
-            docker build -t jing855/activity:latest .
-            """
+            
         }
         stage('Push') {
             echo 'Pushing....'
