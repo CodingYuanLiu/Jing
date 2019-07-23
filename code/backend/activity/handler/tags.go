@@ -13,7 +13,7 @@ func (actSrv *ActivitySrv) GenTags(ctx context.Context,req *activity.TagReq,resp
 
 	//每次都从数据库里面把所有的tag取出来并加到jieba分词器里面。优点是如果tag词典有更新可以反映出来。
 	// 缺点是，每次取数据和加词语的过程影响了性能。考虑到词典里面一共不超过100个词语，这样的性能折损可以接受。
-	x:=gojieba.NewJieba("./dict/jieba.dict.utf8","./dict/hmm_model.utf8","./dict/user.dict.utf8","./dict/idf.utf8","./dict/stop_words.utf8")
+	x:=gojieba.NewJieba("/home/app/dict/jieba.dict.utf8","/home/app/dict/hmm_model.utf8","/home/app/dict/user.dict.utf8","/home/app/dict/idf.utf8","/home/app/dict/stop_words.utf8")
 	defer x.Free()
 	tags,err := dao.GetAllTags()
 	if err!=nil{
