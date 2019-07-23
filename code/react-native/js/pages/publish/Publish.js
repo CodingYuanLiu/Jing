@@ -1,6 +1,6 @@
 import React from "react"
 import {View, Text, StyleSheet, StatusBar } from 'react-native';
-import { Icon } from "react-native-elements";
+import { Icon, Button } from "react-native-elements";
 import NavigationUtil from '../../navigator/NavUtil';
 import {connect} from "react-redux";
 
@@ -68,7 +68,7 @@ class PublishScreen extends React.PureComponent{
                 type={"ionicon"}
                 name={"md-contacts"}
                 color={"#009eff"}
-                onPress={() => {this.toPublishCommon("activity")}}
+                onPress={() => {this.toPublishCommon("other")}}
             />;
         const activityTitle = "发起活动";
         return(
@@ -80,6 +80,10 @@ class PublishScreen extends React.PureComponent{
                     size={32}
                     color={"#d3d3d3"}
                     onPress={this.fadeOut}
+                    />
+                    <Button
+                        title={"去测试页面"}
+                        onPress={() => {NavigationUtil.toPage(null, "PublishPage")}}
                     />
                 </View>
                 <View style={styles.main}>

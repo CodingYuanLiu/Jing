@@ -4,7 +4,12 @@ import {Input, Button, Icon} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
 import CustomDatePicker from "./components/CustomDatePicker";
 import { connect } from "react-redux";
-import {setPublishActCommon, setPublishActSpec} from "../../actions/activity";
+import {
+    setPublishActCommon,
+    setPublishActivityTime,
+    setPublishTakeoutTime,
+    setPublishTaxiDepart
+} from "../../actions/activity";
 import Util from "../../common/util";
 import PublishHeader from "./components/PublishHeader";
 
@@ -39,7 +44,15 @@ class PublishCommon extends React.PureComponent{
         if (this.props.endTime && this.props.endTime !== "") {
             this.setState({endTime: this.props.endTime})
         }
-        console.log(this.props.spec);
+        if (type === "taxi" && this.props.departTime && this.props.departTime !== "") {
+            this.setState({specDateTime: this.props.departTime});
+        }
+        if (type === "takeout" && this.props.takeoutTime && this.props.takeoutTime !== "") {
+            this.setState({specDateTime: this.props.takeoutTime})
+        }
+        if (type === "other" && this.props.activityTime && this.props.activityTime !== "") {
+            this.setState({specDateTime: this.props.activityTime})
+        }
     }
 
 
@@ -141,7 +154,7 @@ class PublishCommon extends React.PureComponent{
             componentByType = this.renderDepartDatePicker();
         } else if (this.state.type === "takeout") {
             componentByType = this.renderOrderTimePicker();
-        } else if (this.state.type === "activity") {
+        } else if (this.state.type === "other") {
             componentByType = this.renderActivityTimePicker();
         } else {
             componentByType = null;
@@ -187,15 +200,18 @@ class PublishCommon extends React.PureComponent{
         });
         switch(this.state.type){
             case "taxi":
-                this.props.setPublishActSpec({departTime: dateString});
+                console.log("set taxi depart time");
+                this.props.setPublishTaxiDepart(dateString);
+                console.log(this.props.departTime);
                 break;
             case "takeout" :
-                this.props.setPublishActSpec({orderTime: dateString});
+                this.props.setPublishTakeoutTime(dateString);
                 break;
-            case "activity" :
-                this.setState({activityTime: dateString});
+            case "other" :
+                this.props.setPublishActivityTime( dateString);
                 break;
             default:
+                console.error("Unknown type encountered!");
                 break;
         }
         this.hideSpecDateTimePicker();
@@ -209,7 +225,7 @@ class PublishCommon extends React.PureComponent{
         if (title === "" ||
             endTime === "" ||
             type === "") {
-            alert("还有一些没有填写哦～")
+            alert("还有一些没有填写哦～");
             return;
         }
 
@@ -221,7 +237,7 @@ class PublishCommon extends React.PureComponent{
         else if (type === "takeout")
             nextPage = "PublishTakeoutSpec";
         else
-            nextPage = "PublishActivitySpec";
+            nextPage = "PublishDetail";
         this.props.setPublishActCommon(type,title, endTime);
         NavigationUtil.toPage(null, nextPage);
     }
@@ -231,13 +247,17 @@ class PublishCommon extends React.PureComponent{
 // let the activity to be published managed by redux store
 const mapDispatchToProps = dispatch => ({
     setPublishActCommon: (type, title, endTime) => dispatch(setPublishActCommon(type,title,endTime)),
-    setPublishActSpec: spec => dispatch(setPublishActSpec(spec)),
+    setPublishTaxiDepart: departTime => dispatch(setPublishTaxiDepart(departTime)),
+    setPublishTakeoutTime: takeoutTime => dispatch(setPublishTakeoutTime(takeoutTime)),
+    setPublishActivityTime: activityTime => dispatch(setPublishActivityTime(activityTime)),
 });
 const mapStateToProps = state => ({
-    type: state.activity.publishAct.type,
-    title: state.activity.publishAct.title,
-    endTime: state.activity.publishAct.endTime,
-    spec: state.activity.publishAct.spec,
+    type: state.publishAct.type,
+    title: state.publishAct.title,
+    endTime: state.publishAct.endTime,
+    departTime: state.publishAct.departTime,
+    activityTime: state.publishAct.activityTime,
+    takeoutTime: state.publishAct.takeoutTime
 });
 export default connect(
     mapStateToProps,

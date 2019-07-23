@@ -102,7 +102,7 @@ export default class ActItem extends React.PureComponent{
     };
     showMiniAction = () => {
         this.setState({miniActionVisible: true})
-    }
+    };
     toDetail = () => {
         this.props.onPress(this.props.id)
     };

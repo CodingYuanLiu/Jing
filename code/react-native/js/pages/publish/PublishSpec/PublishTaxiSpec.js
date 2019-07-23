@@ -1,12 +1,12 @@
 import React from "react"
 import { View, Text, StatusBar, TextInput, StyleSheet, Dimensions } from 'react-native';
 import PublishHeader from "../components/PublishHeader";
-import {setPublishActSpec} from "../../../actions/activity";
+import {setPublishActSpec, setPublishTaxiDest, setPublishTaxiOrigin} from "../../../actions/activity";
 import {connect} from "react-redux";
 import {Icon, Input} from "react-native-elements";
 import NavigationUtil from "../../../navigator/NavUtil";
 
-const {height, width} = Dimensions.get('window');
+
 
 class PublishTaxiSpec extends React.PureComponent{
     constructor(props) {
@@ -21,12 +21,14 @@ class PublishTaxiSpec extends React.PureComponent{
     }
 
     componentDidMount() {
-        if (this.props.spec && this.props.spec.departTime &&
-            this.props.spec.departTime !== "") {
+        if (this.props.dest && this.props.dest !== "") {
             this.setState({
-                departTime: this.props.spec.departTime,
-                origin: this.props.spec.origin,
-                dest: this.props.spec.dest,
+                dest: this.props.dest,
+            })
+        }
+        if (this.props.origin && this.props.origin !== "") {
+            this.setState({
+                origin: this.props.origin,
             })
         }
     }
@@ -43,22 +45,29 @@ class PublishTaxiSpec extends React.PureComponent{
 
     renderLocationInput = () => {
         let leftInput =
-            <TextInput
-                style={styles.locationInput}
+            <Input
+                containerStyle={styles.locationInputContainer}
+                inputStyle={styles.locationInput}
+                value={this.state.origin}
+                onChangeText={this.handleInputOrigin}
+                autoFocus={true}
             />;
         let rightInput =
-            <TextInput
-                style={styles.locationInput}
+            <Input
+                containerStyle={styles.locationInputContainer}
+                inputStyle={styles.locationInput}
+                value={this.state.dest}
+                onChangeText={this.handleInputDest}
             />;
         let middleIcon =
             <Icon
                 type={"material-community"}
                 name={"car-side"}
-                size={20}
-                color={"#bfbfbf"}
+                size={32}
+                color={"#0084ff"}
             />;
         return (
-            <View style={styles.locationInputContainer}>
+            <View style={styles.headerInputContainer}>
                 {leftInput}
                 {middleIcon}
                 {rightInput}
@@ -87,17 +96,32 @@ class PublishTaxiSpec extends React.PureComponent{
         )
     };
 
+    handleInputOrigin = value => {
+        this.setState({origin: value});
+        this.props.setPublishTaxiOrigin(value);
+    };
+
+    handleInputDest = dest => {
+        this.setState({dest: dest});
+        this.props.setPublishTaxiDest(dest);
+    };
     toNextPage = () => {
-        this.props.setPublishActSpec();
+        if (this.state.origin === "" ||
+            this.state.dest === "") {
+            alert("有空没有填哦～")
+            return;
+        }
         NavigationUtil.toPage({actType: "taxi"}, "PublishDetail")
     };
 }
 
 const mapStateToProps = state => ({
-    spec: state.activity.publishAct.spec,
+    origin: state.publishAct.origin,
+    dest: state.publishAct.dest,
 });
 const mapDispatchToProps = dispatch => ({
-    setPublishActSpec: spec => dispatch(setPublishActSpec(spec))
+    setPublishTaxiOrigin: origin => dispatch(setPublishTaxiOrigin(origin)),
+    setPublishTaxiDest: dest => dispatch(setPublishTaxiDest(dest)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PublishTaxiSpec);
@@ -111,7 +135,7 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(255,255,255,0)",
         marginTop: 0,
     },
-    locationInputContainer: {
+    headerInputContainer: {
         backgroundColor: "#fff",
         height: 48,
         borderRadius: 4,
@@ -123,10 +147,15 @@ const styles = StyleSheet.create({
         backgroundColor: "#eee",
         marginTop: 0,
     },
-    locationInput: {
+    locationInputContainer: {
         flex: 1,
+        borderWidth: 0,
+    },
+    locationInput: {
         fontSize: 16,
         color: "#5e5e5e",
         backgroundColor: "yellow",
-    },
+        paddingLeft: 12,
+        paddingBottom: 8,
+    }
 });

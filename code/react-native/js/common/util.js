@@ -1,3 +1,5 @@
+import React from "react";
+import {Dimensions} from "react-native";
 
 export default class Util {
     static dateTimeToString = date => {
@@ -10,4 +12,17 @@ export default class Util {
         return res;
     }
 
+
+    static getVerticalWindowDimension = () => {
+        let {height, width} = Dimensions.get("window");
+        if (height < width) {
+            let tmp = width;
+            width = height;
+            height = tmp;
+        }
+        return {
+            height: height,
+            width: width,
+        }
+    }
 }

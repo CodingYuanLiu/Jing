@@ -2,7 +2,7 @@ import {createStackNavigator} from "react-navigation";
 import PublishCommon from "./PublishCommon";
 import PublishTaxiSpec from "./PublishSpec/PublishTaxiSpec";
 import PublishDetail from "./PublishDetail";
-
+import PublishPage from "./PublishPage";
 
 export default createStackNavigator({
     PublishCommon: {
@@ -13,6 +13,9 @@ export default createStackNavigator({
     },
     PublishDetail: {
         screen: PublishDetail,
+    },
+    PublishPage: {
+        screen: PublishPage,
     },
 }, {
     defaultNavigationOptions: {

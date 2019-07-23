@@ -113,8 +113,8 @@ export default class Api {
         })
     }
     static getActDetail(actId) {
-        let id = actId
-        console.log(id)
+        let id = actId;
+        console.log(id);
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/act/query?act_id=${id}`)
                 .then(res => {

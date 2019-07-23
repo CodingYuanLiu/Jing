@@ -8,8 +8,9 @@ import {Icon, Image} from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
 import Util from "../../common/util";
 import Api from "../../api/Api";
+import MenubarItem from "./components/menubarItem";
 
-class PublishDetail extends React.PureComponent{
+class PublishPage extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
@@ -39,17 +40,26 @@ class PublishDetail extends React.PureComponent{
     };
     renderDetailInput = () => {
         return (
-            <View>
+            <View style={{backgroundColor: "green"}}>
                 <TextInput
-                value={this.state.bodyText}
-                onChangeText={this.handleBodyText}
-                onBlur={this.handleTextBlur}
-                placeholder={"想对大家说点什么..."}
-                placeholderTextColor={"#bfbfbf"}
-                returnKeyType={"done"}
-                textBreakStrategy={"highQuality"}
-                style={styles.textInput}
-                multiline={true}
+                    value={this.state.title}
+                    onChangeText={this.handleTitleTextChange}
+                    onBlur={this.handleTitleTextBlur}
+                    autoFocus
+                    placeholder={"输入标题让大家看到你..."}
+                    placeholderTextColor={"#bfbfbf"}
+                    style={styles.textInputTitle}
+                />
+                <TextInput
+                    value={this.state.bodyText}
+                    onChangeText={this.handleBodyTextChange}
+                    onBlur={this.handleBodyTextBlur}
+                    placeholder={"想对大家说点什么..."}
+                    placeholderTextColor={"#bfbfbf"}
+                    returnKeyType={"done"}
+                    textBreakStrategy={"highQuality"}
+                    style={styles.textInputBody}
+                    multiline={true}
                 />
             </View>
         )
@@ -72,51 +82,57 @@ class PublishDetail extends React.PureComponent{
         return imagePicker;
     };
 
-    renderMenubar = () => {
-        return null;
+    renderCommonMenu = () => {
+        return (
+            <MenubarItem
+            />
+        );
     };
-
+    renderSpecMenubar = () => {}
     render() {
         let header = this.renderHeader();
         let detailInput = this.renderDetailInput();
         let imagePicker = this.renderImagePicker();
-        let menubar = this.renderMenubar();
-
+        let commonMenubar = this.renderCommonMenu();
+        let specMenubar = this.renderSpecMenubar();
         let imageList = this.state.images;
 
         return(
-
-                <View style={styles.container}>
-                    {header}
-                    <ScrollView style={styles.mainContainer}>
-                        {detailInput}
-                        <View style={styles.imageListContainer}>
-                            {
-                                imageList.map((imgUri, i) => {
-                                    return (
-                                        <Image
-                                            key={i}
-                                            containerStyle={styles.imageContainer}
-                                            style={styles.image}
-                                            source={{uri: imgUri}}
-                                            resizeMode={"cover"}
-                                        />
-                                    )
-                                })
-                            }
-                            {imagePicker}
-                        </View>
-                        {menubar}
-                    </ScrollView>
-                </View>
+            <View style={styles.container}>
+                {header}
+                <ScrollView style={styles.mainContainer}>
+                    {detailInput}
+                    <View style={styles.imageListContainer}>
+                        {
+                            imageList.map((imgUri, i) => {
+                                return (
+                                    <Image
+                                        key={i}
+                                        containerStyle={styles.imageContainer}
+                                        style={styles.image}
+                                        source={{uri: imgUri}}
+                                        resizeMode={"cover"}
+                                    />
+                                )
+                            })
+                        }
+                        {imagePicker}
+                    </View>
+                    <View style={styles.menuContainer}>
+                        {commonMenubar}
+                        {specMenubar}
+                    </View>
+                </ScrollView>
+            </View>
         )
     }
 
     publish = () => {
         let publishAct = this.props.publishAct;
+
         let images = [...publishAct.images];
         images.map((img, i) => {
-            images[i] = img.substring(img.indexOf(",") + 1);
+            images[i] = img.substring(img.indexOf(","));
         });
         let data = {
             type: publishAct.type,
@@ -153,17 +169,24 @@ class PublishDetail extends React.PureComponent{
             })
     };
 
-    handleBodyText = text => {
+    handleBodyTextChange = text => {
         this.setState({bodyText: text});
         if (Number(text.length) % 10 === 0 ) {
             this.props.setPublishActDetail(this.props.images, text);
         }
     };
-    handleTextBlur = () => {
+    handleBodyTextBlur = () => {
         let text = this.state.bodyText;
         this.props.setPublishActDetail(this.props.images, text);
         console.log(text);
     };
+    handleTitleTextChange = text => {
+        this.setState({title: text});
+    };
+    handleTitleTextBlur = text => {
+        // ...
+    };
+
     showImagePicker = () => {
         ImagePicker.showImagePicker(options, res => {
             console.log("response : ", res);
@@ -201,16 +224,16 @@ const options = {
 };
 
 const mapStateToProps = state => ({
-   description: state.publishAct.description,
-   images: state.publishAct.images,
-   publishAct: state.publishAct,
+    description: state.publishAct.description,
+    images: state.publishAct.images,
+    publishAct: state.publishAct,
     jwt: state.user.jwt,
 });
 const mapDispatchToProps = dispatch => ({
-   setPublishActDetail: (images, description) => dispatch(setPublishActDetail(images, description)),
+    setPublishActDetail: (images, description) => dispatch(setPublishActDetail(images, description)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(PublishDetail)
+export default connect(mapStateToProps, mapDispatchToProps)(PublishPage)
 
 const imageContainerLen = Util.getVerticalWindowDimension().width * 0.293;
 const imageLen = Util.getVerticalWindowDimension().width * 0.270;
@@ -220,11 +243,20 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#eee",
     },
+    headerContainer: {
+        marginTop: 0,
+    },
     mainContainer: {
         minHeight: "100%",
         backgroundColor: "#fff",
     },
-    textInput: {
+    textInputTitle: {
+        fontWeight: "bold",
+        fontSize: 20,
+        paddingLeft: "6%",
+        paddingRight: "6%",
+    },
+    textInputBody: {
         paddingLeft: "6%",
         paddingRight: "6%",
         height: 140,
@@ -261,5 +293,8 @@ const styles = StyleSheet.create({
     image: {
         width: imageLen,
         height: imageLen,
-    }
+    },
+    menuContainer: {
+
+    },
 });

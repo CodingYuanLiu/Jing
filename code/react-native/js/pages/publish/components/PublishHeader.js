@@ -20,10 +20,10 @@ export default class PublishHeader extends React.PureComponent{
             />;
         let rightBtn =
             <Button
-                title={"下一步"}
-                type={"clear"}
+                title={this.props.buttonTitle}
+                type={this.props.buttonType}
                 color={Theme.TEXT_BUTTON_ENABLED}
-                onPress={this.props.onNext}
+                onPress={this.props.onNext ? this.props.onNext : this.props.onPublish}
             />;
         let style= this.props.style;
         return (
@@ -42,4 +42,12 @@ PublishHeader.propTypes = {
     style: ViewPropTypes.style,
     onClose: PropTypes.func,
     onNext: PropTypes.func,
+    onPublish: PropTypes.func,
+    buttonTitle: PropTypes.string,
+    buttonType: PropTypes.string,
+};
+
+PublishHeader.defaultProps = {
+    buttonTitle: "下一步",
+    buttonType: "clear",
 };
