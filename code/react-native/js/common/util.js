@@ -9,8 +9,10 @@ export default class Util {
         let timeString = date.toTimeString();
         timeString = timeString.substring(0, timeString.indexOf(" "));
         let res=`${dateString} ${timeString}`
+
         return res;
-    }
+
+    };
 
 
     static getVerticalWindowDimension = () => {

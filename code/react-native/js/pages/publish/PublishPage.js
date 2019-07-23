@@ -2,30 +2,36 @@ import React from "react"
 import { View, StyleSheet, TextInput, TouchableHighlight, ScrollView} from 'react-native';
 import PublishHeader from "./components/PublishHeader";
 import NavigationUtil from "../../navigator/NavUtil";
-import {setPublishActDetail} from "../../actions/activity";
+import {
+    setPublishActCommon,
+    setPublishActDetail, setPublishActivityTime,
+    setPublishTakeoutTime,
+    setPublishTaxiDepart
+} from "../../actions/activity";
 import { connect } from "react-redux";
 import {Icon, Image} from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
 import Util from "../../common/util";
 import Api from "../../api/Api";
 import MenubarItem from "./components/menubarItem";
+import DateTimePicker from "react-native-modal-datetime-picker";
 
 class PublishPage extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
+            type: "",
             bodyText: "",
+            title: "",
+            tags: [],
             images: [],
+            endTimePickerVisible: false,
+            specTimePickerVisible: false,
         }
     }
 
     componentDidMount(){
-        if (this.props.images && this.props.images.length > 0) {
-            this.setState({images: this.props.images});
-        }
-        if (this.props.description && this.props.description !== "") {
-            this.setState({bodyText: this.props.description});
-        }
+        this.setup(this.props.publishAct);
     }
 
     renderHeader = () => {
@@ -40,7 +46,7 @@ class PublishPage extends React.PureComponent{
     };
     renderDetailInput = () => {
         return (
-            <View style={{backgroundColor: "green"}}>
+            <View>
                 <TextInput
                     value={this.state.title}
                     onChangeText={this.handleTitleTextChange}
@@ -83,18 +89,120 @@ class PublishPage extends React.PureComponent{
     };
 
     renderCommonMenu = () => {
+        let act = this.props.publishAct;
         return (
             <MenubarItem
+                onPress={this.handleClickEndTime}
+                iconName={"endTime"}
+                title={"加入截止时间"}
+                rightTitle={act.endTime ? act.endTime : ""}
+                active={Boolean(act.endTime && act.endTime !== "")}
             />
         );
     };
-    renderSpecMenubar = () => {}
+    renderSpecMenubar = () => {
+        let act = this.props.publishAct;
+        switch(act.type) {
+            case "taxi" : {
+                return (
+                    <View>
+                        <MenubarItem
+                            onPress={this.showSpecTimePicker}
+                            iconName={"depart"}
+                            title={"出发时间"}
+                            rightTitle={act.departTime ? act.departTime : ""}
+                            active={Boolean(act.departTime && act.departTime !== "")}
+                        />
+                        <MenubarItem
+                            onPress={this.handleClickOriginDest}
+                            iconName={"originDest"}
+                            title={act.origin && act.dest && act.origin !== "" && act.dest !== "" ?
+                                act.origin + "——>" + act.dest : "出发、到达"}
+                            active={Boolean(act.origin && act.dest && act.origin !== "" && act.dest !== "")}
+                        />
+                    </View>
+                )
+            }
+            case "takeout": {
+                return (
+                    <View>
+                        <MenubarItem
+                            onPress={this.handleClickTakeoutStore}
+                            iconName={"store"}
+                            title={"外卖店铺"}
+                            rightTitle={act.store ? act.store : ""}
+                            active={Boolean(act.store && act.store !== "")}
+                        />
+                        <MenubarItem
+                            onPress={this.showSpecTimePicker}
+                            iconName={"takeoutTime"}
+                            title={"下单时间"}
+                            rightTitle={act.takeoutTime ? act.takeoutTime : ""}
+                            active={Boolean(act.takeoutTime && act.takeoutTime !== "")}
+                        />
+                    </View>
+                )
+            }
+            case "order": {
+                return (
+                    <View>
+                        <MenubarItem
+                            onPress={this.handleClickOrderStore}
+                            iconName={"store"}
+                            title={"下单店铺"}
+                            rightTitle={act.store ? act.store : ""}
+                            active={Boolean(act.string && act.store !== "")}
+                        />
+                    </View>
+                )
+            }
+            case "other": {
+                return (
+                    <View>
+                        <MenubarItem
+                            onPress={this.showSpecTimePicker}
+                            iconName={"activity"}
+                            title={"活动时间"}
+                            rightTitle={act.activityTime ? act.activityTime : ""}
+                            active={Boolean(act.activityTime && act.activityTime !== "")}
+                        />
+                    </View>
+                )
+            }
+        }
+    };
+    renderEndTimePicker = () => {
+        return (
+            <DateTimePicker
+                isVisible={this.state.endTimePickerVisible}
+                onConfirm={this.confirmEndTime}
+                onCancel={this.cancelEndTime}
+                mode={"datetime"}
+                minimumDate={new Date()}
+                is24Hour={true}
+            />
+        )
+    };
+    renderSpecTimePicker = () => {
+        return (
+            <DateTimePicker
+                isVisible={this.state.specTimePickerVisible}
+                onConfirm={this.confirmSpecTime}
+                onCancel={this.cancelSpecTime}
+                mode={"datetime"}
+                minimumDate={new Date()}
+                is24Hour={true}
+            />
+        )
+    };
     render() {
         let header = this.renderHeader();
         let detailInput = this.renderDetailInput();
         let imagePicker = this.renderImagePicker();
         let commonMenubar = this.renderCommonMenu();
         let specMenubar = this.renderSpecMenubar();
+        let endTimePicker = this.renderEndTimePicker();
+        let specTimePicker = this.renderSpecTimePicker();
         let imageList = this.state.images;
 
         return(
@@ -121,6 +229,8 @@ class PublishPage extends React.PureComponent{
                     <View style={styles.menuContainer}>
                         {commonMenubar}
                         {specMenubar}
+                        {endTimePicker}
+                        {specTimePicker}
                     </View>
                 </ScrollView>
             </View>
@@ -182,11 +292,62 @@ class PublishPage extends React.PureComponent{
     };
     handleTitleTextChange = text => {
         this.setState({title: text});
+        let act = this.props.publishAct;
+        this.props.setPublishActCommon(act.type, text, act.endTime);
     };
-    handleTitleTextBlur = text => {
+    handleTitleTextBlur = () => {
         // ...
     };
+    handleClickEndTime = () => {
+        this.setState({
+            endTimePickerVisible: true,
+        })
+    };
+    confirmEndTime = (date) => {
+        let {type, title } = this.props.publishAct;
+        let dateString = Util.dateTimeToString(date);
+        this.props.setPublishActCommon(type, title, dateString);
+    };
+    cancelEndTime = () => {
+        this.setState({
+            endTimePickerVisible: false,
+        })
+    };
+    handleClickOriginDest = () => {
+        NavigationUtil.toPage()
+    };
+    handleClickTakeoutStore = () => {
 
+    };
+    handleClickOrderStore = () => {
+
+    };
+    // spec time picker handle
+    showSpecTimePicker = () => {
+        this.setState({
+            specTimePickerVisible: true,
+        })
+    };
+    confirmSpecTime = (date) => {
+        let dateString = Util.dateTimeToString(date);
+        switch(this.props.publishAct.type) {
+            case "takeout" : {
+                this.props.setPublishTakeoutTime(dateString);
+            }
+            case "taxi" : {
+                this.props.setPublishTaxiDepart(dateString);
+            }
+            case "activity" : {
+                this.props.setPublishActivityTime(dateString);
+            }
+        }
+        this.cancelSpecTime();
+    };
+    cancelSpecTime = () => {
+        this.setState({
+            specTimePickerVisible: false,
+        })
+    };
     showImagePicker = () => {
         ImagePicker.showImagePicker(options, res => {
             console.log("response : ", res);
@@ -208,7 +369,24 @@ class PublishPage extends React.PureComponent{
             }
         })
 
-    }
+    };
+    setup = (act) => {
+        let {
+            title, endTime, images, tags, description,
+        } = act;
+        if (images && images.length > 0) {
+            this.setState({images: images});
+        }
+        if (description && description !== "") {
+            this.setState({bodyText: description});
+        }
+        if (endTime && endTime !== "") {
+            this.setState({title: title});
+        }
+        if (tags && tags.length > 0) {
+            this.setState({tags: tags});
+        }
+    };
 }
 
 const options = {
@@ -231,6 +409,10 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => ({
     setPublishActDetail: (images, description) => dispatch(setPublishActDetail(images, description)),
+    setPublishActCommon: (type, title, endTime) => dispatch(setPublishActCommon(type,title,endTime)),
+    setPublishTaxiDepart: departTime => dispatch(setPublishTaxiDepart(departTime)),
+    setPublishTakeoutTime: takeoutTime => dispatch(setPublishTakeoutTime(takeoutTime)),
+    setPublishActivityTime: activityTime => dispatch(setPublishActivityTime(activityTime)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PublishPage)
@@ -283,6 +465,7 @@ const styles = StyleSheet.create({
         paddingLeft: "6%",
         paddingRight:  "6%",
         flexWrap: "wrap",
+        minHeight: imageContainerLen * 2,
     },
     imageContainer: {
         width: imageContainerLen,
@@ -295,6 +478,8 @@ const styles = StyleSheet.create({
         height: imageLen,
     },
     menuContainer: {
-
+        marginRight: "2%",
+        marginLeft: "2%",
     },
+
 });

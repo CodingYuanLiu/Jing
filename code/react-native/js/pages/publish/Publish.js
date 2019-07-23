@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, StatusBar } from 'react-native';
 import { Icon, Button } from "react-native-elements";
 import NavigationUtil from '../../navigator/NavUtil';
 import {connect} from "react-redux";
+import {setPublishActCommon} from "../../actions/activity";
 
 class PublishScreen extends React.PureComponent{
     constructor(props) {
@@ -24,6 +25,7 @@ class PublishScreen extends React.PureComponent{
         NavigationUtil.back(this.props)
     };
     toPublishCommon = type => {
+        this.props.setPublishActCommon(type, this.props.title, this.props.endTime);
         NavigationUtil.toPage({actType: type}, "PublishCommon");
         /*
         if (this.props.logged) {
@@ -83,7 +85,7 @@ class PublishScreen extends React.PureComponent{
                     />
                     <Button
                         title={"去测试页面"}
-                        onPress={() => {NavigationUtil.toPage(null, "PublishPage")}}
+                        onPress={() => {this.props.setPublishActCommon("taxi", this.props.title, this.props.endTime);NavigationUtil.toPage(null, "PublishPage")}}
                     />
                 </View>
                 <View style={styles.main}>
@@ -120,8 +122,15 @@ class PublishScreen extends React.PureComponent{
 const mapStateToProps = state => ({
     logged: state.user.logged,
     jwt: state.user.jwt,
-})
-export default connect(mapStateToProps, null)(PublishScreen)
+    title: state.publishAct.title,
+    type: state.publishAct.type,
+    endTime: state.publishAct.endTime,
+});
+const mapDispatchToProps = dispatch => ({
+    setPublishActCommon: (type, title, endTime) => dispatch(setPublishActCommon(type, title, endTime))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PublishScreen)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
