@@ -26,6 +26,8 @@ func (actSrv *ActivitySrv) GenTags(ctx context.Context,req *activity.TagReq,resp
 	}
 	resource:= fmt.Sprintf("%s,%s",req.Title,req.Description)
 	words := x.Cut(resource,true)
+	log.Print("words:")
+	log.Println(words)
 	var results []string
 	for _,tag := range tags{
 		for _,word := range words{
@@ -36,6 +38,8 @@ func (actSrv *ActivitySrv) GenTags(ctx context.Context,req *activity.TagReq,resp
 			}
 		}
 	}
+	log.Println("results:")
+	log.Println(results)
 	resp.Tag = results
 	resp.Status = 200
 	return nil
