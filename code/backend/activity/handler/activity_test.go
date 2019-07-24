@@ -68,8 +68,6 @@ func TestActivitySrv_TaxiAndComment(t *testing.T) {
 		},
 		TaxiInfo: &activity.TaxiInfo{
 			DepartTime:  "2019-7-10 15:41:00",
-			Origin:      "Minhang",
-			Destination: "Xinzhuang",
 		},
 	}
 	taxiPubResp := &activity.PubResp{}
@@ -119,8 +117,6 @@ func TestActivitySrv_TaxiAndComment(t *testing.T) {
 		Tag: []string{"Joy City","Taxi"},
 		TaxiInfo: &activity.TaxiInfo{
 			DepartTime:"2020-7-7 12:21:32",
-			Origin:"ModifiedOrigin",
-			Destination:"ModifiedDest",
 		},
 	}
 	taxiMdfResp := &activity.MdfResp{}
