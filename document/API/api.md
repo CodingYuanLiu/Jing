@@ -903,7 +903,7 @@ Recommand activity for a logined user.
 
 #### Request
 ``` json
-POST /api/user/act/recommendact
+GET /api/user/act/recommendact
 Authorization: Bearer jwt
 ```
 
