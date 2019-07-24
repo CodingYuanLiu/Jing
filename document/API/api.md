@@ -895,3 +895,41 @@ Status OK-200
     "message": "Add behavior succeed"
 }
 ```
+
+### Recommend Activities
+
+#### Description
+Recommand activity for a logined user.
+
+#### Request
+``` json
+POST /api/user/act/recommendact
+Authorization: Bearer jwt
+```
+
+#### Response
+```` json
+[
+    {
+        "act_id": 1,
+        "activity_time": "2022-11-11 11:11:21",
+        "comments": [],
+        "create_time": "2022-10-5",
+        "description": "description",
+        "end_time": "2022-12-6",
+        "images": null,
+        "signature": "simimasai",
+        "sponsor_id": 3,
+        "sponsor_username": "孙笑川",
+        "tag": [
+            "Basketball"
+        ],
+        "title": "Basketball this afternoon",
+        "type": "other"
+    },
+    {
+        "act_id": 2,
+        ...
+    }
+]
+````
