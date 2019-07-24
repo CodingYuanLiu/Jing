@@ -185,3 +185,19 @@ func AddTags(tags []string, userId int32) int32{
 	return resp.Num
 }
 
+func GetRecommendation(userId int32) []int{
+	resp,err := Client.Recommendation(context.TODO(),&activityProto.RecommendReq{
+		UserId:userId,
+	})
+	acts := make([]int,0)
+
+	if err != nil{
+		log.Println(err)
+		return acts
+	}
+
+	for _,int32Act := range resp.ActId{
+		acts = append(acts,int(int32Act))
+	}
+	return acts
+}

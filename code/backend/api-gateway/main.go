@@ -77,6 +77,7 @@ func setupRouter() *gin.Engine {
 		userRouter.POST("/act/gettag",ac.GetTags)
 		userRouter.POST("/act/addtag",ac.AddTags)
 		userRouter.POST("/act/addbehavior",ac.AddBehavior)
+		userRouter.GET("/act/recommendact",ac.RecommendActivity)
 	}
 
 	return router
