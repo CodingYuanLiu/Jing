@@ -65,15 +65,15 @@ func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.Reco
 	/* All the other users have no behavior*/
 	if nearestAngle == 0{
 		resp.Status = 0
-		resp.ActId = []int32{}
-		return errors.New("the user or all the other users have no behavior")
+		resp.ActId = make([]int32,0)
+		return errors.New("the nearest user has no activity")
 	}
 
 	//For debug
 	log.Printf("The nearest user is %d\n",nearestUserId)
 	acts := dao.GetAllUserActivityInt32(int(nearestUserId))
 	if len(acts) == 0{
-		resp.ActId = []int32{}
+		resp.ActId = make([]int32,0)
 		resp.Status = 1
 		return errors.New("the nearest user has no activity")
 	}

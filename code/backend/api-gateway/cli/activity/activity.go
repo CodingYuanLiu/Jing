@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/micro/go-micro/client"
-	//"github.com/micro/go-micro/client/grpc"
-	//"github.com/micro/go-plugins/registry/kubernetes"
+	"github.com/micro/go-micro/client/grpc"
+	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/dao"
 	"jing/app/json"
 	"log"
-	//"os"
+	"os"
 )
 
 var (
@@ -20,10 +20,10 @@ var (
 
 func init()  {
 
-	/*os.Setenv("MICRO_REGISTRY", "kubernetes")
+	os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
-	)*/
+	)
 	Client = activityProto.NewActivitySrvService("act", client.DefaultClient)
 }
 
@@ -179,3 +179,19 @@ func AddTags(tags []string, userId int32) int32{
 	return resp.Num
 }
 
+func GetRecommendation(userId int32) []int{
+	resp,err := Client.Recommendation(context.TODO(),&activityProto.RecommendReq{
+		UserId:userId,
+	})
+	acts := make([]int,0)
+
+	if err != nil{
+		log.Println(err)
+		return acts
+	}
+
+	for _,int32Act := range resp.ActId{
+		acts = append(acts,int(int32Act))
+	}
+	return acts
+}

@@ -529,3 +529,15 @@ func (activityController *Controller) AddBehavior(c *gin.Context){
 		})
 	}
 }
+
+func (activityController *Controller) RecommendActivity(c *gin.Context){
+	userId := c.GetInt("userId")
+	var actJSONs []myjson.JSON
+	recommendActs := activityClient.GetRecommendation(int32(userId))
+
+	for _, v := range recommendActs {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
