@@ -48,11 +48,11 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	qryReq := activityProto.QryReq{
 		ActId: int32(actId),
 	}
-	resp, _ := Client.Query(context.TODO(), &qryReq)
+	resp, err := Client.Query(context.TODO(), &qryReq)
 	if resp.Status != 200 {
 		return nil, errors.New(fmt.Sprintf("error, status %d", resp.Status))
 	}
-	return resp, nil
+	return resp, err
 }
 
 func DeleteActivity(userId int, actId int) error {

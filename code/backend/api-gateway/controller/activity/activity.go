@@ -371,6 +371,9 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 
 func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	resp, err := activityClient.QueryActivity(actId)
+	if err != nil {
+		return
+	}
 	userId := dao.GetActivityAdmin(actId)
 	user, _ := dao.FindUserById(userId)
 	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature, resp)
