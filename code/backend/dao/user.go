@@ -13,7 +13,7 @@ var db *gorm.DB
 type User struct {
 	ID 			int 				`gorm:"primary_key;auto_increment"`
 	Gender 		int
-	BirthDay 	string
+	Birthday 	string
 	Major	 	string
 	Dormitory 	string
 	Username 	string
@@ -325,8 +325,8 @@ func InsertCandidateTag(tag string,userId int) int32{
 
 func init()  {
 	var err error
-	//db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
-	db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
+	//db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}

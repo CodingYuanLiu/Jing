@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-web"
-	k8s "github.com/micro/kubernetes/go/web"
+	//k8s "github.com/micro/kubernetes/go/web"
 	"jing/app/api-gateway/controller/activity"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	service := k8s.NewService(
+	service := web.NewService(
 		web.Name("api"),
 		web.Address(":8080"),
 	)

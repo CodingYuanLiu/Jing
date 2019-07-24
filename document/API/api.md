@@ -23,7 +23,11 @@ Status OK - 200
     "nickname": "nickname",
     "phone": "12341825417",
     "signature": "欧哈哈哈哈哈哈哈",
-    "username": "username"
+    "username": "username",
+    "birthday": "2001-1-1",
+    "major": "软件工程",
+    "gender": 0,
+    "dormitory": "东15",
 }
 ```
 Jwt is invalid - 401
@@ -55,6 +59,10 @@ Status OK - 200
     "nickname": "nickname",
     "phone": "12341825417",
     "signature": "欧哈哈哈哈哈哈哈",
+    "birthday": "2001-1-1",
+    "major": "软件工程",
+    "gender": 0,
+    "dormitory": "东15",
 }
 ```
 
