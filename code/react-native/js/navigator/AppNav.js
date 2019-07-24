@@ -12,7 +12,7 @@ import PersonalHome from '../pages/me/PersonalHome';
 import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch"
 import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
-import Another from "../pages/notification/pages/chatTest/Another";
+import ChatRoom from "../pages/notification/pages/ChatRoom";
 
 
 const StartNav = createStackNavigator(
@@ -63,6 +63,9 @@ const MainNav = createStackNavigator(
         AnotherTest: {
             screen: Another,
         },*/
+        ChatRoom: {
+            screen: ChatRoom,
+        }
     },
     {
         defaultNavigationOptions: {

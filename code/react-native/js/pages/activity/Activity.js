@@ -16,15 +16,15 @@ export default class HomeScreen extends React.Component{
     }
 
     toSearch = () => {
-        console.log("Press!")
+        console.log("Press!");
         NavigationUtil.toPage(this.props, "Search")
-    }
+    };
 
     render() {
         const TabNavigator = createAppContainer(
                 createMaterialTopTabNavigator(
                     ActTopTab,ActTabConfig
-                ))
+                ));
 
         const leftIcon = <Octicons name={"search"} color={"#7ecaff"} size={20}/>
         const ActSearch =
@@ -32,13 +32,13 @@ export default class HomeScreen extends React.Component{
                 leftIcon={leftIcon}
                 title={"搜索，即刻响应"}
                 press={() => {this.toSearch()}}
-            />
+            />;
         const RightIcon =
             <Feather
                 name={"plus"}
                 size={28}
                 color={"#fff"}
-            />
+            />;
         return(
             <View style={{flex:1,}}>
                 <NavigationBar

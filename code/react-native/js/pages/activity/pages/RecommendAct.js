@@ -15,7 +15,7 @@ export default class RecommendAct extends React.Component{
     }
 
     componentDidMount() {
-
+        /*
         Api.getAllAct()
             .then(data => {
                 console.log(data);
@@ -24,6 +24,8 @@ export default class RecommendAct extends React.Component{
             .catch(err => {
                 console.log(err)
             })
+
+         */
     }
 
     renderItem = ({item}) => {
