@@ -1,14 +1,14 @@
-# /api
+# Application Interface of Jing
 
 ## Get User Status
 
 #### Description
 
-Find a user's id by its jwt.
+Get a user's detail by its jwt.
 
 #### Request
 ```json
-GET /api/public/status HTTP/1.1
+GET /api/user/status HTTP/1.1
 Authorization: Bearer jwt
 ```
 
@@ -16,18 +16,71 @@ Authorization: Bearer jwt
 Status OK - 200
 ```json
 {
-    "id": 6,
-    "message": "You are online"
+    "avatar_url": "http://puo7ltwok.bkt.clouddn.com/Fse4b_C0cNTmFNftBXX3T-RQPMFo",
+    "id": 5,
+    "jwt_token": "new_jwt",
+    "jaccount": "jaccount",
+    "nickname": "nickname",
+    "phone": "12341825417",
+    "signature": "欧哈哈哈哈哈哈哈",
+    "username": "username",
+    "birthday": "2001-1-1",
+    "major": "软件工程",
+    "gender": 0,
+    "dormitory": "东15",
 }
 ```
 Jwt is invalid - 401
 ```json
 {
-    "message": "Invaild token"
+    "message": "You need login to do this"
+}
+```
+
+## Get User Detail
+
+#### Description
+
+Get a user's detail by user id.
+
+#### Request
+
+```json
+GET /api/public/detail?id=1
+```
+
+#### Response
+
+Status OK - 200
+```json
+{
+    "avatar_url": "http://puo7ltwok.bkt.clouddn.com/Fse4b_C0cNTmFNftBXX3T-RQPMFo",
+    "id": 5,
+    "nickname": "nickname",
+    "phone": "12341825417",
+    "signature": "欧哈哈哈哈哈哈哈",
+    "birthday": "2001-1-1",
+    "major": "软件工程",
+    "gender": 0,
+    "dormitory": "东15",
+}
+```
+
+User Not Found - 400
+```json
+{
+    "error": {
+        "id": "",
+        "code": 0,
+        "detail": "user not found",
+        "status": ""
+    }
 }
 ```
 
 ## Register
+
+#### Description
 
 Register a new user by username, password, phone, nickname and jwt.
 
@@ -248,10 +301,10 @@ GET /api/public/act/query?act_id={act_id} HTTP/1.1
     "create_time": "Wed Jul 17 2019",
     "depart_time": "2019-07-17",
     "description": "dfgdfgb",
-    "destination": "fnbfgn",
+    "destination": {},
     "end_time": "2019-07-17",
     "images": null,
-    "origin": "gdfbdf",
+    "origin": {},
     "signature": "123qwehuuu",
     "sponsor_id": 5,
     "sponsor_username": "sebastianj",
@@ -262,6 +315,9 @@ GET /api/public/act/query?act_id={act_id} HTTP/1.1
     "type": "taxi"
 }
 ```
+
+## *Activity Pages*
+For `myact`,`manageact` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
 
 ## Find All Activity
 
@@ -302,7 +358,35 @@ GET /api/public/act/findall HTTP/1.1
     }
 ]
 ```
+## Find Activity by Type
 
+#### Description
+Find activities of a designate type. If the user has already logined, a jwt is needed to carry the userid and help save the user's behavior.
+
+#### Requests
+```
+GET /api/public/act/findbytype?type=taxi HTTP/1.1
+(Authorization: Bearer)
+```
+
+Status OK - 200
+#### Response
+```json
+[
+    {
+        "act_id": 1,
+        ...
+        "type" : "taxi"
+    },
+    {
+        "act_id": 3,
+        ...
+        "type" : "taxi"
+    },
+]
+```
+
+####
 ## My Act
 
 #### Description
@@ -363,10 +447,10 @@ Status OK - 200
         "create_time": "Wed Jul 17 2019",
         "depart_time": "2019-07-17",
         "description": "dfgdfgb",
-        "destination": "fnbfgn",
+        "destination": {},
         "end_time": "2019-07-17",
         "images": null,
-        "origin": "gdfbdf",
+        "origin": {},
         "signature": "123qwehuuu",
         "sponsor_id": 5,
         "sponsor_username": "sebastianj",
@@ -403,10 +487,10 @@ Status OK - 200
         "create_time": "2019-7-15 15:17",
         "depart_time": "2019-7-16 15:17",
         "description": "desc",
-        "destination": "ori",
+        "destination": {},
         "end_time": "2019-7-17 15:17",
         "images": null,
-        "origin": "dest",
+        "origin": {},
         "signature": "",
         "sponsor_id": 6,
         "sponsor_username": "孙笑川",
@@ -420,9 +504,6 @@ Status OK - 200
     }
 ]
 ```
-
-### PS:
-For `myact`,`manageact` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
 
 ## Publish Activity
 
@@ -446,8 +527,8 @@ Authorization: Bearer jwt
     "images": [],
 
     "depart_time": "2019-7-16 15:17",
-    "origin": "ori",
-    "destination": "dest",
+    "origin": {},
+    "destination": {},
 
     "order_time": "2019-7-16 15:17",
     "store": "store",
@@ -494,8 +575,8 @@ Authorization: Bearer jwt
     "images": [],
 
     "depart_time": "2019-7-16 15:17",
-    "origin": "dest",
-    "destination": "ori",
+    "origin": {},
+    "destination": {},
 
     "order_time": "2019-7-16 15:17",
     "store": "store",
@@ -633,10 +714,10 @@ Status OK - 200
         "create_time": "2019-7-15 15:17",
         "depart_time": "2019-7-16 15:17",
         "description": "desc",
-        "destination": "ori",
+        "destination": {},
         "end_time": "2019-7-17 15:17",
         "images": null,
-        "origin": "dest",
+        "origin": {},
         "signature": "",
         "sponsor_id": 6,
         "sponsor_username": "孙笑川",
@@ -750,7 +831,7 @@ base64
 Generate recommmended tags refering to the title and description of the very activity. 
 #### Request
 ``` json
-GET /api/user/act/gettag
+POST /api/user/act/gettag
 Authorization: Bearer jwt
 
 {
@@ -788,3 +869,132 @@ Return the number of tags that are added into the candidate list or formal tag d
     "num":1
 }
 ```
+
+## Recommandation
+### Record user's behavior
+#### Description
+When a user interact with the application, his/her behaviors are expected to be sent to the database and stored there, which can be used to construct his/her personal portrait.
+</br>
+The type can be "taxi","takeout","order","other", and the behavior can be "search","scanning","join","publish"
+#### Request
+``` json
+POST /api/user/act/addbehavior
+Authorization:Bearer jwt
+
+{
+	"type":"taxi",
+	"behavior":"scanning"
+}
+```
+
+#### Response
+Status OK-200
+
+```json
+{
+    "message": "Add behavior succeed"
+}
+```
+
+### Recommend Activities
+
+#### Description
+Recommand activity for a logined user.
+
+#### Request
+``` json
+GET /api/user/act/recommendact
+Authorization: Bearer jwt
+```
+
+#### Response
+```` json
+[
+    {
+        "act_id": 1,
+        "activity_time": "2022-11-11 11:11:21",
+        "comments": [],
+        "create_time": "2022-10-5",
+        "description": "description",
+        "end_time": "2022-12-6",
+        "images": null,
+        "signature": "simimasai",
+        "sponsor_id": 3,
+        "sponsor_username": "孙笑川",
+        "tag": [
+            "Basketball"
+        ],
+        "title": "Basketball this afternoon",
+        "type": "other"
+    },
+    {
+        "act_id": 2,
+        ...
+    }
+]
+````
+
+
+### Search Takeout Shops
+
+#### Description
+Search a shop by name.
+
+#### Request
+``` json
+GET api/public/takeout/searchshop?key=鱼
+```
+
+#### Response
+```` json
+[
+    {
+        "id": "E2232915932469195332",
+        "name": "鱼你在一起(吴泾宝龙广场店)"
+    },
+    {
+        "id": "E14984431780752757484",
+        "name": "晨曦炖品·鲍鱼饭(吴泾店)"
+    },
+    {
+        "id": "E18379350634051443412",
+        "name": "蜀风麻辣鱼-烤鱼-烤鸡-炸鸡"
+    },
+    {
+        "id": "E3086685298986339899",
+        "name": "无骨烤鱼饭&牛蛙饭"
+    },
+    {
+        "id": "E5149393426759582031",
+        "name": "陈小碗等一人烤鱼饭(闵行店)"
+    },
+    {
+        "id": "E868837318594021566",
+        "name": "林葱烤鱼饭(上海交大店)"
+    },
+    {
+        "id": "E1290644095784343101",
+        "name": "酸菜鱼"
+    },
+    {
+        "id": "E18168908440994869408",
+        "name": "鲜牛火锅|烤鱼牛蛙|不甘平淡(永平南路店)"
+    },
+    {
+        "id": "E7993081741303640907",
+        "name": "小金鱼麻辣香锅(灯辉支路店)"
+    },
+    {
+        "id": "E4092211391740264883",
+        "name": "芳小姐水煮鱼(万乐城店)"
+    },
+    {
+        "id": "E4112325855160229761",
+        "name": "辉哥酸菜鱼黄焖鸡米 饭"
+    },
+    {
+        "id": "E18255317800802630288",
+        "name": "鱼酷活力烤鱼(碧江广场店)"
+    }
+]
+````

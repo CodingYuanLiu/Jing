@@ -34,6 +34,7 @@ var _ server.Option
 // Client API for Login service
 
 type LoginService interface {
+	NewJwt(ctx context.Context, in *JwtReq, opts ...client.CallOption) (*JwtResp, error)
 	Auth(ctx context.Context, in *AuthReq, opts ...client.CallOption) (*AuthResp, error)
 	LoginByJaccount(ctx context.Context, in *LJReq, opts ...client.CallOption) (*TokenResp, error)
 	LoginByUP(ctx context.Context, in *UPReq, opts ...client.CallOption) (*TokenResp, error)
@@ -59,6 +60,16 @@ func NewLoginService(name string, c client.Client) LoginService {
 		c:    c,
 		name: name,
 	}
+}
+
+func (c *loginService) NewJwt(ctx context.Context, in *JwtReq, opts ...client.CallOption) (*JwtResp, error) {
+	req := c.c.NewRequest(c.name, "Login.NewJwt", in)
+	out := new(JwtResp)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *loginService) Auth(ctx context.Context, in *AuthReq, opts ...client.CallOption) (*AuthResp, error) {
@@ -134,6 +145,7 @@ func (c *loginService) BindJwtAndJaccount(ctx context.Context, in *BindReq, opts
 // Server API for Login service
 
 type LoginHandler interface {
+	NewJwt(context.Context, *JwtReq, *JwtResp) error
 	Auth(context.Context, *AuthReq, *AuthResp) error
 	LoginByJaccount(context.Context, *LJReq, *TokenResp) error
 	LoginByUP(context.Context, *UPReq, *TokenResp) error
@@ -145,6 +157,7 @@ type LoginHandler interface {
 
 func RegisterLoginHandler(s server.Server, hdlr LoginHandler, opts ...server.HandlerOption) error {
 	type login interface {
+		NewJwt(ctx context.Context, in *JwtReq, out *JwtResp) error
 		Auth(ctx context.Context, in *AuthReq, out *AuthResp) error
 		LoginByJaccount(ctx context.Context, in *LJReq, out *TokenResp) error
 		LoginByUP(ctx context.Context, in *UPReq, out *TokenResp) error
@@ -162,6 +175,10 @@ func RegisterLoginHandler(s server.Server, hdlr LoginHandler, opts ...server.Han
 
 type loginHandler struct {
 	LoginHandler
+}
+
+func (h *loginHandler) NewJwt(ctx context.Context, in *JwtReq, out *JwtResp) error {
+	return h.LoginHandler.NewJwt(ctx, in, out)
 }
 
 func (h *loginHandler) Auth(ctx context.Context, in *AuthReq, out *AuthResp) error {

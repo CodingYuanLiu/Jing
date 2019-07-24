@@ -1,8 +1,0 @@
-{
-    "navigationBarTitleText": "回答",
-    "usingComponents": {
-        "i-modal": "../../dist/modal/index",
-        "i-action-sheet": "../../dist/action-sheet/index",
-        "i-toast": "../../dist/toast/index"
-    }
-}

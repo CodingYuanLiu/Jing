@@ -13,7 +13,7 @@ import (
 
 func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp *activity.DltResp) error {
 	var result  map[string] interface{}
-	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
+	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
 	if err == mgo.ErrNotFound{
 		log.Println("Can not find the removed activity")
 		resp.Status = 404
@@ -24,10 +24,14 @@ func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp 
 	imagesLen := len(mapBasicInfo["images"].([]interface{}))
 	for i:=0;i<imagesLen;i++{
 		name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
-		dao.DeleteImgWithName(name)
+		err = dao.DeleteImgWithName(name)
+		if err != nil{
+			log.Printf("Catch delete error from dao,cannot delete pictures for act %d, pic %d\n",req.ActId,i)
+			continue
+		}
 		log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)
 	}
-	err = actSrv.Collection.Remove(bson.M{"actid": req.ActId})
+	err = dao.Collection.Remove(bson.M{"actid": req.ActId})
 
 	if err == mgo.ErrNotFound{
 		log.Println(err)

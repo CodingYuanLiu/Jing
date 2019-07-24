@@ -3,7 +3,7 @@ package login
 import (
 	"context"
 	"github.com/micro/go-micro/client"
-	"github.com/micro/go-plugins/client/grpc"
+	"github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	loginProto "jing/app/login/proto/login"
 	"log"
@@ -21,6 +21,16 @@ func init() {
 	)
 
 	Client = loginProto.NewLoginService("auth-service", client.DefaultClient)
+}
+
+func CallNewJwt(userId int) string {
+	resp, err := Client.NewJwt(context.TODO(), &loginProto.JwtReq{
+		UserId: int32(userId),
+	})
+	if err != nil {
+		return ""
+	}
+	return resp.JwtToken
 }
 
 func CallAuth(jwt string) (*loginProto.AuthResp, error) {

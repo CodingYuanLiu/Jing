@@ -11,15 +11,19 @@ import (
 var db *gorm.DB
 
 type User struct {
-	ID int 				`gorm:"primary_key;auto_increment"`
-	Username string
-	Password string
-	Nickname string
-	Phone string
-	Signature string
-	OpenId string
-	Jaccount string
-	AvatarKey string
+	ID 			int 				`gorm:"primary_key;auto_increment"`
+	Gender 		int
+	Birthday 	string
+	Major	 	string
+	Dormitory 	string
+	Username 	string
+	Password 	string
+	Nickname 	string
+	Phone 		string
+	Signature 	string
+	OpenId 		string
+	Jaccount 	string
+	AvatarKey 	string
 }
 
 type Join struct {
@@ -66,6 +70,16 @@ func GetAllActId() []int {
 	return acts
 }
 
+func GetAllUserId() []int {
+	var ids []int
+	var users []User
+	db.Find(&users)
+	for _, user := range users{
+		ids	= append(ids, user.ID)
+	}
+	return ids
+}
+
 func GetManagingActivity(userId int) (acts []int) {
 	var joins []Join
 	db.Where("user_id = ? and is_admin = ?", userId, true).Find(&joins)
@@ -74,6 +88,25 @@ func GetManagingActivity(userId int) (acts []int) {
 	}
 	return
 }
+
+func GetAllUserActivity(userId int) (acts []int) {
+	var joins []Join
+	db.Where("user_id = ?", userId, true).Find(&joins)
+	for _, v := range joins {
+		acts = append(acts, v.ActID)
+	}
+	return
+}
+
+func GetAllUserActivityInt32(userId int) (acts []int32) {
+	var joins []Join
+	db.Where("user_id = ?", userId).Find(&joins)
+	for _, v := range joins {
+		acts = append(acts, int32(v.ActID))
+	}
+	return
+}
+
 
 func DeleteActivity(actId int) error {
 	db.Where("act_id = ?", actId).Delete(Join{})
@@ -341,6 +374,9 @@ func init()  {
 	}
 	if !db.HasTable(&CandidateTags{}){
 		db.CreateTable(&CandidateTags{})
+	}
+	if !db.HasTable(&Takeoutshop{}) {
+		db.CreateTable(&Takeoutshop{})
 	}
 	return
 }

@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/micro/go-micro/client"
-	"github.com/micro/go-plugins/client/grpc"
+	"gopkg.in/mgo.v2/bson"
+
+	"github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/dao"
@@ -19,6 +21,7 @@ var (
 )
 
 func init()  {
+
 	os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
@@ -45,11 +48,11 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	qryReq := activityProto.QryReq{
 		ActId: int32(actId),
 	}
-	resp, _ := Client.Query(context.TODO(), &qryReq)
+	resp, err := Client.Query(context.TODO(), &qryReq)
 	if resp.Status != 200 {
 		return nil, errors.New(fmt.Sprintf("error, status %d", resp.Status))
 	}
-	return resp, nil
+	return resp, err
 }
 
 func DeleteActivity(userId int, actId int) error {
@@ -82,10 +85,12 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 			OrderTime: 	jsonForm["order_time"].(string),
 		}
 	} else if actType == "taxi" {
+		origin, _ := bson.Marshal(jsonForm["origin"])
+		dest, _ := bson.Marshal(jsonForm["destination"])
 		mdfReq.TaxiInfo = &activityProto.TaxiInfo{
 			DepartTime: 	jsonForm["depart_time"].(string),
-			Origin: 		jsonForm["origin"].(string),
-			Destination: 	jsonForm["destination"].(string),
+			Origin: 		origin,
+			Destination: 	dest,
 		}
 	} else if actType == "order" {
 		mdfReq.OrderInfo = &activityProto.OrderInfo{
@@ -134,10 +139,12 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 			OrderTime: 	jsonForm["order_time"].(string),
 		}
 	} else if actType == "taxi" {
+		origin, _ := bson.Marshal(jsonForm["origin"])
+		dest, _ := bson.Marshal(jsonForm["destination"])
 		pubReq.TaxiInfo = &activityProto.TaxiInfo{
 			DepartTime: 	jsonForm["depart_time"].(string),
-			Origin: 		jsonForm["origin"].(string),
-			Destination: 	jsonForm["destination"].(string),
+			Origin: 		origin,
+			Destination: 	dest,
 		}
 	} else if actType == "order" {
 		pubReq.OrderInfo = &activityProto.OrderInfo{
@@ -176,4 +183,21 @@ func AddTags(tags []string, userId int32) int32{
 		UserId:userId,
 	})
 	return resp.Num
+}
+
+func GetRecommendation(userId int32) []int{
+	resp,err := Client.Recommendation(context.TODO(),&activityProto.RecommendReq{
+		UserId:userId,
+	})
+	acts := make([]int,0)
+
+	if err != nil{
+		log.Println(err)
+		return acts
+	}
+
+	for _,int32Act := range resp.ActId{
+		acts = append(acts,int(int32Act))
+	}
+	return acts
 }

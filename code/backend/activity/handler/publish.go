@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"jing/app/activity/model"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
 	"log"
@@ -14,7 +13,7 @@ import (
 
 func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
 	//fmt.Println(req)
-	id := insert(req, actSrv.Collection, actSrv.IdCollection)
+	id := insert(req, dao.Collection, dao.IdCollection)
 	if id == -1{
 		resp.Status = 500
 		resp.Description = "Undefined Type"
@@ -29,7 +28,7 @@ func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp
 
 func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Collection) int32 {
 	var id int32
-	basicInfo := model.BasicInfo{
+	basicInfo := dao.BasicInfo{
 		//Actid:id,
 		Type:req.Info.Type,
 		CreateTime:req.Info.CreateTime,
@@ -61,50 +60,53 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 
 	switch basicInfo.Type{
 	case "taxi":
+		var ori, dest map[string]interface{}
+		_ = bson.Unmarshal(req.TaxiInfo.Origin, &ori)
+		_ = bson.Unmarshal(req.TaxiInfo.Destination, &dest)
 		id = id+1
-		newAct := model.TaxiAct{
+		newAct := dao.TaxiAct{
 			ActId:     id,
 			BasicInfo: basicInfo,
-			TaxiInfo: model.TaxiInfo{
+			TaxiInfo: dao.TaxiInfo{
 				DepartTime:req.TaxiInfo.DepartTime,
-				Origin:req.TaxiInfo.Origin,
-				Destination:req.TaxiInfo.Destination,
+				Origin: ori,
+				Destination: dest,
 			},
-		Comments: []model.Comment{},
+		Comments: []dao.Comment{},
 		}
 		err = collection.Insert(newAct)
 	case "takeout":
 		id = id+1
-		newAct := model.TakeoutAct{
+		newAct := dao.TakeoutAct{
 			ActId:      id,
 			BasicInfo: basicInfo,
-			TakeoutInfo:model.TakeoutInfo{
+			TakeoutInfo:dao.TakeoutInfo{
 				Store:req.TakeoutInfo.Store,
 				OrderTime:req.TakeoutInfo.OrderTime,
 			},
-		Comments: []model.Comment{},
+		Comments: []dao.Comment{},
 		}
 		err = collection.Insert(newAct)
 	case "order":
 		id = id+1
-		newAct := model.OrderAct{
+		newAct := dao.OrderAct{
 			ActId: id,
 			BasicInfo:basicInfo,
-			OrderInfo:model.OrderInfo{
+			OrderInfo:dao.OrderInfo{
 				Store:req.OrderInfo.Store,
 			},
-		Comments: []model.Comment{},
+		Comments: []dao.Comment{},
 		}
 		err = collection.Insert(newAct)
 	case "other":
 		id = id+1
-		newAct := model.OtherAct{
+		newAct := dao.OtherAct{
 			ActId: id,
 			BasicInfo:basicInfo,
-			OtherInfo:model.OtherInfo{
+			OtherInfo:dao.OtherInfo{
 				ActivityTime:req.OtherInfo.ActivityTime,
 			},
-		Comments: []model.Comment{},
+		Comments: []dao.Comment{},
 		}
 		err = collection.Insert(newAct)
 	default:

@@ -23,40 +23,24 @@ type WXCode struct {
 }
 
 func (lc *Controller) GetUserStatus (c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string {
-			"message" : "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	rsp, _:= loginClient.CallAuth(jwt)
-	if rsp.Status == -2 || rsp.Status == -3{
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message" : "Invaild token",
-		})
-	} else if rsp.Status == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string {
-			"message" : "Account expired",
-		})
-	} else if rsp.Status == 0{
-		resp, _ := user.CallQueryUser(rsp.UserId)
-		c.JSON(http.StatusOK, map[string]interface {}{
-			"message" : "You are online",
-			"id" : rsp.UserId,
-			"nickname": resp.Nickname,
-			"signature": resp.Signature,
-			"phone": resp.Phone,
-			"avatar_url": resp.AvatarUrl,
-		})
-	} else {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
-		})
-	}
+	userId := c.GetInt("userId")
+	resp, _ := user.CallQueryUser(int32(userId))
+	c.JSON(http.StatusOK, map[string]interface {}{
+		"message" : "You are online",
+		"username": resp.Username,
+		"jaccount": resp.Jaccount,
+		"jwt_token": loginClient.CallNewJwt(userId),
+		"password": resp.Password,
+		"id": userId,
+		"nickname": resp.Nickname,
+		"signature": resp.Signature,
+		"phone": resp.Phone,
+		"avatar_url": resp.AvatarUrl,
+		"birthday": resp.Birthday,
+		"major": resp.Major,
+		"gender": resp.Gender,
+		"dormitory": resp.Dormitory,
+	})
 }
 
 func (lc *Controller) JaccountLogin (c *gin.Context) {

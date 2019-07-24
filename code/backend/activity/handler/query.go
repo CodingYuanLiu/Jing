@@ -6,13 +6,14 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
+	"jing/app/dao"
 	"log"
 )
 
 func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error {
 	//fmt.Println(req)
 	var result map[string] interface{}
-	err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
+	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		resp.Status = 404
@@ -57,10 +58,12 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	switch basicInfo.Type {
 	case "taxi":
 		mapTaxiInfo := result["taxiinfo"].(map[string] interface{})
+		origin, _ := bson.Marshal(mapTaxiInfo["origin"])
+		dest, _ := bson.Marshal(mapTaxiInfo["destination"])
 		taxiInfo := activity.TaxiInfo{
 			DepartTime:  mapTaxiInfo["departtime"].(string),
-			Origin:      mapTaxiInfo["origin"].(string),
-			Destination: mapTaxiInfo["destination"].(string),
+			Origin:      origin,
+			Destination: dest,
 		}
 		resp.TaxiInfo = &taxiInfo
 		resp.Status = 200

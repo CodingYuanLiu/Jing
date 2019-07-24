@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	b64 "encoding/base64"
-	"github.com/qiniu/api.v7/auth/qbox"
-	"github.com/qiniu/api.v7/storage"
+	"jing/app/lib/auth/qbox"
+	"jing/app/lib/storage"
 	"log"
 )
 
@@ -129,25 +129,26 @@ func getUpToken() string{
 	return upToken
 }
 
-func DeleteImgWithName(name string){
+func DeleteImgWithName(name string) error {
 	accessKey := "XjJVXANFlU4XnSFgKmUdJWxx2GEzM_ftCVOvsorP"
 	secretKey := "OrpJx83zmG6PPgV1e0D-j7wkhuykOxHB5-GdcENT"
 	/* Auto generated key by qiniuyun, which is available in only 30 days.*/
 	bucket := "jing"
 	mac := qbox.NewMac(accessKey, secretKey)
-	cfg := storage.Config{
-		// 是否使用https域名进行资源管理
-		UseHTTPS: false,
-	}
-	// 指定空间所在的区域，如果不指定将自动探测
-	// 如果没有特殊需求，默认不需要指定
-	//cfg.Zone=&storage.ZoneHuabei
+	cfg := storage.Config{}
+	// 空间对应的机房
+	cfg.Zone = &storage.ZoneHuadong
+	// 是否使用https域名
+	cfg.UseHTTPS = false
+	// 上传是否使用CDN上传加速
+	cfg.UseCdnDomains = false
 	bucketManager := storage.NewBucketManager(mac, &cfg)
 	err := bucketManager.Delete(bucket,name)
 	if err != nil{
 		log.Printf("Dao error: delete image %s from qiniu error.\n",name)
 		log.Println(err)
-		return
+		return err
 	}
 	log.Printf("Delete image %s from qiniu successfully\n",name)
+	return nil
 }

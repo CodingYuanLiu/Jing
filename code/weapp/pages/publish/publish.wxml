@@ -1,0 +1,22 @@
+<!--logs.wxml-->
+<view hidden="{{loged}}">请登录</view>
+<scroll-view hidden="{{!loged}}"  scroll-y="true" class="container notify" style="background: white" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+    <view style="margin-top: 700rpx; float: bottom; background: white">
+        <block wx:for="{{category}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <view class="flex-wrp" style="display: block; width: 100%; float: top ;background: white">
+                <block wx:for="{{item.r}}" wx:for-index="idx" wx:for-item="item_r" data-idx="{{idx}}">
+                    <view bindtap="handleClick" data-idx="{{item_r.idx}}" class="feed-item" style="width:17%; float: left;  background: white">
+                        <view class="feed-source" style="border-radius: 13px">
+                            <a class=""  style="border-radius: 3px; background: white">
+                                <view class="avatar">
+                                    <image src="{{item_r.icon}}"></image>
+                                </view>
+                                <text>{{item_r.name}}</text>
+                            </a>
+                        </view>
+                    </view>
+                </block>
+            </view>
+        </block>
+    </view>
+</scroll-view>

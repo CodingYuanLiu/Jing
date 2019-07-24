@@ -130,6 +130,8 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string] string{
 			"message" : "Param id is not correct",
 		})
+		c.Abort()
+		return
 	}
 	rsp, err := userClient.CallQueryUser(int32(intId))
 	if err != nil {
@@ -139,12 +141,14 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 	} else if rsp.Id > 0 {
 		c.JSON(http.StatusOK, map[string]interface {}{
 			"id" : rsp.Id,
-			"username" : rsp.Username,
-			"jaccount" : rsp.Jaccount,
 			"phone" : rsp.Phone,
 			"nickname" : rsp.Nickname,
 			"signature" : rsp.Signature,
 			"avatar_url": rsp.AvatarUrl,
+			"birthday": rsp.Birthday,
+			"major": rsp.Major,
+			"gender": rsp.Gender,
+			"dormitory": rsp.Dormitory,
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {

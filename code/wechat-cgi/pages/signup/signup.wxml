@@ -1,9 +1,0 @@
-<!--pages/signup/signup.wxml-->
-<text>pages/signup/signup.wxml</text>
-<i-panel title="注册">
-    <i-input value="{{ username }}" bind:change="handleUsernameInput" type="text" maxlength="20" title="用户名" placeholder="最长20个字符" />
-    <i-input value="{{ pwd }}" bind:change="handlePwdInput" type="password" maxlength="20" title="密码" />
-    <i-input value="{{ nickname }}" bind:change="handleNickInput" type="text" maxlength="20" title="昵称" placeholder="最长20个字符"/>
-    <i-input value="{{ phone }}" bind:change="handlePhoneInput" type="number" maxlength="20" title="手机"/>
-</i-panel>
-<i-button type="primary" bind:click="handleClick">提交</i-button>

@@ -1,0 +1,7 @@
+{
+    "navigationBarTitleText": "我的",
+    "usingComponents": {
+        "i-button": "../../dist/button/index",
+        "i-toast": "../../dist/toast/index"
+    }
+}

@@ -10,9 +10,9 @@ import (
 func main(){
 	service :=micro.NewService()
 	service.Init()
-	c1 := activity.NewActivitySrvService("go.micro.handler.act",service.Client())
+	c1 := activity.NewActivitySrvService("act",service.Client())
 	rsp,err:= c1.Query(context.TODO(), &activity.QryReq{
-		ActId:1,
+		ActId:3,
 	})
 	if err != nil {
 		fmt.Println(err)

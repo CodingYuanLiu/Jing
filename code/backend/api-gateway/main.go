@@ -7,6 +7,7 @@ import (
 	"jing/app/api-gateway/controller/activity"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
+	functionController "jing/app/api-gateway/controller/function"
 	"jing/app/api-gateway/filter"
 	"log"
 )
@@ -39,9 +40,10 @@ func setupRouter() *gin.Engine {
 	// activity service
 	ac := new(activity.Controller)
 
+	fc := new(functionController.Controller)
+
 	publicRouter := router.Group("/api/public")
 	{
-		publicRouter.GET("/status", lc.GetUserStatus)
 		// TODO: Confirm register's security
 		publicRouter.POST("/register", uc.Register)
 		publicRouter.POST("/login/jaccount", lc.JaccountLogin)
@@ -51,7 +53,8 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
 		publicRouter.GET("/act/query", ac.QueryActivity)
 		publicRouter.GET("/act/findall", ac.FindAllActivity)
-		//publicRouter.GET("/activity", )
+		publicRouter.GET("/act/findbytype",ac.FindActivityByType )
+		publicRouter.GET("/takeout/searchshop", fc.TakeoutSearchShop)
 	}
 	/*
 		adminRouter := router.Group("/api/admin")
@@ -62,7 +65,7 @@ func setupRouter() *gin.Engine {
 	*/
 	userRouter := router.Group("/api/user")
 	{
-		// TODO: Privilege & Request activity
+		userRouter.GET("/status", lc.GetUserStatus)
 		userRouter.GET("/act/myact", ac.MyAct)
 		userRouter.GET("/act/manageact", ac.ManageAct)
 		userRouter.POST("/act/publish", ac.PublishActivity)
@@ -75,8 +78,10 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/act/status", ac.Status)
 		userRouter.PUT("/info/update", uc.UpdateUser)
 		userRouter.POST("/avatar/upload", uc.UploadAvatar)
-		userRouter.GET("/act/gettag",ac.GetTags)
+		userRouter.POST("/act/gettag",ac.GetTags)
 		userRouter.POST("/act/addtag",ac.AddTags)
+		userRouter.POST("/act/addbehavior",ac.AddBehavior)
+		userRouter.GET("/act/recommendact",ac.RecommendActivity)
 	}
 
 	return router

@@ -12,7 +12,7 @@ func main(){
 	service.Init()
 	c1 := activity.NewActivitySrvService("act",service.Client())
 	rsp,err:= c1.Delete(context.TODO(), &activity.DltReq{
-		ActId:1,
+		ActId:3,
 	})
 	if err != nil {
 		fmt.Println(err)

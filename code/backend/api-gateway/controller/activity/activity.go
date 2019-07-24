@@ -2,13 +2,11 @@ package activity
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	activityProto "jing/app/activity/proto"
 	activityClient "jing/app/api-gateway/cli/activity"
-	"jing/app/api-gateway/cli/login"
-	srv "jing/app/api-gateway/service"
 	"jing/app/dao"
 	myjson "jing/app/json"
 	"log"
@@ -35,8 +33,11 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	}
 	if resp.BasicInfo.Type == "taxi" {
 		returnJson["depart_time"] = resp.TaxiInfo.DepartTime
-		returnJson["origin"] = resp.TaxiInfo.Origin
-		returnJson["destination"] = resp.TaxiInfo.Destination
+		var ori, dest map[string]interface{}
+		_ = bson.Unmarshal(resp.TaxiInfo.Origin, &ori)
+		_ = bson.Unmarshal(resp.TaxiInfo.Destination, &dest)
+		returnJson["origin"] = ori
+		returnJson["destination"] = dest
 	} else if resp.BasicInfo.Type == "takeout" {
 		returnJson["store"] = resp.TakeoutInfo.Store
 		returnJson["order_time"] = resp.TakeoutInfo.OrderTime
@@ -48,20 +49,17 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	returnJson["comments"] = []myjson.JSON{}
 	comments := resp.Comments
 	for _, v := range comments {
-		var title string
 		user, _ := dao.FindUserById(int(v.UserId))
-		if v.ReceiverId != -1 {
-			receiver, _ := dao.FindUserById(int(v.ReceiverId))
-			title = fmt.Sprintf("%s -> %s", user.Nickname, receiver.Nickname)
-		} else {
-			title = fmt.Sprintf("%s", user.Nickname)
-		}
 		comment := myjson.JSON{
 			"user_id": v.UserId,
 			"receiver_id": v.ReceiverId,
 			"content": v.Content,
 			"time": v.Time,
-			"title": title,
+			"user_nickname": user.Nickname,
+		}
+		if v.ReceiverId != -1 {
+			receiver, _ := dao.FindUserById(int(v.ReceiverId))
+			comment["receiver_nickname"] = receiver.Nickname
 		}
 		returnJson["comments"] = append(returnJson["comments"].([]myjson.JSON), comment)
 	}
@@ -194,15 +192,7 @@ func (activityController *Controller) ManageAct(c *gin.Context) {
 }
 
 func (activityController *Controller) PublishActivity(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
+	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -229,16 +219,8 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		log.Println(err)
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-	err = activityClient.PublishActivity(int(resp.UserId), jsonForm)
+
+	err = activityClient.PublishActivity(int(userId), jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
 			"error": err,
@@ -305,15 +287,7 @@ func (activityController *Controller) GetJoinApplication(c *gin.Context){
 }
 
 func (activityController *Controller) ModifyActivity(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
+	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -339,16 +313,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		log.Println(err)
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-	acts := dao.GetManagingActivity(int(resp.UserId))
+	acts := dao.GetManagingActivity(userId)
 	flag := false
 	for _, v := range acts {
 		if int(jsonForm["act_id"].(float64)) == v {
@@ -363,7 +328,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.ModifyActivity(int(resp.UserId), jsonForm)
+	err = activityClient.ModifyActivity(userId, jsonForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {
 			"error": err,
@@ -410,6 +375,9 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 
 func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	resp, err := activityClient.QueryActivity(actId)
+	if err != nil {
+		return
+	}
 	userId := dao.GetActivityAdmin(actId)
 	user, _ := dao.FindUserById(userId)
 	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature, resp)
@@ -430,24 +398,6 @@ func (activityController Controller) QueryActivity(c *gin.Context) {
 }
 
 func (activityController *Controller) GetTags(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -467,7 +417,6 @@ func (activityController *Controller) GetTags(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
 	tags := activityClient.GenerateTags(jsonForm["title"].(string),jsonForm["description"].(string))
 	c.JSON(http.StatusOK,map[string][]string{
 		"tags":tags,
@@ -475,24 +424,7 @@ func (activityController *Controller) GetTags(c *gin.Context) {
 }
 
 func (activityController *Controller) AddTags(c *gin.Context) {
-	auth := c.Request.Header.Get("Authorization")
-	verified, jwt := srv.VerifyAuthorization(auth)
-	if !verified {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Need Authorization field",
-		})
-		c.Abort()
-		return
-	}
-	resp, _ := login.CallAuth(jwt)
-	if resp.UserId == -1 {
-		c.JSON(http.StatusUnauthorized, map[string]string{
-			"message": "Invalid jwt",
-		})
-		c.Abort()
-		return
-	}
-
+	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -516,8 +448,103 @@ func (activityController *Controller) AddTags(c *gin.Context) {
 	for _,param := range jsonForm["tags"].([]interface{}){
 		tags = append(tags,param.(string))
 	}
-	num := activityClient.AddTags(tags,resp.UserId)
+	num := activityClient.AddTags(tags, int32(userId))
 	c.JSON(http.StatusOK,map[string]int32{
 		"num":num,
 	})
+}
+
+func (activityController *Controller) FindActivityByType(c *gin.Context){
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	actType := c.Query("type")
+	if actType == ""{
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Miss type param",
+		})
+		c.Abort()
+		return
+	}
+
+	var actJSONs []myjson.JSON
+
+	acts,err := dao.GetActsByType(actType)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+		c.Abort()
+		return
+	}
+	for _, v := range retActs {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
+
+func (activityController *Controller) AddBehavior(c *gin.Context){
+	userId := c.GetInt("userId")
+	jsonStr, err := ioutil.ReadAll(c.Request.Body)
+	jsonForm := myjson.JSON{}
+	_ = json.Unmarshal(jsonStr, &jsonForm)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Json parse error",
+		})
+		c.Abort()
+		return
+	}
+	if jsonForm["behavior"] == nil || jsonForm["type"] == nil{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message":"Miss some field",
+		})
+		c.Abort()
+		return
+	}
+	behavior := jsonForm["behavior"].(string)
+	type_ := jsonForm["type"].(string)
+	check := (behavior != "search" && behavior != "scanning" && behavior != "join" && behavior != "publish") ||
+		(type_ != "taxi" && type_ != "takeout" && type_ != "other" && type_ != "order")
+	if check{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message":"Wrong behavior or wrong type",
+		})
+		c.Abort()
+		return
+	}
+	err = dao.AddBehavior(behavior,userId,type_)
+	if err!=nil{
+		c.JSON(http.StatusInternalServerError,map[string] string{
+			"message":error.Error(err),
+		})
+		c.Abort()
+		return
+	} 	else{
+		c.JSON(http.StatusOK,map[string] string{
+			"message":"Add behavior succeed",
+		})
+	}
+}
+
+func (activityController *Controller) RecommendActivity(c *gin.Context){
+	userId := c.GetInt("userId")
+	var actJSONs []myjson.JSON
+	recommendActs := activityClient.GetRecommendation(int32(userId))
+
+	for _, v := range recommendActs {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
 }
