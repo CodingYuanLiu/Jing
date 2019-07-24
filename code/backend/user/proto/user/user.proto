@@ -36,6 +36,7 @@ message FindReq {
 }
 
 message FindResp {
+    int32 gender = 1;
     int32 id = 3;
     string password = 2;
     string username = 4;
@@ -44,4 +45,7 @@ message FindResp {
     string jaccount = 7;
     string signature = 8;
     string avatar_url = 9;
+    string birthday = 10;
+    string dormitory = 11;
+    string major = 12;
 }

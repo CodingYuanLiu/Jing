@@ -36,6 +36,10 @@ func (lc *Controller) GetUserStatus (c *gin.Context) {
 		"signature": resp.Signature,
 		"phone": resp.Phone,
 		"avatar_url": resp.AvatarUrl,
+		"birthday": resp.Birthday,
+		"major": resp.Major,
+		"gender": resp.Gender,
+		"dormitory": resp.Dormitory,
 	})
 }
 

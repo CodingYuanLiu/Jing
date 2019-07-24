@@ -11,15 +11,19 @@ import (
 var db *gorm.DB
 
 type User struct {
-	ID int 				`gorm:"primary_key;auto_increment"`
-	Username string
-	Password string
-	Nickname string
-	Phone string
-	Signature string
-	OpenId string
-	Jaccount string
-	AvatarKey string
+	ID 			int 				`gorm:"primary_key;auto_increment"`
+	Gender 		int
+	BirthDay 	string
+	Major	 	string
+	Dormitory 	string
+	Username 	string
+	Password 	string
+	Nickname 	string
+	Phone 		string
+	Signature 	string
+	OpenId 		string
+	Jaccount 	string
+	AvatarKey 	string
 }
 
 type Join struct {
