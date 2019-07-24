@@ -5,6 +5,7 @@ import(
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
+	"jing/app/dao"
 	"log"
 	"testing"
 )
@@ -29,13 +30,11 @@ func Before() ActivitySrv{
 		log.Fatal(err)
 	}
 	actSrv := ActivitySrv{
-		IdCollection:idCollection,
-		Collection:collection,
 	}
 	fetchId := bson.M{}
 	err = idCollection.Find(nil).One(&fetchId)
 	if err == mgo.ErrNotFound{
-		id := new(Id)
+		id := new(dao.Id)
 		id.AutoId = int32(0)
 		id.Lock = false
 		insertErr := idCollection.Insert(id)
