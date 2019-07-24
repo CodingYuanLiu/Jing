@@ -30,6 +30,7 @@ func (lc *Controller) GetUserStatus (c *gin.Context) {
 		"username": resp.Username,
 		"jaccount": resp.Jaccount,
 		"jwt_token": loginClient.CallNewJwt(userId),
+		"password": resp.Password,
 		"id": userId,
 		"nickname": resp.Nickname,
 		"signature": resp.Signature,

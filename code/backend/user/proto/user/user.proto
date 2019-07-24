@@ -37,6 +37,7 @@ message FindReq {
 
 message FindResp {
     int32 id = 3;
+    string password = 2;
     string username = 4;
     string phone = 5;
     string nickname = 6;
