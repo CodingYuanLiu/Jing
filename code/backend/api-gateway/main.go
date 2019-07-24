@@ -7,6 +7,7 @@ import (
 	"jing/app/api-gateway/controller/activity"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
+	functionController "jing/app/api-gateway/controller/function"
 	"jing/app/api-gateway/filter"
 	"log"
 )
@@ -39,6 +40,8 @@ func setupRouter() *gin.Engine {
 	// activity service
 	ac := new(activity.Controller)
 
+	fc := new(functionController.Controller)
+
 	publicRouter := router.Group("/api/public")
 	{
 		// TODO: Confirm register's security
@@ -51,6 +54,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/act/query", ac.QueryActivity)
 		publicRouter.GET("/act/findall", ac.FindAllActivity)
 		publicRouter.GET("/act/findbytype",ac.FindActivityByType )
+		publicRouter.GET("/takeout/searchshop", fc.TakeoutSearchShop)
 	}
 	/*
 		adminRouter := router.Group("/api/admin")

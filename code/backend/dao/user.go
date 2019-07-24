@@ -356,5 +356,8 @@ func init()  {
 	if !db.HasTable(&CandidateTags{}){
 		db.CreateTable(&CandidateTags{})
 	}
+	if !db.HasTable(&Takeoutshop{}) {
+		db.CreateTable(&Takeoutshop{})
+	}
 	return
 }
