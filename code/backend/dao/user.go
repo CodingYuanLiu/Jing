@@ -85,6 +85,25 @@ func GetManagingActivity(userId int) (acts []int) {
 	return
 }
 
+func GetAllUserActivity(userId int) (acts []int) {
+	var joins []Join
+	db.Where("user_id = ?", userId, true).Find(&joins)
+	for _, v := range joins {
+		acts = append(acts, v.ActID)
+	}
+	return
+}
+
+func GetAllUserActivityInt32(userId int) (acts []int32) {
+	var joins []Join
+	db.Where("user_id = ?", userId).Find(&joins)
+	for _, v := range joins {
+		acts = append(acts, int32(v.ActID))
+	}
+	return
+}
+
+
 func DeleteActivity(actId int) error {
 	db.Where("act_id = ?", actId).Delete(Join{})
 	return nil

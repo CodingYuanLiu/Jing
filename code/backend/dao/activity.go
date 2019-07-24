@@ -23,7 +23,7 @@ type UserBehavior struct{
 	Takeout [5]int32
 	Order [5]int32
 	Other [5]int32
-	Portrait [4]float32
+	Portrait [4]float64
 }
 
 type TotalBehavior struct{
@@ -169,7 +169,7 @@ func AddBehavior(behavior string, userId int,type_ string) error{
 			Takeout: [5]int32{0,0,0,0,0},
 			Order: [5]int32{0,0,0,0,0},
 			Other: [5]int32{0,0,0,0,0},
-			Portrait:[4]float32{0,0,0,0},
+			Portrait:[4]float64{0,0,0,0},
 		}
 		err2 := BehaviorCollection.Insert(userBehavior)
 		if err2 !=nil {
@@ -295,55 +295,55 @@ func AddBehavior(behavior string, userId int,type_ string) error{
 	return nil
 }
 
-func CalculateWeight(userBehavior UserBehavior,totalBehavior TotalBehavior) (portrait [4]float32){
+func CalculateWeight(userBehavior UserBehavior,totalBehavior TotalBehavior) (portrait [4]float64){
 	/* The weight of the behavior ("search","scanning","join","publish") is (3,2,5,8) respectively */
-	var tf float32
-	var idf float32
-	var tfIdf float32
+	var tf float64
+	var idf float64
+	var tfIdf float64
 
 	userTotal := userBehavior.Taxi[4] + userBehavior.Takeout[4] + userBehavior.Order[4] + userBehavior.Other[4]
 	allTotal := totalBehavior.Taxi + totalBehavior.Takeout+ totalBehavior.Order + totalBehavior.Other
 
 	/* Calculate taxi portrait*/
 	if totalBehavior.Taxi != 0 {
-		tf = float32(userTotal) / float32(totalBehavior.Taxi)
-		idf = float32(allTotal)/float32(totalBehavior.Taxi)
+		tf = float64(userTotal) / float64(totalBehavior.Taxi)
+		idf = float64(allTotal)/float64(totalBehavior.Taxi)
 		tfIdf = tf * idf
-		portrait[0] = tfIdf * (float32(userBehavior.Taxi[0]) * 3 + float32(userBehavior.Taxi[1]) * 2 +
-		float32(userBehavior.Taxi[2]) * 5 + float32(userBehavior.Taxi[3]) * 8)
+		portrait[0] = tfIdf * (float64(userBehavior.Taxi[0]) * 3 + float64(userBehavior.Taxi[1]) * 2 +
+			float64(userBehavior.Taxi[2]) * 5 + float64(userBehavior.Taxi[3]) * 8)
 	} else{
 		portrait[0] = 0
 	}
 
 	/* Calculate takeout portrait*/
 	if totalBehavior.Takeout != 0{
-		tf = float32(userTotal) / float32(totalBehavior.Takeout)
-		idf = float32(allTotal)/float32(totalBehavior.Takeout)
+		tf = float64(userTotal) / float64(totalBehavior.Takeout)
+		idf = float64(allTotal)/float64(totalBehavior.Takeout)
 		tfIdf = tf * idf
-		portrait[1] = tfIdf * (float32(userBehavior.Takeout[0]) * 3 + float32(userBehavior.Takeout[1]) * 2 +
-		float32(userBehavior.Takeout[2]) * 5 + float32(userBehavior.Takeout[3]) * 8)
+		portrait[1] = tfIdf * (float64(userBehavior.Takeout[0]) * 3 + float64(userBehavior.Takeout[1]) * 2 +
+			float64(userBehavior.Takeout[2]) * 5 + float64(userBehavior.Takeout[3]) * 8)
 	} else{
 		portrait[1] = 0
 	}
 
 	/* Calculate order portrait*/
 	if totalBehavior.Order != 0 {
-		tf = float32(userTotal) / float32(totalBehavior.Order)
-		idf = float32(allTotal)/float32(totalBehavior.Order)
+		tf = float64(userTotal) / float64(totalBehavior.Order)
+		idf = float64(allTotal)/float64(totalBehavior.Order)
 		tfIdf = tf * idf
-		portrait[2] = tfIdf * (float32(userBehavior.Order[0]) * 3 + float32(userBehavior.Order[1]) * 2 +
-			float32(userBehavior.Order[2]) * 5 + float32(userBehavior.Order[3]) * 8)
+		portrait[2] = tfIdf * (float64(userBehavior.Order[0]) * 3 + float64(userBehavior.Order[1]) * 2 +
+			float64(userBehavior.Order[2]) * 5 + float64(userBehavior.Order[3]) * 8)
 	}else{
 		portrait[2] = 0
 	}
 
 	/* Calculate other portrait*/
 	if totalBehavior.Other != 0{
-		tf = float32(userTotal) / float32(totalBehavior.Takeout)
-		idf = float32(allTotal)/float32(totalBehavior.Takeout)
+		tf = float64(userTotal) / float64(totalBehavior.Takeout)
+		idf = float64(allTotal)/float64(totalBehavior.Takeout)
 		tfIdf = tf * idf
-		portrait[3] = tfIdf * (float32(userBehavior.Other[0]) * 3 + float32(userBehavior.Other[1]) * 2 +
-			float32(userBehavior.Other[2]) * 5 + float32(userBehavior.Other[3]) * 8)
+		portrait[3] = tfIdf * (float64(userBehavior.Other[0]) * 3 + float64(userBehavior.Other[1]) * 2 +
+			float64(userBehavior.Other[2]) * 5 + float64(userBehavior.Other[3]) * 8)
 	} else{
 		portrait[3] = 0
 	}
@@ -363,7 +363,7 @@ func InitBehaviorCollection(){
 				Takeout: [5]int32{0,0,0,0,0},
 				Order: [5]int32{0,0,0,0,0},
 				Other: [5]int32{0,0,0,0,0},
-				Portrait:[4]float32{0,0,0,0},
+				Portrait:[4]float64{0,0,0,0},
 			})
 			if err2 != nil{
 				log.Println("Init user behavior collection error")
