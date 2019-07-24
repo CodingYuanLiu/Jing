@@ -76,10 +76,15 @@ func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.
 		domain := "puo7ltwok.bkt.clouddn.com"
 		out.Id = int32(user2.ID)
 		out.Username = user2.Username
+		out.Password = user2.Password
 		out.Jaccount = user2.Jaccount
 		out.Phone = user2.Phone
 		out.Nickname = user2.Nickname
 		out.Signature = user2.Signature
+		out.Birthday = user2.Birthday
+		out.Dormitory = user2.Dormitory
+		out.Gender = int32(user2.Gender)
+		out.Major = user2.Major
 		out.AvatarUrl = "http://" + domain + "/" + user2.AvatarKey
 		return nil
 	}

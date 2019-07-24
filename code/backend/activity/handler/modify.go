@@ -34,10 +34,13 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	}
 	switch fetchType{
 	case "taxi":
+		var ori, dest map[string]interface{}
+		_ = bson.Unmarshal(req.TaxiInfo.Origin, &ori)
+		_ = bson.Unmarshal(req.TaxiInfo.Destination, &dest)
 		taxiInfo := dao.TaxiInfo{
-			DepartTime:req.TaxiInfo.DepartTime,
-			Origin:req.TaxiInfo.Origin,
-			Destination:req.TaxiInfo.Destination,
+			DepartTime: req.TaxiInfo.DepartTime,
+			Origin: ori,
+			Destination: dest,
 		}
 		err = dao.Collection.Update(
 		bson.M{"actid":req.ActId},

@@ -3,6 +3,7 @@ package activity
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
 	activityProto "jing/app/activity/proto"
 	activityClient "jing/app/api-gateway/cli/activity"
@@ -32,8 +33,11 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	}
 	if resp.BasicInfo.Type == "taxi" {
 		returnJson["depart_time"] = resp.TaxiInfo.DepartTime
-		returnJson["origin"] = resp.TaxiInfo.Origin
-		returnJson["destination"] = resp.TaxiInfo.Destination
+		var ori, dest map[string]interface{}
+		_ = bson.Unmarshal(resp.TaxiInfo.Origin, &ori)
+		_ = bson.Unmarshal(resp.TaxiInfo.Destination, &dest)
+		returnJson["origin"] = ori
+		returnJson["destination"] = dest
 	} else if resp.BasicInfo.Type == "takeout" {
 		returnJson["store"] = resp.TakeoutInfo.Store
 		returnJson["order_time"] = resp.TakeoutInfo.OrderTime
@@ -371,6 +375,9 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 
 func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	resp, err := activityClient.QueryActivity(actId)
+	if err != nil {
+		return
+	}
 	userId := dao.GetActivityAdmin(actId)
 	user, _ := dao.FindUserById(userId)
 	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature, resp)

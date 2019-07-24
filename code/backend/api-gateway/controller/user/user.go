@@ -145,6 +145,10 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 			"nickname" : rsp.Nickname,
 			"signature" : rsp.Signature,
 			"avatar_url": rsp.AvatarUrl,
+			"birthday": rsp.Birthday,
+			"major": rsp.Major,
+			"gender": rsp.Gender,
+			"dormitory": rsp.Dormitory,
 		})
 	} else {
 		c.JSON(http.StatusBadRequest, map[string]interface{} {

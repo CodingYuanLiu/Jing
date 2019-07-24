@@ -81,8 +81,8 @@ message QryResp{
 
 message TaxiInfo{
     string departTime = 1;
-    string origin = 2;
-    string destination = 3;
+    bytes origin = 2;
+    bytes destination = 3;
 }
 
 message TakeoutInfo{
