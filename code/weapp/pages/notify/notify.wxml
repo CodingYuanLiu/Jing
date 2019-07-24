@@ -15,7 +15,7 @@
             <view class="notify-item flex-wrp" bindtap="handleToAccept" data-aid="{{item.act_id}}" data-uid="{{item.applicant_id}}" data-nick="{{item.app_nick}}">
                 <view class="avatar flex-item">
                     <!-- <image src="{{item.avatar}}"></image> -->
-                    <image src="../../images/icons/timg.jpg"></image>
+                    <image src="{{item.avatar}}"></image>
                 </view>
                 <view class="notify-content flex-item">
                     <text class="notify-source">{{item.app_nick}} 申请加入 </text>

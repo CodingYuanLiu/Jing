@@ -204,6 +204,7 @@ Page({
                         success: function(res) {
                             console.log(res);
                             applicant[i].app_nick = res.data.nickname;
+                            applicant[i].avatar = res.data.avatar_url;
                             that.setData({
                                 applicant: applicant
                             });
