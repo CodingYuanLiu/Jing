@@ -36,8 +36,8 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		Title:req.Info.Title,
 		Description:req.Info.Description,
 		Tag:req.Info.Tag,
-		//Store the images into the mongoDB. Discard it now.
-		//Images:req.Info.Images,
+		MaxMember:	req.Info.MaxMember,
+		Status:int32(0),
 	}
 	fetchId := bson.M{}
 	err := idCollection.Find(nil).One(&fetchId)

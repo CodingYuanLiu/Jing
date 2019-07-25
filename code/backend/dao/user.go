@@ -154,7 +154,6 @@ func PublishActivity(userId int, actId int) error {
 	return nil
 }
 
-
 func JoinActivity(userId int, actId int) error {
 	join := Join{}
 	join.UserID = userId
@@ -166,7 +165,7 @@ func JoinActivity(userId int, actId int) error {
 
 func AcceptJoinActivity(userId int, actId int) error{
 	join := Join{}
-	db.Where("user_id = ? and act_id=?",userId,actId).First(&join)
+	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
 	if join.ID == 0{
 		err := errors.New("application not found")
 		return err

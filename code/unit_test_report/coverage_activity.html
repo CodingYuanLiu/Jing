@@ -54,17 +54,19 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">jing/app/activity/handler/activity.go (100.0%)</option>
+				<option value="file0">jing/app/activity/handler/comment.go (75.0%)</option>
 				
-				<option value="file1">jing/app/activity/handler/comment.go (76.9%)</option>
+				<option value="file1">jing/app/activity/handler/delete.go (83.3%)</option>
 				
-				<option value="file2">jing/app/activity/handler/delete.go (90.9%)</option>
+				<option value="file2">jing/app/activity/handler/modify.go (90.5%)</option>
 				
-				<option value="file3">jing/app/activity/handler/modify.go (92.0%)</option>
+				<option value="file3">jing/app/activity/handler/publish.go (92.2%)</option>
 				
-				<option value="file4">jing/app/activity/handler/publish.go (94.1%)</option>
+				<option value="file4">jing/app/activity/handler/query.go (97.7%)</option>
 				
-				<option value="file5">jing/app/activity/handler/query.go (97.4%)</option>
+				<option value="file5">jing/app/activity/handler/recommendation.go (87.9%)</option>
+				
+				<option value="file6">jing/app/activity/handler/tags.go (90.9%)</option>
 				
 				</select>
 			</div>
@@ -81,49 +83,83 @@
 		<pre class="file" id="file0" style="display: none">package handler
 
 import (
-        "gopkg.in/mgo.v2"
-        "sync/atomic"
-)
-
-type ActivitySrv struct{
-        Collection *mgo.Collection
-        IdCollection *mgo.Collection
-}
-
-var Id int32
-func GetId() int32 <span class="cov8" title="1">{
-        return atomic.AddInt32(&amp;Id,1)
-}</pre>
-		
-		<pre class="file" id="file1" style="display: none">package handler
-
-import (
         "context"
         "gopkg.in/mgo.v2"
         "gopkg.in/mgo.v2/bson"
-        "jing/app/activity/model"
         activity "jing/app/activity/proto"
+        "jing/app/dao"
+        "log"
 )
 
 func (actSrv *ActivitySrv) Comment(ctx context.Context,req *activity.CmtReq,resp *activity.CmtResp) error <span class="cov8" title="1">{
-        comment := model.Comment{
+        comment := dao.Comment{
                 UserId:req.UserId,
                 ReceiverId:req.ReceiverId,
                 Content:req.Content,
                 Time:req.Time,
         }
-        err := actSrv.Collection.Update(
+        err := dao.Collection.Update(
                 bson.M{"actid":req.ActId},
                 bson.M{"$push":bson.M{"comments":comment}})
         if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
                 resp.Status = 404
                 resp.Description = "Not Found"
+                log.Println("Can't find the activity")
                 return err
         }</span>        else<span class="cov8" title="1"> if err!=nil</span><span class="cov0" title="0">{
                 resp.Status = 500
                 resp.Description = "Comment Error"
+                log.Println("Comment Error")
                 return err
         }</span>        else<span class="cov8" title="1">{
+                resp.Status = 200
+                resp.Description = "OK"
+                log.Println("Comment successfully")
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "gopkg.in/mgo.v2"
+        "gopkg.in/mgo.v2/bson"
+        activity "jing/app/activity/proto"
+        "jing/app/dao"
+        "log"
+        "strconv"
+)
+
+func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp *activity.DltResp) error <span class="cov8" title="1">{
+        var result  map[string] interface{}
+        err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&amp;result)
+        if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
+                log.Println("Can not find the removed activity")
+                resp.Status = 404
+                resp.Description = "Not Found"
+                return err
+        }</span>
+        <span class="cov8" title="1">mapBasicInfo := result["basicinfo"].(map[string] interface{})
+        imagesLen := len(mapBasicInfo["images"].([]interface{}))
+        for i:=0;i&lt;imagesLen;i++</span><span class="cov8" title="1">{
+                name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
+                err = dao.DeleteImgWithName(name)
+                if err != nil</span><span class="cov0" title="0">{
+                        log.Printf("Catch delete error from dao,cannot delete pictures for act %d, pic %d\n",req.ActId,i)
+                        continue</span>
+                }
+                <span class="cov8" title="1">log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)</span>
+        }
+        <span class="cov8" title="1">err = dao.Collection.Remove(bson.M{"actid": req.ActId})
+
+        if err!=nil</span><span class="cov0" title="0">{
+                log.Println(err)
+                return err
+        }</span> else<span class="cov8" title="1">{
+                log.Println("Delete activity successfully.")
                 resp.Status = 200
                 resp.Description = "OK"
         }</span>
@@ -139,22 +175,101 @@ import (
         "gopkg.in/mgo.v2"
         "gopkg.in/mgo.v2/bson"
         activity "jing/app/activity/proto"
+        "jing/app/dao"
+        "log"
+        "strconv"
 )
 
-func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp *activity.DltResp) error <span class="cov8" title="1">{
-        err := actSrv.Collection.Remove(bson.M{"actid": req.ActId})
+func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error <span class="cov8" title="1">{
+        var act map[string]interface{}
+        err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&amp;act)
         if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
-                fmt.Println(err)
-                resp.Status = 404
-                resp.Description = "Not Found"
+                log.Println(err)
+                resp.Status=404
+                resp.Description="Not Found"
                 return err
-        }</span> else<span class="cov8" title="1"> if err!=nil</span><span class="cov0" title="0">{
-                return err
-        }</span> else<span class="cov8" title="1">{
-                resp.Status = 200
-                resp.Description = "OK"
         }</span>
-        <span class="cov8" title="1">return nil</span>
+        <span class="cov8" title="1">mapBasicInfo :=act["basicinfo"].(map[string]interface{})
+        fetchType:= mapBasicInfo["type"].(string)
+
+        basicInfo:=dao.BasicInfo{
+                Type:        fetchType,
+                Title:       mapBasicInfo["title"].(string),
+                CreateTime:  req.CreateTime,
+                EndTime:     req.EndTime,
+                Description: req.Description,
+                Tag:         req.Tag,
+        }
+
+        for i:=0;i&lt;len(mapBasicInfo["images"].([]interface{}));i++</span><span class="cov8" title="1">{
+                name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
+                err = dao.DeleteImgWithName(name)
+                if err != nil</span><span class="cov0" title="0">{
+                        log.Printf("Catch delete error from dao,cannot delete pictures for act %d, pic %d\n",req.ActId,i)
+                        continue</span>
+                }
+                <span class="cov8" title="1">log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)</span>
+        }
+
+        <span class="cov8" title="1">var newImages []string
+        for i,param := range req.Images</span><span class="cov8" title="1">{
+                name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
+                newImages = append(newImages,dao.UploadImgWithName(param,name))
+        }</span>
+
+        <span class="cov8" title="1">for _,param := range newImages</span><span class="cov8" title="1">{
+                basicInfo.Images = append(basicInfo.Images,param)
+        }</span>
+
+        <span class="cov8" title="1">switch fetchType</span>{
+        case "taxi":<span class="cov8" title="1">
+                var ori, dest map[string]interface{}
+                _ = bson.Unmarshal(req.TaxiInfo.Origin, &amp;ori)
+                _ = bson.Unmarshal(req.TaxiInfo.Destination, &amp;dest)
+                taxiInfo := dao.TaxiInfo{
+                        DepartTime: req.TaxiInfo.DepartTime,
+                        Origin: ori,
+                        Destination: dest,
+                }
+                err = dao.Collection.Update(
+                bson.M{"actid":req.ActId},
+                bson.M{"$set":bson.M{"basicinfo":basicInfo,"taxiinfo":taxiInfo}})</span>
+        case "takeout":<span class="cov8" title="1">
+                takeoutInfo:=dao.TakeoutInfo{
+                        Store:req.TakeoutInfo.Store,
+                        OrderTime:req.TakeoutInfo.OrderTime,
+                }
+                err = dao.Collection.Update(
+                        bson.M{"actid":req.ActId},
+                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"takeoutinfo":takeoutInfo}})</span>
+        case "order":<span class="cov8" title="1">
+                orderInfo := dao.OrderInfo{
+                        Store:req.OrderInfo.Store,
+                }
+                err = dao.Collection.Update(
+                        bson.M{"actid":req.ActId},
+                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"orderinfo":orderInfo}})</span>
+        case "other":<span class="cov8" title="1">
+                otherInfo := dao.OtherInfo{
+                        ActivityTime:req.OtherInfo.ActivityTime,
+                }
+                err = dao.Collection.Update(
+                        bson.M{"actid":req.ActId},
+                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"otherinfo":otherInfo}})</span>
+                /*
+        default:
+                resp.Status=500
+                resp.Description="Undefined Type"
+                return nil*/
+        }
+        <span class="cov8" title="1">if err!=nil</span><span class="cov0" title="0">{
+                log.Println(err)
+                return err
+        }</span>
+        <span class="cov8" title="1">resp.Status=200
+        resp.Description="OK"
+        log.Println("Modify successfully")
+        return nil</span>
 }
 </pre>
 		
@@ -165,94 +280,15 @@ import (
         "fmt"
         "gopkg.in/mgo.v2"
         "gopkg.in/mgo.v2/bson"
-        "jing/app/activity/model"
         activity "jing/app/activity/proto"
-)
-
-func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error <span class="cov8" title="1">{
-        var act map[string]interface{}
-        err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&amp;act)
-        if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
-                fmt.Println(err)
-                resp.Status=404
-                resp.Description="Not Found"
-                return err
-        }</span>
-        <span class="cov8" title="1">mapBasicInfo :=act["basicinfo"].(map[string]interface{})
-        fetchType:= mapBasicInfo["type"].(string)
-
-        basicInfo:=model.BasicInfo{
-                Type:        fetchType,
-                Title:       mapBasicInfo["title"].(string),
-                CreateTime:  req.CreateTime,
-                EndTime:     req.EndTime,
-                Description: req.Description,
-                Tag:         req.Tag,
-        }
-
-        switch fetchType</span>{
-        case "taxi":<span class="cov8" title="1">
-                taxiInfo := model.TaxiInfo{
-                        DepartTime:req.TaxiInfo.DepartTime,
-                        Origin:req.TaxiInfo.Origin,
-                        Destination:req.TaxiInfo.Destination,
-                }
-                err = actSrv.Collection.Update(
-                bson.M{"actid":req.ActId},
-                bson.M{"$set":bson.M{"basicinfo":basicInfo,"taxiinfo":taxiInfo}})</span>
-        case "takeout":<span class="cov8" title="1">
-                takeoutInfo:=model.TakeoutInfo{
-                        Store:req.TakeoutInfo.Store,
-                        OrderTime:req.TakeoutInfo.OrderTime,
-                }
-                err = actSrv.Collection.Update(
-                        bson.M{"actid":req.ActId},
-                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"takeoutinfo":takeoutInfo}})</span>
-        case "order":<span class="cov8" title="1">
-                orderInfo := model.OrderInfo{
-                        Store:req.OrderInfo.Store,
-                }
-                err = actSrv.Collection.Update(
-                        bson.M{"actid":req.ActId},
-                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"orderinfo":orderInfo}})</span>
-        case "other":<span class="cov8" title="1">
-                otherInfo := model.OtherInfo{
-                        ActivityTime:req.OtherInfo.ActivityTime,
-                }
-                err = actSrv.Collection.Update(
-                        bson.M{"actid":req.ActId},
-                        bson.M{"$set":bson.M{"basicinfo":basicInfo,"otherinfo":otherInfo}})</span>
-                /*
-        default:
-                resp.Status=500
-                resp.Description="Undefined Type"
-                return nil*/
-        }
-        <span class="cov8" title="1">if err!=nil</span><span class="cov0" title="0">{
-                fmt.Println(err)
-                return err
-        }</span>
-        <span class="cov8" title="1">resp.Status=200
-        resp.Description="OK"
-        return nil</span>
-}
-</pre>
-		
-		<pre class="file" id="file4" style="display: none">package handler
-
-import (
-        "jing/app/activity/model"
-        activity "jing/app/activity/proto"
-        "context"
-        "fmt"
-        "gopkg.in/mgo.v2"
-        "gopkg.in/mgo.v2/bson"
+        "jing/app/dao"
         "log"
+        "strconv"
 )
 
 func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error <span class="cov8" title="1">{
         //fmt.Println(req)
-        id := insert(req, actSrv.Collection, actSrv.IdCollection)
+        id := insert(req, dao.Collection, dao.IdCollection)
         if id == -1</span><span class="cov8" title="1">{
                 resp.Status = 500
                 resp.Description = "Undefined Type"
@@ -267,7 +303,7 @@ func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp
 
 func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Collection) int32 <span class="cov8" title="1">{
         var id int32
-        basicInfo := model.BasicInfo{
+        basicInfo := dao.BasicInfo{
                 //Actid:id,
                 Type:req.Info.Type,
                 CreateTime:req.Info.CreateTime,
@@ -275,74 +311,98 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
                 Title:req.Info.Title,
                 Description:req.Info.Description,
                 Tag:req.Info.Tag,
+                //Store the images into the mongoDB. Discard it now.
+                //Images:req.Info.Images,
         }
-        var err error
-        switch basicInfo.Type</span>{
+        fetchId := bson.M{}
+        err := idCollection.Find(nil).One(&amp;fetchId)
+        log.Println("Get autoid from mongoDB.")
+        if err!=nil </span><span class="cov0" title="0">{
+                log.Println("Get autoId error.")
+                log.Fatal(err)
+        }</span>
+
+        <span class="cov8" title="1">intId := fetchId["autoid"].(int)
+        id = int32(intId)
+        check := basicInfo.Type == "taxi" || basicInfo.Type == "takeout" || basicInfo.Type == "order" || basicInfo.Type == "other"
+        if check</span><span class="cov8" title="1">{
+                /* Upload the pictures and return the url */
+                for i:=0;i&lt;len(req.Info.Images);i++</span><span class="cov8" title="1">{
+                        name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(intId+1),strconv.Itoa(i))
+                        basicInfo.Images = append(basicInfo.Images, dao.UploadImgWithName(req.Info.Images[i],name))
+                }</span>
+        }
+
+        <span class="cov8" title="1">switch basicInfo.Type</span>{
         case "taxi":<span class="cov8" title="1">
-                id = GetId()
-                newAct := model.TaxiAct{
+                var ori, dest map[string]interface{}
+                _ = bson.Unmarshal(req.TaxiInfo.Origin, &amp;ori)
+                _ = bson.Unmarshal(req.TaxiInfo.Destination, &amp;dest)
+                id = id+1
+                newAct := dao.TaxiAct{
                         ActId:     id,
                         BasicInfo: basicInfo,
-                        TaxiInfo: model.TaxiInfo{
+                        TaxiInfo: dao.TaxiInfo{
                                 DepartTime:req.TaxiInfo.DepartTime,
-                                Origin:req.TaxiInfo.Origin,
-                                Destination:req.TaxiInfo.Destination,
+                                Origin: ori,
+                                Destination: dest,
                         },
-                Comments: []model.Comment{},
+                Comments: []dao.Comment{},
                 }
                 err = collection.Insert(newAct)</span>
         case "takeout":<span class="cov8" title="1">
-                id = GetId()
-                newAct := model.TakeoutAct{
+                id = id+1
+                newAct := dao.TakeoutAct{
                         ActId:      id,
                         BasicInfo: basicInfo,
-                        TakeoutInfo:model.TakeoutInfo{
+                        TakeoutInfo:dao.TakeoutInfo{
                                 Store:req.TakeoutInfo.Store,
                                 OrderTime:req.TakeoutInfo.OrderTime,
                         },
-                Comments: []model.Comment{},
+                Comments: []dao.Comment{},
                 }
                 err = collection.Insert(newAct)</span>
         case "order":<span class="cov8" title="1">
-                id = GetId()
-                newAct := model.OrderAct{
+                id = id+1
+                newAct := dao.OrderAct{
                         ActId: id,
                         BasicInfo:basicInfo,
-                        OrderInfo:model.OrderInfo{
+                        OrderInfo:dao.OrderInfo{
                                 Store:req.OrderInfo.Store,
                         },
-                Comments: []model.Comment{},
+                Comments: []dao.Comment{},
                 }
                 err = collection.Insert(newAct)</span>
         case "other":<span class="cov8" title="1">
-                id = GetId()
-                newAct := model.OtherAct{
+                id = id+1
+                newAct := dao.OtherAct{
                         ActId: id,
                         BasicInfo:basicInfo,
-                        OtherInfo:model.OtherInfo{
+                        OtherInfo:dao.OtherInfo{
                                 ActivityTime:req.OtherInfo.ActivityTime,
                         },
-                Comments: []model.Comment{},
+                Comments: []dao.Comment{},
                 }
                 err = collection.Insert(newAct)</span>
         default:<span class="cov8" title="1">
-                fmt.Println("Undefined Type.")
+                log.Println("Undefined Type.")
                 return -1</span>
         }
         <span class="cov8" title="1">if err!=nil</span><span class="cov0" title="0">{
-                fmt.Println("Insert Fail!")
+                log.Println("Insert Fail!")
         }</span>
         <span class="cov8" title="1">err = idCollection.Update(
                 bson.M{"autoid": id-1},
                 bson.M{"$inc": bson.M{ "autoid": 1 }})
+        log.Println("Inserted autoid.")
         if err!=nil</span><span class="cov0" title="0">{
                 log.Fatal(err)
         }</span>
-        <span class="cov8" title="1">return id</span>
-}
-</pre>
+        <span class="cov8" title="1">log.Println("Publish activity successfully")
+        return id</span>
+}</pre>
 		
-		<pre class="file" id="file5" style="display: none">package handler
+		<pre class="file" id="file4" style="display: none">package handler
 
 import (
         "context"
@@ -350,13 +410,14 @@ import (
         "gopkg.in/mgo.v2"
         "gopkg.in/mgo.v2/bson"
         activity "jing/app/activity/proto"
+        "jing/app/dao"
         "log"
 )
 
 func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error <span class="cov8" title="1">{
         //fmt.Println(req)
         var result map[string] interface{}
-        err := actSrv.Collection.Find(bson.M{"actid": req.ActId}).One(&amp;result)
+        err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&amp;result)
         if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
                 fmt.Println(err)
                 resp.Status = 404
@@ -376,6 +437,10 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
         for _,param := range mapBasicInfo["tag"].([]interface{})</span><span class="cov8" title="1">{
                 basicInfo.Tag = append(basicInfo.Tag,param.(string))
         }</span>
+        <span class="cov8" title="1">for _,param := range mapBasicInfo["images"].([]interface{})</span><span class="cov8" title="1">{
+                basicInfo.Images = append(basicInfo.Images,param.(string))
+        }</span>
+
         <span class="cov8" title="1">var comments []*activity.Comment
         for _,param := range result["comments"].([]interface{})</span><span class="cov8" title="1">{
                 //Need a intermediate map tp transfer map to comment
@@ -397,10 +462,12 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
         switch basicInfo.Type </span>{
         case "taxi":<span class="cov8" title="1">
                 mapTaxiInfo := result["taxiinfo"].(map[string] interface{})
+                origin, _ := bson.Marshal(mapTaxiInfo["origin"])
+                dest, _ := bson.Marshal(mapTaxiInfo["destination"])
                 taxiInfo := activity.TaxiInfo{
                         DepartTime:  mapTaxiInfo["departtime"].(string),
-                        Origin:      mapTaxiInfo["origin"].(string),
-                        Destination: mapTaxiInfo["destination"].(string),
+                        Origin:      origin,
+                        Destination: dest,
                 }
                 resp.TaxiInfo = &amp;taxiInfo
                 resp.Status = 200</span>
@@ -424,13 +491,191 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
                 mapOtherInfo := result["otherinfo"].(map[string] interface{})
                 otherInfo := activity.OtherInfo{
                         ActivityTime:mapOtherInfo["activitytime"].(string),
+
                 }
                 resp.OtherInfo = &amp;otherInfo
                 resp.Status = 200</span>
         }
+        //log.Println("Query successfully.")
         <span class="cov8" title="1">return nil</span>
 }
 </pre>
+		
+		<pre class="file" id="file5" style="display: none">package handler
+
+import (
+        "context"
+        "errors"
+        "gopkg.in/mgo.v2"
+        "gopkg.in/mgo.v2/bson"
+        activity "jing/app/activity/proto"
+        "jing/app/dao"
+        "log"
+        "math"
+        "math/rand"
+)
+
+//Maximum number of the user that is compared with the user.
+const userTotal = 10
+
+func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.RecommendReq,resp *activity.RecommendResp) error <span class="cov8" title="1">{
+        userId := req.UserId
+        userBehavior := dao.UserBehavior{}
+        err := dao.BehaviorCollection.Find(bson.M{"userid":userId}).One(&amp;userBehavior)
+        if err == mgo.ErrNotFound</span><span class="cov8" title="1">{
+                log.Println("Recommendation srv error: no behavior yet")
+                resp.Status = 0
+                resp.ActId = []int32{}
+                return nil
+        }</span>
+
+
+        <span class="cov8" title="1">var count int
+        iter := dao.BehaviorCollection.Find(nil).Iter()
+
+        count,err = dao.BehaviorCollection.Find(nil).Count()
+        if err !=nil</span><span class="cov0" title="0">{
+                log.Println("get count error")
+                log.Println(err)
+        }</span>
+        <span class="cov8" title="1">var anotherUser dao.UserBehavior
+        //Find users partially randomly
+        start,number := GetComparedUsers(count)
+        for i:=0;i&lt;start;i++</span><span class="cov0" title="0">{
+                iter.Next(anotherUser)
+        }</span>
+
+        <span class="cov8" title="1">var nearestAngle float64 = 0
+        var nearestUserId int32 = 0
+        for iter.Next(&amp;anotherUser)</span><span class="cov8" title="1">{
+                if anotherUser.UserId == userBehavior.UserId || anotherUser.UserId == 0</span><span class="cov8" title="1">{
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">angle := GetAngle(userBehavior, anotherUser)
+                //For debug
+                log.Printf("Angel between %d and %d is %f\n",userBehavior.UserId,anotherUser.UserId,angle)
+                if angle &gt; nearestAngle</span><span class="cov8" title="1">{
+                        nearestAngle = angle
+                        nearestUserId = anotherUser.UserId
+                }</span>
+
+                <span class="cov8" title="1">number -= 1
+                if number == 0</span><span class="cov0" title="0">{
+                        break</span>
+                }
+        }
+        /* All the other users have no behavior*/
+        <span class="cov8" title="1">if nearestAngle == 0</span><span class="cov8" title="1">{
+                resp.Status = 0
+                resp.ActId = make([]int32,0)
+                return errors.New("the user or all the other users have no behavior")
+        }</span>
+
+        //For debug
+        <span class="cov8" title="1">log.Printf("The nearest user is %d\n",nearestUserId)
+        acts := dao.GetAllUserActivityInt32(int(nearestUserId))
+        if len(acts) == 0</span><span class="cov8" title="1">{
+                resp.ActId = make([]int32,0)
+                resp.Status = 1
+                return errors.New("the nearest user has no activity")
+        }</span>
+
+        <span class="cov8" title="1">resp.Status = 2
+        resp.ActId = acts
+        return nil</span>
+}
+
+func GetAngle(user dao.UserBehavior, anotherUser dao.UserBehavior) float64<span class="cov8" title="1">{
+        // cos(AB) = A*B/(|A|*|B|)
+        pA := user.Portrait
+        pB := anotherUser.Portrait
+        A := math.Sqrt(pA[0]*pA[0] + pA[1]*pA[1] + pA[2]*pA[2] + pA[3]*pA[3])
+        B := math.Sqrt(pB[0]*pB[0] + pB[1]*pB[1] + pB[2]*pB[2] + pB[3]*pB[3])
+        if A == 0 || B == 0</span><span class="cov8" title="1">{
+                return 0
+        }</span>
+        <span class="cov8" title="1">return (pA[0] * pB[0] + pA[1] * pB[1] + pA[2] * pB[2] + pA[3] * pB[3])/(A*B)</span>
+}
+
+func GetComparedUsers(count int) (start int, number int)<span class="cov8" title="1">{
+        if count &lt; userTotal + 1</span><span class="cov8" title="1">{
+                start = 0
+                number = count - 1
+                return
+        }</span> else<span class="cov0" title="0">{
+                number = userTotal
+                start = rand.Intn(count-userTotal-1)
+                return
+        }</span>
+}</pre>
+		
+		<pre class="file" id="file6" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "github.com/yanyiwu/gojieba"
+        activity "jing/app/activity/proto"
+        "jing/app/dao"
+        "log"
+)
+
+func (actSrv *ActivitySrv) GenTags(ctx context.Context,req *activity.TagReq,resp *activity.TagResp) error <span class="cov8" title="1">{
+
+        //每次都从数据库里面把所有的tag取出来并加到jieba分词器里面。优点是如果tag词典有更新可以反映出来。
+        // 缺点是，每次取数据和加词语的过程影响了性能。考虑到词典里面一共不超过100个词语，这样的性能折损可以接受。
+        x:=gojieba.NewJieba()
+        defer x.Free()
+        tags,err := dao.GetAllTags()
+        if err!=nil</span><span class="cov0" title="0">{
+                log.Println(err)
+                resp.Status=500
+                return err
+        }</span>
+        <span class="cov8" title="1">for _,param := range tags</span><span class="cov8" title="1">{
+                x.AddWord(param)
+        }</span>
+        <span class="cov8" title="1">resource:= fmt.Sprintf("%s,%s",req.Title,req.Description)
+        words := x.Cut(resource,true)
+        var results []string
+        for _,tag := range tags</span><span class="cov8" title="1">{
+                for _,word := range words</span><span class="cov8" title="1">{
+                        if word == tag</span><span class="cov8" title="1">{
+                                if !inList(results,word)</span><span class="cov8" title="1">{
+                                        results = append(results,word)
+                                }</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">resp.Tag = results
+        resp.Status = 200
+        return nil</span>
+}
+
+func inList(results []string,word string) bool<span class="cov8" title="1">{
+        for _,result := range results</span><span class="cov8" title="1">{
+                if result == word</span><span class="cov8" title="1">{
+                        return true
+                }</span>
+        }
+        <span class="cov8" title="1">return false</span>
+}
+
+func (actSrv *ActivitySrv) AddTags(ctx context.Context,req *activity.AddTagsReq,resp *activity.AddTagsResp) error <span class="cov8" title="1">{
+        tags := req.Tags
+        var num int32
+        num = 0
+        for _,tag := range tags</span><span class="cov8" title="1">{
+                if dao.IsInTagDict(tag) == true</span><span class="cov8" title="1">{
+                        continue</span>
+                }else<span class="cov8" title="1">{
+                        num += dao.InsertCandidateTag(tag,int(req.UserId))
+                }</span>
+        }
+        <span class="cov8" title="1">resp.Num = num
+        return nil</span>
+}</pre>
 		
 		</div>
 	</body>

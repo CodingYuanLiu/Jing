@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -20,7 +21,14 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		resp.Description="Not Found"
 		return err
 	}
+
 	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
+	if mapBasicInfo["status"].(int) == 2{
+		log.Println("cannot modify expired activity")
+		resp.Status = 500
+		resp.Description = "cannot modify expired activity"
+		return errors.New("cannot modify expired activity")
+	}
 	fetchType:= mapBasicInfo["type"].(string)
 
 	basicInfo:=dao.BasicInfo{
@@ -30,6 +38,8 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		EndTime:     req.EndTime,
 		Description: req.Description,
 		Tag:         req.Tag,
+		MaxMember:   req.MaxMember,
+		Status :     dao.GetOverdueStatus(req.EndTime,dao.GetMaxMemberStatus(req.ActId,req.MaxMember)),
 	}
 
 	for i:=0;i<len(mapBasicInfo["images"].([]interface{}));i++{

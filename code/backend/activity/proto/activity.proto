@@ -21,6 +21,8 @@ message BasicInfo{
     string description = 6;
     repeated string tag = 7;
     repeated string images = 8;
+    int32 status = 9;   //0 for available, 1 for registration full, 2 for overdue.
+    int32 maxMember = 10;
 }
 
 message PubReq{
@@ -44,6 +46,7 @@ message MdfReq{
     string createTime = 2;
     string endTime = 3;
     string description = 4;
+    int32 maxMember = 11 ;
     repeated string tag = 5;
     repeated string images = 10;
 
