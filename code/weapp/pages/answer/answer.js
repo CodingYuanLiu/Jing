@@ -76,19 +76,20 @@ Page({
                     comment_length: res.data.comments.length
                 });
                 console.log(res);
+                if (res.data.sponsor_avatar !== 'http://puo7ltwok.bkt.clouddn.com/')
+                    that.setData({
+                        avatar_src: res.data.sponsor_avatar
+                    })
                 let d = res.data;
-                wx.request({
-                    url: 'https://jing855.cn/api/public/detail?id=' + res.data.sponsor_id,
-                    method: 'GET',
-                    success: function(res) {
-                        console.log(res);
-                        if (res.data.avatar_url !== 'http://puo7ltwok.bkt.clouddn.com/')
-                            that.setData({
-                                avatar_src: res.data.avatar_url
-                            })
-                    }
-                })
-                for (let i=0;i<res.data.comments.length;i++){
+                // wx.request({
+                //     url: 'https://jing855.cn/api/public/detail?id=' + res.data.sponsor_id,
+                //     method: 'GET',
+                //     success: function(res) {
+                //         console.log(res);
+                        
+                //     }
+                // })
+                for (let i = 0; i < res.data.comments.length; i++) {
                     wx.request({
                         url: 'https://jing855.cn/api/public/detail?id=' + res.data.comments[i].user_id,
                         method: 'GET',
@@ -100,8 +101,25 @@ Page({
                         }
                     })
                 }
+                if (app.globalData.userInfo !== null) {
+                    wx.request({
+                        url: 'https://jing855.cn/api/user/act/addbehavior',
+                        method: 'POST',
+                        header: {
+                            "Authorization": "Bearer " + app.globalData.jwt,
+                        },
+                        data: {
+                            "type": that.data.content.type,
+                            "behavior": "scanning"
+                        },
+                        success: function(res) {
+                            console.log(res);
+                        }
+                    })
+                }
             }
         });
+
 
     },
     tapName: function(event) {
@@ -230,6 +248,20 @@ Page({
                         });
                     }
                 })
+                wx.request({
+                    url: 'https://jing855.cn/api/user/act/addbehavior',
+                    method: 'POST',
+                    header: {
+                        "Authorization": "Bearer " + app.globalData.jwt,
+                    },
+                    data: {
+                        "type": that.data.content.type,
+                        "behavior": "join"
+                    },
+                    success: function(res) {
+                        console.log(res);
+                    }
+                })
             }
         })
 
@@ -310,6 +342,18 @@ Page({
         console.log(id);
         wx.navigateTo({
             url: '/pages/showuserinfo/showuserinfo?id=' + id,
+        })
+    },
+    handleToRoutine: function() {
+        let origin = this.data.content.origin.latitude + "," + this.data.content.origin.longitude
+        let dest = this.data.content.destination.latitude + "," + this.data.content.destination.longitude
+        let center_la = (this.data.content.origin.latitude + this.data.content.destination.latitude) / 2
+        let center_lo = (this.data.content.origin.longitude + this.data.content.destination.longitude) /2
+        wx.navigateTo({
+            url: '/pages/showroutine/showroutine?ori='+origin+"&dest="+dest+"&latitude="+center_la+"&longitude="+center_lo,
+            success: function(res) {},
+            fail: function(res) {},
+            complete: function(res) {},
         })
     }
 })

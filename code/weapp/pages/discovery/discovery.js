@@ -7,29 +7,29 @@ Page({
         category: [{
             "idx": 0,
             "r": [{
-                "idx": 0,
-                "name": "外卖",
-                "type": "takeout",
-                "icon": "../../images/icons/takeout.png"
-            },
-            {
-                "idx": 1,
-                "name": "打车",
-                "type": "taxi",
-                "icon": "../../images/icons/taxi.png"
-            },
-            {
-                "idx": 2,
-                "name": "网购",
-                "type": "order",
-                "icon": "../../images/icons/order.png"
-            },
-            {
-                "idx": 3,
-                "name": "其他",
-                "type": "other",
-                "icon": "../../images/icons/movie.png"
-            }
+                    "idx": 0,
+                    "name": "外卖",
+                    "type": "takeout",
+                    "icon": "../../images/icons/takeout.png"
+                },
+                {
+                    "idx": 1,
+                    "name": "打车",
+                    "type": "taxi",
+                    "icon": "../../images/icons/taxi.png"
+                },
+                {
+                    "idx": 2,
+                    "name": "网购",
+                    "type": "order",
+                    "icon": "../../images/icons/order.png"
+                },
+                {
+                    "idx": 3,
+                    "name": "其他",
+                    "type": "other",
+                    "icon": "../../images/icons/movie.png"
+                }
             ]
         }],
         feed_length: 0,
@@ -147,9 +147,10 @@ Page({
                 break;
             }
         }
+
         wx.request({
-            url: 'https://jing855.cn/api/public/act/findbytype?type='+type,
-            method:'GET',
+            url: 'https://jing855.cn/api/public/act/findbytype?type=' + type,
+            method: 'GET',
             // header: {
             //     "Authorization": "Bearer " + app.globalData.jwt,
             // },
@@ -162,6 +163,22 @@ Page({
                 });
             }
         })
+        if (app.globalData.userInfo !== null) {
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/addbehavior',
+                method: 'POST',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                data: {
+                    "type": type,
+                    "behavior": "search"
+                },
+                success: function(res) {
+                    console.log(res);
+                }
+            })
+        }
     }
 
 
