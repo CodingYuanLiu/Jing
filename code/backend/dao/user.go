@@ -24,6 +24,7 @@ type User struct {
 	OpenId 		string
 	Jaccount 	string
 	AvatarKey 	string
+	PrivacyLevel int // 0: everybody 1: only friend (inter-follow) -1: hidden
 }
 
 type Join struct {
@@ -40,6 +41,12 @@ type TagDict struct{
 type CandidateTags struct {
 	Tag string 	`gorm:"unique"`
 	UserID int
+}
+
+type Follow struct {
+	ID		int			`gorm:"primary_key;auto_increment"`
+	From 	int
+	To 		int
 }
 
 func SetAvatarKey(Id int, key string) {
@@ -342,10 +349,63 @@ func InsertCandidateTag(tag string,userId int) int32{
 	}
 }
 
+func QueryFollow(From int, To int) bool {
+	follow := Follow{}
+	db.Where("`from` = ? and `to` = ?", From, To).First(&follow)
+	return follow.ID != 0
+}
+
+func ChangePrivacyLevel(userId int, level int) error {
+	user := User{}
+	db.Where("id = ?", userId).First(&user)
+	user.PrivacyLevel = level
+	db.Save(&user)
+	return nil
+}
+
+func CreateFollow(From int, To int) {
+	follow := Follow{
+		From: From,
+		To: To,
+	}
+	db.Create(&follow)
+}
+
+func GetFollowing(userId int) (ret []int) {
+	var arr []Follow
+	db.Where("`from` = ?", userId).Find(&arr)
+	for _, v := range arr {
+		ret = append(ret, v.To)
+	}
+	return
+}
+
+func GetFollower(userId int) (ret []int) {
+	var arr []Follow
+	db.Where("`to` = ?", userId).Find(&arr)
+	for _, v := range arr {
+		ret = append(ret, v.From)
+	}
+	return
+}
+
+func GetFriends(userId int) (ret []int) {
+	followings := GetFollowing(userId)
+	followers := GetFollower(userId)
+	for _, a := range followings {
+		for _, b := range followers {
+			if a == b {
+				ret = append(ret, a)
+			}
+		}
+	}
+	return
+}
+
 func init()  {
 	var err error
-	//db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
-	db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
+	//db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -374,6 +434,9 @@ func init()  {
 	}
 	if !db.HasTable(&CandidateTags{}){
 		db.CreateTable(&CandidateTags{})
+	}
+	if !db.HasTable(&Follow{}){
+		db.CreateTable(&Follow{})
 	}
 	if !db.HasTable(&Takeoutshop{}) {
 		db.CreateTable(&Takeoutshop{})

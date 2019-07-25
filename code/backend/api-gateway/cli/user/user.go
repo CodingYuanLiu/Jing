@@ -3,10 +3,10 @@ package user
 import (
 	"context"
 	"github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/client/grpc"
-	"github.com/micro/go-plugins/registry/kubernetes"
+	//"github.com/micro/go-micro/client/grpc"
+	//"github.com/micro/go-plugins/registry/kubernetes"
 	userProto "jing/app/user/proto/user"
-	"os"
+	//"os"
 )
 
 var (
@@ -14,10 +14,10 @@ var (
 )
 
 func init() {
-	os.Setenv("MICRO_REGISTRY", "kubernetes")
+	/*os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
-	)
+	)*/
 	Client = userProto.NewUserService("user", client.DefaultClient)
 }
 
@@ -63,9 +63,10 @@ func CallRegister(username string, password string,
 	return rsp, nil
 }
 
-func CallQueryUser(id int32) (*userProto.FindResp, error) {
+func CallQueryUser(id int32, userId int32) (*userProto.FindResp, error) {
 	rsp, err := Client.FindUser(context.TODO(), &userProto.FindReq{
 		Id: id,
+		UserId: userId,
 	})
 	if err != nil {
 		return rsp, err

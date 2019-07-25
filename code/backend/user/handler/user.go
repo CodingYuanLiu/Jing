@@ -73,6 +73,25 @@ func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.
 		out.Id = -1
 		return err
 	} else {
+		if in.Id == in.UserId {
+			out.Privacy = 0
+		} else if user2.PrivacyLevel == 1 {
+			flag := false
+			friends := dao.GetFriends(int(in.UserId))
+			for _, v := range friends {
+				if v == user2.ID {
+					flag = true
+					break
+				}
+			}
+			if flag {
+				out.Privacy = 2
+			} else {
+				out.Privacy = 1
+			}
+		} else {
+			out.Privacy = int32(user2.PrivacyLevel)
+		}
 		domain := "puo7ltwok.bkt.clouddn.com"
 		out.Id = int32(user2.ID)
 		out.Username = user2.Username

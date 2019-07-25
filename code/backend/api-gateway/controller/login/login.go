@@ -24,7 +24,7 @@ type WXCode struct {
 
 func (lc *Controller) GetUserStatus (c *gin.Context) {
 	userId := c.GetInt("userId")
-	resp, _ := user.CallQueryUser(int32(userId))
+	resp, _ := user.CallQueryUser(int32(userId), int32(userId))
 	c.JSON(http.StatusOK, map[string]interface {}{
 		"message" : "You are online",
 		"username": resp.Username,
