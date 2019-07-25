@@ -13,6 +13,10 @@ message UpdateReq {
     string phone = 1;
     string signature = 2;
     string nickname = 3;
+    string birthday = 9;
+    string dormitory = 11;
+    string major = 12;
+    int32 gender = 4;
 }
 
 message UpdateResp {
