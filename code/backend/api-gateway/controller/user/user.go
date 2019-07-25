@@ -177,6 +177,8 @@ func (uc *Controller) UploadAvatar (c *gin.Context) {
 
 func (uc *Controller) UpdateUser (c *gin.Context) {
 
+	id := c.GetInt("userId")
+
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
 	_ = json.Unmarshal(jsonStr, &jsonForm)
@@ -189,13 +191,6 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 		return
 	}
 
-	if jsonForm["id"] == nil {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message": "Missing field id",
-		})
-		c.Abort()
-		return
-	}
 	if jsonForm["phone"] == nil {
 		jsonForm["phone"] = ""
 	}
@@ -205,9 +200,20 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 	if jsonForm["nickname"] == nil {
 		jsonForm["nickname"] = ""
 	}
+	if jsonForm["gender"] == nil {
+		jsonForm["gender"] = float64(-1)
+	}
+	if jsonForm["birthday"] == nil {
+		jsonForm["birthday"] = ""
+	}
+	if jsonForm["dormitory"] == nil {
+		jsonForm["dormitory"] = ""
+	}
+	if jsonForm["major"] == nil {
+		jsonForm["major"] = ""
+	}
 
-	rsp, err := userClient.CallUpdateUser(int32(jsonForm["id"].(float64)),
-		jsonForm["phone"].(string), jsonForm["signature"].(string), jsonForm["nickname"].(string))
+	rsp, err := userClient.CallUpdateUser(id, jsonForm)
 
 	// All field update, rely on the frontend
 	if err != nil {

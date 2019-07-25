@@ -30,6 +30,18 @@ func (h *UserService) Update(ctx context.Context, in *user.UpdateReq, out *user.
 	if in.Signature != "" {
 		_ = dao.UpdateUserById(int(in.Id), "signature", in.Signature)
 	}
+	if in.Gender != -1 {
+		_ = dao.UpdateUserById(int(in.Id), "gender", in.Gender)
+	}
+	if in.Birthday != "" {
+		_ = dao.UpdateUserById(int(in.Id), "birthday", in.Birthday)
+	}
+	if in.Major != "" {
+		_ = dao.UpdateUserById(int(in.Id), "major", in.Major)
+	}
+	if in.Dormitory != "" {
+		_ = dao.UpdateUserById(int(in.Id), "dormitory", in.Dormitory)
+	}
 	out.Status = 200
 	return nil
 }
