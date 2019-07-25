@@ -201,7 +201,7 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 		jsonForm["nickname"] = ""
 	}
 	if jsonForm["gender"] == nil {
-		jsonForm["gender"] = -1
+		jsonForm["gender"] = float64(-1)
 	}
 	if jsonForm["birthday"] == nil {
 		jsonForm["birthday"] = ""
