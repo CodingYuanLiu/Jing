@@ -1,8 +1,7 @@
 import React from 'react'
 import {NativeModules, View, StyleSheet} from "react-native";
 import { GiftedChat } from "react-native-gifted-chat";
-import XmppUtil from "../../../navigator/XmppUtil";
-import {Button, Input} from "react-native-elements";
+import XmppApi from "../../../api/XmppApi";
 const xml = require('@xmpp/xml');
 import {connect} from "react-redux";
 import {addMessage} from "../../../actions/xmpp";
@@ -16,25 +15,24 @@ class ChatRoom extends React.Component{
     }
 
     componentDidMount(){
-        let recipient = this.props.navigation.getParam("recipient")
-        this.setState({recipient: recipient});
-        this.setState({username: this.props.navigation.getParam("username")});
-        this.setState({avatar: this.props.navigation.getParam("avatar")});
-        const presence = xml('presence', {to:recipient + '/son'},
+        this.id = this.props.navigation.getParam("recipient");
+        const presence = xml('presence', {to: `${id}/${this.props.username}`},
             xml('x', {xmlns: 'http://jabber.org/protocol/muc'}));
-        XmppUtil.sendMessage(presence);
+        XmppApi.sendMessage(presence);
     }
 
     render() {
-        let messages = [];
-        for ( let room of this.props.chatRoomList) {
-            if (room.roomId === this.state.recipient){
-                messages = room.messages;
+        let xmpp = this.props.xmpp;
+        let room = xmpp[this.id];
+        if (!room) {
+            room = {
+                id: "",
+                messages: [],
             }
         }
         return (
             <GiftedChat
-                messages={messages}
+                messages={room.messages}
                 onSend={this.onSend}
                 user={this.getUser()}
                 renderUsernameOnMessage={true}
@@ -47,30 +45,28 @@ class ChatRoom extends React.Component{
         console.log(messages);
         const message = xml('message', {
                 type: 'groupchat',
-                to: this.state.recipient,
-                avatar: this.state.avatar,
+                to: this.id,
+                avatar: this.props.user.avatar,
+                nickname: "我是小可爱",
             },
             xml('body', {}, messages[0].text),
             xml('delay', {
                 stamp: new Date(),
             }),
         );
-        XmppUtil.sendMessage(message);
+        XmppApi.sendMessage(message);
     };
-    login = () => {
-        XmppUtil.login("aa", "aa");
-    };
+
     getUser = () => {
         return {
-            _id: this.state.username,
-            name: this.state.username,
-            avatar: this.state.avatar,
+            _id: 'aa',
         }
     }
 }
 
 const mapStateToProps = state => ({
-    chatRoomList: state.xmpp.chatRoomList,
+    xmpp: state.xmpp,
+    user: state.user,
 });
 const mapDispatchToProps = dispatch => ({
     addMessage: (room, message) => dispatch(addMessage(room, message))

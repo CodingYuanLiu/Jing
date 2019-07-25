@@ -16,7 +16,6 @@ export default class HomeScreen extends React.Component{
     }
 
     toSearch = () => {
-        console.log("Press!");
         NavigationUtil.toPage(this.props, "Search")
     };
 

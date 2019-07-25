@@ -1,163 +1,92 @@
 import React from "react"
-import { View, Text } from 'react-native';
-import NavigationUtil from "../../../navigator/NavUtil";
-import {Button, Input} from "react-native-elements";
-import XmppUtil from "../../../navigator/XmppUtil";
+import { View, Text, FlatList, RefreshControl } from 'react-native';
+import {Badge, ListItem } from "react-native-elements";
+import XmppApi from "../../../api/XmppApi";
 import {connect} from "react-redux";
-import {addMessage, initChatRoomList} from "../../../actions/xmpp";
-const xml = require('@xmpp/xml');
-
-const recipient = "diving_fish@202.120.40.8";
-
+import {addChatRoom, onSendMessage} from "../../../actions/xmpp";
+import {ON_LOADING_CHAT_ROOM} from "../../../common/constant/ActionTypes";
+import {CHAT_ROOM_LOADED} from "../../../common/constant/ActionTypes";
+import NavigationUtil from "../../../navigator/NavUtil";
 
 class GroupChatScreen extends React.PureComponent{
     constructor(props) {
         super(props);
-        this.state = {
-            username :"",
-            password: "",
-        }
     }
 
     componentDidMount() {
+        let user = this.props.user;
+
     }
 
+    renderRoom = (room) => {
+        let leftAvatar;
+        console.log(room);
+        let title = room.name;
+        let subtitle = room.messages? room.messages[0].text : "";
+        let rightTitle = room.messages? room.messages[0].createAt : "";
+        return (
+            <ListItem
+                leftAvatar={{source: {uri: "https://pic1.zhimg.com/v2-fda399250493e674f2152c581490d6eb_1200x500.jpg"}}}
+                title={title}
+                titleProps={{ellipsizeMode: "tail", numberOfLines: 1}}
+                titleStyle={styles.roomTitle}
+                subtitle={subtitle}
+                subtitleProps={{ellipsizeMode: "tail", numberOfLines:1}}
+                subtitleStyle={styles.roomSubtitle}
+                rightTitle={
+                    <Text
+                    numberOfLines={1}
+                    style={styles.roomTimeStamp}
+                    >{rightTitle}</Text>
+                }
+                rightSubtitle={
+                    <Badge
+                    value={room.messages? room.messages.length: 0}
+                    />
+                }
+                onPress={() => {NavigationUtil.toPage({recipient: room.id}, "ChatRoom")}}
+            />
+        )
+    };
     render() {
+        let xmpp = this.props.xmpp;
+        if (!xmpp.roomList) {
+            xmpp = {
+                roomList: [],
+                isLoading: false,
+            }
+        }
         return(
             <View style={{flex: 1,}}>
-                <Input
-                    value={this.state.username}
-                    onChangeText={(text) => {this.setState({username: text})}}
+                <FlatList
+                    data={xmpp.roomList}
+                    renderItem={({item}) => this.renderRoom(item)}
+                    keyExtractor={item => {return item.id.toString()}}
+
+                    refreshControl={
+                        <RefreshControl
+                            title={"加载中..."}
+                            titleColor={"#0084ff"}
+                            colors={["#0084ff"]}
+                            refreshing={xmpp.isLoading}
+                            onRefresh={this.getChatList}
+                            tintColor={"#0084ff"}
+                        />
+                    }
                 />
-                <Input
-                    value={this.state.password}
-                    onChangeText={(text) => {this.setState({password: text})}}
-                />
-                <Button
-                    title={"注册"}
-                    onPress={this.register}
-                />
-                <Button
-                    title={"登录"}
-                    onPress={this.login}
-                />
-                <Button
-                    title={"获取群聊列表"}
-                    onPress={this.getChatList}
-                />
-                <Button
-                    title={"退出"}
-                    onPress={this.logout}
-                />
-                <Button
-                    title={"发送测试消息"}
-                    onPress={this.sendMessage}
-                />
-                {
-                    this.props.chatRoomList.map((room, i) => {
-                        return (
-                        <Button
-                            key={i}
-                            title={room.roomId}
-                            onPress={() => {this.toChatRoom(room)}}
-                        />);
-                    })
-                }
             </View>
         )
-    }
-    register = () => {
-        let username = this.state.username;
-        let password = this.state.password;
-        XmppUtil.register(username, password);
     };
-    login = () => {
-
-        let username = this.state.username;
-        let password = this.state.password;
-        XmppUtil.login(username, password);
-        XmppUtil.onStanza(
-            async standaz => {
-                console.log(standaz);
-                if (standaz.is('iq') && standaz.attrs.id === 'chatlist') {
-                    const type = standaz.attrs.type;
-                    if (type === "error")
-                        console.log("error");
-                    else {
-                        let list = new Array();
-                        for(let room of standaz.children[0].children) {
-                            console.log(room.attrs);
-                            list.push(room.attrs.jid);
-                        }
-                        console.log(list);
-                        this.props.initChatRoomList(list);
-                        console.log(this.props.chatRoomList);
-                    }
-                }
-                if (standaz.is("message")) {
-                    if (standaz.children && standaz.children.length > 0){
-                        let jid = standaz.attrs.from;
-                        let nickname = jid.substring(jid.indexOf("/") + 1);
-                        let msg = new Object();
-                        msg.user = {
-                            _id: jid,
-                            name: nickname,
-                        };
-                        msg.user.avatar = standaz.attrs.avatar ?
-                            standaz.attrs.avatar : "http://m.imeitou.com/uploads/allimg/171123/3-1G123203S6-50.jpg";
-                        for (let child of standaz.children) {
-                            if (child.name === "body") {
-                                msg.text = child.children[0];
-                            }
-                            if (child.name === "delay"){
-                                msg.createAt=child.attrs.stamp;
-                            }
-                            if (child.name === "stanza-id") {
-                                msg._id = child.attrs.id;
-                            }
-                        }
-                        if (!msg.createAt) {
-                            msg.createAt = new Date();
-                        }
-                        if (msg.text) {
-                            this.props.addMessage("test@conference.202.120.40.8", msg);
-                        } else {
-                            console.warn("is message, but no body");
-                        }
-                    }
-                    console.log(this.props.chatRoomList);
-                }
-            }
-        )
-    };
-    logout = () => {
-        XmppUtil.logout();
-    };
-    toChatRoom = (room) => {
-          NavigationUtil.toPage({
-                avatar: "https://assets.pub.bitrabbit.com/uploads/user/avatar/638/1515610232-vkCOFYmeKd.jpg",
-                username: this.state.username,
-                recipient: room.roomId,
-          }, "ChatRoom");
-    };
-    sendMessage = () => {
-        const message = xml('message', {
-                type: 'chat', to: recipient
-            },
-            xml('subject', {}, '测试'),
-            xml('body', {}, '测试内容'),
-        );
-        XmppUtil.sendMessage(message);
-    };
-    getChatList = () => {
-        XmppUtil.getChatList()
-    }
 }
 const mapStateToProps = state => ({
-    chatRoomList: state.xmpp.chatRoomList,
+    xmpp: state.xmpp,
+    user: state.user,
 });
 const mapDispatchToProps = dispatch => ({
-    initChatRoomList: list => dispatch(initChatRoomList(list)),
-    addMessage: (room, message) => dispatch(addMessage(room, message))
+    onLoadingChatRoom: () => dispatch({type: ON_LOADING_CHAT_ROOM}),
+    chatRoomLoaded: () => dispatch({type: CHAT_ROOM_LOADED}),
+    onSendMessage: (room, message) => dispatch(onSendMessage(room, message)),
+    addChatRoom: (room, roomName) => dispatch(addChatRoom(room, roomName))
 });
+
 export default connect(mapStateToProps, mapDispatchToProps)(GroupChatScreen);

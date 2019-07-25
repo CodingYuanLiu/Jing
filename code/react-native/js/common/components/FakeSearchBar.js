@@ -2,7 +2,7 @@ import { PropTypes } from "prop-types";
 import React from "react";
 import { ViewPropTypes, View, Text, TouchableNativeFeedback, StyleSheet, Platform } from "react-native";
 import Theme from "../constant/Theme";
-import Default from "../constant/Default";
+import Default from "../constant/Constant";
 
 export default class NavigationBar extends React.Component{
     constructor(props) {

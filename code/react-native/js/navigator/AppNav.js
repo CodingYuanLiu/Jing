@@ -50,7 +50,7 @@ const MainNav = createStackNavigator(
         Search: {
             screen: SearchScreen,
         },
-        PublishCommon: {
+        PublishStack: {
             screen: PublishStack,
         },
         PersonalHome: {

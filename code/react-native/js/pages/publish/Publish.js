@@ -24,9 +24,9 @@ class PublishScreen extends React.PureComponent{
         StatusBar.setHidden(false, "fade");
         NavigationUtil.back(this.props)
     };
-    toPublishCommon = type => {
+    toPublishPage = type => {
         this.props.setPublishActCommon(type, this.props.title, this.props.endTime);
-        NavigationUtil.toPage({actType: type}, "PublishCommon");
+        NavigationUtil.toPage({actType: type}, "PublishPage");
         /*
         if (this.props.logged) {
             NavigationUtil.toPage({actType: type}, "PublishCommon");
@@ -43,7 +43,7 @@ class PublishScreen extends React.PureComponent{
             type={"font-awesome"}
             name={"taxi"}
             color={"#0072ff"}
-            onPress={() => {this.toPublishCommon("taxi")}}
+            onPress={() => {this.toPublishPage("taxi")}}
             />;
         const taxiTitle = "发起拼车";
         const shopping =
@@ -52,7 +52,7 @@ class PublishScreen extends React.PureComponent{
                  type={"font-awesome"}
                  name={"shopping-bag"}
                  color={"#007bff"}
-                 onPress={() => {this.toPublishCommon("order")}}
+                 onPress={() => {this.toPublishPage("order")}}
             />;
         const shoppingTitle = "拼网购";
         const takeOut =
@@ -61,7 +61,7 @@ class PublishScreen extends React.PureComponent{
                 type={"material-community"}
                 name={"food"}
                 color={"#0090ff"}
-                onPress={() => {this.toPublishCommon("takeout")}}
+                onPress={() => {this.toPublishPage("takeout")}}
             />;
         const takeOutTitle = "拼外卖";
         const activity =
@@ -70,7 +70,7 @@ class PublishScreen extends React.PureComponent{
                 type={"ionicon"}
                 name={"md-contacts"}
                 color={"#009eff"}
-                onPress={() => {this.toPublishCommon("other")}}
+                onPress={() => {this.toPublishPage("other")}}
             />;
         const activityTitle = "发起活动";
         return(
@@ -82,10 +82,6 @@ class PublishScreen extends React.PureComponent{
                     size={32}
                     color={"#d3d3d3"}
                     onPress={this.fadeOut}
-                    />
-                    <Button
-                        title={"去测试页面"}
-                        onPress={() => {this.props.setPublishActCommon("taxi", this.props.title, this.props.endTime);NavigationUtil.toPage(null, "PublishPage")}}
                     />
                 </View>
                 <View style={styles.main}>

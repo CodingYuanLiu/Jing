@@ -228,6 +228,24 @@ class EmojiIcon extends React.PureComponent{
             />)
     }
 }
+
+class LeftUpArrowIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props
+        return (
+            <Icon
+                type={"feather"}
+                name={"arrow-left-up"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -243,4 +261,5 @@ export {
     CloseIcon,
     CommentIcon,
     EmojiIcon,
+    LeftUpArrowIcon,
 }

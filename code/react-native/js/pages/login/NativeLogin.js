@@ -6,15 +6,16 @@ import Fontisto from "react-native-vector-icons/Fontisto";
 import { SafeAreaView } from 'react-navigation';
 import NavigationUtil from '../../navigator/NavUtil';
 import Api from "../../api/Api";
-import UserDao from "../../api/dao/UserDao"
-import {login, setUserInfo} from '../../actions/user';
+import Dao from "../../api/dao/Dao"
+import {login, setUser, setUserInfo} from '../../actions/user';
 import {connect} from "react-redux";
-import Default from "../../common/constant/Default";
+import Default from "../../common/constant/Constant";
 import Theme from "../../common/constant/Theme";
+import XmppApi from "../../api/XmppApi";
 
 class LoginScreen extends React.PureComponent {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             username: "",
             password: "",
@@ -31,22 +32,34 @@ class LoginScreen extends React.PureComponent {
         }
         Api.login(name, pwd)
             .then(jwt => {
-                UserDao.saveString("@jwt", jwt)
+                Dao.saveString("@jwt", jwt)
                     .then(() => {
-                        Api.isOnline(jwt)
+                        Api.getSelfDetail(jwt)
                             .then(data => {
-                                let user = {
-                                    nickname: data.nickname,
-                                    signature: data.signature === "" ? Default.DEFAULT_SIGNATURE : data.signature,
-                                    avatarUri: Default.DEFAULT_AVATAR,
-                                };
-                                this.setState({
-                                    isLoading: false,
-                                });
-
-                                this.props.onLogin(jwt);
-                                this.props.setUser(user);
-                                NavigationUtil.toPage(null,"Home");
+                                console.log(data);
+                                XmppApi.login('aa', 'aa')
+                                    .then(() => {
+                                        console.log("Login ok");
+                                        this.props.setUser({
+                                            avatar: data.avatar_url,
+                                            birthday: data.birthday,
+                                            dormitory: data.dormitory,
+                                            gender: data.gender,
+                                            id: data.id,
+                                            jaccount: data.jaccount,
+                                            jwt: data.jwt,
+                                            major: data.major,
+                                            nickname: data.nickname,
+                                            password: data.password,
+                                            phone: data.phone,
+                                            signature: data.signature,
+                                            username: data.username,
+                                        });
+                                        NavigationUtil.toPage(null,"Home");
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    })
                             })
                     })
             }).catch(err => {
@@ -60,112 +73,126 @@ class LoginScreen extends React.PureComponent {
                 }
         })
     };
+
+    renderHeader = () => {
+        return (
+            <View style={styles.header}>
+                <Icon
+                    type={"AntDesign"}
+                    name={"close"}
+                    onPress={() => {NavigationUtil.toPage(null, "Home")}}
+                    color={"#a3a3a3"}
+                    size={32}
+                    iconStyle={styles.headerLeft}
+                />
+            </View>
+        )
+    };
+    renderBody = () => {
+        return (
+            <View style={styles.main}>
+                <View style={styles.inputContainer}>
+                    <Input
+                        leftIcon={
+                            <FontAwesome
+                                name={"user"}
+                                size={24}
+                                color={"#d3d3d3"}
+                            />
+                        }
+                        placeholder={"输入用户名"}
+                        textContentType={"username"}
+                        autoCompleteType={"username"}
+                        keyboardType={"email-address"}
+                        onChangeText={(username) => {this.handleUsername(username)}}
+                        value={this.state.username}
+                    />
+                    <Input
+                        leftIcon={
+                            <Fontisto
+                                name={"locked"}
+                                size={24}
+                                color={"#d3d3d3"}
+                            />
+                        }
+                        placeholder={"输入密码"}
+                        textContentType={"password"}
+                        autoCompleteType={"password"}
+                        secureTextEntry={true}
+                        onChangeText={(password) => {
+                            this.handlePassword(password)
+                        }}
+                        value={this.state.password}
+                    />
+                </View>
+
+                <View style={styles.buttonContainer}>
+                    <Button
+                        title={"登录"} style={styles.button}
+                        onPress={() => {
+                            const username = this.state.username;
+                            const password = this.state.password;
+                            this.login(username, password)
+                        }}
+                        loading={this.state.isLoading}
+                        disabled={this.state.btnDisabled}
+                        disabledStyle={styles.buttonDisabled}
+                        titleStyle={styles.buttonTitle}
+                        disabledTitleStyle={styles.buttonTitleDisabled}
+                    />
+                </View>
+                <View style={styles.tips}>
+                    <Text
+                        style={styles.tipsLeft}
+                        onPress={() => {NavigationUtil.toPage(this.props, "ActDetail")}}
+                    >忘记密码？</Text>
+                    <Text
+                        style={styles.tipsRight}
+                        onPress={() => {NavigationUtil.toPage(this.props, "JaccountLogin")}}
+                    >Jaccount登录</Text>
+                </View>
+            </View>
+        )
+    };
     render() {
+        let header = this.renderHeader();
+        let body = this.renderBody();
         return (
             <SafeAreaView style={{flex: 1}}>
-
                 <View style={styles.container}>
-                    <View style={styles.header}>
-                        <Icon
-                            type={"AntDesign"}
-                            name={"close"}
-                            onPress={() => {NavigationUtil.toPage(null, "Home")}}
-                            color={"#a3a3a3"}
-                            size={32}
-                            iconStyle={styles.headerLeft}
-                        />
-                    </View>
-
+                    {header}
                     <View style={styles.title}>
                         <Text h3>密码登录</Text>
                     </View>
-
-                    <View style={styles.main}>
-                        <View style={styles.inputContainer}>
-                            <Input
-                                leftIcon={
-                                    <FontAwesome
-                                        name={"user"}
-                                        size={24}
-                                        color={"#d3d3d3"}
-                                    />
-                                }
-                                placeholder={"输入用户名"}
-                                textContentType={"username"}
-                                autoCompleteType={"username"}
-                                keyboardType={"email-address"}
-                                onChangeText={(username) => {
-                                    this.setState({username})
-                                    if(this.state.password.length >= 8 && username !== "") {
-                                        this.setState({btnDisabled: false})
-                                    } else {
-                                        this.setState({btnDisabled: true})
-                                    }
-                                }}
-                                value={this.state.username}
-                            />
-                            <Input
-                                leftIcon={
-                                    <Fontisto
-                                        name={"locked"}
-                                        size={24}
-                                        color={"#d3d3d3"}
-                                    />
-                                }
-                                placeholder={"输入密码"}
-                                textContentType={"password"}
-                                autoCompleteType={"password"}
-                                secureTextEntry={true}
-                                onChangeText={(password) => {
-                                    this.setState({password})
-                                    if(password.length >= 8 && this.state.username !== "") {
-                                        this.setState({btnDisabled: false})
-                                    } else {
-                                        this.setState({btnDisabled: true})
-                                    }
-                                }}
-                                value={this.state.password}
-                            />
-                        </View>
-
-                        <View style={styles.buttonContainer}>
-                            <Button
-                                title={"登录"} style={styles.button}
-                                onPress={() => {
-                                    const username = this.state.username;
-                                    const password = this.state.password;
-                                    this.login(username, password)
-                                }}
-                                loading={this.state.isLoading}
-                                disabled={this.state.btnDisabled}
-                                disabledStyle={styles.buttonDisabled}
-                                titleStyle={styles.buttonTitle}
-                                disabledTitleStyle={styles.buttonTitleDisabled}
-                            />
-                        </View>
-                        <View style={styles.tips}>
-                            <Text
-                                style={styles.tipsLeft}
-                                onPress={() => {NavigationUtil.toPage(this.props, "ActDetail")}}
-                            >忘记密码？</Text>
-                            <Text
-                                style={styles.tipsRight}
-                                onPress={() => {NavigationUtil.toPage(this.props, "JaccountLogin")}}
-                            >Jaccount登录</Text>
-                        </View>
-                    </View>
+                    {body}
                     <View style={styles.bottom}>
                         <Text>底部</Text>
                     </View>
                 </View>
             </SafeAreaView>
         )
-    }
+    };
+    handleUsername = (username) => {
+        this.setState({username});
+        if(this.state.password.length >= 8 && username !== "") {
+            this.setState({btnDisabled: false})
+        } else {
+            this.setState({btnDisabled: true})
+        }
+    };
+    handlePassword = (password) => {
+        this.setState({password});
+        if(password.length >= 8 && this.state.username !== "") {
+            this.setState({btnDisabled: false})
+        } else {
+            this.setState({btnDisabled: true})
+        }
+    };
 }
 
 const mapDispatchToProps = dispatch => ({
     onLogin: (jwt) => dispatch(login(jwt)),
-    setUser: (user) => dispatch(setUserInfo(user)),
+    setUser: (user) => dispatch(setUser(user)),
 });
 
 export default connect(null, mapDispatchToProps)(LoginScreen)

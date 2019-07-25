@@ -1,4 +1,5 @@
-import React from "react"
+import React from "react";
+import {View, Text} from "react-native";
 import { WebView } from 'react-native-webview';
 import NavigationUtil from '../../navigator/NavUtil';
 
@@ -43,7 +44,6 @@ export default class JaccountWebView extends React.Component{
                 startInLoadingState={true}
                 renderError={err => (<View><Text>{err}</Text></View>)}
                 onNavigationStateChange={navState => {this.onNavStateChange(navState)}}
-                injectedJavaScript={this.injectedJS}
                 onMessage={event => {alert(event.nativeEvent.data)}}
                 useWebKit={false}
                 />

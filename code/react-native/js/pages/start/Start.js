@@ -1,9 +1,9 @@
 import React from "react";
 import {View, Text, StyleSheet} from "react-native";
 import NavigationUtil from '../../navigator/NavUtil';
+import {connect} from "react-redux";
 
-
-export default class Start extends React.Component {
+export default class StartPage extends React.Component {
     constructor(props) {
         super(props)
     }
@@ -11,7 +11,7 @@ export default class Start extends React.Component {
     componentDidMount() {
         this.timer = setTimeout(() => {
             NavigationUtil.toHomePage(this.props)
-        }, 200)
+        }, 200);
     }
 
     componentWillUnmount() {
@@ -34,6 +34,7 @@ styles = StyleSheet.create({
         alignItems: "center",
     },
     text: {
-        height: 50,
+        color: "#0084ff",
+        fontSize: 40,
     }
-})
+});

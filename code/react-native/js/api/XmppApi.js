@@ -1,7 +1,7 @@
 const {client, jid} = require("@xmpp/client");
 const xml = require('@xmpp/xml');
 
-export default class XmppUtil {
+export default class XmppApi {
     static xmpp;
 
     static init(username, password, debug = true) {
@@ -60,44 +60,10 @@ export default class XmppUtil {
     }) {
         this.xmpp.on('stanza', callback);
     }
-    static register(username, password) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
-        const xmpp = client({
-            service: 'ws://202.120.40.8:30256/ws',
-            username: '__reg__',
-            password: '__reg__',
-        });
-
-        xmpp.start().catch(console.error);
-        xmpp.on('online', async address => {
-            xmpp.send(
-                xml('iq', {type: 'set', id: 'reg2'},
-                    xml('query', {xmlns: 'jabber:iq:register'},
-                        xml('username', {}, username),
-                        xml('email', {}, 'dfyshisb@163.com'),
-                        xml('name', {}, '测试用户'),
-                        xml('password', {}, password),
-                    )
-                )
-            )
-        });
-        xmpp.on('stanza', async stanza => {
-            if (stanza.is('iq') && stanza.attrs.id === 'reg2') {
-                const type = stanza.attrs.type;
-                if (type === 'error') {
-                    console.log("Register error");
-                } else {
-                    console.log("Register successfully");
-                }
-                xmpp.stop();
-            }
-        });
-    }
 
     static login(username, password){
         this.init(username, password);
-        this.xmpp.start().catch(console.error);
+        return this.xmpp.start()
     }
 
     static logout() {
@@ -119,7 +85,6 @@ export default class XmppUtil {
         return new Promise((resolve, reject) => {
             this.xmpp.send(
                 xml('iq', {
-                    from: 'user3@202.120.40.8',
                     type: 'get',
                     id: 'chatlist',
                     to: 'conference.202.120.40.8'
@@ -129,8 +94,42 @@ export default class XmppUtil {
             ).then(() => {
                 resolve()
             }).catch(err => {
-                reject()
+                reject(err)
             })
         })
+    }
+
+    static register(username, password) {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+        const xmpp = client({
+            service: 'ws://202.120.40.8:30256/ws',
+            username: '__reg__',
+            password: '__reg__',
+        });
+        xmpp.on('stanza', async stanza => {
+            if (stanza.is('iq') && stanza.attrs.id === 'reg2') {
+                const type = stanza.attrs.type;
+                if (type === 'error') {
+                    console.log("Register error");
+                } else {
+                    console.log("Register successfully");
+                }
+                xmpp.stop();
+            }
+        });
+        xmpp.on('online', async address => {
+            xmpp.send(
+                xml('iq', {type: 'set', id: 'reg2'},
+                    xml('query', {xmlns: 'jabber:iq:register'},
+                        xml('username', {}, username),
+                        xml('email', {}, 'dfyshisb@163.com'),
+                        xml('name', {}, '测试用户'),
+                        xml('password', {}, password),
+                    )
+                )
+            )
+        });
+        return xmpp.start();
     }
 }

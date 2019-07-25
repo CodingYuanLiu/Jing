@@ -2,11 +2,12 @@ import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import {Button, Image} from "react-native-elements"
 import Api from '../../api/Api';
-import {login, setUserInfo} from '../../actions/user';
+import {login, setUser} from '../../actions/user';
 import {connect} from 'react-redux';
-import UserDao from '../../api/dao/UserDao';
+import Dao from '../../api/dao/Dao';
 import NavigationUtil from '../../navigator/NavUtil';
-import Default from "../../common/constant/Default";
+import Default from "../../common/constant/Constant";
+import XmppApi from "../../api/XmppApi";
 
 class JaccountLoadingScreen extends React.PureComponent{
     constructor(props) {
@@ -22,26 +23,42 @@ class JaccountLoadingScreen extends React.PureComponent{
 
         Api.loginWithJaccount(code, redirectUri)
             .then(data => {
-                UserDao.saveString("@jwt", data.jwt_token)
-                    .then((saveStatus) => {
+                Dao.saveString("@jwt", data.jwt_token)
+                    .then(() => {
 
                         // status = 12, first login with our app, redirect to register page
-                        if (data.status == 12) {
+                        if (data.status === 12) {
                             NavigationUtil.toPage({jwt:data.jwt_token}, "Register")
+                        }
                         // status = 0, login success, redirect to home page
-                        } else if (data.status == 0) {
+                        else if (data.status === 0) {
                             // get user information, is there anyway that
                             // don't get user status in this page, but in userinfo page
-                            Api.isOnline(data.jwt_token)
-                                .then(state => {
-                                    let user = {
-                                        nickname: state.nickname,
-                                        signature: state.signature === "" ? Default.DEFAULT_SIGNATURE : state.signature,
-                                        avatarUri: Default.DEFAULT_AVATAR,
-                                    }
-                                    this.props.onLogin(data.jwt_token)
-                                    this.props.setUser(user)
-                                    NavigationUtil.toPage(null, "Home")
+                            Api.getSelfDetail(data.jwt_token)
+                                .then(user => {
+                                    XmppApi.login('aa', 'aa')
+                                        .then(() => {
+                                            console.log("Login ok");
+                                            this.props.setUser({
+                                                avatar: user.avatar_url,
+                                                birthday: user.birthday,
+                                                dormitory: user.dormitory,
+                                                gender: user.gender,
+                                                id: user.id,
+                                                jaccount: user.jaccount,
+                                                jwt: user.jwt,
+                                                major: user.major,
+                                                nickname: user.nickname,
+                                                password: user.password,
+                                                phone: user.phone,
+                                                signature: user.signature,
+                                                username: user.username,
+                                            });
+                                            NavigationUtil.toPage(null,"Home");
+                                        })
+                                        .catch(err => {
+                                            console.log(err);
+                                        });
                                 })
                         } else {
                             throw new Error("In jaccount loading, status is not 0 or 12")
@@ -49,7 +66,7 @@ class JaccountLoadingScreen extends React.PureComponent{
                     })
             })
             .catch(err => {
-                console.log("In jaccount loading, ", err)
+                console.log("In jaccount loading, ", err);
                 this.setState({error:true})
             })
     }
@@ -68,7 +85,11 @@ class JaccountLoadingScreen extends React.PureComponent{
         const renderError =
             <View style={styles.container}>
                 <Text style={styles.text}>似乎出了点问题</Text>
-            </View>
+                <Button
+                title={"返回App"}
+                onPress={() => {NavigationUtil.toPage(null, "Home")}}
+                />
+            </View>;
         let isError = this.state.error;
         return(
             <View style={styles.container}>
@@ -80,8 +101,8 @@ class JaccountLoadingScreen extends React.PureComponent{
 
 const mapDispatchToProps = dispatch => ({
     onLogin: (jwt) => dispatch(login(jwt)),
-    setUser: user => dispatch(setUserInfo(user))
-})
+    setUser: user => dispatch(setUser(user))
+});
 
 export default connect(null, mapDispatchToProps)(JaccountLoadingScreen)
 

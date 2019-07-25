@@ -4,11 +4,11 @@ import NavigationBar from "../../common/components/NavigationBar"
 import Api from "../../api/Api"
 import {Button, Icon, Image, ListItem, Avatar} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
-import Default from "../../common/constant/Default";
+import Default from "../../common/constant/Constant";
 import {CommentIcon, PlusIcon} from "../../common/components/Icons";
 import Tag from "../../common/components/Tag";
-import Modal from "react-native-modal";
-import CommentModal from "./CommentModal";
+
+
 export default class DetailScreen extends React.Component {
     constructor(props) {
         super(props)

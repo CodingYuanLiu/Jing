@@ -1,12 +1,13 @@
 import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import {Input, Button, Overlay} from "react-native-elements"
-import UserDao from "../../api/dao/UserDao";
-import {login, setUserInfo} from "../../actions/user";
+import Dao from "../../api/dao/Dao";
+import {login, setUser, setUserInfo} from "../../actions/user";
 import {connect} from "react-redux";
 import Api from "../../api/Api"
 import NavigationUtil from "../../navigator/NavUtil";
-import defaults from "../../common/constant/Default"
+import XmppApi from "../../api/XmppApi";
+import Util from "../../common/util";
 
 
 const errors = {
@@ -14,7 +15,7 @@ const errors = {
     incomplete: "缺少字段哦～",
     duplicateUsername: "用户名已经被占用啦～",
     networkError: "亲，网络故障啦～",
-}
+};
 
 class RegisterScreen extends React.PureComponent{
     constructor(props) {
@@ -27,25 +28,19 @@ class RegisterScreen extends React.PureComponent{
             nickname: "",
             error: false,
             errorMessage: "",
+            success:false,
         }
     }
 
-    componentDidMount() {
-        console.log(this.props.navigation.state.params)
-        console.log(this.props.navigation.getParam("jwt"))
-    }
-
     register = () => {
-        const jwt = this.props.navigation.getParam("jwt")
-        console.log(this.props.navigation.state.params)
-        console.log(this.props.navigation.getParam("jwt"))
+        const jwt = this.props.navigation.getParam("jwt");
 
         let data = {
             username: this.state.username,
             password: this.state.password,
             phone: this.state.phone,
             nickname: this.state.nickname,
-        }
+        };
         if (this.state.password !== this.state.confirmPassword) {
             this.setState({error : true, errorMessage: errors.passwordNotMatch})
         } else if (this.state.username === "" ||
@@ -55,28 +50,49 @@ class RegisterScreen extends React.PureComponent{
             this.setState({error: true, errorMessage: errors.incomplete})
         } else {
             Api.register(data, jwt)
-                .then( res => {
-                    UserDao.saveString("@jwt", jwt)
-                        .then(saveStatus => {})
-                        .catch(err => {})
-                    UserDao.saveJson("@user", {
-                            username: data.username,
-                            nickname: data.nickname,
-                            signature: defaults.DEFAULT_SIGNATURE,
-                    })
-                        .then(saveStatus => {})
-                        .catch(err => {})
-                    this.props.onLogin(jwt)
-                    this.props.setUser({
-                        username: this.state.nickname,
-                        signature: defaults.DEFAULT_SIGNATURE,
-                    })
-
-                    NavigationUtil.toPage(null, "Home")
-
+                .then( () => {
+                    Api.getSelfDetail(jwt)
+                        .then(data => {
+                            let password = Util.cryptoOnpenFire(data.username, data.password);
+                            console.log(password);
+                            console.log(data.username, password);
+                            XmppApi.register(
+                                data.username,
+                                password,
+                            )
+                                .then(() => {
+                                    this.props.setUser({
+                                        avatar: data.avatar_url,
+                                        birthday: data.birthday,
+                                        dormitory: data.dormitory,
+                                        gender: data.gender,
+                                        id: data.id,
+                                        jaccount: data.jaccount,
+                                        jwt: data.jwt,
+                                        major: data.major,
+                                        nickname: data.nickname,
+                                        password: data.password,
+                                        phone: data.phone,
+                                        signature: data.signature,
+                                        username: data.username,
+                                    });
+                                    this.setState({success: true});
+                                })
+                                .catch(err => {
+                                    console.log(err)
+                                })
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                    Dao.saveString("@jwt", jwt)
+                        .then(() => {})
+                        .catch(err => {
+                            Console.log(err);
+                        });
                 })
                 .catch(err => {
-                    console.log("Err: In Register APi err:" ,err)
+                    console.log("Err: In Register APi err:" ,err);
                     if (err.status === 400){
                         this.setState({error: true, errorMessage: errors.duplicateUsername})
                     } else {
@@ -84,7 +100,7 @@ class RegisterScreen extends React.PureComponent{
                     }
                 })
         }
-    }
+    };
 
     render() {
         return(
@@ -131,7 +147,7 @@ class RegisterScreen extends React.PureComponent{
                 </View>
                 <View style={styles.buttonContainer}>
                     <Button
-                        title={"填写完啦～"}
+                        title={"确定"}
                         onPress={() => {this.register()}}
                     />
                 </View>
@@ -142,7 +158,18 @@ class RegisterScreen extends React.PureComponent{
                         <Text>{this.state.errorMessage}</Text>
                         <Button
                             title={"确定"}
-                            onPress={() => {this.setState({error: false})}}
+                            onPress={() => {this.setState({error: false}) ;NavigationUtil.toPage(null, "Home")}}
+                        />
+                    </View>
+                </Overlay>
+                <Overlay
+                    isVisible={this.state.success}
+                >
+                    <View>
+                        <Text>注册成功</Text>
+                        <Button
+                            title={"确定"}
+                            onPress={() => {this.setState({success: false});NavigationUtil.toPage(null, "Home")}}
                         />
                     </View>
                 </Overlay>
@@ -153,8 +180,8 @@ class RegisterScreen extends React.PureComponent{
 
 const mapDispatchToProps = dispatch => ({
     onLogin: jwt => dispatch(login(jwt)),
-    setUser: user => dispatch(setUserInfo(user)),
-})
+    setUser: user => dispatch(setUser(user)),
+});
 
 export default connect(null, mapDispatchToProps)(RegisterScreen)
 
@@ -164,4 +191,4 @@ const styles = StyleSheet.create({
     },
     formStyle: {
     }
-})
+});

@@ -1,13 +1,13 @@
 import {
-    ADD_XMPP_MESSAGE,
-    INIT_XMPP_CHATROOMLIST,
-    XMPP_LOGIN,
-    XMPP_LOGOUT,
-    XMPP_SET_USER,
+    ADD_CHAT_ROOM,
+    CHAT_ROOM_LOADED,
+    ON_LOADING_CHAT_ROOM,
+    ON_SEND_MESSAGE,
+
 } from "../common/constant/ActionTypes"
 
 const initialState = {
-    chatRoomList: [],
+    roomList: [],
 };
 
 const initRoomList = (chatRoomList) => {
@@ -36,14 +36,36 @@ const addMessageToList = (chatRoom, message, list) => {
 };
 const chatRoom = (state=initialState, action) => {
     switch (action.type) {
-        case INIT_XMPP_CHATROOMLIST:
-            return Object.assign({}, state, {
-                chatRoomList: initRoomList(action.chatRoomList)
-            });
-        case ADD_XMPP_MESSAGE:
-            return Object.assign({}, state, {
-                chatRoomList: addMessageToList(action.chatRoom, action.message, state.chatRoomList),
-            });
+        case ON_SEND_MESSAGE:
+            return {
+                ...state,
+                [action.room]: {
+                    ...state[action.room],
+                    messages: state[action.room] && state[action.room].messages?
+                        [action.message, ...state[action.room].messages]
+                        : [action.message]
+                }
+            };
+        case ADD_CHAT_ROOM:
+            return {
+                ...state,
+                [action.room]: {
+                    ...state[action.room],
+                    id: action.room,
+                    name: action.roomName
+                },
+                roomList: [{id: action.room, name: action.roomName}, ...state.roomList],
+            };
+        case ON_LOADING_CHAT_ROOM:
+            return {
+                ...state,
+                isLoading: true,
+            };
+        case CHAT_ROOM_LOADED:
+            return {
+                ...state,
+                isLoading: false,
+            };
         default:
             return state;
     }

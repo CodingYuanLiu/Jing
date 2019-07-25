@@ -7,10 +7,8 @@ import NavigationUtil from '../../navigator/NavUtil';
 import LoginMenu from './components/LoginMenu';
 import { connect } from "react-redux"
 import { Button } from 'react-native-elements';
-import UserDao from '../../api/dao/UserDao';
-import Api from "../../api/Api"
+import Dao from '../../api/dao/Dao';
 import {login, logout, setUserInfo} from '../../actions/user';
-import Default from "../../common/constant/Default";
 import LinearGradient from "react-native-linear-gradient";
 
 
@@ -18,39 +16,6 @@ class MeScreen extends React.PureComponent{
     constructor(props) {
         super(props);
     }
-
-    componentDidMount() {
-        UserDao.get("@jwt")
-            .then(jwt => {
-                Api.isOnline(jwt)
-                    .then(data => {
-                        this.props.onLogin(jwt)
-                        let user = {
-                            nickname: data.nickname,
-                            signature: data.signature === "" ? Default.DEFAULT_SIGNATURE : data.signature,
-                            avatarUri: Default.DEFAULT_AVATAR,
-                        }
-                        console.log(data)
-                        this.props.setUser(user)
-                        UserDao.saveJson("@user", user)
-                            .then(data => {
-                                // ...
-                            })
-                            .catch(err => {
-                                console.log("Err, in Me", err)
-                            })
-                    })
-                    .catch(err => {
-                        console.log("Err, in Me isOnline judge",err)
-                    })
-            })
-            .catch(err => {
-                console.log( "Err, in Me, get jwt", err)
-            })
-    }
-
-    componentWillUnmount() {}
-
     renderItem = ({item}) => {
         return <ListItem
             title={item.title}
@@ -61,35 +26,35 @@ class MeScreen extends React.PureComponent{
     };
 
     logout = () => {
-        this.props.onLogout()
-        UserDao.remove("@user")
-            .catch(err => {
-                //...
-        })
+        this.props.onLogout();
+        Dao.remove("@user")
+            .catch(err => {});
+        Dao.remove("@jwt")
+            .catch(err => {})
     };
 
     render() {
-        const user = this.props.user.user;
+        const user = this.props.user;
         const {logged} = this.props.user;
         const dataList = [
-            {data:7, label: "关注"},
-            {data:8, label: "粉丝"},
-            {data:15, label: "活动"},
-            {data:20, label: "点赞"},
+            {data:0, label: "关注"},
+            {data:0, label: "粉丝"},
+            {data:0, label: "活动"},
+            {data:0, label: "点赞"},
         ];
         const itemList = [
             {title: "我发布的", key: "MyAct", data: 0},
             {title: "我参与的", key: "FinishAct", data: 0},
             {title: "我的群聊", key: "GroupChat", data: 0},
         ];
-
+        console.log(this.props);
         const topCard = logged ?
             <InfoCard
                 user={user}
                 style={{borderTopLeftRadius: 6, borderTopRightRadius: 6,}}
                 onPress={() => {NavigationUtil.toPage(this.props, "PersonalHome")}}
             /> :
-            <LoginMenu/>
+            <LoginMenu/>;
         return(
             <View style={styles.container}>
                 <LinearGradient

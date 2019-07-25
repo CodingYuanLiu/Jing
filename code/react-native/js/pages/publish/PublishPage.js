@@ -27,6 +27,8 @@ class PublishPage extends React.PureComponent{
             images: [],
             endTimePickerVisible: false,
             specTimePickerVisible: false,
+            saved: false,
+            published: false,
         }
     }
 
@@ -38,9 +40,10 @@ class PublishPage extends React.PureComponent{
         return (
             <PublishHeader
                 style={styles.headerContainer}
-                onClose={() => {NavigationUtil.back(this.props)}}
+                onClose={() => {NavigationUtil.toPage(null, "Home")}}
                 onPublish={this.publish}
                 buttonTitle={"发布"}
+                buttonType={"solid"}
             />
         );
     };
@@ -226,12 +229,11 @@ class PublishPage extends React.PureComponent{
                         }
                         {imagePicker}
                     </View>
-                    <View style={styles.menuContainer}>
+
                         {commonMenubar}
                         {specMenubar}
                         {endTimePicker}
                         {specTimePicker}
-                    </View>
                 </ScrollView>
             </View>
         )
@@ -314,7 +316,7 @@ class PublishPage extends React.PureComponent{
         })
     };
     handleClickOriginDest = () => {
-        NavigationUtil.toPage()
+        NavigationUtil.toPage(null, "PublishTaxiSpec")
     };
     handleClickTakeoutStore = () => {
 
@@ -429,7 +431,6 @@ const styles = StyleSheet.create({
         marginTop: 0,
     },
     mainContainer: {
-        minHeight: "100%",
         backgroundColor: "#fff",
     },
     textInputTitle: {
@@ -441,7 +442,7 @@ const styles = StyleSheet.create({
     textInputBody: {
         paddingLeft: "6%",
         paddingRight: "6%",
-        height: 140,
+        height: 100,
         fontSize: 18,
         color: "#3a3a3a",
     },

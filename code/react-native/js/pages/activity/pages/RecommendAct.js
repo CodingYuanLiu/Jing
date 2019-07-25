@@ -1,33 +1,28 @@
 import React from "react"
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import Default from "../../../common/constant/Default";
+import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
+import Default from "../../../common/constant/Constant";
 import ActItem from "../components/ActItem";
 import NavigationUtil from "../../../navigator/NavUtil";
-import Api from "../../../api/Api";
+import Activity from "../../../actions/activity";
+import {connect} from "react-redux";
 
-export default class RecommendAct extends React.Component{
+class RecommendAct extends React.Component{
     constructor(props) {
         super(props);
-        this.state = {
-            activities: [],
-            isLoading: true
-        }
     }
-
     componentDidMount() {
-        /*
-        Api.getAllAct()
-            .then(data => {
-                console.log(data);
-                this.setState({activities: data});
-            })
-            .catch(err => {
-                console.log(err)
-            })
-
-         */
+        this.loadData();
     }
 
+    loadData = () => {
+        let {onLoadRecommendAct} = this.props;
+        let {jwt} = this.props.user;
+        if (jwt) {
+            onLoadRecommendAct(jwt);
+        } else {
+            //...
+        }
+    };
     renderItem = ({item}) => {
         return (
         <ActItem
@@ -36,7 +31,7 @@ export default class RecommendAct extends React.Component{
             user={{
                 id: item.sponsor_id,
                 nickname: item.sponsor_username,
-                signature: Default.DEFAULT_SIGNATURE,
+                signature: item.signature,
                 avatarUri: Default.DEFAULT_AVATAR,
             }}
             bodyText={item.description}
@@ -61,7 +56,7 @@ export default class RecommendAct extends React.Component{
                     store: item.store,
                 } : null
             }
-            normalSpecInfo={
+            otherSpecInfo={
                 item.type === "other" ? {
                     activityTime: item.activity_time,
                 } : null
@@ -69,35 +64,56 @@ export default class RecommendAct extends React.Component{
             metadata={
                 {
                     comments: item.comments.length,
-                    participants: 10, // we don't have participants data here
+                    participants: 0, // we don't have participants data here
                 }
             }
             onPress={() => {this._onPressItem(item.act_id)}}
         />)
-    }
-
+    };
     _onPressItem = (id: number) => {
         NavigationUtil.toPage({id:id}, "ActDetail")
-    }
+    };
 
     render() {
-
+        let {recommendAct} = this.props;
+        let activities = recommendAct.items;
+        if (!activities) {
+            activities=[];
+        }
         return(
             <View style={styles.container}>
                 <FlatList
-                    data={this.state.activities}
+                    data={activities}
                     renderItem={this.renderItem}
-                    extraData={this.state}
-                    keyExtractor={(item, index) => (item.act_id.toString())}
+                    keyExtractor={item => (item.act_id.toString())}
+                    refreshControl={
+                        <RefreshControl
+                            title={"加载中..."}
+                            titleColor={"#0084ff"}
+                            colors={["#0084ff"]}
+                            refreshing={recommendAct.isLoading}
+                            onRefresh={this.loadData}
+                            tintColor={"#0084ff"}
+                        />
+                    }
                 />
             </View>
         )
     }
 }
 
+const mapStateToProps = state => ({
+    recommendAct: state.recommendAct,
+    user: state.user,
+});
+const mapDispatchToProps = dispatch => ({
+    onLoadRecommendAct: (jwt) => dispatch(Activity.onLoadRecommendAct(jwt))
+});
+export default connect(mapStateToProps, mapDispatchToProps)(RecommendAct)
+
 const styles = StyleSheet.create({
     container:{
         flex: 1,
         backgroundColor: "#eeeeee"
     }
-})
+});

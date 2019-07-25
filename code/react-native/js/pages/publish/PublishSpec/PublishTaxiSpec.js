@@ -39,6 +39,7 @@ class PublishTaxiSpec extends React.PureComponent{
                 style={styles.headerContainer}
                 onClose={() => {NavigationUtil.back(this.props)}}
                 onNext={this.toNextPage}
+                buttonTitle={"确定"}
             />
             );
     };
@@ -108,10 +109,10 @@ class PublishTaxiSpec extends React.PureComponent{
     toNextPage = () => {
         if (this.state.origin === "" ||
             this.state.dest === "") {
-            alert("有空没有填哦～")
+            alert("有空没有填哦～");
             return;
         }
-        NavigationUtil.toPage({actType: "taxi"}, "PublishDetail")
+        NavigationUtil.back(this.props);
     };
 }
 

@@ -25,7 +25,7 @@ class TaxiSpec extends React.PureComponent {
                     <Text style={styles.time}>{departTime}</Text>
                 </View>
                 <View style={styles.departContainer}>
-                    <Text style={[styles.departLeftText]} numberOfLines={1} ellipsizeMode={"middle"}>{origin}</Text>
+                    <Text style={[styles.departLeftText]} numberOfLines={1} ellipsizeMode={"middle"}>{origin.title}</Text>
                     <View style={styles.arrowContainer}>
                         <FontAwesome
                             name={"long-arrow-right"}
@@ -33,7 +33,7 @@ class TaxiSpec extends React.PureComponent {
                             color={"#bfbfbf"}
                         />
                     </View>
-                    <Text style={[styles.departRightText]} numberOfLines={1} ellipsizeMode={"middle"}>{dest}</Text>
+                    <Text style={[styles.departRightText]} numberOfLines={1} ellipsizeMode={"middle"}>{dest.title}</Text>
                 </View>
             </View>
         )
@@ -43,9 +43,9 @@ class TaxiSpec extends React.PureComponent {
 TaxiSpec.propTypes = {
     departTime: PropTypes.string,
     endTime: PropTypes.string.isRequired,
-    dest: PropTypes.string.isRequired,
-    origin: PropTypes.string.isRequired,
-}
+    dest: PropTypes.object.isRequired,
+    origin: PropTypes.object.isRequired,
+};
 
 
 class  TakeoutSpec extends React.PureComponent{
@@ -62,7 +62,7 @@ class  TakeoutSpec extends React.PureComponent{
         else if (hour <= 24 && hour >= 21)
             return "有夜宵哎";
 
-    }
+    };
 
     render() {
         let endTime = this.props.endTime;
@@ -119,7 +119,7 @@ class OnlineShopSpec extends React.PureComponent{
 OnlineShopSpec.propTypes = {
     endTime: PropTypes.string.isRequired,
     store: PropTypes.string.isRequired,
-}
+};
 
 class NormalActSpec extends React.PureComponent{
     constructor(props) {
@@ -147,7 +147,7 @@ class NormalActSpec extends React.PureComponent{
 NormalActSpec.propTypes = {
     endTime: PropTypes.string.isRequired,
     activityTime: PropTypes.string.isRequired,
-}
+};
 
 export {
     TaxiSpec,
@@ -197,4 +197,4 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "row",
     },
-})
+});

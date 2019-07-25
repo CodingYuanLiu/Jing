@@ -1,4 +1,5 @@
 import * as actionTypes from "../common/constant/ActionTypes"
+import Api from "../api/Api";
 
 export const setCurrentActivity = act => ({
     type: actionTypes.SET_CURRENT_ACT,
@@ -57,3 +58,84 @@ export const setPublishActDetail = (images, description) => ({
         description: description,
     }
 });
+
+
+/**
+ * asynchronous action
+ */
+const onLoadRecommendAct = (jwt) => {
+    return dispatch => {
+        dispatch({
+            type: actionTypes.ON_LOADING_RECOMMEND,
+        });
+        Api.getRecommendAct(jwt)
+            .then(data => {
+                dispatch({
+                    type: actionTypes.LOADING_RECOMMEND_OK,
+                    items: data // what if data is null or undefined ?
+                });
+                console.log(data);
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch({
+                    type: actionTypes.LOADING_RECOMMEND_FAIL,
+                    err,
+                })
+            })
+    }
+};
+
+const onLoadMyAct = (jwt) => {
+    return dispatch => {
+        dispatch({
+            type: actionTypes.ON_LOADING_MY,
+        });
+        Api.getMyAct(jwt)
+            .then(data => {
+                dispatch({
+                    type: actionTypes.LOADING_MY_OK,
+                    items: data,
+                })
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch({
+                    type: actionTypes.LOADING_MY_FAIL,
+                    err,
+                })
+            })
+    }
+};
+
+const onLoadTypeAct = (type) => {
+    return dispatch => {
+        dispatch({
+            type: actionTypes.ON_LOADING_TYPE,
+            typeName: type,
+        });
+        Api.getActByType(type)
+            .then(data => {
+                dispatch({
+                    type: actionTypes.LOADING_TYPE_OK,
+                    items: data,
+                    typeName: type,
+                });
+                console.log(data);
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch({
+                    type: actionTypes.LOADING_TYPE_FAIL,
+                    err,
+                    typeName: type,
+                })
+            })
+    }
+};
+
+export default {
+    onLoadRecommendAct,
+    onLoadMyAct,
+    onLoadTypeAct,
+}

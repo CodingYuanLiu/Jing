@@ -1,21 +1,21 @@
 import {createStackNavigator} from "react-navigation";
-import PublishCommon from "./PublishCommon";
 import PublishTaxiSpec from "./PublishSpec/PublishTaxiSpec";
-import PublishDetail from "./PublishDetail";
 import PublishPage from "./PublishPage";
+import PublishTakeoutSpec from "./PublishSpec/PublishTakeoutSpec";
+import PublishOrderSpec from "./PublishSpec/PublishOrderSpec";
 
 export default createStackNavigator({
-    PublishCommon: {
-        screen: PublishCommon,
+    PublishPage: {
+        screen: PublishPage,
     },
     PublishTaxiSpec: {
         screen: PublishTaxiSpec,
     },
-    PublishDetail: {
-        screen: PublishDetail,
+    PublishTakeoutSpec: {
+        screen: PublishTakeoutSpec,
     },
-    PublishPage: {
-        screen: PublishPage,
+    PublishOrderSpec: {
+        screen: PublishOrderSpec,
     },
 }, {
     defaultNavigationOptions: {

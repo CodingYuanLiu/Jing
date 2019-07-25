@@ -3,7 +3,7 @@ import { View, Text, ViewPropTypes, StyleSheet, TouchableNativeFeedback } from '
 import { ListItem, Icon, Image } from "react-native-elements";
 import { PropTypes } from "prop-types";
 import {TaxiSpec, TakeoutSpec, OnlineShopSpec, NormalActSpec} from "./SpecInfo";
-import Default from "../../../common/constant/Default";
+import Default from "../../../common/constant/Constant";
 import Tag from "../../../common/components/Tag";
 
 export default class ActItem extends React.PureComponent{
@@ -50,7 +50,7 @@ export default class ActItem extends React.PureComponent{
                     orderTime={orderTime}
                 />
         } else {
-            let activityTime = this.props.normalSpecInfo.activityTime;
+            let activityTime = this.props.otherSpecInfo.activityTime;
             ActSpec =
                 <NormalActSpec
                     endTime={endTime}
@@ -171,8 +171,8 @@ const item =
 const TaxiSpecShape = {
     departTime: PropTypes.string,
     endTime: PropTypes.string,
-    source: PropTypes.string,
-    dest: PropTypes.string,
+    origin: PropTypes.object,
+    dest: PropTypes.object,
 };
 const OnlineShopSpecShape = {
     store: PropTypes.string,
@@ -188,7 +188,7 @@ const UserShape = {
     signature: PropTypes.string.isRequired,
     avatarUri: PropTypes.string.isRequired,
 };
-const normalSpecShape = {
+const otherSpecShape = {
     endTime: PropTypes.string,
     activityTime: PropTypes.string,
 };
@@ -199,20 +199,12 @@ ActItem.propTypes = {
     taxiSpecInfo: PropTypes.shape(TaxiSpecShape),
     shopSpecInfo: PropTypes.shape(OnlineShopSpecShape),
     takeoutSpecInfo: PropTypes.shape(TakeoutSpecShape),
-    normalSpecInfo: PropTypes.shape(normalSpecShape),
+    otherSpecInfo: PropTypes.shape(otherSpecShape),
     bodyText: PropTypes.string.isRequired,
     tags: PropTypes.arrayOf(PropTypes.string),
     type: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,
     metadata: PropTypes.object.isRequired,
-};
-
-ActItem.defaultProps = {
-    title: "测试",
-    type: "taxi",
-    user: {
-        avatarUri: Default.DEFAULT_AVATAR
-    }
 };
 
 const styles = StyleSheet.create({
@@ -223,7 +215,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         height: 240,
-        marginTop: 10,
         marginBottom: 10,
         paddingLeft: 10,
         paddingRight: 10,

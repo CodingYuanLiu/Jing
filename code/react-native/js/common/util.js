@@ -1,5 +1,6 @@
 import React from "react";
 import {Dimensions} from "react-native";
+import CryptoJs from "crypto-js";
 
 export default class Util {
     static dateTimeToString = date => {
@@ -8,12 +9,19 @@ export default class Util {
 
         let timeString = date.toTimeString();
         timeString = timeString.substring(0, timeString.indexOf(" "));
-        let res=`${dateString} ${timeString}`
-
+        let res=`${dateString} ${timeString}`;
         return res;
 
     };
+    static dateTimeToDisplayString = date => {
+        let dateString = date.toISOString();
+        dateString = dateString.substring(0, dateString.indexOf("T"));
 
+        let timeString = date.toTimeString();
+        timeString = timeString.substring(0, timeString.indexOf(" "));
+        let res=`${dateString} ${timeString}`;
+        return res;
+    };
 
     static getVerticalWindowDimension = () => {
         let {height, width} = Dimensions.get("window");
@@ -26,5 +34,10 @@ export default class Util {
             height: height,
             width: width,
         }
-    }
+    };
+    static cryptoOnpenFire(username, password) {
+        let crypt = CryptoJs.MD5(username+password).toString();
+        let openfirePwd = crypt.substring(5, 15);
+        return openfirePwd;
+    };
 }

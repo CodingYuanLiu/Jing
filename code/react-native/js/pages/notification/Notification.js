@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import { createAppContainer, createMaterialTopTabNavigator } from 'react-navigation';
 import { NoticeTabConfig, NoticeTopTab } from "./TopTabBar"
-import UserDao from '../../api/dao/UserDao';
+import Dao from '../../api/dao/Dao';
 
 
 export default class NotificationScreen extends React.PureComponent{

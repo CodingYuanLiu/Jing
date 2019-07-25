@@ -77,8 +77,8 @@ export default class MenubarItem extends React.PureComponent{
             case "store": {
                 return (
                     <Icon
-                        type={"fontisto"}
-                        name={"shopping-store"}
+                        type={"material"}
+                        name={"store"}
                         size={24}
                         color={color}
                     />
@@ -108,15 +108,15 @@ export default class MenubarItem extends React.PureComponent{
                 title={this.props.title}
                 titleStyle={[styles.title, this.props.active ? {color: this.props.activeColor} : null]}
                 titleProps={{numberOfLines: 1, ellipsizeMode: "tail"}}
-                subTitle={"实验"}
                 chevron
                 rightTitle={this.props.rightTitle}
                 rightStyle={[styles.rightTitle, this.props.active ? {color: this.props.activeColor} : null]}
                 rightTitleProps={{numberOfLines: 1, ellipsizeMode: "tail"}}
                 containerStyle={[
-                    {borderTopColor: "#eee", borderTopWidth: 0.5},
+                    styles.menuContainer,
                     this.props.style,
                 ]}
+                rightContentContainerStyle={styles.rightContainer}
                 onPress={this.props.onPress}
             />
         )
@@ -143,7 +143,18 @@ const styles = StyleSheet.create({
     title: {
         color: "#bfbfbf",
     },
+    menuContainer: {
+        borderTopColor: "#eee",
+        borderTopWidth: 0.5,
+        paddingTop: 12,
+        paddingBottom: 12,
+        paddingLeft: "3%",
+        paddingRight: "3%",
+    },
     rightTitle: {
         color: "#eee",
     },
+    rightContainer: {
+        flex: 3,
+    }
 });

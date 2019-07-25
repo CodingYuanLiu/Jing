@@ -1,5 +1,5 @@
 import React from "react";
-import { ViewPropTypes } from "react-native";
+import { ViewPropTypes, StyleSheet } from "react-native";
 import {CloseIcon} from "../../../common/components/Icons";
 import Theme from "../../../common/constant/Theme";
 import {Button} from "react-native-elements";
@@ -23,6 +23,9 @@ export default class PublishHeader extends React.PureComponent{
                 title={this.props.buttonTitle}
                 type={this.props.buttonType}
                 color={Theme.TEXT_BUTTON_ENABLED}
+                containerStyle={styles.buttonContainer}
+                buttonStyle={styles.button}
+                disable={this.props.disabled}
                 onPress={this.props.onNext ? this.props.onNext : this.props.onPublish}
             />;
         let style= this.props.style;
@@ -45,9 +48,23 @@ PublishHeader.propTypes = {
     onPublish: PropTypes.func,
     buttonTitle: PropTypes.string,
     buttonType: PropTypes.string,
+    disabled: PropTypes.bool
 };
 
 PublishHeader.defaultProps = {
     buttonTitle: "下一步",
     buttonType: "clear",
+    disabled: false,
 };
+
+const styles = StyleSheet.create({
+    buttonContainer: {
+
+    },
+    button: {
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 5,
+        paddingBottom: 5,
+    },
+});
