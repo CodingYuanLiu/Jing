@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-web"
-	//k8s "github.com/micro/kubernetes/go/web"
+	k8s "github.com/micro/kubernetes/go/web"
 	"jing/app/api-gateway/controller/activity"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	service := web.NewService(
+	service := k8s.NewService(
 		web.Name("api"),
 		web.Address(":8080"),
 	)
@@ -86,6 +86,7 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/followers", uc.GetFollowers)
 		userRouter.GET("/friends", uc.GetFriends)
 		userRouter.GET("/follow", uc.Follow)
+		userRouter.GET("/changeprivacy", uc.ChangePrivacyLevel)
 	}
 
 	return router

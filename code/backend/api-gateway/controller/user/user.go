@@ -65,7 +65,7 @@ func (uc *Controller) Follow (c *gin.Context) {
 	}
 	dao.CreateFollow(userId, id)
 	c.JSON(http.StatusOK, map[string]string {
-		"message": "follow successfully",
+		"message": "Follow successfully",
 	})
 }
 

@@ -42,16 +42,18 @@ Jwt is invalid - 401
 #### Description
 
 Get a user's detail by user id.
+With different privacy level, you will get different results.
 
 #### Request
 
 ```json
 GET /api/public/detail?id=1
+(optional) Authorization: Bearer jwt
 ```
 
 #### Response
 
-Status OK - 200
+Status OK (Privacy Level `0`) - 200
 ```json
 {
     "avatar_url": "http://puo7ltwok.bkt.clouddn.com/Fse4b_C0cNTmFNftBXX3T-RQPMFo",
@@ -63,6 +65,47 @@ Status OK - 200
     "major": "软件工程",
     "gender": 0,
     "dormitory": "东15",
+    "privacy": 0
+}
+```
+
+Status OK (Privacy Level `1`) - 200
+```json
+{
+    "avatar_url": "http://puo7ltwok.bkt.clouddn.com/Fse4b_C0cNTmFNftBXX3T-RQPMFo",
+    "id": 5,
+    "nickname": "nickname",
+    "signature": "欧哈哈哈哈哈哈哈",
+    "privacy": 1,
+    "message": "Only friend can access information"
+}
+```
+
+Status OK (Privacy Level `-1`) - 200
+```json
+{
+    "avatar_url": "http://puo7ltwok.bkt.clouddn.com/Fse4b_C0cNTmFNftBXX3T-RQPMFo",
+    "id": 5,
+    "nickname": "nickname",
+    "signature": "欧哈哈哈哈哈哈哈",
+    "privacy": -1,
+    "message": "The user hide its information"
+}
+```
+
+Status OK (Privacy Level `1` & Friends) - 200
+```json
+{
+    "avatar_url": "http://puo7ltwok.bkt.clouddn.com/Fse4b_C0cNTmFNftBXX3T-RQPMFo",
+    "id": 5,
+    "nickname": "nickname",
+    "phone": "12341825417",
+    "signature": "欧哈哈哈哈哈哈哈",
+    "birthday": "2001-1-1",
+    "major": "软件工程",
+    "gender": 0,
+    "dormitory": "东15",
+    "privacy": 2
 }
 ```
 
@@ -256,6 +299,144 @@ POST /api/public/wx/redirect?code={code}&jwt=jwt HTTP/1.1
 
 ```
 <h1>已完成绑定，重新打开微信小程序即可使用即应的强大功能</h1>
+```
+
+## Follow
+
+#### Description
+
+Follow someone with user_id.
+
+#### Request
+```json
+GET /api/user/follow?id=1
+Authorization: Bearer jwt
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Follow successfully"
+}
+```
+Follow Oneself - 400
+```json
+{
+    "error": 1,
+    "message": "Can't follow yourself"
+}
+```
+Have Followed - 400
+```json
+{
+    "error": 2,
+    "message": "You've followed this person"
+}
+```
+
+## Get Following
+
+#### Description
+
+Get a list of following persons.
+
+#### Request
+```json
+GET /api/user/followings
+Authorization: Bearer jwt
+```
+
+#### Response
+```json
+[
+    {
+        "id": 1,
+        "nickname": "Nick",
+        "avatar_url": "http://..",
+        "signature": "Hello world"
+    },
+    {
+        ...
+    }
+]
+```
+or `null`.
+
+## Get Follower
+#### Description
+
+Get a list of your followers.
+
+#### Request
+```json
+GET /api/user/followers
+Authorization: Bearer jwt
+```
+
+#### Response
+```json
+[
+    {
+        "id": 1,
+        "nickname": "Nick",
+        "avatar_url": "http://..",
+        "signature": "Hello world"
+    },
+    {
+        ...
+    }
+]
+```
+or `null`.
+
+## Get Friends
+
+#### Description
+
+Get a list of your friends (follow each other).
+
+#### Request
+```json
+GET /api/user/friends
+Authorization: Bearer jwt
+```
+
+#### Response
+```json
+[
+    {
+        "id": 1,
+        "nickname": "Nick",
+        "avatar_url": "http://..",
+        "signature": "Hello world"
+    },
+    {
+        ...
+    }
+]
+```
+or `null`.
+
+## Change Privacy Level
+#### Description
+
+Change your privacy level.
+`0` - Anyone can see
+`1` - Only friends
+`-1` - Hidden
+
+#### Request
+```json
+GET /changeprivacy?level=-1
+Authorization: Bearer jwt
+```
+
+#### Response
+```json
+{
+    "message": "update successfully",
+}
 ```
 
 ## Query Activity
