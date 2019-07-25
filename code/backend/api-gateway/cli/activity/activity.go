@@ -69,8 +69,12 @@ func DeleteActivity(userId int, actId int) error {
 func ModifyActivity(userId int, jsonForm json.JSON) error {
 	actType := jsonForm["type"].(string)
 	var tags []string
+	var images []string
 	for _, v := range jsonForm["tag"].([]interface{}) {
 		tags = append(tags, v.(string))
+	}
+	for _,v := range jsonForm["images"].([]interface{}){
+		images = append(images,v.(string))
 	}
 	mdfReq := activityProto.MdfReq{
 		ActId:       int32(jsonForm["act_id"].(float64)),
@@ -78,6 +82,7 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 		EndTime:     jsonForm["end_time"].(string),
 		Description: jsonForm["description"].(string),
 		Tag:         tags,
+		Images:		 images,
 	}
 	if actType == "takeout" {
 		mdfReq.TakeoutInfo = &activityProto.TakeoutInfo{

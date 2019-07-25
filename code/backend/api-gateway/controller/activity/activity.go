@@ -17,10 +17,12 @@ import (
 
 type Controller struct{}
 
-func generateJSON(actId int, userId int, userName string, userSignature string, resp *activityProto.QryResp) (returnJson myjson.JSON) {
+func generateJSON(actId int, userId int, userName string, userSignature string, userAvatar string,resp *activityProto.QryResp) (returnJson myjson.JSON) {
+	avatarUrl := "http://puo7ltwok.bkt.clouddn.com" + "/" + userAvatar
 	returnJson = myjson.JSON{
 		"sponsor_id": userId,
 		"sponsor_username": userName,
+		"sponsor_avatar":avatarUrl,
 		"signature": userSignature,
 		"act_id": actId ,
 		"type": resp.BasicInfo.Type,
@@ -300,7 +302,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		return
 	}
 	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
-		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil) ||
+		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil) || (jsonForm["images"] == nil) ||
 		jsonForm["type"].(string) == "taxi" && (jsonForm["depart_time"] == nil || jsonForm["origin"] == nil || jsonForm["destination"] == nil) ||
 		jsonForm["type"].(string) == "takeout" && (jsonForm["order_time"] == nil || jsonForm["store"] == nil) ||
 		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||
@@ -380,7 +382,7 @@ func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	}
 	userId := dao.GetActivityAdmin(actId)
 	user, _ := dao.FindUserById(userId)
-	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature, resp)
+	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature,user.AvatarKey, resp)
 	return
 }
 
