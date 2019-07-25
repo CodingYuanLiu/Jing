@@ -29,7 +29,9 @@ Page({
             name: '确定',
             color: '#ed3f14'
         }],
-        visible: false
+        visible: false,
+        destLocation: {},
+        originLocation: {}
     },
 
     /**
@@ -41,6 +43,8 @@ Page({
             mode: options.mode
         })
     },
+
+    // submit click
     handleClick: function(event) {
         let that = this;
         let date = new Date();
@@ -51,7 +55,7 @@ Page({
         for (let i = 0; i < that.data.tags.length; i++) {
             tag_str.push(that.data.tags[i].name);
         }
-        if (mode === 'taxo') {
+        if (mode === 'taxi') {
             wx.request({
                 url: 'https://jing855.cn/api/user/act/publish',
                 header: {
@@ -64,8 +68,8 @@ Page({
                     "create_time": dateString,
                     "end_time": that.data.end_time + " " + that.data.end_time_t,
                     "description": that.data.details,
-                    "origin": that.data.origin,
-                    "destination": that.data.dest,
+                    "origin": that.data.originLocation,
+                    "destination": that.data.destLocation,
                     "depart_time": that.data.depart_time + " " + that.data.depart_time_t,
                     "tag": tag_str,
                     "images": that.data.base,
@@ -75,6 +79,20 @@ Page({
                     wx.switchTab({
                         url: '/pages/index/index',
                     })
+                }
+            })
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/addbehavior',
+                method: 'POST',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                data: {
+                    "type": "taxi",
+                    "behavior": "publish"
+                },
+                success: function(res) {
+                    console.log(res);
                 }
             })
         } else if (mode === 'takeout') {
@@ -103,6 +121,20 @@ Page({
                     })
                 }
             })
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/addbehavior',
+                method: 'POST',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                data: {
+                    "type": "takeout",
+                    "behavior": "publish"
+                },
+                success: function(res) {
+                    console.log(res);
+                }
+            })
         } else if (mode === 'order') {
             wx.request({
                 url: 'https://jing855.cn/api/user/act/publish',
@@ -126,6 +158,20 @@ Page({
                     wx.switchTab({
                         url: '/pages/index/index',
                     })
+                }
+            })
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/addbehavior',
+                method: 'POST',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                data: {
+                    "type": "order",
+                    "behavior": "publish"
+                },
+                success: function(res) {
+                    console.log(res);
                 }
             })
         } else if (mode === 'other') {
@@ -152,6 +198,20 @@ Page({
                     wx.switchTab({
                         url: '/pages/index/index',
                     })
+                }
+            })
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/addbehavior',
+                method: 'POST',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                data: {
+                    "type": "other",
+                    "behavior": "publish"
+                },
+                success: function(res) {
+                    console.log(res);
                 }
             })
         }
@@ -204,18 +264,6 @@ Page({
             store: event.detail.detail.value
         });
     },
-    // handleEndTimeInput: function(event) {
-    //     this.setData({
-    //         end_time: event.detail.detail.value
-    //     });
-    // },
-    // handleDepartTimeInput: function(event) {
-    //     this.setData({
-    //         depart_time: event.detail.detail.value
-    //     });
-    // },
-
-
 
     //description
     bindTextAreaBlur: function(event) {
@@ -235,7 +283,9 @@ Page({
                     "description": that.data.details
                 },
                 success: function(res) {
+
                     let tags = res.data.tags;
+                    if (tags === undefined || tags.length === 0) return
                     let tag_show = []
                     for (let i = 0; i < tags.length; i++) {
                         tag_show.push({
@@ -342,11 +392,6 @@ Page({
             newTag: event.detail.detail.value
         });
     },
-    // handleCancel() {
-    //     this.setData({
-    //         visible: false
-    //     });
-    // },
     handleModalClick() {
         let that = this
         setTimeout(() => {
@@ -375,5 +420,10 @@ Page({
                 visible: false,
             });
         }, 200);
+    },
+    handleStoreSelect: function() {
+        wx.navigateTo({
+            url: '/pages/selectstore/selectstore',
+        })
     }
 })

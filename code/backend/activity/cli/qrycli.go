@@ -12,11 +12,12 @@ func main(){
 	service.Init()
 	c1 := activity.NewActivitySrvService("act",service.Client())
 	rsp,err:= c1.Query(context.TODO(), &activity.QryReq{
-		ActId:3,
+		ActId:1,
 	})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(rsp)
+	fmt.Println(rsp.BasicInfo.Status)
 }

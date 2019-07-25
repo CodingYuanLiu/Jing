@@ -9,8 +9,9 @@ import (
 	"log"
 )
 
+const domain = "image.jing855.cn"
+
 func ReplaceImg(base64Img string, removeImg string) string {
-	domain := "puo7ltwok.bkt.clouddn.com"
 	// Init access key and secret key
 	accessKey := "XjJVXANFlU4XnSFgKmUdJWxx2GEzM_ftCVOvsorP"
 	secretKey := "OrpJx83zmG6PPgV1e0D-j7wkhuykOxHB5-GdcENT"
@@ -52,7 +53,6 @@ func ReplaceImg(base64Img string, removeImg string) string {
 
 func UploadImg(base64Img string) string{
 	/* Auto generated key by qiniuyun, which is available in only 30 days.*/
-	domain := "puo7ltwok.bkt.clouddn.com"
 	upToken := getUpToken()
 	cfg := storage.Config{}
 	// 空间对应的机房
@@ -84,7 +84,6 @@ func UploadImg(base64Img string) string{
 
 
 func UploadImgWithName(base64Img string,name string) string{
-	domain := "puo7ltwok.bkt.clouddn.com"
 	// Init access key and secret key
 	upToken := getUpToken()
 	cfg := storage.Config{}

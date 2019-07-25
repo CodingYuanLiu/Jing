@@ -1,0 +1,5 @@
+<view style="position: absolute; width:100vw; padding-left: 20px; height: 5vh; top: 0;z-index:99; line-height: 5vh;  ">路线仅供参考，预测打车费用： {{fee}} 元</view>
+<map id="myMap" style="width: 100%; height: 95vh; margin-top: 5vh" longitude="{{longitude}}" latitude="{{latitude}}" scale='11' polyline="{{polyline}}" markers="{{markers}}">
+</map>
+<!-- <image src="{{imagesrc}}"></image> -->
+<!-- <button bindtap="getImage">获取图片</button> -->

@@ -29,13 +29,26 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 		Title:       mapBasicInfo["title"].(string),
 		CreateTime : mapBasicInfo["createtime"].(string),
 		EndTime :    mapBasicInfo["endtime"].(string),
+		MaxMember:   int32(mapBasicInfo["maxmember"].(int)),
+		Status:      dao.GetOverdueStatus(mapBasicInfo["endtime"].(string),int32(mapBasicInfo["status"].(int))),
 	}
+	if basicInfo.Status == 2 && mapBasicInfo["status"].(int) != 2{
+		err = dao.Collection.Update(bson.M{"actid":req.ActId},
+		bson.M{"$set":bson.M{"basicinfo.status":int32(2)}})
+		log.Println("Update overdue status")
+		if err!=nil{
+			log.Println("Update overdue status error")
+			log.Println(err)
+		}
+	}
+
 	for _,param := range mapBasicInfo["tag"].([]interface{}){
 		basicInfo.Tag = append(basicInfo.Tag,param.(string))
 	}
 	for _,param := range mapBasicInfo["images"].([]interface{}){
 		basicInfo.Images = append(basicInfo.Images,param.(string))
 	}
+
 
 	var comments []*activity.Comment
 	for _,param := range result["comments"].([]interface{}){

@@ -21,21 +21,18 @@ func init() {
 	Client = userProto.NewUserService("user", client.DefaultClient)
 }
 
-func CallUpdateUser(id int32, phone string, signature string,
-	nickname string) (*userProto.UpdateResp, error) {
+func CallUpdateUser(id int, jsonForm map[string]interface{}) (*userProto.UpdateResp, error) {
 
 	req := new(userProto.UpdateReq)
-	req.Id = id
+	req.Id = int32(id)
 
-	if phone != "" {
-		req.Phone = phone
-	}
-	if signature != "" {
-		req.Signature = signature
-	}
-	if nickname != "" {
-		req.Nickname = nickname
-	}
+	req.Phone = jsonForm["phone"].(string)
+	req.Birthday = jsonForm["birthday"].(string)
+	req.Major = jsonForm["major"].(string)
+	req.Dormitory = jsonForm["dormitory"].(string)
+	req.Signature = jsonForm["signature"].(string)
+	req.Nickname = jsonForm["nickname"].(string)
+	req.Gender = int32(jsonForm["gender"].(float64))
 
 	rsp, err := Client.Update(context.TODO(), req)
 
@@ -63,9 +60,10 @@ func CallRegister(username string, password string,
 	return rsp, nil
 }
 
-func CallQueryUser(id int32) (*userProto.FindResp, error) {
+func CallQueryUser(id int32, userId int32) (*userProto.FindResp, error) {
 	rsp, err := Client.FindUser(context.TODO(), &userProto.FindReq{
 		Id: id,
+		UserId: userId,
 	})
 	if err != nil {
 		return rsp, err

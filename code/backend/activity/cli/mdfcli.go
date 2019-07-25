@@ -43,10 +43,11 @@ func main(){
 			Store:"Taobao Dior",
 		},*/
 		ActId:1,
-		CreateTime:"2025-7-7",
-		EndTime:"2025-7-17",
+		CreateTime:"2025-7-7 11:12:11",
+		EndTime:"2015-07-17 12:12:11",
 		Description:"Modified other description",
 		Tag: []string{"Dior","Taobao"},
+		MaxMember:1,
 		OtherInfo:&activity.OtherInfo{
 			ActivityTime:"2025-11-11",
 		},

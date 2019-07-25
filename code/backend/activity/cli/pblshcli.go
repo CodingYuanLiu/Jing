@@ -15,6 +15,7 @@ func main(){
 	//img1,_:=file2Bytes("./testqiniu1.png")
 	//img2,_:=file2Bytes("./testqiniu2.png")
 	rsp,err:= c1.Publish(context.TODO(), &activity.PubReq{
+		/*
 		Info: &activity.BasicInfo{
 			Type:"taxi",
 			CreateTime:"2019.6.5",
@@ -26,9 +27,9 @@ func main(){
 		},
 		TaxiInfo: &activity.TaxiInfo{
 			DepartTime:"2019-7-10 15:41:00",
-			Origin:"Minhang",
-			Destination:"Xinzhuang",
-		},
+			Origin:[]byte{},
+			Destination:[]byte{},
+		},*/
 		/*
 		Info: &activity.BasicInfo{
 			Type:"takeout",
@@ -54,20 +55,21 @@ func main(){
 		OrderInfo: &activity.OrderInfo{
 			Store:"Dior",
 		},*/
-		/*
+
 		Info: &activity.BasicInfo{
 			Type:"other",
-			CreateTime:"2022-10-5",
-			EndTime:"2022-12-6",
+			CreateTime:"2018-10-5 ",
+			EndTime:"2019-7-25 15:03:23",
 			Title:"Basketball this afternoon",
 			Description:"description",
 			Tag: []string{"Basketball"},
+			MaxMember:4,
 			Images:[]string{},
 		},
 		OtherInfo: &activity.OtherInfo{
 			ActivityTime:"2022-11-11 11:11:21",
 		},
-		 */
+
 	})
 	if err != nil {
 		fmt.Println(err)

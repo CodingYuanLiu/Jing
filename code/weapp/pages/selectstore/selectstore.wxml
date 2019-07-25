@@ -1,0 +1,13 @@
+<!--pages/selectstore/selectstore.wxml-->
+<i-input style="width:100vw;" bind:change="getsuggest" type="text" maxlength="20" placeholder="输入来开始搜索" value="{{backfill}}"></i-input>
+<view style="border:0.01px solid black;width:100vw;background:white;" wx:if="{{show_sug}}" wx:for="{{suggestion}}" wx:key="index">
+    <!--绑定回填事件-->
+    <view bindtap="handleClick" data-poi="{{item}}" id="{{index}}">
+    <!--根据需求渲染相应数据-->
+    <!--渲染地址title-->
+    <view style="text-align:center;" bindtap="backfill" id="{{index}}" style="padding: 5px">{{item.name}}</view>
+    <!--渲染详细地址-->
+    <!-- <view style="font-size:12px;color:#666;text-align:center;">{{item.addr}}</view> -->
+    </view>
+</view>
+<!-- <i-button wx:if="{{!show_sug}}" bindtap="handleConfirm" type="primary" style="height:7vh;width: 100vw;position: absolute; top:90vh">确定</i-button> -->

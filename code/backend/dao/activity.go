@@ -5,6 +5,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"log"
+	"time"
 )
 var Collection *mgo.Collection
 var IdCollection *mgo.Collection
@@ -44,6 +45,8 @@ type BasicInfo struct{
 	//Comments []Comment
 	Tag []string
 	Images []string
+	MaxMember int32
+	Status int32
 }
 
 type TaxiInfo struct{
@@ -385,6 +388,34 @@ func InitBehaviorCollection(){
 	}
 }
 
+/* 	If the activity is overdue (endTime < now), return status 2.
+	Else, return status in the parameter
+*/
+func GetOverdueStatus(endTime string,status int32) int32{
+	if status == 2{
+		return 2
+	}
+
+	timeEnd,_ := time.Parse("2006-01-02 15:04:05",endTime)
+	timeNow := time.Now()
+
+	if timeEnd.Before(timeNow){
+		return 2
+	}else{
+		return status
+	}
+}
+
+func GetMaxMemberStatus(actId int32,maxMember int32) int32{
+	var count int
+	var join  []Join
+	db.Where("act_id=? and (is_admin=? or is_admin=?)",actId,1,0).Find(&join).Count(&count)
+	if int32(count)>=maxMember{
+		return 1
+	} else{
+		return 0
+	}
+}
 
 func init(){
 	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")

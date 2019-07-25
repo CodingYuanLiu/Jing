@@ -24,9 +24,11 @@
             <text>{{content.type}}: {{content.origin}} > {{content.destination}}</text>
         </view> -->
         <view wx:if="{{content.type === 'taxi'}}">
-            <i-alert>
-                {{content.depart_time}} : {{content.origin}} ---> {{content.destination}}
+            <i-alert bindtap="handleToRoutine">
+                {{content.depart_time}} : {{content.origin.title}} ---> {{content.destination.title}}
                 <view slot="desc">
+                    点击查看预计路线和价格
+                    <text>\n</text>
                     {{content.end_time}} 报名截止
                     <text>\n</text>
                     <i-tag wx:for="{{content.tag}}" wx:key="{{index}}" bindchange="onChange" checkable="{{false}}" name="{{item}}" color="green" type="border" style="margin-right:5px;">
@@ -94,12 +96,12 @@
             <image src="../../images/allread.png"></image>
         </view>
         <block wx:for="{{content.comments}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
-            <view class="chat-item flex-wrp" bindtap="handleCommentToUser" data-id="{{item.user_id}}" data-nick="{{item.title}}">
-                <view class="avatar flex-item">
+            <view class="chat-item flex-wrp"  data-id="{{item.user_id}}" data-nick="{{item.title}}">
+                <view class="avatar flex-item" bindtap="handleToShowInfo" data-id="{{item.user_id}}" data-nick="{{item.title}}">
                     <!-- <image src="{{item.avatar}}"></image> -->
                     <image src="{{item.avatar_src}}"></image>
                 </view>
-                <view class="chat-content flex-item">
+                <view  bindtap="handleCommentToUser" data-id="{{item.user_id}}" data-nick="{{item.title}}" class="chat-content flex-item">
                     <view class="chat-source">
                         <text class="chatmate">{{item.title}}</text>
                         <text class="lasttime">{{item.time}}</text>

@@ -4,6 +4,8 @@ import (
 	//"bytes"
 	//"context"
 	"fmt"
+	"time"
+
 	//"jing/app/lib/auth/qbox"
 	//"jing/app/lib/storage"
 	"github.com/yanyiwu/gojieba"
@@ -95,7 +97,7 @@ func testGoJieba(){
 		"租车，早上坐出租从徐汇校区到闵行校区出发，到东川路地铁站，到剑川路地铁站，到人民广场站，打滴滴到上海南站去,一起打车过去,"
 	x:=gojieba.NewJieba()
 	defer x.Free()
-	tags := dao.GetAllTags()
+	tags,_ := dao.GetAllTags()
 	for _,param := range tags{
 		x.AddWord(param)
 	}
@@ -107,5 +109,14 @@ func testGoJieba(){
 }
 
 func main(){
-	testGoJieba()
+	//testGoJieba()
+	t1 := "2022-12-06 12:11:12"
+	//t2 := time.Now().Format("2006-01-02 15:04:05")
+	time1,_ := time.Parse("2006-01-02 15:04:05", t1)
+	//time2,_ := time.Parse("2006-01-02 15:04:05", t2)
+	time2 := time.Now()
+	fmt.Println("t2:"+time2.String())
+	if time1.Before(time2){
+		fmt.Println("true")
+	}
 }

@@ -1,8 +1,11 @@
 //discovery.js
-const { $Toast } = require('../../dist/base/index');
+const {
+    $Toast
+} = require('../../dist/base/index');
+let app = getApp()
 Page({
     data: {
-        navTab: ["推荐", "关注", "我的"],
+        navTab: ["全部", "推荐", "我的"],
         currentNavtab: "0",
         indicatorDots: false,
         autoplay: true,
@@ -12,13 +15,28 @@ Page({
         feed_length: 0,
         typemap: {},
         size: 5,
-        index: 0
+        index: 0,
+        myacts: [],
+        log: false
     },
     onLoad: function() {
         console.log('onLoad')
         var that = this
         //调用应用实例的方法获取全局数据
         this.refresh();
+    },
+    onShow: function() {
+        if (app.globalData.userInfo === null) {
+            this.setData({
+                feed_sugg: [],
+                myacts: [],
+                log: false
+            })
+        } else {
+            this.setData({
+                log: true
+            })
+        }
     },
     switchTab: function(e) {
         this.setData({
@@ -28,7 +46,7 @@ Page({
         wx.showNavigationBarLoading()
         this.refresh();
         console.log("upper");
-        setTimeout(function () {
+        setTimeout(function() {
             wx.hideNavigationBarLoading();
             // wx.stopPullDownRefresh();
         }, 2000);
@@ -94,10 +112,54 @@ Page({
 
             }
         })
+        if (app.globalData.userInfo !== null) {
+            that.setData({log: true})
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/recommendact',
+                method: 'GET',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt
+                },
+                success: function(res) {
+                    console.log(res);
+                    feed_data = res.data;
+                    that.setData({
+                        feed_sugg: feed_data,
+                    });
 
+                }
+            })
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/myact',
+                method: 'GET',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                success: function(res) {
+                    console.log(res);
+                    that.setData({
+                        myacts: that.data.myacts.concat(res.data)
+                    })
+                }
+            })
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/manageact',
+                method: 'GET',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                success: function(res) {
+                    console.log(res);
+                    that.setData({
+                        myacts: that.data.myacts.concat(res.data)
+                    })
+                }
+            })
+        }
     },
 
     nextLoad: function() {
+        if (this.data.currentNavtab !== "0" && this.data.currentNavtab !== 0) return;
         console.log("continueload");
         var next_data = null;
         let that = this;
@@ -120,7 +182,7 @@ Page({
                         feed_length: that.data.feed_length + next_data.length,
                         index: that.data.index + 1
                     });
-                    
+
                 }
 
             }

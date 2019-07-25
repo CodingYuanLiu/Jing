@@ -3,8 +3,6 @@
         "i-button": "../../dist/button/index",
         "i-input": "../../dist/input/index",
         "i-panel": "../../dist/panel/index",
-        "i-toast": "../../dist/toast/index",
-        "i-tag": "../../dist/tag/index",
-        "i-modal": "../../dist/modal/index"
+        "i-toast": "../../dist/toast/index"
     }
 }

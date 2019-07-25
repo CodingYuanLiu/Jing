@@ -17,10 +17,12 @@ import (
 
 type Controller struct{}
 
-func generateJSON(actId int, userId int, userName string, userSignature string, resp *activityProto.QryResp) (returnJson myjson.JSON) {
+func generateJSON(actId int, userId int, userName string, userSignature string, userAvatar string,resp *activityProto.QryResp) (returnJson myjson.JSON) {
+	avatarUrl := "http://puo7ltwok.bkt.clouddn.com" + "/" + userAvatar
 	returnJson = myjson.JSON{
 		"sponsor_id": userId,
 		"sponsor_username": userName,
+		"sponsor_avatar":avatarUrl,
 		"signature": userSignature,
 		"act_id": actId ,
 		"type": resp.BasicInfo.Type,
@@ -30,6 +32,8 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 		"images":resp.BasicInfo.Images,
 		"create_time": resp.BasicInfo.CreateTime,
 		"end_time": resp.BasicInfo.EndTime,
+		"status": resp.BasicInfo.Status,
+		"max_member":resp.BasicInfo.MaxMember,
 	}
 	if resp.BasicInfo.Type == "taxi" {
 		returnJson["depart_time"] = resp.TaxiInfo.DepartTime
@@ -236,13 +240,31 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 func (activityController *Controller) JoinActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
 	actId, _ := strconv.Atoi(c.Query("act_id"))
+
+	var act map[string] interface{}
+	_ = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	basicInfo := act["basicinfo"].(map [string]interface{})
+	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),int32(basicInfo["status"].(int)))
+	if status == 1{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message": "The member of the activity is already full",
+		})
+		c.Abort()
+		return
+	} else if status == 2{
+		c.JSON(http.StatusBadRequest,map[string] string{
+			"message": "The activity has expired",
+		})
+		c.Abort()
+		return
+	}
+
 	_ = dao.JoinActivity(userId, actId)
 	c.JSON(http.StatusOK, map[string]string{
 		"message": "Join activity successfully",
 	})
 }
 
-//TODO:Finish it at 7.17 morning
 func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
 	acts := dao.GetManagingActivity(userId)
@@ -260,6 +282,25 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	var act map[string] interface{}
+	_ = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	basicInfo := act["basicinfo"].(map [string]interface{})
+	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),int32(basicInfo["status"].(int)))
+	if status == 1{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message": "The member of the activity is full already",
+		})
+		c.Abort()
+		return
+	} else if status == 2{
+		c.JSON(http.StatusBadRequest,map[string] string{
+			"message": "The activity has expired",
+		})
+		c.Abort()
+		return
+	}
+
 	acceptId, _ := strconv.Atoi(c.Query("user_id"))
 	err := dao.AcceptJoinActivity(acceptId, actId)
 	if err != nil {
@@ -269,6 +310,9 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	_ = dao.Collection.Update(bson.M{"actid":actId},
+	bson.M{"$set":bson.M{"basicinfo.status":dao.GetMaxMemberStatus(int32(actId),int32(basicInfo["maxmember"].(int)))}})
+
 	c.JSON(http.StatusOK,map[string]string{
 		"message":"Accept successfully",
 	})
@@ -300,7 +344,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		return
 	}
 	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
-		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil) ||
+		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil) || (jsonForm["images"] == nil) ||
 		jsonForm["type"].(string) == "taxi" && (jsonForm["depart_time"] == nil || jsonForm["origin"] == nil || jsonForm["destination"] == nil) ||
 		jsonForm["type"].(string) == "takeout" && (jsonForm["order_time"] == nil || jsonForm["store"] == nil) ||
 		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||
@@ -380,7 +424,7 @@ func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	}
 	userId := dao.GetActivityAdmin(actId)
 	user, _ := dao.FindUserById(userId)
-	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature, resp)
+	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature,user.AvatarKey, resp)
 	return
 }
 

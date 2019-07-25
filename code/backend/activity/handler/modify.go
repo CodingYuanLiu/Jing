@@ -2,11 +2,14 @@ package handler
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
 	"log"
+	"strconv"
 )
 
 func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp *activity.MdfResp) error {
@@ -18,7 +21,14 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		resp.Description="Not Found"
 		return err
 	}
+
 	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
+	if mapBasicInfo["status"].(int) == 2{
+		log.Println("cannot modify expired activity")
+		resp.Status = 500
+		resp.Description = "cannot modify expired activity"
+		return errors.New("cannot modify expired activity")
+	}
 	fetchType:= mapBasicInfo["type"].(string)
 
 	basicInfo:=dao.BasicInfo{
@@ -28,10 +38,30 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		EndTime:     req.EndTime,
 		Description: req.Description,
 		Tag:         req.Tag,
+		MaxMember:   req.MaxMember,
+		Status :     dao.GetOverdueStatus(req.EndTime,dao.GetMaxMemberStatus(req.ActId,req.MaxMember)),
 	}
-	for _,param := range mapBasicInfo["images"].([]interface{}){
-		basicInfo.Images = append(basicInfo.Images,param.(string))
+
+	for i:=0;i<len(mapBasicInfo["images"].([]interface{}));i++{
+		name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
+		err = dao.DeleteImgWithName(name)
+		if err != nil{
+			log.Printf("Catch delete error from dao,cannot delete pictures for act %d, pic %d\n",req.ActId,i)
+			continue
+		}
+		log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)
 	}
+
+	var newImages []string
+	for i,param := range req.Images{
+		name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
+		newImages = append(newImages,dao.UploadImgWithName(param,name))
+	}
+
+	for _,param := range newImages{
+		basicInfo.Images = append(basicInfo.Images,param)
+	}
+
 	switch fetchType{
 	case "taxi":
 		var ori, dest map[string]interface{}

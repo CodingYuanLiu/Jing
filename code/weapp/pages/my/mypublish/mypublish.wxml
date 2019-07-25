@@ -1,32 +1,42 @@
 <!--pages/my/mypublish/mypublish.wxml-->
 <view hidden="{{!no_content}}"> 暂无 </view>
-<scroll-view scroll-y="true" class="container discovery" >
+<scroll-view scroll-y="true" class="container discovery">
     <view class="ctnt0">
         <block wx:for="{{acts}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <view class="feed-item">
                 <view class="feed-source">
                     <a class="">
-                        <text>{{item.type}} · </text>
+                        <!-- <view class="avatar">
+                            <image src="{{item.feed_source_img}}"></image>
+                        </view> -->
+                        <!-- <text>{{item.feed_source_name}} · </text> -->
+                        <text>{{item.sponsor_username}} · {{item.type}} · </text>
                         <text>{{item.create_time}}</text>
                     </a>
                 </view>
-                <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}" data-mode="{{item.type}}">
                     <view class="question">
                         <a class="question-link">
-                            <text>【{{item.depart_time}}】 {{item.title}}</text>
+                            <text>【{{item.type}}】 {{item.title}}</text>
                         </a>
                     </view>
                     <view class="answer-body">
-                        <view  data-id="{{act_id}}">
+                        <view data-id="{{act_id}}">
                             <text class="answer-txt" aid="{{act_id}}">{{item.description}}</text>
                         </view>
+                        <!-- <view>
+                            <image src="{{item.feed_img}}"></image>
+                        </view> -->
                         <view class="answer-actions">
                             <view class="like dot">
-                                <a>{{item.good_num}} 赞  </a>
+                                <a>👍 {{item.good_num}} </a>
                             </view>
                             <view class="comments dot">
                                 <a>{{item.comments.length}} 评论 </a>
                             </view>
+                            <!-- <view class="follow-it">
+                                <a>{{item.comment_num}} 关注</a>
+                            </view> -->
                         </view>
                     </view>
                 </view>
