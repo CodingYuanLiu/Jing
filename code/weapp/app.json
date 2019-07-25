@@ -6,7 +6,6 @@
         "pages/notify/notify",
         "pages/my/my",
         "pages/answer/answer",
-        "pages/question/question",
         "pages/userinfo/userinfo",
         "pages/scan/scan",
         "pages/fillinfo/fillinfo",
@@ -17,7 +16,9 @@
         "pages/accept/accept",
         "pages/showuserinfo/showuserinfo",
         "pages/avatar/upload",
-        "pages/map/map"
+        "pages/map/map",
+        "pages/showroutine/showroutine",
+        "pages/selectstore/selectstore"
     ],
     "permission": {
         "scope.userLocation": {

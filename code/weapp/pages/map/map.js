@@ -38,7 +38,8 @@ Page({
         for (var i = 0; i < this.data.suggestion.length; i++) {
             if (i == id) {
                 this.setData({
-                    backfill: this.data.suggestion[i].title
+                    backfill: this.data.suggestion[i].title,
+                    location: this.data.suggestion[i]
                 });
             }
         }
@@ -126,11 +127,13 @@ Page({
         //prevPage 是获取上一个页面的js里面的pages的所有信息。 -2 是上一个页面，-3是上上个页面以此类推。
         if (this.data.mode === 'origin') {
             prevPage.setData({ // 将我们想要传递的参数在这里直接setData。上个页面就会执行这里的操作。
-                origin: this.data.backfill
+                origin: this.data.backfill,
+                originLocation: this.data.location
             })
         } else {
             prevPage.setData({ // 将我们想要传递的参数在这里直接setData。上个页面就会执行这里的操作。
-                dest: this.data.backfill
+                dest: this.data.backfill,
+                destLocation: this.data.location
             })
         }
         wx.navigateBack({})

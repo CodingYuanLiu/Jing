@@ -98,10 +98,11 @@ Page({
     },
     bindQueTap: function(event) {
         let actid = event.currentTarget.dataset.id
+        let mode = event.currentTarget.dataset.mode
         console.log(actid);
         console.log(23);
         wx.navigateTo({
-            url: '/pages/my/editact/editact?id=' + actid
+            url: '/pages/my/editact/editact?id=' + actid +'&mode=' + mode
         })
     },
 })
