@@ -1,6 +1,7 @@
 package handler
 import(
 	"context"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -21,6 +22,8 @@ func Before() ActivitySrv{
 	/* Used to store id */
 	idCollection := session.DB("Jing").C("AutoIdTest")
 	collection := session.DB("Jing").C("ActivityTest")
+	dao.IdCollection = idCollection
+	dao.Collection = collection
 	_,err = collection.RemoveAll(nil)
 	if err!=nil {
 		log.Fatal(err)
@@ -44,11 +47,6 @@ func Before() ActivitySrv{
 	}else if err !=nil{
 		log.Fatal(err)
 	}else {
-		/* The fetchId["autoid"] can only be converted to int, not int32.*/
-		/*
-		intId := fetchId["autoid"].(int)
-		Id = int32(intId)
-		*/
 	}
 
 	return actSrv
@@ -64,6 +62,7 @@ func TestActivitySrv_TaxiAndComment(t *testing.T) {
 			Title:"To Big Joy City at 7.6 afternoon",
 			Description:"Anothor description",
 			Tag: []string{"Joy City","Taxi"},
+			Images: []string{"123123123"},
 		},
 		TaxiInfo: &activity.TaxiInfo{
 			DepartTime:  "2019-7-10 15:41:00",
@@ -105,7 +104,6 @@ func TestActivitySrv_TaxiAndComment(t *testing.T) {
 	_ = actSrv.Query(context.TODO(),taxiQryReq,taxiQryResp)
 	a.Equal(int32(200),taxiQryResp.Status)
 	a.Equal("taxi",taxiQryResp.BasicInfo.Type)
-	a.Equal("Minhang",taxiQryResp.TaxiInfo.Origin)
 	a.Equal((*activity.OrderInfo)(nil),taxiQryResp.OrderInfo)
 
 	taxiMdfReq:= &activity.MdfReq{
@@ -357,4 +355,42 @@ func TestActivitySrv_NotFound(t *testing.T) {
 	_ = actSrv.Delete(context.TODO(), notFoundDltReq, notFoundDltResp)
 	a.Equal(int32(404), notFoundDltResp.Status)
 	a.Equal("Not Found", notFoundDltResp.Description)
+}
+
+func TestActivitySrv_GenTags(t *testing.T) {
+	a := assert.New(t)
+	actSrv := ActivitySrv{}
+	var resp activity.TagResp
+	_ = actSrv.GenTags(context.TODO(),&activity.TagReq{
+		Title:"星期六拼车去虹桥机场",
+		Description:"计划星期六上午拼车去虹桥机场，找两个小伙伴一起打车去。",
+	},&resp)
+	a.Equal(int32(200),resp.Status)
+	a.Equal("打车",resp.Tag[0])
+	fmt.Println(resp.Tag)
+}
+
+func TestActivitySrv_AddTags(t *testing.T) {
+	a := assert.New(t)
+	actSrv := ActivitySrv{}
+	var resp activity.AddTagsResp
+	_ = actSrv.AddTags(context.TODO(),&activity.AddTagsReq{
+		Tags:[]string{"肯德基","新标签"},
+		UserId:1,
+	},&resp)
+	a.Equal(int32(0),resp.Num)
+}
+
+func TestActivitySrv_Recommendation(t *testing.T) {
+	a := assert.New(t)
+	actSrv := ActivitySrv{}
+	var resp activity.RecommendResp
+	_ = actSrv.Recommendation(context.TODO(),&activity.RecommendReq{
+		UserId:3,
+	},&resp)
+	a.Equal(int32(1),resp.Status)
+	_ = actSrv.Recommendation(context.TODO(),&activity.RecommendReq{
+		UserId:2,
+	},&resp)
+	a.Equal(int32(2),resp.Status)
 }

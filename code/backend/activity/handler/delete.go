@@ -33,12 +33,7 @@ func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp 
 	}
 	err = dao.Collection.Remove(bson.M{"actid": req.ActId})
 
-	if err == mgo.ErrNotFound{
-		log.Println(err)
-		resp.Status = 404
-		resp.Description = "Not Found"
-		return err
-	} else if err!=nil{
+	if err!=nil{
 		log.Println(err)
 		return err
 	} else{
