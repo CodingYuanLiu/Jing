@@ -63,9 +63,10 @@ func CallRegister(username string, password string,
 	return rsp, nil
 }
 
-func CallQueryUser(id int32) (*userProto.FindResp, error) {
+func CallQueryUser(id int32, userId int32) (*userProto.FindResp, error) {
 	rsp, err := Client.FindUser(context.TODO(), &userProto.FindReq{
 		Id: id,
+		UserId: userId,
 	})
 	if err != nil {
 		return rsp, err

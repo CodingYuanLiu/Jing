@@ -45,6 +45,7 @@ message MdfReq{
     string endTime = 3;
     string description = 4;
     repeated string tag = 5;
+    repeated string images = 10;
 
     TaxiInfo taxiInfo=6;
     TakeoutInfo takeoutInfo = 7;

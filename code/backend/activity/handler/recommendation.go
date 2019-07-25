@@ -21,7 +21,7 @@ func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.Reco
 	err := dao.BehaviorCollection.Find(bson.M{"userid":userId}).One(&userBehavior)
 	if err == mgo.ErrNotFound{
 		log.Println("Recommendation srv error: no behavior yet")
-		resp.Status = 500
+		resp.Status = 0
 		resp.ActId = []int32{}
 		return nil
 	}
@@ -66,7 +66,7 @@ func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.Reco
 	if nearestAngle == 0{
 		resp.Status = 0
 		resp.ActId = make([]int32,0)
-		return errors.New("the nearest user has no activity")
+		return errors.New("the user or all the other users have no behavior")
 	}
 
 	//For debug
@@ -98,11 +98,11 @@ func GetAngle(user dao.UserBehavior, anotherUser dao.UserBehavior) float64{
 func GetComparedUsers(count int) (start int, number int){
 	if count < userTotal + 1{
 		start = 0
-		number = count
+		number = count - 1
 		return
 	} else{
 		number = userTotal
-		start = rand.Intn(count-userTotal)
+		start = rand.Intn(count-userTotal-1)
 		return
 	}
 }

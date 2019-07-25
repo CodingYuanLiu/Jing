@@ -33,6 +33,7 @@ message RegResp {
 
 message FindReq {
     int32 id = 9;
+    int32 user_id = 1;
 }
 
 message FindResp {
@@ -48,4 +49,5 @@ message FindResp {
     string birthday = 10;
     string dormitory = 11;
     string major = 12;
+    int32 privacy = 13;
 }
