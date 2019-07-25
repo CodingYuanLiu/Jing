@@ -112,6 +112,7 @@ func TestActivitySrv_TaxiAndComment(t *testing.T) {
 		EndTime:"2015-7-17",
 		Description:"Modified description",
 		Tag: []string{"Joy City","Taxi"},
+		Images :[]string{"1234234234"},
 		TaxiInfo: &activity.TaxiInfo{
 			DepartTime:"2020-7-7 12:21:32",
 		},
@@ -393,4 +394,12 @@ func TestActivitySrv_Recommendation(t *testing.T) {
 		UserId:2,
 	},&resp)
 	a.Equal(int32(2),resp.Status)
+	_ = actSrv.Recommendation(context.TODO(),&activity.RecommendReq{
+		UserId:4,
+	},&resp)
+	a.Equal(int32(0),resp.Status)
+	_ = actSrv.Recommendation(context.TODO(),&activity.RecommendReq{
+		UserId:5,
+	},&resp)
+	a.Equal(int32(0),resp.Status)
 }

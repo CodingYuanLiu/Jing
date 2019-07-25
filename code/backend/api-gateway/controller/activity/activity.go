@@ -18,10 +18,11 @@ import (
 type Controller struct{}
 
 func generateJSON(actId int, userId int, userName string, userSignature string, userAvatar string,resp *activityProto.QryResp) (returnJson myjson.JSON) {
+	avatarUrl := "http://puo7ltwok.bkt.clouddn.com" + "/" + userAvatar
 	returnJson = myjson.JSON{
 		"sponsor_id": userId,
 		"sponsor_username": userName,
-		"sponsor_avatar":userAvatar,
+		"sponsor_avatar":avatarUrl,
 		"signature": userSignature,
 		"act_id": actId ,
 		"type": resp.BasicInfo.Type,
@@ -381,7 +382,7 @@ func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	}
 	userId := dao.GetActivityAdmin(actId)
 	user, _ := dao.FindUserById(userId)
-	returnJson = generateJSON(actId, userId, user.Nickname, user.AvatarKey,user.Signature, resp)
+	returnJson = generateJSON(actId, userId, user.Nickname, user.Signature,user.AvatarKey, resp)
 	return
 }
 
