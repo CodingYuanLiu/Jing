@@ -10,6 +10,7 @@ import (
 	loginClient "jing/app/api-gateway/cli/login"
 	user "jing/app/api-gateway/cli/user"
 	srv "jing/app/api-gateway/service"
+	"jing/app/jing"
 	myjson "jing/app/json"
 	"log"
 	"net/http"
@@ -40,6 +41,7 @@ func (lc *Controller) GetUserStatus (c *gin.Context) {
 		"major": resp.Major,
 		"gender": resp.Gender,
 		"dormitory": resp.Dormitory,
+		"privacy": resp.Privacy,
 	})
 }
 
@@ -159,20 +161,13 @@ func (lc *Controller) NativeLogin (c *gin.Context) {
 		c.Abort()
 		return
 	}
-	rsp, _ := loginClient.CallLoginByUP(username, password)
-
-	if rsp.Status == 1 {
-		c.JSON(http.StatusUnauthorized, map[string]string {
-			"message" : "Bad credential",
-		})
+	rsp, err := loginClient.CallLoginByUP(username, password)
+	if err != nil {
+		jing.SendError(c, err)
 	} else if rsp.Status == 0 {
 		c.JSON(http.StatusOK, map[string]string {
 			"message" : "Login success",
 			"jwt_token" : rsp.JwtToken,
-		})
-	} else {
-		c.JSON(http.StatusInternalServerError, map[string]string {
-			"message" : "Uncaught error",
 		})
 	}
 }

@@ -9,6 +9,7 @@ import (
 	activityClient "jing/app/api-gateway/cli/activity"
 	userClient "jing/app/api-gateway/cli/user"
 	"jing/app/dao"
+	"jing/app/jing"
 	myjson "jing/app/json"
 	"log"
 	"net/http"
@@ -111,10 +112,12 @@ func (activityController *Controller) GetGroupChatInfo(c *gin.Context) {
 func (activityController *Controller) Status(c *gin.Context) {
 	userId := c.GetInt("userId")
 	actId, err := strconv.Atoi(c.Query("act_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"error": err,
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
 		})
+		c.Abort()
+		return
 	}
 	c.JSON(http.StatusOK, map[string]int {
 		"status": dao.CheckStatus(userId, actId),
@@ -145,10 +148,7 @@ func (activityController *Controller) Comment(c *gin.Context) {
 	err = activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, int(jsonForm["receiver_id"].(float64)),
 		jsonForm["content"].(string), jsonForm["time"].(string))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't comment",
-		})
-		c.Abort()
+		jing.SendError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, map[string]string{
@@ -264,10 +264,7 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 
 	err = activityClient.PublishActivity(int(userId), jsonForm)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"error": err,
-		})
-		c.Abort()
+		jing.SendError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, map[string]string{
@@ -277,8 +274,14 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 
 func (activityController *Controller) JoinActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
-	actId, _ := strconv.Atoi(c.Query("act_id"))
-
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
+		})
+		c.Abort()
+		return
+	}
 	var act map[string] interface{}
 	_ = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
 	basicInfo := act["basicinfo"].(map [string]interface{})
@@ -306,7 +309,14 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
 	acts := dao.GetManagingActivity(userId)
-	actId, _ := strconv.Atoi(c.Query("act_id"))
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
+		})
+		c.Abort()
+		return
+	}
 	flag := false
 	for _, v := range acts {
 		if actId == v {
@@ -340,7 +350,7 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 	}
 
 	acceptId, _ := strconv.Atoi(c.Query("user_id"))
-	err := dao.AcceptJoinActivity(acceptId, actId)
+	err = dao.AcceptJoinActivity(acceptId, actId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string {
 			"message": "Accept join activity application error",
@@ -412,10 +422,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 	}
 	err = activityClient.ModifyActivity(userId, jsonForm)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"error": err,
-		})
-		c.Abort()
+		jing.SendError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, map[string]string{
@@ -426,7 +433,14 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 func (activityController Controller) DeleteActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
 	acts := dao.GetManagingActivity(userId)
-	actId, _ := strconv.Atoi(c.Query("act_id"))
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
+		})
+		c.Abort()
+		return
+	}
 	flag := false
 	for _, v := range acts {
 		if actId == v {
@@ -441,12 +455,9 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err := activityClient.DeleteActivity(userId, actId)
+	err = activityClient.DeleteActivity(userId, actId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]interface{} {
-			"error": err,
-		})
-		c.Abort()
+		jing.SendError(c, err)
 		return
 	}
 	_ = dao.DeleteActivity(actId)
@@ -457,8 +468,9 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 
 func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	resp, err := activityClient.QueryActivity(actId)
-	if err != nil {
-		return
+	jerr := err.(*jing.Error)
+	if jerr != nil {
+		return nil, jerr
 	}
 	userId := dao.GetActivityAdmin(actId)
 	user, _ := dao.FindUserById(userId)
@@ -466,14 +478,18 @@ func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	return
 }
 
-func (activityController Controller) QueryActivity(c *gin.Context) {
-	actId, _ := strconv.Atoi(c.Query("act_id"))
-	returnJson , err := getActivityJson(actId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't find that act",
+func (activityController *Controller) QueryActivity(c *gin.Context) {
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
 		})
 		c.Abort()
+		return
+	}
+	returnJson, err := getActivityJson(actId)
+	if err != nil {
+		jing.SendError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, returnJson)

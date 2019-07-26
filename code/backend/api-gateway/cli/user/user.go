@@ -3,6 +3,8 @@ package user
 import (
 	"context"
 	"github.com/micro/go-micro/client"
+	"jing/app/jing"
+
 	"github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
 	userProto "jing/app/user/proto/user"
@@ -33,13 +35,10 @@ func CallUpdateUser(id int, jsonForm map[string]interface{}) (*userProto.UpdateR
 	req.Signature = jsonForm["signature"].(string)
 	req.Nickname = jsonForm["nickname"].(string)
 	req.Gender = int32(jsonForm["gender"].(float64))
-
 	rsp, err := Client.Update(context.TODO(), req)
-
 	if err != nil {
-		return rsp, err
+		return nil, jing.Format(err)
 	}
-
 	return rsp, nil
 }
 
@@ -53,9 +52,8 @@ func CallRegister(username string, password string,
 		Nickname: nickname,
 		Jwt: jaccount,
 	})
-
 	if err != nil {
-		return rsp, err
+		return nil, jing.Format(err)
 	}
 	return rsp, nil
 }
@@ -66,7 +64,7 @@ func CallQueryUser(id int32, userId int32) (*userProto.FindResp, error) {
 		UserId: userId,
 	})
 	if err != nil {
-		return rsp, err
+		return nil, jing.Format(err)
 	}
-	return rsp, err
+	return rsp, nil
 }

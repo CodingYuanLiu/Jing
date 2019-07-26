@@ -1,5 +1,15 @@
 # Application Interface of Jing
 
+## Global Error Codes
+
+Code | Description | Status
+---- | ----- | ----
+101  | Need login | Status Unauthorized (401)
+102  | Bad Jwt token | Status Unauthorized (401)
+103  | Bad Credential | Status Unauthorized (401)
+201  | Parameter not provided or bad | Status Bad Request (400)
+202  | Missing some field | Status Bad Request (400)
+
 ## Get User Status
 
 #### Description
@@ -28,6 +38,7 @@ Status OK - 200
     "major": "软件工程",
     "gender": 0,
     "dormitory": "东15",
+    "privacy": 0
 }
 ```
 Jwt is invalid - 401
@@ -332,6 +343,26 @@ Have Followed - 400
 {
     "error": 2,
     "message": "You've followed this person"
+}
+```
+
+## UnFollow
+
+#### Description
+
+Unfollow someone with user_id.
+
+#### Request
+```json
+GET /api/user/unfollow?id=1
+Authorization: Bearer jwt
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Unfollow successfully"
 }
 ```
 

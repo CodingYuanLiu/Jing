@@ -2,8 +2,6 @@ package activity
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"github.com/micro/go-micro/client"
 	"gopkg.in/mgo.v2/bson"
 
@@ -11,6 +9,7 @@ import (
 	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/dao"
+	"jing/app/jing"
 	"jing/app/json"
 	"log"
 	"os"
@@ -39,7 +38,7 @@ func AddComment(actId int, userId int, receiverId int, content string, time stri
 	}
 	resp, _ := Client.Comment(context.TODO(), &req)
 	if resp.Status != 200 {
-		return errors.New(fmt.Sprintf("error, status %d, msg: %s", resp.Status, resp.Description))
+		return jing.NewError(1, int(resp.Status), resp.Description)
 	}
 	return nil
 }
@@ -49,8 +48,8 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 		ActId: int32(actId),
 	}
 	resp, err := Client.Query(context.TODO(), &qryReq)
-	if resp.Status != 200 {
-		return nil, errors.New(fmt.Sprintf("error, status %d", resp.Status))
+	if err != nil {
+		return nil, jing.NewError(1, 400, "Can't find such activity")
 	}
 	return resp, err
 }
@@ -61,7 +60,7 @@ func DeleteActivity(userId int, actId int) error {
 	}
 	resp, _ := Client.Delete(context.TODO(), &dltReq)
 	if resp.Status != 200 {
-		return errors.New(fmt.Sprintf("error, status %d, msg: %s", resp.Status, resp.Description))
+		return jing.NewError(1, int(resp.Status), resp.Description)
 	}
 	return nil
 }
@@ -112,7 +111,7 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 		return err
 	}
 	if resp2.Status != 200 {
-		return errors.New(fmt.Sprintf("error, status %d, msg: %s", resp2.Status, resp2.Description))
+		return jing.NewError(1, int(resp2.Status), resp2.Description)
 	}
 	return nil
 }
@@ -167,7 +166,7 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 		return err
 	}
 	if resp2.Status != 200 {
-		return errors.New(fmt.Sprintf("error, status %d, msg: %s", resp2.Status, resp2.Description))
+		return jing.NewError(1, int(resp2.Status), resp2.Description)
 	}
 	_ = dao.PublishActivity(userId, int(resp2.ActId))
 	return nil
