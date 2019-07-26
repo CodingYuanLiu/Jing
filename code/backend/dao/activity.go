@@ -397,7 +397,8 @@ func GetOverdueStatus(endTime string,status int32) int32{
 	}
 
 	timeEnd,_ := time.Parse("2006-01-02 15:04:05",endTime)
-	timeNow := time.Now()
+	timeStr:=time.Now().Format("2006-01-02 15:04:05")
+	timeNow,_ := time.Parse("2006-01-02 15:04:05",timeStr)
 
 	if timeEnd.Before(timeNow){
 		return 2
