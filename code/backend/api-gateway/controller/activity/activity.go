@@ -343,7 +343,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
+	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil || jsonForm["max_member"] == nil ||
 		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil) || (jsonForm["images"] == nil) ||
 		jsonForm["type"].(string) == "taxi" && (jsonForm["depart_time"] == nil || jsonForm["origin"] == nil || jsonForm["destination"] == nil) ||
 		jsonForm["type"].(string) == "takeout" && (jsonForm["order_time"] == nil || jsonForm["store"] == nil) ||

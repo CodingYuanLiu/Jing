@@ -83,6 +83,7 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 		Description: jsonForm["description"].(string),
 		Tag:         tags,
 		Images:		 images,
+		MaxMember:	 int32(jsonForm["max_member"].(float64)),
 	}
 	if actType == "takeout" {
 		mdfReq.TakeoutInfo = &activityProto.TakeoutInfo{
