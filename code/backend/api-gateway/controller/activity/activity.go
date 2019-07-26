@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	activityProto "jing/app/activity/proto"
 	activityClient "jing/app/api-gateway/cli/activity"
+	userClient "jing/app/api-gateway/cli/user"
 	"jing/app/dao"
 	myjson "jing/app/json"
 	"log"
@@ -68,6 +69,43 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 		returnJson["comments"] = append(returnJson["comments"].([]myjson.JSON), comment)
 	}
 	return
+}
+
+func (activityController *Controller) GetGroupChatInfo(c *gin.Context) {
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
+		})
+		c.Abort()
+		return
+	}
+	members, err := dao.GetActivityMembers(actId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "Can't find act",
+		})
+		c.Abort()
+		return
+	}
+	var jsons []map[string]interface{}
+	for _, member := range members {
+		resp, err := userClient.CallQueryUser(int32(member), -1)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, map[string]string {
+				"message": "Unexpected Error",
+			})
+			c.Abort()
+			return
+		}
+		jsons = append(jsons, map[string]interface{} {
+			"id": resp.Id,
+			"username": resp.Username,
+			"nickname": resp.Nickname,
+			"avatar_url": resp.AvatarUrl,
+		})
+	}
+	c.JSON(http.StatusOK, jsons)
 }
 
 func (activityController *Controller) Status(c *gin.Context) {

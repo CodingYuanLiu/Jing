@@ -163,6 +163,18 @@ func JoinActivity(userId int, actId int) error {
 	return nil
 }
 
+func GetActivityMembers(actId int) (ret []int, err error) {
+	var joins []Join
+	db.Where("act_id = ?", actId).Find(&joins)
+	if len(joins) == 0 {
+		return nil, errors.New("can't find this activity")
+	}
+	for _, v := range joins {
+		ret = append(ret, v.UserID)
+	}
+	return
+}
+
 func AcceptJoinActivity(userId int, actId int) error{
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
