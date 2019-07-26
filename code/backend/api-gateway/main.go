@@ -53,8 +53,9 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
 		publicRouter.GET("/act/query", ac.QueryActivity)
 		publicRouter.GET("/act/findall", ac.FindAllActivity)
-		publicRouter.GET("/act/findbytype",ac.FindActivityByType )
+		publicRouter.GET("/act/findbytype",ac.FindActivityByType)
 		publicRouter.GET("/takeout/searchshop", fc.TakeoutSearchShop)
+		publicRouter.GET("/chat/members", ac.GetGroupChatInfo)
 	}
 	/*
 		adminRouter := router.Group("/api/admin")
