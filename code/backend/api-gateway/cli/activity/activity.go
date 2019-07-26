@@ -136,6 +136,7 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 			Description: jsonForm["description"].(string),
 			Tag:         tags,
 			Images:		 images,
+			MaxMember:	 int32(jsonForm["max_member"].(int)),
 		},
 	}
 	if actType == "takeout" {
