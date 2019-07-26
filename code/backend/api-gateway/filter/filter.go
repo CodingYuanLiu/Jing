@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	loginClient "jing/app/api-gateway/cli/login"
 	srv "jing/app/api-gateway/service"
-	"net/http"
+	"jing/app/jing"
 	"strings"
 )
 
@@ -21,10 +21,7 @@ func AuthFilter(c *gin.Context) {
 		verified, jwt := srv.VerifyAuthorization(auth)
 
 		if !verified {
-			c.JSON(http.StatusUnauthorized, map[string]string {
-				"message" : "You need login to do this",
-			})
-			c.Abort()
+			jing.SendError(c, jing.NewError(101, 401, "You need login to do this"))
 			return
 		}
 
@@ -33,10 +30,7 @@ func AuthFilter(c *gin.Context) {
 			c.Next()
 			return
 		} else {
-			c.JSON(http.StatusUnauthorized, map[string]string {
-				"message" : "You need login to do this",
-			})
-			c.Abort()
+			jing.SendError(c, jing.NewError(102, 401, "Jwt Token is invalid"))
 			return
 		}
 	}

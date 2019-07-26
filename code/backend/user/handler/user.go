@@ -2,9 +2,9 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jameskeane/bcrypt"
+	"jing/app/jing"
 	json2 "jing/app/json"
 )
 import user "jing/app/user/proto/user"
@@ -21,7 +21,6 @@ func (h *UserService) Update(ctx context.Context, in *user.UpdateReq, out *user.
 		err = dao.UpdateUserById(int(in.Id), "phone", in.Phone)
 	}
 	if err != nil {
-		out.Status = 400
 		return err
 	}
 	if in.Nickname != "" {
@@ -57,22 +56,18 @@ func (h *UserService) Register(ctx context.Context, in *user.RegReq, out *user.R
 	}
 	token, st := handler.ParseToken(in.Jwt)
 	if st != 0 {
-		out.Status = 400
-		return errors.New("invalid token")
+		return jing.NewError(1, 400,"invalid token")
 	}
 	userID := int(token.Claims.(jwt.MapClaims)["userId"].(float64))
 	user, err := dao.FindUserById(userID)
 	if err != nil {
-		out.Status = 400
 		return err
 	}
 	if user.Username != "" {
-		out.Status = 400
-		return errors.New("you've already registered")
+		return jing.NewError(1, 400,"you've already registered")
 	}
 	err = dao.CreateUser(json, userID)
 	if err != nil {
-		out.Status = 400
 		return err
 	}
 	out.Status = 200
@@ -104,7 +99,7 @@ func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.
 		} else {
 			out.Privacy = int32(user2.PrivacyLevel)
 		}
-		domain := "puo7ltwok.bkt.clouddn.com"
+		domain := "image.jing855.cn"
 		out.Id = int32(user2.ID)
 		out.Username = user2.Username
 		out.Password = user2.Password
