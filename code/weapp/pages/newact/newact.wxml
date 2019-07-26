@@ -2,7 +2,7 @@
 <form bindsubmit="handleClick" report-submit='true'>
     <i-panel title="基本信息">
         <i-input value="{{title}}" bind:blur="handleTitleInput" type="text" maxlength="20" title="标题" placeholder="活动标题" />
-
+        <i-input value="{{maxMember}}" bind:blur="handleMemberInput" type="number" maxlength="10" title="最大人数" placeholder="" />
         <picker mode="date" value="{{date}}" bindchange="bindEDateChange">
             <i-input value="{{end_time}}" disabled="true" bind:blur="handleEndTimeInput" type="text" maxlength="20 " title="报名截止" placeholder="截止日期" />
         </picker>

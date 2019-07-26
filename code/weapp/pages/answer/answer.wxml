@@ -2,21 +2,22 @@
 <i-toast id="toast" />
 <view class="container">
     <view class="question">
-        <text class="question-title">{{content.title}}</text>
+        <text class="question-title">{{content.title}} {{status_show[content.status]}}</text>
     </view>
     <view class="answerer-wrp">
         <view class="bg-half"></view>
-        <view class="answerer flex-wrp" bindtap="handleToShowInfo" data-id="{{content.sponsor_id}}">
-            <view class="avatar flex-item">
+        <view class="answerer flex-wrp">
+            <view class="avatar flex-item"  bindtap="handleToShowInfo" data-id="{{content.sponsor_id}}">
                 <image src="{{avatar_src}}"></image>
             </view>
-            <view class="answerer-info flex-item">
+            <view class="answerer-info flex-item"  bindtap="handleToShowInfo" data-id="{{content.sponsor_id}}">
                 <text class="answerer-name">{{content.sponsor_username}}</text>
                 <text class="answerer-des">{{content.signature}}</text>
             </view>
-            <!-- <view class="follow flex-item">
-                <text>十 关注</text>
-            </view> -->
+            <view class="follow flex-item"   bindtap="handleFollow" data-id="{{content.sponsor_id}}">
+                <text wx:if="{{!followed}}">十 关注</text>
+                <text wx:if="{{followed}}">已关注</text>
+            </view>
         </view>
     </view>
     <view class="answer-content">
@@ -87,7 +88,7 @@
         <!-- <image src="../../images/1444983318907-_DSC1826.jpg"></image>
         <image src="../../images/1444983318907-_DSC1826.jpg"></image> -->
         <block wx:for="{{content.images}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
-            <image src="{{item}}"></image>
+            <image mode="widthFix" src="{{item}}"></image>
         </block>
     </view>
     <view class="ctnt0">
@@ -103,7 +104,7 @@
                 </view>
                 <view  bindtap="handleCommentToUser" data-id="{{item.user_id}}" data-nick="{{item.title}}" class="chat-content flex-item">
                     <view class="chat-source">
-                        <text class="chatmate">{{item.title}}</text>
+                        <text class="chatmate">{{item.user_nickname}}</text>
                         <text class="lasttime">{{item.time}}</text>
                     </view>
                     <text class="chat-txt">{{item.content}}</text>
@@ -130,8 +131,12 @@
         <view class="operation ">
 
 
-            <view class="operation-btn flex-item" style="float: left" bindtap="handleJoin">
+            <view wx:if="{{content.status === 0}}" class="operation-btn flex-item" style="float: left" bindtap="handleJoin">
                 <image src="../../images/icons/add_line.png"></image>
+                <text>加入</text>
+            </view>
+            <view wx:if="{{!(content.status === 0)}}" class="operation-btn flex-item" style="float: left">
+                <image src="../../images/icons/add_line_disabled.png"></image>
                 <text>加入</text>
             </view>
             <view class="operation-btn flex-item" style="float: left">

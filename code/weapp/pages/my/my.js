@@ -72,35 +72,39 @@ Page({
                                     },
                                     success: function(res) {
                                         app.globalData.userid = res.data.id;
-                                        wx.request({
-                                            url: 'https://jing855.cn/api/public/detail?id=' + res.data.id,
-                                            method: 'GET',
-                                            header: {
-                                                "Authorization": "Bearer " + app.globalData.jwt,
-                                            },
-                                            success: function(res) {
-                                                console.log(res);
-                                                console.log(111);
-                                                app.globalData.userInfo = res.data;
-                                                that.setData({
-                                                    log: true
-                                                });
-                                                that.setData({
-                                                    userInfo: res.data
-                                                });
-                                                $Toast.hide();
-                                                $Toast({
-                                                    content: '登录成功',
-                                                    type: 'success',
-                                                    duration: 1
-                                                });
-                                                if (app.globalData.userInfo.avatar_url !== "http://puo7ltwok.bkt.clouddn.com/") {
-                                                    that.setData({
-                                                        avatar_src: app.globalData.userInfo.avatar_url
-                                                    })
-                                                }
-                                            }
-                                        })
+
+                                        console.log(res);
+                                        console.log(111);
+                                        app.globalData.userInfo = res.data;
+                                        that.setData({
+                                            log: true
+                                        });
+                                        that.setData({
+                                            userInfo: res.data
+                                        });
+                                        $Toast.hide();
+                                        $Toast({
+                                            content: '登录成功',
+                                            type: 'success',
+                                            duration: 1
+                                        });
+                                        if (app.globalData.userInfo.avatar_url !== "http://puo7ltwok.bkt.clouddn.com/") {
+                                            that.setData({
+                                                avatar_src: app.globalData.userInfo.avatar_url
+                                            })
+                                        }
+
+                                    }
+                                })
+                                wx.request({
+                                    url: 'https://jing855.cn/api/user/followings',
+                                    method: 'GET',
+                                    header: {
+                                        "Authorization": "Bearer " + app.globalData.jwt,
+                                    },
+                                    success: function(res) {
+                                        console.log(res)
+                                        app.globalData.following = res.data
                                     }
                                 })
                             } else {
