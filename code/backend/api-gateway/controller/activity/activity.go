@@ -209,8 +209,8 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		return
 	}
 	/* tag cannot be nil but images can.*/
-	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
-		jsonForm["title"] == nil || jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["images"] == nil) || (jsonForm["max_member"] == nil) ||
+	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil || (jsonForm["max_member"] == nil) ||
+		jsonForm["title"] == nil || jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["images"] == nil) ||
 		jsonForm["type"].(string) == "taxi" && (jsonForm["depart_time"] == nil || jsonForm["origin"] == nil || jsonForm["destination"] == nil) ||
 		jsonForm["type"].(string) == "takeout" && (jsonForm["order_time"] == nil || jsonForm["store"] == nil) ||
 		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||

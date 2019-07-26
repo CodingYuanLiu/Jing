@@ -706,6 +706,7 @@ Authorization: Bearer jwt
     "description": "desc",
     "tag": ["t", "a", "g"],
     "images": [],
+    "max_member" : 4,
 
     "depart_time": "2019-7-16 15:17",
     "origin": {},
