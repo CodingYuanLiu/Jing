@@ -1,7 +1,9 @@
 // pages/userinfo/userinfo.js
 var app = getApp()
 // const { $Message } = require('../../dist/base/index');
-const { $Toast } = require('../../dist/base/index');
+const {
+    $Toast
+} = require('../../dist/base/index');
 Page({
 
     /**
@@ -16,16 +18,40 @@ Page({
             avatar_id: "1",
             signature: "签名功能不实现"
         },
+        gendershow: '女',
+        genders: [{
+            id: 1,
+            name: '女',
+        }, {
+            id: 2,
+            name: '男'
+        }, {
+            id: 3,
+            name: '保密'
+        }],
+        levelshow: '全部展示',
+        levels: [{
+            id: 1,
+            name: '不可见',
+        }, {
+            id: 2,
+            name: '全部可见'
+        }, {
+            id: 3,
+            name: '好友可见'
+        }],
         visible: false,
         error: false,
         button_message: "编辑个人信息",
         editing: false,
         userInfo: {},
-        actions: [
-            {
-                name: '修改头像',
-            },
-        ],
+        dorm: '',
+        major: '',
+        gender: 0,
+        birthday: '',
+        actions: [{
+            name: '修改头像',
+        }, ],
         images: [],
         base: []
     },
@@ -36,87 +62,50 @@ Page({
     onLoad: function() {
         console.log('onLoad')
         var that = this
-        //调用应用实例的方法获取全局数据
-        // app.getUserInfo(function(userInfo) {
-        //     //更新数据
-        //     that.setData({
-        //         userInfo: userInfo
-        //     })
-        // })
-        // wx.request({
-        //     url: 'https://sebastianj1wzyd.xyz/queryuser?id=1',
-        //     method: 'GET',
-        //     success: function(res) {
-        //         if (res.data.status === 200) {
-
-        //         } else 
-        //         {
-        //             that.setData({error: true});
-        //         }
-
-        //     }
-        // })
-        this.setData({
-            user: app.globalData.userInfo
-        });
-        that.setData({
-            phone: that.data.user.phone,
-            nickname: that.data.user.nickname
-        });
         if (app.globalData.userInfo.avatar_url !== "http://puo7ltwok.bkt.clouddn.com/") {
             that.setData({
                 avatar_src: app.globalData.userInfo.avatar_url
             })
         }
+        this.setData({
+            user: app.globalData.userInfo
+        });
+        that.setData({
+            // phone: that.data.user.phone,
+            // nickname: that.data.user.nickname,
+            gendershow: that.data.genders[that.data.user.gender].name,
+            levelshow: that.data.levels[that.data.user.privacy+1].name
+        });
     },
 
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady: function() {
-
+    handleGenderChange({detail = {}}) {
+        this.setData({
+            gendershow: detail.value
+        });
+        console.log(detail)
+        for (let i = 0; i < this.data.genders.length; i++) {
+            if (this.data.genders[i].name === detail.value) {
+                this.setData({
+                    gender: i
+                })
+                break;
+            }
+        }
     },
 
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow: function() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide: function() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload: function() {
-
-    },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh: function() {
-
-    },
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom: function() {
-
-    },
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage: function() {
-
+    handleLevelChange({ detail = {} }) {
+        this.setData({
+            levelshow: detail.value
+        });
+        console.log(detail)
+        for (let i = 0; i < this.data.levels.length; i++) {
+            if (this.data.levels[i].name === detail.value) {
+                this.setData({
+                    level: i
+                })
+                break;
+            }
+        }
     },
 
     handleClick: function() {
@@ -139,19 +128,36 @@ Page({
                     "Authorization": "Bearer " + app.globalData.jwt,
                 },
                 data: {
-                    'id': app.globalData.userid,
                     'phone': that.data.phone,
                     'nickname': that.data.nickname,
                     "signature": that.data.signature,
+                    'dormitory': that.data.dorm,
+                    'major': that.data.major,
+                    'birthday': that.data.birthday,
+                    'gender': that.data.gender
                 },
                 success: function(res) {
                     if (res.statusCode !== 200) {
                         console.log("error");
                         // todo: 错误提示
                     } else {
-                        app.globalData.userInfo.phone = that.data.phone;
-                        app.globalData.userInfo.nickname = that.data.nickname;
-                        app.globalData.userInfo.signature = that.data.signature;
+                        // app.globalData.userInfo.phone = that.data.phone;
+                        // app.globalData.userInfo.nickname = that.data.nickname;
+                        // app.globalData.userInfo.signature = that.data.signature;
+                        wx.request({
+                            url: 'https://jing855.cn/api/user/status',
+                            method: 'GET',
+                            header: {
+                                "Authorization": "Bearer " + app.globalData.jwt,
+                            },
+                            success: function(res) {
+                                app.globalData.userid = res.data.id;
+                                app.globalData.userInfo = res.data;
+                                // that.setData({
+                                //     user: res.data
+                                // });
+                            }
+                        })
                         wx.switchTab({
                             url: '/pages/my/my',
                         })
@@ -180,7 +186,22 @@ Page({
             signature: event.detail.detail.value
         })
     },
-    handleChangeAvatar: function(){
+    handleBirthInput: function(event) {
+        this.setData({
+            birthday: event.detail.detail.value
+        })
+    },
+    handleDormInput: function(event) {
+        this.setData({
+            dorm: event.detail.detail.value
+        })
+    },
+    handleMajorInput: function(event) {
+        this.setData({
+            major: event.detail.detail.value
+        })
+    },
+    handleChangeAvatar: function() {
         this.setData({
             visible: true
         });
@@ -206,7 +227,9 @@ Page({
         //     url: '/pages/imagecut/index/index',
         // })
     },
-    handleClickItem({ detail }) {
+    handleClickItem({
+        detail
+    }) {
         const index = detail.index + 1;
         let that = this;
 
@@ -229,11 +252,13 @@ Page({
                         'Content-type': 'text/plain'
                     },
                     data: base64[0],
-                    success: function (res) {
+                    success: function(res) {
                         console.log(res)
                         console.log(10088);
                         console.log(base64[0])
-                        that.setData({visible:false});
+                        that.setData({
+                            visible: false
+                        });
                         $Toast({
                             content: '成功',
                             type: 'success'
@@ -242,7 +267,7 @@ Page({
                 })
             }
         })
-        
+
     },
 
 

@@ -5,6 +5,8 @@
         "i-panel": "../../dist/panel/index",
         "i-modal": "../../dist/modal/index",
         "i-action-sheet": "../../dist/action-sheet/index",
-        "i-toast": "../../dist/toast/index"
+        "i-toast": "../../dist/toast/index",
+        "i-radio-group": "../../dist/radio-group/index",
+        "i-radio": "../../dist/radio/index"
     }
 }
