@@ -2,6 +2,11 @@ import {
     SET_CURRENT_ACT,
     ADD_COMMENT,
     CLEAR_CURRENT_ACT,
+    LOAD_ACT_DETAIL_OK,
+    LOAD_ACT_DETAIL_FAIL,
+    ADD_COMMENT_OK,
+    ADD_COMMENT_FAIL,
+    ON_LOADING_ACT_DETAIL,
 } from "../common/constant/ActionTypes"
 
 
@@ -52,16 +57,33 @@ const initialState = {
 
 const currentAct = (state=initialState, action) => {
     switch (action.type) {
-        case SET_CURRENT_ACT:
-            return Object.assign({}, state, action.act)
-        case ADD_COMMENT:
-            return Object.assign({}, state, {
-                comments:
-                    state.currentAct.comments.push(action.comment)
-            });
-        case CLEAR_CURRENT_ACT:
-            return Object.assign({}, state, initialState);
-
+        case ON_LOADING_ACT_DETAIL:
+            return {
+                ...state,
+                isLoading: true,
+            };
+        case LOAD_ACT_DETAIL_OK:
+            return {
+                ...state,
+                isLoading: false,
+                ...action.data
+            };
+        case LOAD_ACT_DETAIL_FAIL:
+            return {
+                ...state,
+                isLoading: false,
+                err: action.err,
+            };
+        case ADD_COMMENT_OK:
+            return {
+                ...state,
+                comments: [...action.comments, action.comment],
+            };
+        case ADD_COMMENT_FAIL:
+            return {
+                ...state,
+                err: action.err,
+            };
         default:
             return state
     }

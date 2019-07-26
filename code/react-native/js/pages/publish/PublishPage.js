@@ -215,13 +215,13 @@ class PublishPage extends React.PureComponent{
                     {detailInput}
                     <View style={styles.imageListContainer}>
                         {
-                            imageList.map((imgUri, i) => {
+                            imageList.map((img, i) => {
                                 return (
                                     <Image
                                         key={i}
                                         containerStyle={styles.imageContainer}
                                         style={styles.image}
-                                        source={{uri: imgUri}}
+                                        source={{uri: `data:${img.type};base64,${img.data}`}}
                                         resizeMode={"cover"}
                                     />
                                 )
@@ -242,10 +242,10 @@ class PublishPage extends React.PureComponent{
     publish = () => {
         let publishAct = this.props.publishAct;
 
-        let images = [...publishAct.images];
-        images.map((img, i) => {
-            images[i] = img.substring(img.indexOf(","));
-        });
+        let images = new Array();
+        for (let img of publishAct.images) {
+            images.push(img.data);
+        }
         let data = {
             type: publishAct.type,
             end_time: publishAct.endTime,
@@ -254,12 +254,17 @@ class PublishPage extends React.PureComponent{
             description: publishAct.description,
             tag: publishAct.tags,
             images: images,
+            max_member: 5,
         };
         if (data.type === "taxi") {
 
             data.depart_time = publishAct.departTime;
-            data.origin = publishAct.origin;
-            data.destination = publishAct.dest;
+            data.origin = {
+                title: publishAct.origin,
+            };
+            data.destination = {
+                title: publishAct.dest,
+            };
         } else if (data.type === "order") {
 
             data.store = publishAct.string;
@@ -272,7 +277,8 @@ class PublishPage extends React.PureComponent{
             data.activity_time = publishAct.activityTime;
         }
         console.log(data);
-        Api.publishAct(this.props.jwt, data)
+
+        Api.publishAct(this.props.user.jwt, data)
             .then (res => {
                 console.log(res);
             })
@@ -319,10 +325,10 @@ class PublishPage extends React.PureComponent{
         NavigationUtil.toPage(null, "PublishTaxiSpec")
     };
     handleClickTakeoutStore = () => {
-
+        NavigationUtil.toPage(null, "PublishTakeoutSpec");
     };
     handleClickOrderStore = () => {
-
+        NavigationUtil.toPage(null, "PublishOrderSpec");
     };
     // spec time picker handle
     showSpecTimePicker = () => {
@@ -335,12 +341,18 @@ class PublishPage extends React.PureComponent{
         switch(this.props.publishAct.type) {
             case "takeout" : {
                 this.props.setPublishTakeoutTime(dateString);
+                console.log(dateString);
+                break;
             }
             case "taxi" : {
                 this.props.setPublishTaxiDepart(dateString);
+                console.log(dateString);
+                break;
             }
-            case "activity" : {
+            case "other" : {
                 this.props.setPublishActivityTime(dateString);
+                console.log(dateString);
+                break;
             }
         }
         this.cancelSpecTime();
@@ -362,10 +374,10 @@ class PublishPage extends React.PureComponent{
                 console.log('User tapped custom button: ', res.customButton);
             } else {
                 let type = res.type;
-                let imgUri =  `data:${type};base64,` + res.data;
+                let img =  res.data;
                 let images = this.state.images;
                 this.setState({
-                    images: [imgUri, ...images],
+                    images: [{type: type, data: img}, ...images],
                 });
                 this.props.setPublishActDetail(this.state.images, this.props.description);
             }
@@ -400,14 +412,14 @@ const options = {
         skipBackup: true,
         path: 'images',
     },
-    quality: 0.3,
+    quality: 0.4,
 };
 
 const mapStateToProps = state => ({
     description: state.publishAct.description,
     images: state.publishAct.images,
     publishAct: state.publishAct,
-    jwt: state.user.jwt,
+    user: state.user,
 });
 const mapDispatchToProps = dispatch => ({
     setPublishActDetail: (images, description) => dispatch(setPublishActDetail(images, description)),

@@ -52,7 +52,7 @@ class MeScreen extends React.PureComponent{
             <InfoCard
                 user={user}
                 style={{borderTopLeftRadius: 6, borderTopRightRadius: 6,}}
-                onPress={() => {NavigationUtil.toPage(this.props, "PersonalHome")}}
+                onPress={() => {NavigationUtil.toPage(this.props, "Information")}}
             /> :
             <LoginMenu/>;
         return(

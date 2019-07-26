@@ -36,10 +36,9 @@ class LoginScreen extends React.PureComponent {
                     .then(() => {
                         Api.getSelfDetail(jwt)
                             .then(data => {
-                                console.log(data);
-                                XmppApi.login('aa', 'aa')
+                                let password = Util.cryptoOnpenFire(data.username, data.password);
+                                XmppApi.login(data.username, password)
                                     .then(() => {
-                                        console.log("Login ok");
                                         this.props.setUser({
                                             avatar: data.avatar_url,
                                             birthday: data.birthday,
@@ -47,7 +46,7 @@ class LoginScreen extends React.PureComponent {
                                             gender: data.gender,
                                             id: data.id,
                                             jaccount: data.jaccount,
-                                            jwt: data.jwt,
+                                            jwt: data.jwt_token,
                                             major: data.major,
                                             nickname: data.nickname,
                                             password: data.password,

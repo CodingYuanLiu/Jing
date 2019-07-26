@@ -5,6 +5,7 @@ import XmppApi from "../../../api/XmppApi";
 const xml = require('@xmpp/xml');
 import {connect} from "react-redux";
 import {addMessage} from "../../../actions/xmpp";
+import {PRESENCE_CHAT_ROOM} from "../../../common/constant/ActionTypes";
 
 class ChatRoom extends React.Component{
     constructor(props) {
@@ -16,9 +17,14 @@ class ChatRoom extends React.Component{
 
     componentDidMount(){
         this.id = this.props.navigation.getParam("recipient");
-        const presence = xml('presence', {to: `${id}/${this.props.username}`},
+        const presence = xml('presence', {to: `${this.id}/${this.props.user.username}`},
             xml('x', {xmlns: 'http://jabber.org/protocol/muc'}));
-        XmppApi.sendMessage(presence);
+        let xmpp = this.props.xmpp;
+        let room = xmpp[this.id];
+        if (!room.init) {
+            XmppApi.sendMessage(presence);
+            this.props.presenceChatRoom(this.id);
+        }
     }
 
     render() {
@@ -42,7 +48,6 @@ class ChatRoom extends React.Component{
         )
     }
     onSend = (messages) => {
-        console.log(messages);
         const message = xml('message', {
                 type: 'groupchat',
                 to: this.id,
@@ -59,7 +64,9 @@ class ChatRoom extends React.Component{
 
     getUser = () => {
         return {
-            _id: 'aa',
+            _id: this.props.user.username,
+            avatar: this.props.user.avatar,
+            name: this.props.user.nickname,
         }
     }
 }
@@ -69,7 +76,8 @@ const mapStateToProps = state => ({
     user: state.user,
 });
 const mapDispatchToProps = dispatch => ({
-    addMessage: (room, message) => dispatch(addMessage(room, message))
+    addMessage: (room, message) => dispatch(addMessage(room, message)),
+    presenceChatRoom: (room) => dispatch({type: PRESENCE_CHAT_ROOM, room: room})
 });
 export default connect(mapStateToProps, mapDispatchToProps)(ChatRoom);
 

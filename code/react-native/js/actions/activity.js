@@ -1,20 +1,6 @@
 import * as actionTypes from "../common/constant/ActionTypes"
 import Api from "../api/Api";
 
-export const setCurrentActivity = act => ({
-    type: actionTypes.SET_CURRENT_ACT,
-    act: act,
-});
-
-export const addComment = comment => ({
-    type: actionTypes.ADD_COMMENT,
-    comment: comment,
-});
-
-export const clearCurrentActivity = () => ({
-    type: actionTypes.CLEAR_CURRENT_ACT,
-});
-
 export const setPublishActCommon = (type, title, endTime) => ({
     type: actionTypes.SET_PUBLISH_ACT_COMMON,
     act: {
@@ -134,8 +120,74 @@ const onLoadTypeAct = (type) => {
     }
 };
 
+const onLoadActDetail = (id) => {
+    return dispatch => {
+        dispatch({
+            type: actionTypes.ON_LOADING_ACT_DETAIL,
+        });
+        Api.getActDetail(id)
+            .then(data => {
+                dispatch({
+                    type: actionTypes.LOAD_ACT_DETAIL_OK,
+                    data: data,
+                })
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch({
+                    type: actionTypes.LOAD_ACT_DETAIL_FAIL,
+                    err,
+                })
+            })
+    }
+};
+
+const addComment = (actId, comment, jwt) => {
+    return dispatch => {
+        Api.addComment(actId, comment, jwt)
+            .then(data => {
+                dispatch({
+                    type: actionTypes.ADD_COMMENT_OK,
+                    actId: actId,
+                    comment: comment,
+                })
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch({
+                    type: actionTypes.ADD_COMMENT_FAIL,
+                    err,
+                })
+            })
+    }
+};
+
+const onLoadPublishDraft = () => {
+    return dispatch => {
+        Dao.get("@draft")
+            .then(res => {
+                let data = JSON.parse(res);
+                dispatch({
+                    type: actionTypes.LOAD_PUBLISH_OK,
+                    data: data[0],
+                })
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch({
+                    type: actionTypes.LOAD_PUBLISH_FAIL,
+                    err,
+                })
+            })
+    }
+};
+
+
 export default {
     onLoadRecommendAct,
     onLoadMyAct,
     onLoadTypeAct,
+    onLoadActDetail,
+    addComment,
+    onLoadPublishDraft,
 }

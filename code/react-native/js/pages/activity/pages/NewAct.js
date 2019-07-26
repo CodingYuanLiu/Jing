@@ -32,7 +32,7 @@ class NewAct extends React.PureComponent{
                     id: item.sponsor_id,
                     nickname: item.sponsor_username,
                     signature: item.signature,
-                    avatarUri: Default.DEFAULT_AVATAR,
+                    avatarUri: item.sponsor_avatar,
                 }}
                 bodyText={item.description}
                 title={item.title}
@@ -91,6 +91,7 @@ class NewAct extends React.PureComponent{
             {title: "拼车", name: "taxi"},
             {title: "网购", name: "order"},
             {title: "外卖", name: "takeout"},
+            {title: "其他", name: "other"},
         ];
         return(
             <View style={styles.container}>

@@ -13,6 +13,7 @@ import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch
 import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
 import ChatRoom from "../pages/notification/pages/ChatRoom";
+import Information from "../pages/me/Information";
 
 
 const StartNav = createStackNavigator(
@@ -52,6 +53,9 @@ const MainNav = createStackNavigator(
         },
         PublishStack: {
             screen: PublishStack,
+        },
+        Information: {
+            screen: Information,
         },
         PersonalHome: {
             screen: PersonalHome,

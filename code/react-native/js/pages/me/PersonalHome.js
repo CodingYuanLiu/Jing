@@ -1,20 +1,21 @@
-import React from "react"
-import { View, Text } from 'react-native';
+import React from 'react';
 
-
-export default class PersonalHome extends React.PureComponent{
+export default class  extends React.PureComponent {
     constructor(props) {
         super(props);
+        this.state = {};
     }
 
     render() {
-        return(
-            <View>
-                <Text>
-                    This is Search screen!
-                </Text>
-            </View>
-        )
-    }
-}
 
+    }
+    renderForeground = () => {
+
+    };
+    renderBackground = () => {
+
+    };
+    renderHeader = () => {
+
+    };
+}

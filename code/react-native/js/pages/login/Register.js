@@ -68,7 +68,7 @@ class RegisterScreen extends React.PureComponent{
                                         gender: data.gender,
                                         id: data.id,
                                         jaccount: data.jaccount,
-                                        jwt: data.jwt,
+                                        jwt: data.jwt_token,
                                         major: data.major,
                                         nickname: data.nickname,
                                         password: data.password,
@@ -77,6 +77,7 @@ class RegisterScreen extends React.PureComponent{
                                         username: data.username,
                                     });
                                     this.setState({success: true});
+                                    XmppApi.login(data.username, password);
                                 })
                                 .catch(err => {
                                     console.log(err)

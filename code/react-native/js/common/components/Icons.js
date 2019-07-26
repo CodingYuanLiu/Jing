@@ -234,11 +234,28 @@ class LeftUpArrowIcon extends React.PureComponent{
         super(props);
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"feather"}
                 name={"arrow-left-up"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+            />)
+    }
+}
+class CaretRightIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"antdesign"}
+                name={"caretright"}
                 color={color}
                 size={size}
                 containerStyle={style}
@@ -262,4 +279,5 @@ export {
     CommentIcon,
     EmojiIcon,
     LeftUpArrowIcon,
+    CaretRightIcon,
 }

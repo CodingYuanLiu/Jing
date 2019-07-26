@@ -2,9 +2,8 @@ import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import PublishHeader from "../components/PublishHeader";
 import NavigationUtil from "../../../navigator/NavUtil";
-import {ListItem} from "react-native-elements";
-import {LeftUpArrowIcon, SearchIcon, SearchBar} from "../../../common/components/Icons";
-import mapDispatchToProps from "react-redux/es/connect/mapDispatchToProps";
+import {ListItem, SearchBar} from "react-native-elements";
+import {LeftUpArrowIcon, SearchIcon} from "../../../common/components/Icons";
 
 export default class PublishTakeoutSpec extends React.PureComponent{
     constructor(props) {
@@ -25,7 +24,6 @@ export default class PublishTakeoutSpec extends React.PureComponent{
             <PublishHeader
                 style={styles.headerContainer}
                 onClose={() => {NavigationUtil.back(this.props)}}
-                onNext={this.toNextPage}
             />
         );
     };

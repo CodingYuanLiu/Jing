@@ -2,7 +2,7 @@ import Dao from "./dao/Dao"
 import axios from "axios"
 import qs from "qs"
 
-axios.defaults.baseURL="https://jing855.cn";
+axios.defaults.baseURL="http://202.120.40.8:30255";
 axios.defaults.withCredentials=true;
 
 const Reject = (err, reject) => {
@@ -89,7 +89,7 @@ export default class Api {
                     Reject(err, reject)
                 })
         })
-    }
+    };
 
 
     static modifyInfo(jwt, data) {
@@ -222,11 +222,11 @@ export default class Api {
         })
     }
 
-    static addComment(act, target, comment, jwt) {
+    static addComment(actId, comment, jwt) {
         let data = {
             receiver_id: target,
             content: comment,
-            act_id :act,
+            act_id :actId,
             time: Util.dateTimeToString(new Date())
         };
         return new Promise((resolve, reject) => {
@@ -244,30 +244,39 @@ export default class Api {
         })
     }
 
-    /**
-     * getSavedPublishAct
-     */
-    static getDraftPublish() {
+    static joinAct(actId, jwt) {
         return new Promise((resolve, reject) => {
-            Dao.get("@draft")
-                .then(data => {
-                    // should be an array
-                    resolve(JSON.parse(data))
+            axios.post(`/api/user/act/join?act_id=${actId}`, null, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                }
+            })
+                .then(res => {
+                    resolve(res.data);
                 })
                 .catch(err => {
-                    // not fount or some other error
-                    reject(err);
+                    Reject(err, reject);
                 })
         })
     }
 
+    /**
+     * getSavedPublishAct
+     */
     static saveDraftPublish(publishAct) {
-        return new Promise( async (resolve) => {
-            let data = await Dao.get("@draft");
-            let dataList = JSON.parse(data);
-            dataList.push(publishAct);
-            await Dao.saveJson(JSON.stringify(dataList));
-            resolve()
+        return new Promise( async () => {
+            let data;
+            Dao.get("@draft")
+                .then(async res => {
+                    let dataList = JSON.parse(res);
+                    dataList.push(publishAct);
+                    await Dao.saveJson(JSON.stringify(dataList));
+                })
+                .catch(async err => {
+                    if (err.status === 404) {
+                        await Dao.saveJson("@draft", [data]);
+                    }
+                });
         })
     }
 }

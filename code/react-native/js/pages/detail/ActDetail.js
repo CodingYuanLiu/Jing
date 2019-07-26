@@ -1,34 +1,31 @@
 import React from "react";
 import {View, Text, StyleSheet, ScrollView, TouchableHighlight} from "react-native"
 import NavigationBar from "../../common/components/NavigationBar"
-import Api from "../../api/Api"
 import {Button, Icon, Image, ListItem, Avatar} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
 import Default from "../../common/constant/Constant";
 import {CommentIcon, PlusIcon} from "../../common/components/Icons";
 import Tag from "../../common/components/Tag";
-
-
-export default class DetailScreen extends React.Component {
+import Activity from "../../actions/activity";
+import {connect} from "react-redux";
+import Util from "../../common/util";
+import Api from "../../api/Api";
+class DetailScreen extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state= {
             activity: {},
+            isJoining: false,
         }
     }
 
     componentDidMount(){
-        let actId = this.props.navigation.getParam("id");
-        Api.getActDetail(actId)
-            .then(data => {
-                this.setState({activity: data})
-                console.log(this.state)
-            })
-            .catch(err => {
-                console.log(err)
-            })
+        this.actId = this.props.navigation.getParam("id");
+        this.loadData(this.actId);
     }
-
+    loadData = (id) => {
+        this.props.onLoadActDetail(id);
+    };
     renderNavBar = () => {
         let backBtn=
             <Icon
@@ -91,7 +88,8 @@ export default class DetailScreen extends React.Component {
         return (
             <ListItem
                 leftAvatar={{
-                    source: {uri: avatarUri === "" ? Default.DEFAULT_AVATAR : avatarUri},
+                    source: {uri: avatarUri },
+                    title: "头像",
                     size: 36
                 }}
                 title={nickname}
@@ -105,7 +103,7 @@ export default class DetailScreen extends React.Component {
                 rightElement={followBtn}
             />
         )
-    }
+    };
     renderBody = (user, specInfo, bodyText, images, publishTime, comments) => {
         let comment = this.renderComment(comments, user);
         let userComponent = this.renderUser(user);
@@ -116,13 +114,16 @@ export default class DetailScreen extends React.Component {
                     <View style={styles.bodyTextContainer}>
                         <Text style={styles.bodyText}>{bodyText}</Text>
                     </View>
-                    <View style={styles.bodyImage}>
+                    <View>
                         {
-                            images && images.length > 0 && images.map((item, i) => (
+                            images && images.length > 0 ? images.map((item, i) => {
+                                return (
                                 <Image
                                     source={{uri: item}}
-                                />
-                            ))
+                                    key={i}
+                                    style={styles.bodyImage}
+                                />)
+                            }): null
                         }
                     </View>
                     <View style={styles.bodyBottomContainer}>
@@ -148,7 +149,7 @@ export default class DetailScreen extends React.Component {
                     style={styles.commentButtonText}
                     onPress={() => {NavigationUtil.toPage({comments: comments}, "ActComment")}}
                 >添加评论...</Text>
-            </View>
+            </View>;
         return (
             <View style={styles.commentContainer}>
                 <Text style={styles.commentTitle}>评论</Text>
@@ -170,12 +171,12 @@ export default class DetailScreen extends React.Component {
             <CommentIcon
                 color={"#b4b4b4"}
                 size={24}
-            />
+            />;
         let joinIcon =
             <PlusIcon
                 color={"#0084ff"}
                 size={24}
-            />
+            />;
         return (
             <View style={styles.footer}>
                 <View style={styles.bottomLeftIconContainer}>
@@ -185,6 +186,8 @@ export default class DetailScreen extends React.Component {
                         titleStyle={styles.bottomButtonText}
                         contaienrStyle={styles.bottomButtonContainer}
                         buttonStyle={styles.bottomButton}
+                        loading={this.state.isJoining}
+                        onPress={this.joinAct}
                     />
                 </View>
                 <View style={styles.bottomRightIconContainer}>
@@ -199,12 +202,13 @@ export default class DetailScreen extends React.Component {
         )
     };
     render() {
-        let activity = this.state.activity;
+        let activity = this.props.currentAct;
         let title = activity.title;
         let comments = activity.comments;
         let bodyText = activity.description;
         let tag = activity.tag;
         let images = activity.images;
+        console.log(images);
         let publishTime = activity.create_time;
         let user={
             avatarUri: activity.sponsor_avatar ? activity.sponsor_avatar : Default.DEFAULT_AVATAR,
@@ -233,10 +237,36 @@ export default class DetailScreen extends React.Component {
         let id = this.state.activity.sponsor_id;
         NavigationUtil.toPage({id:id}, "PersonalPage")
     };
+    joinAct = () => {
+        let jwt = this.props.user.jwt;
+        let actId = this.actId;
+        this.setState({isJoining: true});
+        Api.joinAct(actId, jwt)
+            .then(message => {
+                console.log(message);
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(
+                () => {
+                    this.setState({isJoining: false});
+                }
+            )
+
+    }
 };
 
+const mapStateToProps = state => ({
+    currentAct: state.currentAct,
+    user: state.user,
+});
+const mapDispatchToProps = dispatch => ({
+    onLoadActDetail: actId => dispatch(Activity.onLoadActDetail(actId)),
 
-
+});
+export default connect(mapStateToProps ,mapDispatchToProps)(DetailScreen);
+const imageWidth = Util.getVerticalWindowDimension().width * 0.4;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -259,8 +289,8 @@ const styles = StyleSheet.create({
 
     },
     title:{
-        fontSize: 21,
-        fontWeight: "600",
+        fontSize: 24,
+        fontWeight: "800",
         color: "#2a2a2a",
     },
     tagContainer: {
@@ -301,16 +331,19 @@ const styles = StyleSheet.create({
         paddingBottom: 5
     },
     bodyContent: {
-        minHeight: 800,
+        minHeight: 500,
     },
     bodyTextContainer: {
     },
     bodyText: {
-        fontSize: 14,
+        fontSize: 20,
+        lineHeight: 26,
         color: "#505050",
     },
     bodyImage: {
-
+        width: imageWidth,
+        height: imageWidth,
+        resizeMode: "cover",
     },
 
     // publish time style

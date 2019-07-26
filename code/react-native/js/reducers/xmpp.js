@@ -2,7 +2,7 @@ import {
     ADD_CHAT_ROOM,
     CHAT_ROOM_LOADED,
     ON_LOADING_CHAT_ROOM,
-    ON_SEND_MESSAGE,
+    ON_SEND_MESSAGE, PRESENCE_CHAT_ROOM,
 
 } from "../common/constant/ActionTypes"
 
@@ -10,30 +10,6 @@ const initialState = {
     roomList: [],
 };
 
-const initRoomList = (chatRoomList) => {
-    let roomList = new Array();
-    for (let room of chatRoomList) {
-        let initRoom = new Object();
-        initRoom.roomId = room;
-        initRoom.messages = new Array();
-        roomList.push(initRoom);
-    }
-    return roomList;
-};
-const addMessageToList = (chatRoom, message, list) => {
-    let newList = [...list];
-    for (let room of newList){
-        if (room.roomId === chatRoom) {
-            if (room.messages) {
-                room.messages = [message, ...room.messages];
-            } else {
-                room.messages = [message];
-            }
-        }
-    }
-    console.log(newList);
-    return newList;
-};
 const chatRoom = (state=initialState, action) => {
     switch (action.type) {
         case ON_SEND_MESSAGE:
@@ -65,6 +41,14 @@ const chatRoom = (state=initialState, action) => {
             return {
                 ...state,
                 isLoading: false,
+            };
+        case PRESENCE_CHAT_ROOM:
+            return {
+                ...state,
+                [action.room]: {
+                    ...state[action.room],
+                    init: true,
+                }
             };
         default:
             return state;
