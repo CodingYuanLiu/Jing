@@ -133,8 +133,8 @@ class PublishPage extends React.PureComponent{
                             onPress={this.handleClickTakeoutStore}
                             iconName={"store"}
                             title={"外卖店铺"}
-                            rightTitle={act.store ? act.store : ""}
-                            active={Boolean(act.store && act.store !== "")}
+                            rightTitle={act.takeoutStore ? act.takeoutStore : ""}
+                            active={Boolean(act.takeoutStore && act.takeoutStore !== "")}
                         />
                         <MenubarItem
                             onPress={this.showSpecTimePicker}
@@ -153,8 +153,8 @@ class PublishPage extends React.PureComponent{
                             onPress={this.handleClickOrderStore}
                             iconName={"store"}
                             title={"下单店铺"}
-                            rightTitle={act.store ? act.store : ""}
-                            active={Boolean(act.string && act.store !== "")}
+                            rightTitle={act.orderStore ? act.orderStore : ""}
+                            active={Boolean(act.orderStore && act.orderStore !== "")}
                         />
                     </View>
                 )
@@ -266,12 +266,11 @@ class PublishPage extends React.PureComponent{
                 title: publishAct.dest,
             };
         } else if (data.type === "order") {
-
-            data.store = publishAct.string;
+            data.store = publishAct.orderStore;
         } else if (data.type === "takeout") {
 
-            data.order_time = publishAct.orderTime;
-            data.store = publishAct.store;
+            data.order_time = publishAct.takeoutTime;
+            data.store = publishAct.takeoutStore;
         } else {
             // type === 'other'
             data.activity_time = publishAct.activityTime;

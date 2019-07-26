@@ -17,7 +17,6 @@ class NewAct extends React.PureComponent{
     componentDidMount() {
         this.loadData();
     }
-
     loadData = () => {
         let {onLoadTypeAct} = this.props;
         let {type} = this.state;

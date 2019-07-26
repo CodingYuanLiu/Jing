@@ -14,11 +14,6 @@ export default class HomeScreen extends React.Component{
         super(props);
 
     }
-
-    toSearch = () => {
-        NavigationUtil.toPage(this.props, "Search")
-    };
-
     render() {
         const TabNavigator = createAppContainer(
                 createMaterialTopTabNavigator(
@@ -50,7 +45,11 @@ export default class HomeScreen extends React.Component{
                 <TabNavigator/>
             </View>
         )
-    }
+    };
+    toSearch = () => {
+        NavigationUtil.toPage(this.props, "Search")
+    };
+
 }
 
 const styles= StyleSheet.create(

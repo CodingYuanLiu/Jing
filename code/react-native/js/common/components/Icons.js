@@ -87,12 +87,12 @@ class CalendarIcon extends React.PureComponent{
             />)
     }
 }
-class BackspaceIcon extends React.PureComponent{
+class ArrowLeftIcon extends React.PureComponent{
     constructor(props) {
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"material-community"}
@@ -238,7 +238,7 @@ class LeftUpArrowIcon extends React.PureComponent{
         return (
             <Icon
                 type={"feather"}
-                name={"arrow-left-up"}
+                name={"arrow-up-left"}
                 color={color}
                 size={size}
                 containerStyle={style}
@@ -263,6 +263,7 @@ class CaretRightIcon extends React.PureComponent{
             />)
     }
 }
+
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -270,7 +271,7 @@ export {
     TaxiIcon,
     FoodIcon,
     CalendarIcon,
-    BackspaceIcon,
+    ArrowLeftIcon,
     UserIcon,
     MessageIcon,
     LockIcon,

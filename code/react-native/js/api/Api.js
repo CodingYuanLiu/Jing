@@ -260,6 +260,18 @@ export default class Api {
         })
     }
 
+    static searchTakeoutStore (keyword) {
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/public/takeout/searchshop?key=${keyword}`)
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    }
+
     /**
      * getSavedPublishAct
      */
