@@ -19,7 +19,7 @@ import (
 type Controller struct{}
 
 func generateJSON(actId int, userId int, userName string, userSignature string, userAvatar string,resp *activityProto.QryResp) (returnJson myjson.JSON) {
-	avatarUrl := "http://puo7ltwok.bkt.clouddn.com" + "/" + userAvatar
+	avatarUrl := "http://image.jing855.cn/"+ userAvatar
 	returnJson = myjson.JSON{
 		"sponsor_id": userId,
 		"sponsor_username": userName,
@@ -381,7 +381,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil ||
+	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil || jsonForm["max_member"] == nil ||
 		jsonForm["description"] == nil || jsonForm["tag"] == nil || jsonForm["act_id"] == nil) || (jsonForm["images"] == nil) ||
 		jsonForm["type"].(string) == "taxi" && (jsonForm["depart_time"] == nil || jsonForm["origin"] == nil || jsonForm["destination"] == nil) ||
 		jsonForm["type"].(string) == "takeout" && (jsonForm["order_time"] == nil || jsonForm["store"] == nil) ||
