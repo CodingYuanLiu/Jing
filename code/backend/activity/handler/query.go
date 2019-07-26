@@ -7,6 +7,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
+	"jing/app/jing"
 	"log"
 )
 
@@ -17,7 +18,7 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	if err == mgo.ErrNotFound{
 		fmt.Println(err)
 		resp.Status = 404
-		return err
+		return jing.NewError(1, 404, "Can't find activity")
 	}else if err != nil{
 		log.Fatal(err)
 	}

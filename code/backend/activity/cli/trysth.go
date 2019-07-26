@@ -109,14 +109,13 @@ func testGoJieba(){
 }
 
 func main(){
-	//testGoJieba()
-	t1 := "2022-12-06 12:11:12"
-	//t2 := time.Now().Format("2006-01-02 15:04:05")
-	time1,_ := time.Parse("2006-01-02 15:04:05", t1)
-	//time2,_ := time.Parse("2006-01-02 15:04:05", t2)
-	time2 := time.Now()
-	fmt.Println("t2:"+time2.String())
-	if time1.Before(time2){
-		fmt.Println("true")
+	timeEnd,_ := time.Parse("2006-01-02 15:04:05","2019-07-26 10:18:12")
+	timeStr:=time.Now().Format("2006-01-02 15:04:05")
+	timeNow,_ := time.Parse("2006-01-02 15:04:05",timeStr)
+
+	if timeEnd.Before(timeNow){
+		fmt.Println("YES")
+	}else{
+		fmt.Println("No")
 	}
 }

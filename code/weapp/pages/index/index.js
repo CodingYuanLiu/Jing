@@ -17,7 +17,8 @@ Page({
         size: 5,
         index: 0,
         myacts: [],
-        log: false
+        log: false,
+        status_show: ["","[人满]","[已过期]"]
     },
     onLoad: function() {
         console.log('onLoad')
@@ -113,7 +114,9 @@ Page({
             }
         })
         if (app.globalData.userInfo !== null) {
-            that.setData({log: true})
+            that.setData({
+                log: true
+            })
             wx.request({
                 url: 'https://jing855.cn/api/user/act/recommendact',
                 method: 'GET',
@@ -123,11 +126,15 @@ Page({
                 success: function(res) {
                     console.log(res);
                     feed_data = res.data;
-                    that.setData({
-                        feed_sugg: feed_data,
-                    });
+                    if (feed_data !== null)
+                        that.setData({
+                            feed_sugg: feed_data,
+                        });
 
                 }
+            })
+            that.setData({
+                myacts: []
             })
             wx.request({
                 url: 'https://jing855.cn/api/user/act/myact',
@@ -137,9 +144,10 @@ Page({
                 },
                 success: function(res) {
                     console.log(res);
-                    that.setData({
-                        myacts: that.data.myacts.concat(res.data)
-                    })
+                    if (feed_data !== null)
+                        that.setData({
+                            myacts: that.data.myacts.concat(res.data)
+                        })
                 }
             })
             wx.request({

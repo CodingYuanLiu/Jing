@@ -92,8 +92,9 @@
     line-height: 44rpx;
 }
 .answer-content image{
-    width: 100%;
-    margin: 20rpx 0;
+    max-width: 80vw;
+    /* height: 80vh; */
+    margin: 5vw;
 }
 .answer-content label{
     width: 100%;

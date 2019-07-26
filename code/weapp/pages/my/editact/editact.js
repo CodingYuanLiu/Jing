@@ -82,8 +82,17 @@ Page({
                             }
                         })
                     }
-
+                    that.setData({
+                        images: d.images
+                    })
+                } else {
+                    that.setData({
+                        images: []
+                    })
                 }
+                that.setData({
+                    max_member: d.max_member
+                })
 
                 let type = d.type
                 //taxi
@@ -99,7 +108,6 @@ Page({
                         originLocation: d.origin,
                         destLocation: d.destination,
                         details: d.description,
-                        images: d.images,
                         mode: d.type,
                     })
 
@@ -111,7 +119,6 @@ Page({
                         end_time_t: '',
                         store: d.store,
                         details: d.description,
-                        images: d.images,
                         mode: d.type,
                     })
 
@@ -125,7 +132,6 @@ Page({
                         order_time_t: '',
                         store: d.store,
                         details: d.description,
-                        images: d.images,
                         mode: d.type,
                     })
 
@@ -138,7 +144,6 @@ Page({
                         activity_time: d.activity_time,
                         activity_time_t: '',
                         details: d.description,
-                        images: d.images,
                         mode: d.type,
                     })
             }
@@ -168,13 +173,14 @@ Page({
                     "act_id": parseInt(that.data.act_id),
                     "type": "taxi",
                     "create_time": dateString,
-                    "end_time": that.data.end_time + " " + that.data.end_time_t,
+                    "end_time": (that.data.end_time + " " + that.data.end_time_t).substr(0, 16) + ":00",
                     "description": that.data.details,
                     "origin": that.data.originLocation,
                     "destination": that.data.destLocation,
                     "depart_time": that.data.depart_time + " " + that.data.depart_time_t,
                     "tag": tag_str,
                     "images": that.data.base,
+                    "max_member": parseInt(that.data.max_member)
                 },
                 success: function() {
                     console.log("naviback")
@@ -194,14 +200,14 @@ Page({
                     "act_id": parseInt(that.data.act_id),
                     "type": takeout,
                     "create_time": dateString,
-                    "end_time": that.data.end_time + " " + that.data.end_time_t,
+                    "end_time": (that.data.end_time + " " + that.data.end_time_t).substr(0, 16) + ":00",
                     "description": that.data.details,
                     "store": that.data.store,
                     "order_time": that.data.order_time + " " + that.data.order_time_t,
                     "tag": tag_str,
                     // "images": that.data.images,
                     "images": that.data.base,
-
+                    "max_member": parseInt(that.data.max_member)
                 },
                 success: function(res) {
                     console.log("naviback")
@@ -222,13 +228,13 @@ Page({
                     "act_id": parseInt(that.data.act_id),
                     "type": "order",
                     "create_time": dateString,
-                    "end_time": that.data.end_time + " " + that.data.end_time_t,
+                    "end_time": (that.data.end_time + " " + that.data.end_time_t).substr(0, 16) + ":00",
                     "description": that.data.details,
                     "store": that.data.store,
                     "tag": tag_str,
                     // "images": that.data.images,
                     "images": that.data.base,
-
+                    "max_member": parseInt(that.data.max_member)
                 },
                 success: function(res) {
                     console.log("naviback")
@@ -249,14 +255,14 @@ Page({
                     "act_id": parseInt(that.data.act_id),
                     "type": "other",
                     "create_time": dateString,
-                    "end_time": that.data.end_time + " " + that.data.end_time_t,
+                    "end_time": (that.data.end_time + " " + that.data.end_time_t).substr(0, 16) + ":00",
                     "description": that.data.details,
                     "activity_time": that.data.activity_time + " " + that.data.activity_time_t,
 
                     "tag": tag_str,
                     // "images": that.data.images,
                     "images": that.data.base,
-
+                    "max_member": parseInt(that.data.max_member)
                 },
                 success: function(res) {
                     console.log("naviback")
@@ -477,6 +483,11 @@ Page({
     handleStoreSelect: function() {
         wx.navigateTo({
             url: '/pages/selectstore/selectstore',
+        })
+    },
+    handleMemberInput: function (event) {
+        this.setData({
+            max_member: event.detail.detail.value
         })
     }
 })

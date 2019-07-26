@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"jing/app/jing"
 	"jing/app/json"
 )
 
@@ -49,17 +50,24 @@ type Follow struct {
 	To 		int
 }
 
-func SetAvatarKey(Id int, key string) {
+func SetAvatarKey(Id int, key string) error {
 	user := User{}
 	db.Where("id = ?", Id).First(&user)
+	if user.ID == 0 {
+		return jing.NewError(1, 404, "Can't find such user")
+	}
 	user.AvatarKey = key
 	db.Save(&user)
+	return nil
 }
 
-func GetAvatarKey(Id int) string {
+func GetAvatarKey(Id int) (string, error) {
 	user := User{}
 	db.Where("id = ?", Id).First(&user)
-	return user.AvatarKey
+	if user.ID == 0 {
+		return "", jing.NewError(1, 404, "Can't find such user")
+	}
+	return user.AvatarKey, nil
 }
 
 // TODO: let lqy implement these more functionally
@@ -163,6 +171,18 @@ func JoinActivity(userId int, actId int) error {
 	return nil
 }
 
+func GetActivityMembers(actId int) (ret []int, err error) {
+	var joins []Join
+	db.Where("act_id = ?", actId).Find(&joins)
+	if len(joins) == 0 {
+		return nil, jing.NewError(1, 404, "Activity not found")
+	}
+	for _, v := range joins {
+		ret = append(ret, v.UserID)
+	}
+	return
+}
+
 func AcceptJoinActivity(userId int, actId int) error{
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
@@ -199,7 +219,7 @@ func FindUserById(id int) (User, error) {
 	user := User{}
 	db.First(&user, id)
 	if user.ID == 0 {
-		return user, errors.New("user not found")
+		return user, jing.NewError(1, 404, "User not found")
 	}
 	return user, nil
 }
@@ -208,7 +228,7 @@ func FindUserByUsername(username string) (User, error) {
 	user := User{}
 	db.Where("username = ?", username).First(&user)
 	if user.ID == 0 {
-		return user, errors.New("user not found")
+		return user, jing.NewError(1, 404, "User not found")
 	}
 	return user, nil
 }
@@ -217,7 +237,7 @@ func UpdateUserById(id int, column string, value interface{}) error {
 	user := User{}
 	db.First(&user, id)
 	if user.ID == 0 {
-		return errors.New("user not found")
+		return jing.NewError(1, 404, "User not found")
 	}
 	db.Model(&user).Update(column, value)
 	return nil
@@ -228,7 +248,7 @@ func CreateUser(json json.JSON, id int) error {
 	user.Username = json["username"].(string)
 	_, err := FindUserByUsername(user.Username)
 	if err == nil {
-		return errors.New("username already exists")
+		return jing.NewError(1, 400, "Username already exists")
 	}
 	user.Password = json["password"].(string)
 	user.Phone = json["phone"].(string)
@@ -247,7 +267,7 @@ func CreateUserByJaccount(jaccount string) error {
 	user := User{}
 	_, err := FindUserByJaccount(jaccount)
 	if err == nil {
-		return errors.New("jaccount has been already bound")
+		return jing.NewError(1, 400,"jaccount has been already bound")
 	}
 	user.Jaccount = jaccount
 	db.Create(&user)
@@ -258,7 +278,7 @@ func FindUserByJaccount(jaccount string) (User, error) {
 	user := User{}
 	db.Where("jaccount = ?", jaccount).First(&user)
 	if user.ID == 0 {
-		return user, errors.New("user not found")
+		return user, jing.NewError(1, 404,"user not found")
 	}
 	return user, nil
 }
@@ -267,7 +287,7 @@ func FindUserByOpenId(openId string) (User, error) {
 	user := User{}
 	db.Where("open_id = ?", openId).First(&user)
 	if user.ID == 0 {
-		return user, errors.New("user not found")
+		return user, jing.NewError(1, 404,"user not found")
 	}
 	return user, nil
 }
@@ -283,7 +303,7 @@ func BindJaccountById(id int, jaccount string) error {
 	user := User{}
 	db.First(&user, id)
 	if user.Jaccount != "" {
-		return errors.New("jaccount has been bound")
+		return jing.NewError(1, 400,"jaccount has been bound")
 	} else {
 		user.Jaccount = jaccount
 		db.Save(&user)
@@ -311,7 +331,7 @@ func GetAllTags() ([]string,error){
 		tags = append(tags,param.Tag)
 	}
 	if len(tags) == 0{
-		err := errors.New("fetch tags error")
+		err := jing.NewError(1, 400,"fetch tags error")
 		return tags,err
 	}
 	return tags,nil
@@ -368,6 +388,12 @@ func CreateFollow(From int, To int) {
 		To: To,
 	}
 	db.Create(&follow)
+}
+
+func DeleteFollow(From int, To int) {
+	follow := Follow{}
+	db.Where("`from` = ? and `to` = ?", From, To).First(&follow)
+	db.Delete(&follow)
 }
 
 func GetFollowing(userId int) (ret []int) {

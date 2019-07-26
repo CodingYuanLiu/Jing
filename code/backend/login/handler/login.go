@@ -8,6 +8,7 @@ import (
 	"github.com/jameskeane/bcrypt"
 	"io/ioutil"
 	"jing/app/dao"
+	"jing/app/jing"
 	json2 "jing/app/json"
 	"jing/app/login/model"
 	login "jing/app/login/proto/login"
@@ -33,9 +34,9 @@ func BuildToken(user dao.User) (tokenString string) {
 
 func (s *LoginService) NewJwt(ctx context.Context, in *login.JwtReq, out *login.JwtResp) error {
 	id := in.UserId
-	user, _ := dao.FindUserById(int(id))
+	user, err := dao.FindUserById(int(id))
 	out.JwtToken = BuildToken(user)
-	return nil
+	return err
 }
 
 func (s *LoginService) GetAccessToken(ctx context.Context, in *login.CodeReq, out *login.AccessResp) error {
@@ -73,7 +74,7 @@ func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *logi
 	user, err := dao.FindUserByUsername(in.Username)
 	if err != nil {
 		out.Status = 1
-		return nil
+		return jing.NewError(103, 401, "Bad credential")
 	} else {
 		if bcrypt.Match(in.Password, user.Password) {
 			out.Status = 0
@@ -81,7 +82,7 @@ func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *logi
 			return nil
 		} else {
 			out.Status = 1
-			return nil
+			return jing.NewError(103, 401, "Bad credential")
 		}
 	}
 }
