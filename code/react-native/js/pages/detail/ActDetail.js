@@ -10,6 +10,7 @@ import Activity from "../../actions/activity";
 import {connect} from "react-redux";
 import Util from "../../common/util";
 import Api from "../../api/Api";
+import CommentPreview from "./components/CommentPreview";
 class DetailScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -25,6 +26,32 @@ class DetailScreen extends React.Component {
     }
     loadData = (id) => {
         this.props.onLoadActDetail(id);
+    };
+    render() {
+        let activity = this.props.currentAct;
+        let {title, comments, tag, images,
+            create_time: publishTime, description: bodyText} = activity;
+        let sponsor = {
+            avatarUri: activity.sponsor_avatar,
+            nickname: activity.sponsor_username,
+            id: activity.sponsor_id,
+            signature: activity.signature,
+        };
+        let specInfo = {};
+        let navBar = this.renderNavBar();
+        let header = this.renderHeader(title, tag);
+        let body = this.renderBody(sponsor, specInfo, bodyText, images, publishTime, comments);
+        let footer = this.renderFooter();
+        return(
+            <View style={{flex:1, alignItems:"center", width:"100%"}}>
+                {navBar}
+                <ScrollView style={styles.container}>
+                    {header}
+                    {body}
+                </ScrollView>
+                {footer}
+            </View>
+        );
     };
     renderNavBar = () => {
         let backBtn=
@@ -59,10 +86,10 @@ class DetailScreen extends React.Component {
                         tags && tags.length > 0 ?
                             tags.map((tag, i) => {
                                 return(
-                                <Tag
-                                title={tag}
-                                key={i}
-                                />);
+                                    <Tag
+                                        title={tag}
+                                        key={i}
+                                    />);
                             }) : null
                     }
                 </View>
@@ -104,13 +131,13 @@ class DetailScreen extends React.Component {
             />
         )
     };
-    renderBody = (user, specInfo, bodyText, images, publishTime, comments) => {
-        let comment = this.renderComment(comments, user);
-        let userComponent = this.renderUser(user);
+    renderBody = (sponsor, specInfo, bodyText, images, publishTime, comments) => {
+        let comment = this.renderComment(comments);
+        let sponsorComponent = this.renderUser(sponsor);
         return (
             <View style={styles.bodyContainer}>
                 <View style={styles.bodyContent}>
-                    {userComponent}
+                    {sponsorComponent}
                     <View style={styles.bodyTextContainer}>
                         <Text style={styles.bodyText}>{bodyText}</Text>
                     </View>
@@ -118,11 +145,11 @@ class DetailScreen extends React.Component {
                         {
                             images && images.length > 0 ? images.map((item, i) => {
                                 return (
-                                <Image
-                                    source={{uri: item}}
-                                    key={i}
-                                    style={styles.bodyImage}
-                                />)
+                                    <Image
+                                        source={{uri: item}}
+                                        key={i}
+                                        style={styles.bodyImage}
+                                    />)
                             }): null
                         }
                     </View>
@@ -139,24 +166,41 @@ class DetailScreen extends React.Component {
     };
 
     renderCommentPreview = (comments) => {
-        return null
+        let previewComments = this.getPreviewComments(comments);
+        return (
+            <View>
+                {
+                    previewComments.map((comment, i) => {
+                    return (
+                        <CommentPreview
+                            avatar={comment.avatar_url ? comment.avatar_url : "https://pic.qqtn.com/up/2019-5/2019053019011498462.jpg"}
+                            content={comment.content}
+                            username={comment.user_nickname}
+                            key={i}
+                        />
+                        );
+                    })
+                }
+            </View>
+        )
     };
-    renderComment = (comments, author) => {
+    renderComment = (comments) => {
         let commentPreview = this.renderCommentPreview(comments);
         let commentButton =
             <View style={styles.commentButton}>
                 <Text
                     style={styles.commentButtonText}
-                    onPress={() => {NavigationUtil.toPage({comments: comments}, "ActComment")}}
+                    onPress={this.toComments}
                 >添加评论...</Text>
             </View>;
+        let user = this.props.user;
         return (
             <View style={styles.commentContainer}>
                 <Text style={styles.commentTitle}>评论</Text>
                 {commentPreview}
                 <View style={styles.commentButtonContainer}>
                     <Avatar
-                        source={{uri: author.avatarUri,}}
+                        source={{uri: user.avatarUri,}}
                         rounded
                         size={24}
                     />
@@ -171,6 +215,7 @@ class DetailScreen extends React.Component {
             <CommentIcon
                 color={"#b4b4b4"}
                 size={24}
+                onPress={this.toComments}
             />;
         let joinIcon =
             <PlusIcon
@@ -201,41 +246,17 @@ class DetailScreen extends React.Component {
             </View>
         )
     };
-    render() {
-        let activity = this.props.currentAct;
-        let title = activity.title;
-        let comments = activity.comments;
-        let bodyText = activity.description;
-        let tag = activity.tag;
-        let images = activity.images;
-        console.log(images);
-        let publishTime = activity.create_time;
-        let user={
-            avatarUri: activity.sponsor_avatar ? activity.sponsor_avatar : Default.DEFAULT_AVATAR,
-            nickname: activity.sponsor_username,
-            id: activity.sponsor_id,
-            signature: activity.signature,
-        };
-        let specInfo = {};
-        let navBar = this.renderNavBar();
-        let header = this.renderHeader(title, tag);
-        let body = this.renderBody(user, specInfo, bodyText, images, publishTime, comments);
-        let footer = this.renderFooter();
-        return(
-            <View style={{flex:1, alignItems:"center", width:"100%"}}>
-                {navBar}
-                <ScrollView style={styles.container}>
-                    {header}
-                    {body}
-                </ScrollView>
-                {footer}
-            </View>
-        );
-    };
-
     toUserPersonalPage = () => {
         let id = this.state.activity.sponsor_id;
         NavigationUtil.toPage({id:id}, "PersonalPage")
+    };
+    toComments = () => {
+        let { comments, sponsor_username } = this.props.currentAct;
+        NavigationUtil.toPage({
+            comments: comments,
+            sponsor: sponsor_username
+        }, "ActComment");
+
     };
     joinAct = () => {
         let jwt = this.props.user.jwt;
@@ -254,8 +275,21 @@ class DetailScreen extends React.Component {
                 }
             )
 
+    };
+
+    // generate preview comments from given comments
+    getPreviewComments = (comments) => {
+        let previewComments = new Array();
+        let count = 0;
+        for (let i = comments.length - 1; i >= 0 && count < 2; i--) {
+            if( comments[i].receiver_id === -1 ) {
+                previewComments.push(comments[i]);
+                count++;
+            }
+        }
+        return previewComments
     }
-};
+}
 
 const mapStateToProps = state => ({
     currentAct: state.currentAct,
@@ -331,7 +365,8 @@ const styles = StyleSheet.create({
         paddingBottom: 5
     },
     bodyContent: {
-        minHeight: 500,
+        minHeight: 400,
+        marginBottom: 40
     },
     bodyTextContainer: {
     },

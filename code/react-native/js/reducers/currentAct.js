@@ -77,7 +77,7 @@ const currentAct = (state=initialState, action) => {
         case ADD_COMMENT_OK:
             return {
                 ...state,
-                comments: [...action.comments, action.comment],
+                comments: [...state.comments, action.comment],
             };
         case ADD_COMMENT_FAIL:
             return {
@@ -87,7 +87,6 @@ const currentAct = (state=initialState, action) => {
         default:
             return state
     }
-
 };
 
 export default currentAct;

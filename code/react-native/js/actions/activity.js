@@ -142,15 +142,15 @@ const onLoadActDetail = (id) => {
     }
 };
 
-const addComment = (actId, comment, jwt) => {
+const addComment = (comment, jwt) => {
     return dispatch => {
-        Api.addComment(actId, comment, jwt)
+        Api.addComment(comment, jwt)
             .then(data => {
+                console.log(data)
                 dispatch({
                     type: actionTypes.ADD_COMMENT_OK,
-                    actId: actId,
                     comment: comment,
-                })
+                });
             })
             .catch(err => {
                 console.log(err);

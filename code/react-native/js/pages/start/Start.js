@@ -23,12 +23,6 @@ class StartPage extends React.Component {
     }
 
     componentDidMount() {
-        /*
-        this.timer = setTimeout(() => {
-            NavigationUtil.toHomePage(this.props)
-        }, 200);
-
-         */
         this.getStatus();
     }
 
@@ -46,7 +40,6 @@ class StartPage extends React.Component {
     getStatus = () => {
         Dao.get("@jwt")
             .then(jwt => {
-                console.log(jwt);
                 Api.getSelfDetail(jwt)
                     .then(data => {
                         // what if user exit when he /she is register?
@@ -76,18 +69,16 @@ class StartPage extends React.Component {
                     })
                     .catch(err => {
                         console.log(err);
-                        this.props.dispatch({
-                            type: actionTypes.LOGIN_FAIL,
-                            err,
-                        })
+                        err.message="expired";
+                        this.props.onLoginFail(err);
                     })
             })
             .catch(err => {
                 console.log(err);
-                this.props.dispatch({
-                    type: actionTypes.GET_STATUS_FAIL,
-                    err,
-                })
+                console.log(this.props);
+                err.message="no jwt";
+                this.props.onLoginFail(err);
+                this.props.navigation.navigate("Home", null);
             })
     };
     dispatchSetUser = (data) => {
@@ -178,6 +169,7 @@ const mapDispatchToProps = dispatch => ({
     addChatRoom: (room, roomName) => dispatch(addChatRoom(room, roomName)),
     chatRoomLoaded: () => dispatch({type: CHAT_ROOM_LOADED}),
     setUser: (user) => dispatch(setUser(user)),
+    onLoginFail: (err) => dispatch({type: actionTypes.LOGIN_FAIL, err,}),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(StartPage);
 

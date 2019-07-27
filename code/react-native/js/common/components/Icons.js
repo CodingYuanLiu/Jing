@@ -197,7 +197,7 @@ class CommentIcon extends React.PureComponent{
     }
 
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"material"}
@@ -210,6 +210,24 @@ class CommentIcon extends React.PureComponent{
     }
 }
 
+class ReplyIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material-community"}
+                name={"comment-outline"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+            />)
+    }
+}
 class EmojiIcon extends React.PureComponent{
     constructor(props) {
         super(props)
@@ -281,4 +299,5 @@ export {
     EmojiIcon,
     LeftUpArrowIcon,
     CaretRightIcon,
+    ReplyIcon,
 }

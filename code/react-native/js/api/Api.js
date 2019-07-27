@@ -222,12 +222,12 @@ export default class Api {
         })
     }
 
-    static addComment(actId, comment, jwt) {
+    static addComment(comment, jwt) {
         let data = {
-            receiver_id: target,
-            content: comment,
-            act_id :actId,
-            time: Util.dateTimeToString(new Date())
+            receiver_id: comment.receiver_id,
+            content: comment.content,
+            act_id :comment.act_id,
+            time: comment.time,
         };
         return new Promise((resolve, reject) => {
             axios.post("/api/user/act/comment",data, {

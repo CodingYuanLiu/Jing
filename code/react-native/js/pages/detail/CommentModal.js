@@ -1,33 +1,53 @@
 import React from "react"
-import { View, Text, ScrollView, StyleSheet, TextInput} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, FlatList} from 'react-native';
 import NoXXX from "../../common/components/NoXXX";
 import {Button, Icon } from "react-native-elements";
 import {CloseIcon, EmojiIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
 import Modal from "react-native-modal";
+import {connect} from "react-redux";
+import Activity from "../../actions/activity";
+import Util from "../../common/util";
+import Comment from "./components/Comment";
 
-export default class CommentModal extends React.PureComponent{
+class CommentModal extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
-            comments: [],
-            commentLength: 0,
             commentContent: "",
-            replyComment: "",
-            replyTo: "",
+            receiverName: "",
+            receiverId: -1,
             commentInputModalVisible: false,
             commentIndicatorVisible: true,
         }
     }
 
     componentDidMount(){
-        let comments = this.props.navigation.getParam("comments");
-        console.log(comments);
-        this.setState({comments: comments, commentLength: comments.length})
+        this.sponsor= this.props.navigation.getParam("sponsor");
+        this.setState({receiverName: this.sponsor});
     }
 
+    render() {
+        let header = this.renderHeader();
+        let commentList = this.renderComments(this.props.currentAct.comments);
+        let footer = this.renderFooter(true);
+        let commentModal = this.renderCommentModal();
+        return(
+            <View style={{flex: 1, backgroundColor: "#0084ff"}}>
+                <View style={styles.container}>
+                    {header}
+                    <View style={styles.commentListContainer}>
+                        {commentList}
+                    </View>
+                    {commentModal}
+                    {footer}
+                </View>
+            </View>
+        );
+    };
+
     renderHeader = () => {
-        let length = this.state.comments ? this.state.comments.length : 0;
+        let length = this.props.currentAct.comments ? this.props.currentAct.comments.length : 0;
         let closeIcon =
             <CloseIcon
                 color={"#6d6d6d"}
@@ -48,13 +68,28 @@ export default class CommentModal extends React.PureComponent{
             </View>
         )
     };
-
+    renderCommentItem = ({item}) => {
+        return (
+            <Comment
+                avatar={item.avatar_url ? item.avatar_url : "https://pic.qqtn.com/up/2019-5/2019053019011498462.jpg"}
+                content={item.content}
+                time={item.time}
+                receiverName={item.receiver_name? item.receiver_name :"未知"}
+                username={item.user_nickname}
+                onPress={() => {
+                    this.openCommentModal(item.user_id, item.user_nickname)
+                }}
+                receiverId={item.receiver_id}
+            />
+            );
+    };
     renderComments = comments => {
         if (comments && comments.length > 0 ) {
             return (
-                <ScrollView>
-
-                </ScrollView>
+                <FlatList
+                    data={comments}
+                    renderItem={this.renderCommentItem}
+                />
             )
 
         } else {
@@ -71,11 +106,11 @@ export default class CommentModal extends React.PureComponent{
                     labelText={"还没有人评论哦，第一个评论吧"}
                     textSize={15}
                 />
-                )
+            )
         }
     };
 
-    renderFooter = () => {
+    renderFooter = (topBorder) => {
         // Emoji support may be difficult, but I determined to support this
         let emojiIcon =
             <EmojiIcon
@@ -85,10 +120,7 @@ export default class CommentModal extends React.PureComponent{
         let inputComponent =
             <View style={styles.footerTextContainer}>
                 <Text
-                    onPress={() => {this.inputComment({
-                        userId: -1,
-                        username: "",
-                    })}}
+                    onPress={() => {this.openCommentModal(-1, this.sponsor)}}
                     style={styles.footerText}
                 >
                     {this.state.commentIndicatorVisible ? "请输入评论" : ""}
@@ -99,9 +131,10 @@ export default class CommentModal extends React.PureComponent{
                 title={"发布"}
                 type={"clear"}
                 onPress={this.publishComment}
+                disabled={this.state.commentContent === ""}
             />;
         return (
-            <View style={styles.footerContainer}>
+            <View style={[styles.footerContainer, topBorder ? {borderTopWidth: 0.5}: null]}>
                 {emojiIcon}
                 {inputComponent}
                 {rightButton}
@@ -109,26 +142,30 @@ export default class CommentModal extends React.PureComponent{
         )
     };
     renderCommentModal = () => {
-        let footer = this.renderFooter();
+        let footer = this.renderFooter(false);
         return (
             <Modal
                 isVisible={this.state.commentInputModalVisible}
-                backdropColor={"rgb(0,0,0)"}
+                onBackdropPress={this.closeCommentModal}
+                backdropColor={"rgba(0,0,0,0.4)"}
                 style={styles.commentModal}
-                onBackdropPress={this.closeInputComment}
                 useNativeDriver={true}
-                avoidKeyboard
+                swipeDirection={"down"}
+                onSwipeComplete={this.closeCommentModal}
             >
                 <View style={styles.commentModalChild}>
                     <View>
-                        <Text style={styles.footerText}>正在回复给{this.state.replyTo}</Text>
+                        <Text style={styles.commentModalReplyText}>
+                            {this.state.receiverId === 1 ? `评论给 ${this.state.receiverName}(作者)` :
+                                `正在回复给 ${this.state.receiverName}`}
+                        </Text>
                     </View>
                     <TextInput
                         selectionColor={"#0084ff"}
                         placeholder={"友善的评论是交流的起点"}
                         placeholderTextColor={"#bfbfbf"}
                         inputContainerStyle={styles.commentInputContainer}
-                        autoFocus={true}
+                        autoFocus
                         style={styles.commentModalInput}
                         value={this.state.commentContent}
                         onChangeText={value => {this.setState({commentContent: value})}}
@@ -137,48 +174,49 @@ export default class CommentModal extends React.PureComponent{
                 </View>
             </Modal>
         )
-    }
-    render() {
-        let header = this.renderHeader();
-        let commentList = this.renderComments(this.state.comments);
-        let footer = this.renderFooter();
-        let commentModal = this.renderCommentModal();
-        return(
-            <View style={{flex: 1, backgroundColor: "#0084ff"}}>
-                <View style={styles.container}>
-                    {header}
-                    <View style={styles.commentListContainer}>
-                        {commentList}
-                    </View>
-                    {commentModal}
-                    {footer}
-                </View>
-            </View>
-        );
     };
 
     publishComment = () => {
-        let content = this.state.commentContent;
-        let receiverId = this.state.replyTo;
-        let replyComment = this.state.replyComment;
-        // some problems here
-
+        let comment = {
+            receiver_id: this.state.receiverId,
+            content: this.state.commentContent,
+            act_id: this.props.currentAct.act_id,
+            time: Util.dateTimeToString(new Date()),
+            user_id: this.props.user.id,
+            user_nickname: this.props.user.nickname,
+        };
+        this.props.addComment(comment, this.props.user.jwt);
     };
 
-    inputComment = (replyTo) => {
-        this.setState({
-            commentIndicatorVisible: false,
-            commentInputModalVisible: true,
-            replyTo: replyTo
-        })
+    openCommentModal = (receiverId, receiverName) => {
+        if(!this.state.commentInputModalVisible) {
+            this.setState({
+                commentIndicatorVisible: false,
+                commentInputModalVisible: true,
+                receiverId: receiverId,
+                receiverName: receiverName,
+            })
+        }
     };
-    closeInputComment = () => {
+    closeCommentModal = () => {
         this.setState({
             commentIndicatorVisible: true,
             commentInputModalVisible: false,
+            receiverId: -1,
+            receiverName: this.sponsor,
         })
     }
-};
+}
+
+const mapStateToProps = state => ({
+    currentAct: state.currentAct,
+    user: state.user,
+});
+const mapDispatchToProps = dispatch => ({
+    addComment: (comment, jwt) => dispatch(Activity.addComment(comment, jwt)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CommentModal);
 
 const styles = StyleSheet.create({
     container: {
@@ -189,8 +227,8 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 8,
     },
     headerContainer: {
-        paddingLeft: "6%",
-        paddingRight: "6%",
+        paddingLeft: "5%",
+        paddingRight: "5%",
         flexDirection: "row",
         height: 48,
         alignItems: "center",
@@ -209,18 +247,15 @@ const styles = StyleSheet.create({
         borderColor: "#d3d3d3",
         flex: 1,
         width: "100%",
-        paddingLeft: "6%",
-        paddingRight: "6%",
     },
 
     footerContainer: {
         flexDirection: "row",
         height: 48,
-        borderTopWidth: 1,
         borderTopColor: "#d3d3d3",
         alignItems: "center",
-        paddingLeft: "6%",
-        paddingRight: "6%",
+        paddingLeft: "5%",
+        paddingRight: "5%",
     },
     footerTextContainer: {
         flex: 1,
@@ -240,11 +275,20 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "#fff",
     },
+    commentModalReplyText: {
+        fontSize: 14,
+        paddingLeft: 22,
+        paddingTop: 10,
+        paddingBottom: 10,
+    },
     commentInputContainer: {
         borderWidth: 0
     },
     commentModalInput: {
         borderWidth: 0,
-        fontSize: 18
+        fontSize: 16,
+        paddingLeft: 22,
+        paddingTop: 5,
+        paddingBottom: 5,
     },
 });

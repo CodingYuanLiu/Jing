@@ -1,7 +1,9 @@
 import React from "react";
-import {View, Text} from "react-native";
+import {View, Text, StyleSheet, TouchableWithoutFeedback} from "react-native";
 import {CaretRightIcon} from "../../../common/components/Icons";
 import {Avatar} from "react-native-elements";
+import {PropTypes} from "prop-types";
+import {ReplyIcon} from "../../../common/components/Icons";
 
 export default class Comment extends React.PureComponent {
     constructor(props){
@@ -9,83 +11,140 @@ export default class Comment extends React.PureComponent {
     }
 
     render() {
-
-        let leftAvatar = this.renderAvatar();
-        let footer = this.renderFooter();
-        let title = this.renderTitle();
-        let body = this.renderBody();
-
+        let {avatar, content, time, receiverName, username, onPress, receiverId} = this.props;
+        let leftAvatar = this.renderAvatar(avatar);
+        let footer = this.renderFooter(time);
+        let title = this.renderTitle(username, receiverName, receiverId);
+        let body = this.renderBody(content);
         return (
-            <View style={styles.container}>
-                {leftAvatar}
-                <View style={styles.mainContainer}>
-                    {title}
-                    {body}
-                    {footer}
+            <TouchableWithoutFeedback
+                onPress={onPress}
+            >
+                <View style={styles.container}>
+                    {leftAvatar}
+                    <View style={styles.mainContainer}>
+                        {title}
+                        {body}
+                        {footer}
+                    </View>
                 </View>
-            </View>
+            </TouchableWithoutFeedback>
         )
     }
-    renderTitle = (from, to) => {
+    renderTitle = (from, to, toId) => {
         let caretIcon =
             <CaretRightIcon
                 color={"#838383"}
                 size={14}
+                style={styles.caretContainer}
             />;
         let fromTitle=<Text style={styles.title}>{from}</Text>
         let toTitle = <Text style={styles.title}>{to}</Text>
         return (
-            <View>
+            <View style={styles.titleContainer}>
                 {fromTitle}
-                {to !== -1 ? caretIcon : null}
-                {to !== -1 ? toTitle : null}
+                {toId !== -1 ? caretIcon : null}
+                {toId !== -1 ? toTitle : null}
             </View>
         )
     };
-    renderBody = (comment) => {
+    renderBody = (content) => {
         return (
-            <Text style={styles.bodyText}>{comment}</Text>
+            <View style={styles.bodyContainer}>
+                <Text
+                    style={styles.bodyText}
+                    multiLine
+                >
+                    {content}
+                </Text>
+            </View>
         )
     };
-    renderAvatar = (user) => {
+    renderAvatar = (avatar) => {
         return (
-            <View>
-                <Avatar
-                    source={{uri: user.avatar}}
+            <Avatar
+                source={{uri: avatar}}
+                rounded
+                onPress={() => {alert("you pressed avatar")}}
+                containerStyle={styles.avatar}
+            />
+        )
+    };
+    renderFooter = (time) => {
+        return (
+            <View style={styles.footerContainer}>
+                <Text style={styles.footerText}>
+                    {time}
+                </Text>
+                <ReplyIcon
+                    color={"#bfbfbf"}
+                    style={styles.replyIcon}
                 />
             </View>
-        )
-    };
-    renderFooter = (timestamp) => {
-        return (
-            <Text style={styles.footerText}>{`发布于${timestamp}`}</Text>
         )
     }
 }
 
+Comment.propTypes = {
+    avatar: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    time: PropTypes.string.isRequired,
+    receiverName: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
+};
+
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         flexDirection: "row",
+        borderBottomWidth: 0.5,
+        borderBottomColor: "#efefef",
         width: "100%",
-        paddingLeft: 5,
-        paddingRight: 5,
-        paddingTop: 8,
-        paddingBottom: 8,
+        paddingLeft: "5%",
+        paddingRight: "5%",
+        paddingTop: 6,
+        paddingBottom: 12,
+    },
+    avatar: {
+        marginTop: 5,
     },
     mainContainer: {
         flex: 1,
+        marginLeft: 8,
+        marginTop: 8,
+    },
+    titleContainer: {
+        flexDirection: "row",
+        alignItems: "center",
     },
     title: {
-        fontWeight: "800",
-        fontSize: 14,
+        fontWeight: "bold",
+        fontSize: 16,
         color: "#3a3a3a",
     },
+    caretContainer: {
+        paddingLeft: 8,
+        paddingRight: 8,
+    },
+    bodyContainer: {
+        marginTop: 6,
+        marginBottom: 18,
+    },
     bodyText: {
-        fontSize: 14,
+        fontSize: 16,
         color: "#4a4a4a",
         fontWeight: "500",
     },
+    footerContainer: {
+        marginBottom: 8,
+        flexDirection: "row",
+    },
     footerText: {
-
+        fontSize: 12,
+        color: "#bfbfbf",
+        flex: 1,
+    },
+    replyIcon: {
+        paddingLeft: 10,
     },
 });

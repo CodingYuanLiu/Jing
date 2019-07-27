@@ -8,6 +8,7 @@ import Dao from '../../api/dao/Dao';
 import NavigationUtil from '../../navigator/NavUtil';
 import Default from "../../common/constant/Constant";
 import XmppApi from "../../api/XmppApi";
+import Util from "../../common/util";
 
 class JaccountLoadingScreen extends React.PureComponent{
     constructor(props) {
