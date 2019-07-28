@@ -146,7 +146,7 @@ const addComment = (comment, jwt) => {
     return dispatch => {
         Api.addComment(comment, jwt)
             .then(data => {
-                console.log(data)
+                console.log(data);
                 dispatch({
                     type: actionTypes.ADD_COMMENT_OK,
                     comment: comment,

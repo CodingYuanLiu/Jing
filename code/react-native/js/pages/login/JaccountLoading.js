@@ -37,7 +37,7 @@ class JaccountLoadingScreen extends React.PureComponent{
                             // don't get user status in this page, but in userinfo page
                             Api.getSelfDetail(data.jwt_token)
                                 .then(user => {
-                                    let password = Util.cryptoOnpenFire(data.username, data.password);
+                                    let password = Util.cryptoOnpenFire(user.username, user.password);
                                     XmppApi.login(data.username, password)
                                         .then(() => {
                                             console.log("Login ok");

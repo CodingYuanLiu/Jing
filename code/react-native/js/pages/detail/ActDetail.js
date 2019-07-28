@@ -17,6 +17,7 @@ class DetailScreen extends React.Component {
         this.state= {
             activity: {},
             isJoining: false,
+            isFriends: false,
         }
     }
 
@@ -102,7 +103,7 @@ class DetailScreen extends React.Component {
         let signature = user.signature;
         let followBtn =
             <Button
-                title={"关注"}
+                title={this.state.isFriends ? "取消关注" : "关注"}
                 icon={
                     <PlusIcon
                         size={24}
@@ -111,6 +112,7 @@ class DetailScreen extends React.Component {
                 }
                 titleStyle={{color: "#0084ff"}}
                 buttonStyle={styles.followBtn}
+                onPress={this.followSponsor}
             />;
         return (
             <ListItem
@@ -288,6 +290,10 @@ class DetailScreen extends React.Component {
             }
         }
         return previewComments
+    };
+
+    followSponsor = () => {
+          
     }
 }
 

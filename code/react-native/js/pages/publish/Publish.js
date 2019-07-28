@@ -83,6 +83,10 @@ class PublishScreen extends React.PureComponent{
                     color={"#d3d3d3"}
                     onPress={this.fadeOut}
                     />
+                    <Button
+                    title={"去测试页面"}
+                    onPress={() => {NavigationUtil.toPage(null, "Test")}}
+                    />
                 </View>
                 <View style={styles.main}>
                     <View style={styles.iconContainer}>

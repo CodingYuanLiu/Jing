@@ -7,7 +7,11 @@ export default class  extends React.PureComponent {
     }
 
     render() {
-
+        return (
+            <View>
+                <Text>这是个人主页</Text>
+            </View>
+        )
     }
     renderForeground = () => {
 

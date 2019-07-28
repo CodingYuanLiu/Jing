@@ -15,7 +15,6 @@ import CommentModal from "../pages/detail/CommentModal";
 import ChatRoom from "../pages/notification/pages/ChatRoom";
 import Information from "../pages/me/Information";
 
-
 const StartNav = createStackNavigator(
     {
         Start: {
@@ -63,10 +62,6 @@ const MainNav = createStackNavigator(
         ActComment: {
             screen: CommentModal,
         },
-        /*
-        AnotherTest: {
-            screen: Another,
-        },*/
         ChatRoom: {
             screen: ChatRoom,
         }

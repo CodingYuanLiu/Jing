@@ -1,92 +1,163 @@
 import React from "react"
-import { View, Text, StyleSheet, FlatList } from 'react-native';
-import InfoCard from "./components/InfoCard"
+import { View, Text, StyleSheet, FlatList, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import OnlineUserCard from "./components/OnlineUserCard"
 import { Divider, ListItem, Badge} from "react-native-elements";
-import DataSegment from "./components/DataSegment";
+import UserDataItem from "./components/UserDataItem";
 import NavigationUtil from '../../navigator/NavUtil';
-import LoginMenu from './components/LoginMenu';
+import OfflineUserCard from './components/OfflineUserCard';
 import { connect } from "react-redux"
 import { Button } from 'react-native-elements';
 import Dao from '../../api/dao/Dao';
-import {login, logout, setUserInfo} from '../../actions/user';
-import LinearGradient from "react-native-linear-gradient";
-
+import {login, logout, setUser} from '../../actions/user';
+import SearchScreen from "../search/Search";
+import {SearchIcon, SettingIcon} from "../../common/components/Icons";
+import Theme from "../../common/constant/Theme";
 
 class MeScreen extends React.PureComponent{
     constructor(props) {
         super(props);
     }
-    renderItem = ({item}) => {
-        return <ListItem
-            title={item.title}
-            badge= {<Badge status={"primary"}
-                           containerStyle={{position:"absolute", right: 40}} />}
-            onPress={()=>{NavigationUtil.toPage(this.props, item.key)}}
-        />
-    };
-
-    logout = () => {
-        this.props.onLogout();
-        Dao.remove("@user")
-            .catch(err => {});
-        Dao.remove("@jwt")
-            .catch(err => {})
-    };
-
     render() {
         const user = this.props.user;
-        const {logged} = this.props.user;
-        const dataList = [
-            {data:0, label: "关注"},
-            {data:0, label: "粉丝"},
-            {data:0, label: "活动"},
-            {data:0, label: "点赞"},
-        ];
-        const itemList = [
-            {title: "我发布的", key: "MyAct", data: 0},
-            {title: "我参与的", key: "FinishAct", data: 0},
-            {title: "我的群聊", key: "GroupChat", data: 0},
-        ];
-        console.log(this.props);
-        const topCard = logged ?
-            <InfoCard
-                user={user}
-                style={{borderTopLeftRadius: 6, borderTopRightRadius: 6,}}
-                onPress={() => {NavigationUtil.toPage(this.props, "Information")}}
-            /> :
-            <LoginMenu/>;
+        let header = this.renderHeader();
+        let userCard = this.renderUserCard();
+        let actMenu = this.renderActMenu();
+        let helpMenu = this.renderHelpMenu();
         return(
-            <View style={styles.container}>
-                <LinearGradient
-                    start={{x:0, y:0}}
-                    end={{x:0, y:1}}
-                    colors={["#0084ff", "#0073ff"]}
-                    style={styles.cover}
-                />
-                <View style={styles.top}>
-                    {topCard}
-                    <Divider style={{height: 1, backgroundColor: "#d3d3d3", width:"92%"}}/>
-                    <View style={styles.dataSegment}>
-                        <DataSegment {...dataList[0]}/>
-                        <DataSegment {...dataList[1]}/>
-                        <DataSegment {...dataList[2]}/>
-                        <DataSegment {...dataList[3]}/>
-                    </View>
-                </View>
-                <View style={styles.main}>
-                    <FlatList
-                    data={itemList}
-                    renderItem={this.renderItem}
+            <ScrollView style={styles.container}>
+                <View style={styles.leftCover} />
+                <View style={styles.rightCover}/>
+                {header}
+                {userCard}
+                {actMenu}
+                {helpMenu}
+            </ScrollView>
+        )
+    };
+    renderHeader = () => {
+        let leftElement = (
+            <Button
+                title={"搜索即应"}
+                titleStyle={styles.headerTitle}
+                icon={
+                    <SearchIcon
+                    color={"#7ecaff"}
                     />
-                </View>
-                {logged ? <Button
-                    style={styles.button}
-                    title={"退出登录"}
-                    onPress={() => {this.logout()}}
-                /> : null}
+                }
+                buttonStyle={styles.headerSearch}
+                containerStyle={styles.headerSearchContainer}
+                TouchableComponent={TouchableWithoutFeedback}
+            />
+        );
+        let settingIcon = (
+            <SettingIcon
+            color={"#fff"}
+            onPress={this.toSettings}
+            />
+        );
+        return (
+            <View style={styles.headerContainer}>
+                {leftElement}
+                {settingIcon}
             </View>
         )
-    }
+    };
+    renderUserCard = () => {
+        let {user} = this.props;
+        let topCard, userData;
+        let dataList = [
+            {data: 0, label: "我发布的",},
+            {data: 0, label: "关注",},
+            {data: 0, label: "粉丝",},
+            {data: 0, label: "最近浏览",}
+        ];
+        if (user.logged) {
+            topCard = (
+                <OnlineUserCard
+                    avatar={user.avatar}
+                    onPress={this.toUserHome}
+                    nickname={user.nickname}
+                    signature={user.signature}
+                />
+            )
+        } else {
+            topCard = (
+                <OfflineUserCard/>
+            )
+        }
+        userData = (
+            <View style={styles.userDataContainer}>
+                {
+                    dataList.map((item, i) => {
+                        return (
+                            <UserDataItem
+                                data={item.data}
+                                label={item.label}
+                                key={i.toString()}
+                                dataContainer={
+                                    i === 3 ? null :
+                                        {borderRightWidth: 0.5, borderColor: "#efefef"}
+                                }
+                            />
+                        )
+                    })
+                }
+            </View>
+        );
+        return (
+            <View style={styles.userCardContainer}>
+                {topCard}
+                {userData}
+            </View>
+        )
+    };
+
+    renderActMenu = () => {
+        return (
+            <View style={styles.actContainer}>
+                <ListItem
+                title={"我发布的"}
+                chevron
+                onPress={() => {NavigationUtil.toPage(null, "MyPublishAct")}}
+                />
+                <ListItem
+                title={"正在参与"}
+                chevron
+                onPress={() => {NavigationUtil.toPage(null, "MyCurrentAct")}}
+                />
+                <ListItem
+                title={"已结束"}
+                chevron
+                onPress={() => {NavigationUtil.toPage(null, "MyFinishAct")}}
+                />
+            </View>
+        )
+    };
+    renderHelpMenu = () => {
+        return (
+            <View style={styles.helpContainer}>
+                <ListItem
+                title={"客服中心"}
+                chevron
+                />
+                <ListItem
+                title={"反馈"}
+                chevron
+                />
+                <ListItem
+                title={"用户满意度调研"}
+                chevron
+                />
+                <ListItem
+                title={"去评价"}
+                />
+            </View>
+        )
+    };
+
+    toUserHome = () => {
+        NavigationUtil.toPage(this.props.user.id, "PersonalHome")
+    };
 }
 const mapStateToProps = state => ({
     user: state.user
@@ -94,7 +165,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     onLogin: (jwt) => dispatch(login(jwt)),
-    setUser: (user) => dispatch(setUserInfo(user)),
+    setUser: (user) => dispatch(setUser(user)),
     onLogout: () => dispatch(logout()),
 });
 
@@ -106,37 +177,68 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#ebebeb",
     },
-    cover: {
-        position: "absolute",
+    leftCover: {
+        backgroundColor: "#0084ff",
         top: 0,
-        backgroundColor: "#67bbff",
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
+        left: -50,
+        position: "absolute",
+        height: 160,
         width: "100%",
-        height: 162,
+        borderBottomLeftRadius: 100,
     },
-    top: {
-        width: "92%",
-        height: 180,
-        marginTop: 16,
-        alignSelf: "center",
+    rightCover: {
+        backgroundColor: "#0084ff",
+        top: 0,
+        right: -50,
+        position: "absolute",
+        height: 160,
+        width: "100%",
+        borderBottomRightRadius: 100,
+    },
+    headerContainer: {
+        flexDirection: "row",
         alignItems: "center",
-        borderRadius: 12,
-        backgroundColor: "#fff",
+        marginLeft: 12,
+        marginRight: 12,
+        marginTop: 16,
+        marginBottom: 10,
     },
-    dataSegment: {
-        width:"100%",
+    headerTitle: {
+        color: "#7ecaff",
+        fontSize: 15,
+    },
+    headerSearchContainer: {
         flex: 1,
+        marginRight: 20,
+        borderRadius: 10,
+    },
+    headerSearch: {
+        backgroundColor: Theme.DEEP_BLUE,
+    },
+
+    // style for user card
+    userCardContainer: {
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        padding: 10,
+        marginLeft: 12,
+        marginRight: 12,
+    },
+    userDataContainer: {
         flexDirection: "row",
         justifyContent: "space-evenly",
-        borderBottomLeftRadius: 6,
-        borderBottomRightRadius: 6,
+        marginTop: 16,
     },
-    main: {
-        marginTop: 15,
+
+    //activity menu container
+    actContainer: {
+        width: "100%",
+        marginTop: 10,
     },
-    button: {
-        height: 20,
-        width:"92%"
-    }
-})
+    // help menu container
+    helpContainer: {
+        width: "100%",
+        marginTop: 10,
+        marginBottom: 5,
+    },
+});

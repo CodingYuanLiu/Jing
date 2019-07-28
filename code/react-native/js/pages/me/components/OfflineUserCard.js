@@ -5,18 +5,18 @@ import { Icon } from 'react-native-elements';
 import NavigationUtil from '../../../navigator/NavUtil';
 
 
-export default class LoginMenu extends React.PureComponent{
+export default class OfflineUserCard extends React.PureComponent{
     constructor(props) {
         super(props);
     }
 
     renderItem = ({item}) => {
         return item.icon
-    }
+    };
 
     render() {
-        const title = this.props.title
-        const icons = this.props.LoginMenu
+        const title = this.props.title;
+        const icons = this.props.LoginMenu;
 
         return(
             <View style={[styles.container, this.props.style]}>
@@ -36,12 +36,12 @@ export default class LoginMenu extends React.PureComponent{
 }
 
 
-LoginMenu.propTypes = {
+OfflineUserCard.propTypes = {
     style: ViewPropTypes.style,
     title: PropTypes.string,
     titleStyle: ViewPropTypes.style,
     LoginMenu: PropTypes.array
-}
+};
 
 const LoginWithPhone =
     <Icon
@@ -50,15 +50,15 @@ const LoginWithPhone =
     reverse
     color={"#0084ff"}
     onPress={() => {alert("即应还不能用手机登录哦～")}}
-    />
+    />;
 const LoginWithPassword =
     <Icon
         type={"foundation"}
         name={"key"}
         reverse
-        color={"#0084ff"}
+        color={"#305aff"}
         onPress={() => {NavigationUtil.toPage(null, "NativeLogin")}}
-    />
+    />;
 const LoginWithWechat =
     <Icon
         type={"antdesign"}
@@ -66,16 +66,16 @@ const LoginWithWechat =
         reverse
         color={"#67c13b"}
         onPress={() => {alert("即应还不能用微信登录哦～")}}
-    />
+    />;
 const LoginWithJaccount =
     <Icon
-        type={"foundation"}
-        name={"key"}
+        type={"material-community"}
+        name={"alpha-j"}
         reverse
-        color={"#51dfff"}
+        color={"#5c9eff"}
         onPress={() => {NavigationUtil.toPage(null, "JaccountLogin")}}
-    />
-LoginMenu.defaultProps = {
+    />;
+OfflineUserCard.defaultProps = {
     title: "登录即应，体验更多功能",
     LoginMenu: [
         {
@@ -91,7 +91,7 @@ LoginMenu.defaultProps = {
             icon: LoginWithJaccount,
         },
     ]
-}
+};
 
 const styles = StyleSheet.create({
     container: {

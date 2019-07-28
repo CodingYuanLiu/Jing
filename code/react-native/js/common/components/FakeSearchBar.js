@@ -13,12 +13,12 @@ export default class NavigationBar extends React.Component{
         if (this.props.press) {
             this.props.press()
         }
-    }
+    };
 
 
     render() {
         let leftIcon = this.props.leftIcon ?
-            this.props.leftIcon : null
+            this.props.leftIcon : null;
         let titleView = this.props.titleView ?
             this.props.titleView :
             <Text ellipsizeMode="head" numberOfLines={1} style={styles.title}>{this.props.title}</Text>
@@ -48,7 +48,7 @@ NavigationBar.propTypes = {
     iconContainerStyle: ViewPropTypes.style,
     titleContainerStyle: ViewPropTypes.style,
     press: PropTypes.func,
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -71,4 +71,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#7ecaff",
     }
-})
+});

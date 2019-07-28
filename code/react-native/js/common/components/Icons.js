@@ -281,6 +281,23 @@ class CaretRightIcon extends React.PureComponent{
             />)
     }
 }
+class SettingIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"feather"}
+                name={"settings"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+            />)
+    }
+}
 
 export {
     // Configure the magic constant here
@@ -300,4 +317,5 @@ export {
     LeftUpArrowIcon,
     CaretRightIcon,
     ReplyIcon,
+    SettingIcon,
 }

@@ -12,7 +12,7 @@ export default class PersonalHome extends React.PureComponent{
         let basicInformation = this.renderBasicInformation();
         return(
             <View style={styles.container}>
-
+                <Text>这是个人信息修改页</Text>
             </View>
         )
     }
