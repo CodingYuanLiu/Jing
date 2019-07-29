@@ -94,6 +94,7 @@ func setupRouter() *gin.Engine {
 	{
 		adminRouter.GET("/banuser", uc.BanUser)
 		adminRouter.POST("/act/delete", ac.DeleteActivity)
+		adminRouter.GET("/findallusers", uc.FindAllUsers)
 	}
 
 	return router
