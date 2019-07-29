@@ -15,7 +15,8 @@ type Error struct {
 
 func Format(err error) error {
 	errStr := err.Error()
-	arr := strings.Split(errStr, "\t")
+	arr := strings.Split(errStr, ",")
+	fmt.Println(arr)
 	errCode, _ := strconv.Atoi(arr[1])
 	respStatus, _ := strconv.Atoi(arr[2])
 	return &Error{
@@ -26,14 +27,13 @@ func Format(err error) error {
 }
 
 func SendError(c *gin.Context, err error) {
-	fmt.Println(err.Error())
 	e := Format(err).(*Error)
 	c.JSON(e.respStatus, e.JSON())
 	c.Abort()
 }
 
 func (e *Error) Error() string {
-	return fmt.Sprintf("%s\t%d\t%d", e.message, e.errCode, e.respStatus)
+	return fmt.Sprintf("%s,%d,%d", e.message, e.errCode, e.respStatus)
 }
 
 func (e *Error) JSON() map[string]interface{} {
