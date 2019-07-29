@@ -26,6 +26,7 @@ func Format(err error) error {
 }
 
 func SendError(c *gin.Context, err error) {
+	fmt.Println(err.Error())
 	e := Format(err).(*Error)
 	c.JSON(e.respStatus, e.JSON())
 	c.Abort()
