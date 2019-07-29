@@ -19,7 +19,7 @@ func Format(err error) error {
 	_ = json.Unmarshal([]byte(err.Error()), &j)
 	errStr := j["detail"].(string)
 	// errStr := err.Error()
-	arr := strings.Split(errStr, ",")
+	arr := strings.Split(errStr, "\t")
 	fmt.Println(arr)
 	errCode, _ := strconv.Atoi(arr[1])
 	respStatus, _ := strconv.Atoi(arr[2])
