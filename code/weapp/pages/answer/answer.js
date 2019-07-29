@@ -12,6 +12,7 @@ var app = getApp()
 Page({
     data: {
         counter: 0,
+        followed: false,
         motto: '知乎--微信小程序版',
         userInfo: {},
         act_id: 0,
@@ -27,7 +28,8 @@ Page({
             color: '#2d8cf0',
         }],
         mode: "net",
-        images: ["http://puo7ltwok.bkt.clouddn.com/Fj0kHQJU5c_EiVQAJy_vrsCosnSZ"]
+        images: ["http://puo7ltwok.bkt.clouddn.com/Fj0kHQJU5c_EiVQAJy_vrsCosnSZ"],
+        status_show: ["", "[人满]", "[已过期]"]
     },
     //事件处理函数
     // toQuestion: function() {
@@ -48,6 +50,16 @@ Page({
                 that.setData({
                     comment_length: res.data.comments.length
                 })
+                for (let i = 0; i < app.globalData.following.length; i++) {
+                    console.log("finding")
+                    if (app.globalData.following[i].id === res.data.sponsor_id) {
+                        that.setData({
+                            followed: true
+                        })
+                        console.log("followed!!!!!!")
+                        break
+                    }
+                }
             }
         });
     },
@@ -64,6 +76,7 @@ Page({
         this.setData({
             act_id: options.id
         });
+
         console.log("id是" + options.id);
         wx.request({
             url: 'https://jing855.cn/api/public/act/query?act_id=' + that.data.act_id,
@@ -86,7 +99,7 @@ Page({
                 //     method: 'GET',
                 //     success: function(res) {
                 //         console.log(res);
-                        
+
                 //     }
                 // })
                 for (let i = 0; i < res.data.comments.length; i++) {
@@ -116,6 +129,16 @@ Page({
                             console.log(res);
                         }
                     })
+                }
+                for (let i = 0; i < app.globalData.following.length; i++) {
+                    console.log("finding")
+                    if (app.globalData.following[i].id === res.data.sponsor_id) {
+                        that.setData({
+                            followed: true
+                        })
+                        console.log("followed!!!!!!")
+                        break
+                    }
                 }
             }
         });
@@ -348,12 +371,47 @@ Page({
         let origin = this.data.content.origin.latitude + "," + this.data.content.origin.longitude
         let dest = this.data.content.destination.latitude + "," + this.data.content.destination.longitude
         let center_la = (this.data.content.origin.latitude + this.data.content.destination.latitude) / 2
-        let center_lo = (this.data.content.origin.longitude + this.data.content.destination.longitude) /2
+        let center_lo = (this.data.content.origin.longitude + this.data.content.destination.longitude) / 2
         wx.navigateTo({
-            url: '/pages/showroutine/showroutine?ori='+origin+"&dest="+dest+"&latitude="+center_la+"&longitude="+center_lo,
+            url: '/pages/showroutine/showroutine?ori=' + origin + "&dest=" + dest + "&latitude=" + center_la + "&longitude=" + center_lo,
             success: function(res) {},
             fail: function(res) {},
             complete: function(res) {},
+        })
+    },
+    handleFollow: function(event) {
+        let id = event.currentTarget.dataset.id;
+        let that = this;
+        // console.log(id);
+        wx.request({
+            url: 'https://jing855.cn/api/user/follow?id=' + id,
+            header: {
+                "Authorization": "Bearer " + app.globalData.jwt,
+            },
+            method: 'GET',
+            success: function(res) {
+                // console.log(100000);
+                console.log(res);
+                // $Toast.hide();
+                if (res.statusCode === 200)
+                    $Toast({
+                        content: '成功',
+                        type: 'success',
+                    });
+                wx.request({
+                    url: 'https://jing855.cn/api/user/followings',
+                    method: 'GET',
+                    header: {
+                        "Authorization": "Bearer " + app.globalData.jwt,
+                    },
+                    success: function (res) {
+                        console.log(res)
+                        app.globalData.following = res.data
+                        that.refresh();
+                    }
+                })
+                
+            }
         })
     }
 })
