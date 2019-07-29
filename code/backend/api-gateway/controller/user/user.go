@@ -264,7 +264,7 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 		jing.SendError(c, err)
 		return
 	} else if rsp.Id > 0 {
-		if rsp.Privacy == 0 || rsp.Privacy == 2 {
+		if rsp.Privacy == 0 || rsp.Privacy == 2 || rsp.SelfRequest {
 			c.JSON(http.StatusOK, map[string]interface {}{
 				"id" : rsp.Id,
 				"privacy": rsp.Privacy,

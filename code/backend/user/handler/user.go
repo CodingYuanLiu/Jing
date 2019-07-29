@@ -80,9 +80,11 @@ func (h *UserService) FindUser(ctx context.Context, in *user.FindReq, out *user.
 		out.Id = -1
 		return err
 	} else {
+		out.SelfRequest = false
 		if in.Id == in.UserId {
-			out.Privacy = 0
-		} else if user2.PrivacyLevel == 1 {
+			out.SelfRequest = true
+		}
+		if user2.PrivacyLevel == 1 {
 			flag := false
 			friends := dao.GetFriends(int(in.UserId))
 			for _, v := range friends {
