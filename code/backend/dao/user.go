@@ -52,6 +52,11 @@ type Follow struct {
 	To 		int
 }
 
+func FindAllUsers() (users []User) {
+	db.Find(&users)
+	return
+}
+
 func IsAdmin(Id int) (bool, error) {
 	user, err := FindUserById(Id)
 	if err != nil {

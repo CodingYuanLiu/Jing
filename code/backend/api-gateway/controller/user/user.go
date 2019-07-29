@@ -20,6 +20,20 @@ import (
 type Controller struct {
 }
 
+func (uc *Controller) FindAllUsers (c *gin.Context) {
+	var retJson []map[string]interface{}
+	users := dao.FindAllUsers()
+	for _, user := range users {
+		retJson = append(retJson, map[string]interface{} {
+			"id": user.ID,
+			"jaccount": user.Jaccount,
+			"nickname": user.Nickname,
+			"ban_time": user.BanTime,
+		})
+	}
+	c.JSON(http.StatusOK, retJson)
+}
+
 func (uc *Controller) BanUser (c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
