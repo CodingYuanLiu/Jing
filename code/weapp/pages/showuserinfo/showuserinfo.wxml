@@ -15,7 +15,7 @@
         <i-tab key="tab1" title="个人信息">
 
         </i-tab>
-        <i-tab key="tab2" title="累计评价">
+        <i-tab key="tab2" title="过往评价">
             <!-- <i-panel title="活动评价"> -->
 
             <!-- </i-panel> -->
