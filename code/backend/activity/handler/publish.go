@@ -7,26 +7,31 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
+	"jing/app/jing"
 	"log"
 	"strconv"
 )
 
 func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp *activity.PubResp) error {
 	//fmt.Println(req)
-	id := insert(req, dao.Collection, dao.IdCollection)
+	id,err := insert(req, dao.Collection, dao.IdCollection)
+	if err != nil{
+		return err
+	}
+	/*
 	if id == -1{
 		resp.Status = 500
 		resp.Description = "Undefined Type"
 		resp.ActId = -1
 		return nil
-	}
+	}*/
 	resp.Status = 200
 	resp.Description = "OK"
 	resp.ActId = id
 	return nil
 }
 
-func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Collection) int32 {
+func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Collection) (int32,error) {
 	var id int32
 	basicInfo := dao.BasicInfo{
 		//Actid:id,
@@ -54,7 +59,11 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		/* Upload the pictures and return the url */
 		for i:=0;i<len(req.Info.Images);i++{
 			name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(intId+1),strconv.Itoa(i))
-			basicInfo.Images = append(basicInfo.Images, dao.UploadImgWithName(req.Info.Images[i],name))
+			image,err2 := dao.UploadImgWithName(req.Info.Images[i],name)
+			if err2 != nil{
+				return 0,err2
+			}
+			basicInfo.Images = append(basicInfo.Images, image)
 		}
 	}
 
@@ -111,7 +120,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		err = collection.Insert(newAct)
 	default:
 		log.Println("Undefined Type.")
-		return -1
+		return -1,jing.NewError(0,400,"Undefined type")
 	}
 	if err!=nil{
 		log.Println("Insert Fail!")
@@ -124,5 +133,5 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		log.Fatal(err)
 	}
 	log.Println("Publish activity successfully")
-	return id
+	return id,nil
 }

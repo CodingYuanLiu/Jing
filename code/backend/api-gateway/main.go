@@ -3,17 +3,18 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-web"
-	k8s "github.com/micro/kubernetes/go/web"
+	//k8s "github.com/micro/kubernetes/go/web"
 	"jing/app/api-gateway/controller/activity"
+	feedbackController "jing/app/api-gateway/controller/feedback"
+	functionController "jing/app/api-gateway/controller/function"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
-	functionController "jing/app/api-gateway/controller/function"
 	"jing/app/api-gateway/filter"
 	"log"
 )
 
 func main() {
-	service := k8s.NewService(
+	service := web.NewService(
 		web.Name("api"),
 		web.Address(":8080"),
 	)
@@ -41,6 +42,8 @@ func setupRouter() *gin.Engine {
 	ac := new(activity.Controller)
 
 	fc := new(functionController.Controller)
+
+	fbc := new(feedbackController.Controller)
 
 	publicRouter := router.Group("/api/public")
 	{
@@ -88,6 +91,7 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/friends", uc.GetFriends)
 		userRouter.GET("/follow", uc.Follow)
 		userRouter.GET("/changeprivacy", uc.ChangePrivacyLevel)
+		userRouter.POST("/publishfeedback", fbc.PublishFeedback)
 	}
 
 	return router

@@ -54,7 +54,7 @@ func SetAvatarKey(Id int, key string) error {
 	user := User{}
 	db.Where("id = ?", Id).First(&user)
 	if user.ID == 0 {
-		return jing.NewError(1, 404, "Can't find such user")
+		return jing.NewError(301, 404, "Can't find such user")
 	}
 	user.AvatarKey = key
 	db.Save(&user)
@@ -65,7 +65,7 @@ func GetAvatarKey(Id int) (string, error) {
 	user := User{}
 	db.Where("id = ?", Id).First(&user)
 	if user.ID == 0 {
-		return "", jing.NewError(1, 404, "Can't find such user")
+		return "", jing.NewError(301, 404, "Can't find such user")
 	}
 	return user.AvatarKey, nil
 }
@@ -175,7 +175,7 @@ func GetActivityMembers(actId int) (ret []int, err error) {
 	var joins []Join
 	db.Where("act_id = ?", actId).Find(&joins)
 	if len(joins) == 0 {
-		return nil, jing.NewError(1, 404, "Activity not found")
+		return nil, jing.NewError(301, 404, "Activity not found")
 	}
 	for _, v := range joins {
 		ret = append(ret, v.UserID)
@@ -219,7 +219,7 @@ func FindUserById(id int) (User, error) {
 	user := User{}
 	db.First(&user, id)
 	if user.ID == 0 {
-		return user, jing.NewError(1, 404, "User not found")
+		return user, jing.NewError(301, 404, "User not found")
 	}
 	return user, nil
 }
@@ -228,7 +228,7 @@ func FindUserByUsername(username string) (User, error) {
 	user := User{}
 	db.Where("username = ?", username).First(&user)
 	if user.ID == 0 {
-		return user, jing.NewError(1, 404, "User not found")
+		return user, jing.NewError(301, 404, "User not found")
 	}
 	return user, nil
 }
@@ -237,7 +237,7 @@ func UpdateUserById(id int, column string, value interface{}) error {
 	user := User{}
 	db.First(&user, id)
 	if user.ID == 0 {
-		return jing.NewError(1, 404, "User not found")
+		return jing.NewError(301, 404, "User not found")
 	}
 	db.Model(&user).Update(column, value)
 	return nil
@@ -278,7 +278,7 @@ func FindUserByJaccount(jaccount string) (User, error) {
 	user := User{}
 	db.Where("jaccount = ?", jaccount).First(&user)
 	if user.ID == 0 {
-		return user, jing.NewError(1, 404,"user not found")
+		return user, jing.NewError(301, 404,"user not found")
 	}
 	return user, nil
 }
@@ -287,7 +287,7 @@ func FindUserByOpenId(openId string) (User, error) {
 	user := User{}
 	db.Where("open_id = ?", openId).First(&user)
 	if user.ID == 0 {
-		return user, jing.NewError(1, 404,"user not found")
+		return user, jing.NewError(301, 404,"user not found")
 	}
 	return user, nil
 }
@@ -303,7 +303,7 @@ func BindJaccountById(id int, jaccount string) error {
 	user := User{}
 	db.First(&user, id)
 	if user.Jaccount != "" {
-		return jing.NewError(1, 400,"jaccount has been bound")
+		return jing.NewError(301, 404,"jaccount has been bound")
 	} else {
 		user.Jaccount = jaccount
 		db.Save(&user)
@@ -331,7 +331,7 @@ func GetAllTags() ([]string,error){
 		tags = append(tags,param.Tag)
 	}
 	if len(tags) == 0{
-		err := jing.NewError(1, 400,"fetch tags error")
+		err := jing.NewError(301, 404,"fetch tags error")
 		return tags,err
 	}
 	return tags,nil
@@ -429,8 +429,8 @@ func GetFriends(userId int) (ret []int) {
 
 func init()  {
 	var err error
-	//db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
-	db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
+	//db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package feedback;
+
+service FeedbackSrv{
+    rpc Publish(PubReq) returns (PubResp){}
+    rpc Delete(DltReq) returns (DltResp){}
+    rpc Query(QryReq) returns (QryResp){}
+    rpc Comment(CmtReq) returns (CmtResp) {}
+}
+
+message PubReq{
+    int32 userId = 1;
+    int32 receiverId = 2;
+    int32 actId = 3;
+    int32 communication = 4;
+    int32 punctuality = 5;
+    int32 honesty = 6;
+    string communicationDesc = 7;
+    string punctualityDesc = 8;
+    string honestyDesc = 9;
+    repeated string fbImages = 10;
+}
+
+message PubResp{
+    string description = 1;
+    string objectId = 2;
+}
+
+message DltReq{
+    string objectId = 1;
+}
+
+message DltResp{
+    string description = 1;
+}
+
+message QryReq{
+    int32 receiverId = 1;
+}
+
+message QryResp{
+    repeated Feedback feedbacks = 1;
+}
+
+message CmtReq{
+    string objectId = 1;
+    int32 commentatorId = 2;
+    string commentDesc = 3;
+    string time = 5;
+}
+
+message CmtResp{
+    string description = 1;
+}
+
+message FeedbackComment{
+    int32 commentatorId = 1;
+    string commentDesc = 2;
+    repeated string commentImages = 3;
+    string time = 4;
+}
+
+message Feedback{
+    int32 userId = 1;
+    int32 receiverId = 2;
+    int32 actId = 3;
+    int32 communication = 4;
+    int32 punctuality = 5;
+    int32 honesty = 6;
+    string communicationDesc = 7;
+    string punctualityDesc = 8;
+    string honestyDesc = 9;
+    repeated string fbImages = 10;
+    string id = 11;
+    repeated FeedbackComment fbComment = 12;
+}
