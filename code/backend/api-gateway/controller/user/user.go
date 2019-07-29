@@ -28,6 +28,7 @@ func (uc *Controller) FindAllUsers (c *gin.Context) {
 			"id": user.ID,
 			"jaccount": user.Jaccount,
 			"nickname": user.Nickname,
+			"signature": user.Signature,
 			"ban_time": user.BanTime,
 		})
 	}
