@@ -15,12 +15,16 @@ type Error struct {
 }
 
 func Format(err error) error {
+	var errStr string
 	var j map[string]interface{}
 	_ = json.Unmarshal([]byte(err.Error()), &j)
-	errStr := j["detail"].(string)
-	// errStr := err.Error()
+	errObject := j["detail"]
+	if errObject == nil {
+		errStr = err.Error()
+	} else {
+		errStr = errObject.(string)
+	}
 	arr := strings.Split(errStr, "\t")
-	fmt.Println(arr)
 	errCode, _ := strconv.Atoi(arr[1])
 	respStatus, _ := strconv.Atoi(arr[2])
 	return &Error{
