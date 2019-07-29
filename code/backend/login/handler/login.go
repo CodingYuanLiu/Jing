@@ -21,12 +21,17 @@ type LoginService struct {
 
 }
 
-func BuildToken(user dao.User) (tokenString string) {
+func BuildToken(user dao.User) (tokenString string, err error) {
 	claims := make(jwt.MapClaims)
 	claims["userId"] = user.ID
-	claims["admin"] = "false"
+	claims["admin"] = user.IsAdmin
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 	claims["iat"] = time.Now().Unix()
+	nano := time.Now().UnixNano() / 1e6
+	if nano < user.BanTime {
+		err = jing.NewError(104, 401, strconv.FormatInt(user.BanTime, 10))
+		return
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, _ = token.SignedString([]byte("lqynb"))
 	return
@@ -35,7 +40,7 @@ func BuildToken(user dao.User) (tokenString string) {
 func (s *LoginService) NewJwt(ctx context.Context, in *login.JwtReq, out *login.JwtResp) error {
 	id := in.UserId
 	user, err := dao.FindUserById(int(id))
-	out.JwtToken = BuildToken(user)
+	out.JwtToken, err = BuildToken(user)
 	return err
 }
 
@@ -59,15 +64,15 @@ func (s *LoginService) LoginByJaccount(ctx context.Context, in *login.LJReq, out
 		out.Status = 12
 		_ = dao.CreateUserByJaccount(jaccount)
 		user, _ = dao.FindUserByJaccount(jaccount)
-		out.JwtToken = BuildToken(user)
+		out.JwtToken, err = BuildToken(user)
 	} else if user.Nickname == "" {
 		out.Status = 12
-		out.JwtToken = BuildToken(user)
+		out.JwtToken, err = BuildToken(user)
 	} else {
 		out.Status = 0
-		out.JwtToken = BuildToken(user)
+		out.JwtToken, err = BuildToken(user)
 	}
-	return nil
+	return err
 }
 
 func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *login.TokenResp) error {
@@ -78,8 +83,8 @@ func (s *LoginService) LoginByUP(ctx context.Context, in *login.UPReq, out *logi
 	} else {
 		if bcrypt.Match(in.Password, user.Password) {
 			out.Status = 0
-			out.JwtToken = BuildToken(user)
-			return nil
+			out.JwtToken, err = BuildToken(user)
+			return err
 		} else {
 			out.Status = 1
 			return jing.NewError(103, 401, "Bad credential")
@@ -123,8 +128,8 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 	} else {
 		out.Status = 0
 	}
-	out.JwtToken = BuildToken(user)
-	return nil
+	out.JwtToken, err = BuildToken(user)
+	return err
 }
 
 func (s *LoginService) BindJwtAndJaccount(ctx context.Context, in *login.BindReq, out *login.BindResp) error {
@@ -168,7 +173,7 @@ func (s *LoginService) Auth(ctx context.Context, req *login.AuthReq, resp *login
 	if status == 0 {
 		claims := token.Claims.(jwt.MapClaims)
 		resp.UserId = int32(claims["userId"].(float64))
-		resp.Admin, _ = strconv.ParseBool(claims["admin"].(string))
+		resp.Admin, _ = claims["admin"].(bool)
 	} else {
 		resp.UserId = -1
 		resp.Admin = false

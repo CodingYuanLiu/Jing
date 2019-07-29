@@ -7,6 +7,8 @@ Code | Description | Status
 101  | Need login | Status Unauthorized (401)
 102  | Bad Jwt token | Status Unauthorized (401)
 103  | Bad Credential | Status Unauthorized (401)
+104  | Banned | Status Unauthorized (401)
+105  | Need Admin Privileges | Status Forbidden (403)
 201  | Parameter not provided or bad | Status Bad Request (400)
 202  | Missing some field | Status Bad Request (400)
 
@@ -18,7 +20,7 @@ Get a user's detail by its jwt.
 
 #### Request
 ```json
-GET /api/user/status HTTP/1.1
+GET /api/user/status
 Authorization: Bearer jwt
 ```
 
@@ -140,7 +142,7 @@ Register a new user by username, password, phone, nickname and jwt.
 
 #### Request
 ```json
-POST /api/public/register HTTP/1.1
+POST /api/public/register
 Content-Type: application/json
 Authorization: Bearer jwt
 
@@ -180,7 +182,7 @@ Call Jaccount login by code and uri.
 
 #### Request
 ```json
-POST /api/public/register HTTP/1.1
+POST /api/public/register
 Content-Type: application/json
 
 {
@@ -223,7 +225,7 @@ Login by username and password
 
 #### Request
 ```json
-POST /api/public/login/native HTTP/1.1
+POST /api/public/login/native
 Content-Type: application/x-www-form-urlencoded
 
 username=hello&password=hello
@@ -255,7 +257,7 @@ Login by wechat. (or bind jaccount)
 
 #### Request
 ```json
-POST /api/public/login/wx HTTP/1.1
+POST /api/public/login/wx
 Content-Type: application/json
 
 {
@@ -303,7 +305,7 @@ Bind wechat and jaccount. (used for redirecting)
 #### Request
 
 ```json
-POST /api/public/wx/redirect?code={code}&jwt=jwt HTTP/1.1
+POST /api/public/wx/redirect?code={code}&jwt=jwt
 ```
 
 #### Response
@@ -479,7 +481,7 @@ Find an activity.
 #### Request
 
 ```json
-GET /api/public/act/query?act_id={act_id} HTTP/1.1
+GET /api/public/act/query?act_id={act_id}
 ```
 
 #### Response
@@ -540,7 +542,7 @@ Find all activity.
 #### Request
 
 ```json
-GET /api/public/act/findall HTTP/1.1
+GET /api/public/act/findall
 ```
 
 
@@ -577,7 +579,7 @@ Find activities of a designate type. If the user has already logined, a jwt is n
 
 #### Requests
 ```
-GET /api/public/act/findbytype?type=taxi HTTP/1.1
+GET /api/public/act/findbytype?type=taxi
 (Authorization: Bearer)
 ```
 
@@ -608,7 +610,7 @@ Get all acts a user joins.
 #### Requests
 
 ```
-GET /api/user/act/myact HTTP/1.1
+GET /api/user/act/myact
 Authorization: Bearer jwt
 ```
 
@@ -684,7 +686,7 @@ Get all acts a user manages.
 #### Requests
 
 ```
-GET /api/user/act/manageact HTTP/1.1
+GET /api/user/act/manageact
 Authorization: Bearer jwt
 ```
 
@@ -726,7 +728,7 @@ Publish an activity, its type can be taxi, takeout, order and other.
 #### Requests
 
 ```json
-POST /api/user/act/publish HTTP/1.1
+POST /api/user/act/publish
 Authorization: Bearer jwt
 
 {
@@ -775,7 +777,7 @@ Modify an activity, but can't modify title and type.
 #### Requests
 
 ```json
-POST /api/user/act/modify HTTP/1.1
+POST /api/user/act/modify
 Authorization: Bearer jwt
 
 {
@@ -828,7 +830,7 @@ Delete an activity.
 
 #### Request
 ```json
-POST /api/user/act/delete?act_id={act_id} HTTP/1.1
+POST /api/user/act/delete?act_id={act_id}
 Authorization: Bearer jwt
 ```
 
@@ -861,7 +863,7 @@ Send a comment under an activity.
 #### Request
 
 ```json
-POST /api/user/act/comment HTTP/1.1
+POST /api/user/act/comment
 Authorization: Bearer jwt
 
 {
@@ -894,7 +896,7 @@ Join an act.
 
 #### Request
 ```json
-POST /api/user/act/join?act_id={act_id} HTTP/1.1
+POST /api/user/act/join?act_id={act_id}
 Authorization: Bearer jwt
 ```
 
@@ -912,7 +914,7 @@ Get an activity along with its applicants.
 
 #### Request
 ```json
-GET /api/user/act/getjoinapp HTTP/1.1
+GET /api/user/act/getjoinapp
 Authorization: Bearer jwt
 ```
 
@@ -974,7 +976,7 @@ Get an activity status to a user. -1: need acception, 0: joined, 1: admin, -2: n
 
 #### Request
 ```
-GET /api/user/act/status?act_id=7 HTTP/1.1
+GET /api/user/act/status?act_id=7
 Authorization: Bearer jwt
 ```
 
@@ -1211,3 +1213,42 @@ GET api/public/takeout/searchshop?key=鱼
     }
 ]
 ````
+
+## Ban User
+
+#### Description
+Ban a user by user_id and timestamp(accurate to ms)
+PS: You can use `Time.prototype.getTime()` in JavaScript to get timestamp.
+
+#### Request
+``` json
+GET api/admin/banuser?id=1&time=1564368642393
+Authorization: Bearer jwt
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Ban user successfully"
+}
+```
+
+## Delete Activity (Admin)
+
+#### Description
+
+Delete an activity.
+
+#### Request
+```json
+POST /api/admin/act/delete?act_id={act_id}
+Authorization: Bearer jwt
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Delete successfully"
+}

@@ -90,5 +90,11 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/changeprivacy", uc.ChangePrivacyLevel)
 	}
 
+	adminRouter := router.Group("/api/admin")
+	{
+		adminRouter.GET("/banuser", uc.BanUser)
+		adminRouter.POST("/act/delete", ac.DeleteActivity)
+	}
+
 	return router
 }

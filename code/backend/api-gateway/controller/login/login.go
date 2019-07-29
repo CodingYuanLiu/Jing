@@ -26,11 +26,15 @@ type WXCode struct {
 func (lc *Controller) GetUserStatus (c *gin.Context) {
 	userId := c.GetInt("userId")
 	resp, _ := user.CallQueryUser(int32(userId), int32(userId))
+	jwt, err := loginClient.CallNewJwt(userId)
+	if err != nil {
+		jing.SendError(c, err)
+	}
 	c.JSON(http.StatusOK, map[string]interface {}{
 		"message" : "You are online",
 		"username": resp.Username,
 		"jaccount": resp.Jaccount,
-		"jwt_token": loginClient.CallNewJwt(userId),
+		"jwt_token": jwt,
 		"password": resp.Password,
 		"id": userId,
 		"nickname": resp.Nickname,

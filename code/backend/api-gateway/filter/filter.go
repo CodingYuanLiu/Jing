@@ -26,6 +26,9 @@ func AuthFilter(c *gin.Context) {
 		}
 
 		if rsp, _ := loginClient.CallAuth(jwt); rsp.Status == 0 {
+			if strings.Compare(url.Path[:10], "/api/admin") == 0 && !rsp.Admin {
+				jing.SendError(c, jing.NewError(105, 403, "403 Forbidden"))
+			}
 			c.Set("userId", int(rsp.UserId))
 			c.Next()
 			return
