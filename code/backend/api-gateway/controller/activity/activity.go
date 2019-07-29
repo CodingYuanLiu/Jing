@@ -62,6 +62,7 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 			"content": v.Content,
 			"time": v.Time,
 			"user_nickname": user.Nickname,
+			"user_avatar":"http://image.jing855.cn/" + user.AvatarKey,
 		}
 		if v.ReceiverId != -1 {
 			receiver, _ := dao.FindUserById(int(v.ReceiverId))
