@@ -11,10 +11,10 @@ export default class Comment extends React.PureComponent {
     }
 
     render() {
-        let {avatar, content, time, receiverName, username, onPress, receiverId} = this.props;
+        let {avatar, content, time, receiverName, nickname, onPress, receiverId} = this.props;
         let leftAvatar = this.renderAvatar(avatar);
         let footer = this.renderFooter(time);
-        let title = this.renderTitle(username, receiverName, receiverId);
+        let title = this.renderTitle(nickname, receiverName, receiverId);
         let body = this.renderBody(content);
         return (
             <TouchableWithoutFeedback
@@ -38,8 +38,8 @@ export default class Comment extends React.PureComponent {
                 size={14}
                 style={styles.caretContainer}
             />;
-        let fromTitle=<Text style={styles.title}>{from}</Text>
-        let toTitle = <Text style={styles.title}>{to}</Text>
+        let fromTitle=<Text style={styles.title}>{from}</Text>;
+        let toTitle = <Text style={styles.title}>{to}</Text>;
         return (
             <View style={styles.titleContainer}>
                 {fromTitle}
@@ -89,8 +89,9 @@ Comment.propTypes = {
     avatar: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
     time: PropTypes.string.isRequired,
+    receiverId: PropTypes.number.isRequired,
     receiverName: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired,
+    nickname: PropTypes.string.isRequired,
 };
 
 const styles = StyleSheet.create({

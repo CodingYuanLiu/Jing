@@ -53,12 +53,7 @@ class RecommendAct extends React.Component{
             <ActItem
                 id={item.id}
                 endTime={item.endTime}
-                user={{
-                    id: item.user.id,
-                    nickname: item.user.nickname,
-                    signature: item.user.signature,
-                    avatarUri: item.user.avatar,
-                }}
+                sponsor={item.sponsor}
                 description={item.description}
                 title={item.title}
                 tags={item.tags}

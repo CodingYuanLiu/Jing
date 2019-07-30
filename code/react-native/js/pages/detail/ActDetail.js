@@ -32,13 +32,7 @@ class DetailScreen extends React.Component {
     render() {
         let activity = this.props.currentAct;
         let {title, comments, tag, images,
-            createTime, description} = activity;
-        let sponsor = {
-            avatar: activity.user.avatar,
-            nickname: activity.user.nickname,
-            id: activity.user.id,
-            signature: activity.user.signature,
-        };
+            createTime, description, sponsor} = activity;
         let specInfo = {};
         let navBar = this.renderNavBar();
         let header = this.renderHeader(title, tag);
@@ -100,7 +94,7 @@ class DetailScreen extends React.Component {
     };
     renderBody = (sponsor, specInfo, description, images, createTime, comments) => {
         let comment = this.renderComment(comments);
-        let sponsorComponent = this.renderUser(sponsor);
+        let sponsorComponent = this.renderSponsor(sponsor);
         return (
             <View style={styles.bodyContainer}>
                 <View style={styles.bodyContent}>
@@ -131,14 +125,12 @@ class DetailScreen extends React.Component {
 
         )
     };
-    renderUser = user => {
-        let nickname = user.nickname;
-        let avatar = user.avatar;
-        let signature = user.signature;
+    renderSponsor = sponsor => {
         let isFriends = false;
-        if (this.props.follow.followings) {
-            for (let item of this.props.follow.followings) {
-                if (item.id === user.id) {
+        console.log(this.props.currentUser.followingList, sponsor);
+        if (this.props.currentUser.followingList) {
+            for (let item of this.props.currentUser.followingList) {
+                if (item.id === sponsor.id) {
                     isFriends = true;
                     break;
                 }
@@ -170,15 +162,15 @@ class DetailScreen extends React.Component {
         return (
             <ListItem
                 leftAvatar={{
-                    source: {uri: avatar === "" ? null : avatar },
+                    source: {uri: sponsor.avatar === "" ? null : sponsor.avatar },
                     title: "头像",
                     size: 36
                 }}
-                title={nickname}
+                title={sponsor.nickname}
                 containerStyle={styles.userInfoContainer}
                 contentContainerStyle={{position: "relative", left: -5}}
                 titleStyle={styles.userInfoTitle}
-                subtitle={signature}
+                subtitle={sponsor.signature}
                 subtitleProps={{ellipsizeMode: "tail", numberOfLines: 1}}
                 subtitleStyle={styles.userInfoSubtitle}
                 titleProps={{numberOfLines: 1, ellipsizeMode: "tail"}}
@@ -276,10 +268,10 @@ class DetailScreen extends React.Component {
         NavigationUtil.back(this.props)
     };
     toComments = () => {
-        let { comments, user } = this.props.currentAct;
+        let { comments, sponsor } = this.props.currentAct;
         NavigationUtil.toPage({
             comments: comments,
-            sponsor: user.nickname
+            sponsor: sponsor.nickname
         }, "ActComment");
 
     };
@@ -326,10 +318,10 @@ class DetailScreen extends React.Component {
                 id: user.id,
             };
             let to = {
-                id: currentAct.user.id,
-                nickname: currentAct.user.nickname,
-                avatar_url: currentAct.user.avatar,
-                signature: currentAct.user.signature,
+                id: currentAct.sponsor.id,
+                nickname: currentAct.sponsor.nickname,
+                avatar_url: currentAct.sponsor.avatar,
+                signature: currentAct.sponsor.signature,
             };
             console.log(currentAct);
             this.props.onFollow(from, to, user.jwt);
@@ -345,7 +337,7 @@ class DetailScreen extends React.Component {
                 id: currentUser.id,
             };
             let to = {
-                id: this.props.currentAct.user.id,
+                id: this.props.currentAct.sponsor.id,
             };
             this.props.onUnFollow(from, to, currentUser.jwt);
         }

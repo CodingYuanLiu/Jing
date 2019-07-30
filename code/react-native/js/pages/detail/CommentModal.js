@@ -76,7 +76,8 @@ class CommentModal extends React.PureComponent{
                 content={item.content}
                 time={item.time}
                 receiverName={item.receiver_nickname ? item.receiver_nickname : ""}
-                username={item.user_nickname}
+                receiverId={item.receiver_id}
+                nickname={item.user_nickname}
                 onPress={() => {
                     this.openCommentModal(item.user_id, item.user_nickname)
                 }}
@@ -184,10 +185,11 @@ class CommentModal extends React.PureComponent{
             act_id: this.props.currentAct.id,
             time: Util.dateTimeToString(new Date()),
             user_id: this.props.currentUser.id,
+            user_avatar: this.props.currentUser.avatar,
             user_nickname: this.props.currentUser.nickname,
         };
         console.log(this.props.currentUser);
-        //this.props.addComment(comment, this.props.currentUser.jwt);
+        this.props.addComment(comment, this.props.currentUser.jwt);
     };
 
     openCommentModal = (receiverId, receiverName) => {

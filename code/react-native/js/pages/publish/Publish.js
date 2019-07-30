@@ -24,7 +24,7 @@ class PublishScreen extends React.PureComponent{
         NavigationUtil.back(this.props)
     };
     toPublishPage = type => {
-        NavigationUtil.toPage({actType: type}, "PublishPage");
+        NavigationUtil.toPage({type: type}, "PublishPage");
         /*
         if (this.props.logged) {
             NavigationUtil.toPage({actType: type}, "PublishCommon");
@@ -119,13 +119,10 @@ class PublishScreen extends React.PureComponent{
 
 const mapStateToProps = state => ({
     currentUser: state.currentUser,
-    title: state.publishAct.title,
-    type: state.publishAct.type,
-    endTime: state.publishAct.endTime,
 });
-
-
 export default connect(mapStateToProps, null)(PublishScreen)
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

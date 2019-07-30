@@ -4,6 +4,7 @@ export const SET_USER_LOGGED = 'SET_USER_LOGGED';
 export const SET_USER_DATA = 'SET_USER_DATA';
 export const UPDATE_USER_INFO = 'UPDATE_USER_INFO';
 export const UPDATE_USER_AVATAR = 'UPDATE_USER_AVATAR';
+
 // follow action for current users
 export const ON_FOLLOW = 'ON_FOLLOW';
 export const FOLLOW_OK = 'FOLLOW_OK';
@@ -23,15 +24,7 @@ export const LOADING_OTHER_USER_DATA = 'LOADING_OTHER_USER_DATA';
 export const LOAD_OTHER_USER_OK = 'LOAD_OTHER_USER_OK';
 export const LOAD_OTHER_USER_FAIL = 'LOAD_OTHER_USER_FAIL';
 
-
-export const ADD_COMMENT = 'ADD_COMMENT';
-export const SET_CURRENT_ACT = 'SET_CURRENT_ACT';
-export const CLEAR_CURRENT_ACT = 'CLEAR_CURRENT_ACT';
-
-export const ADD_XMPP_MESSAGE = 'ADD_XMPP_MESSAGE';
-export const INIT_XMPP_CHATROOMLIST = 'INIT_XMPP_CHATROOMLIST';
-
-
+// actions for act detail
 export const ON_LOADING_ACT_DETAIL = 'ON_LOADING_ACT_DETAIL';
 export const LOAD_ACT_DETAIL_FAIL = 'LOAD_ACT_DETAIL_FAIL';
 export const LOAD_ACT_DETAIL_OK = 'LOAD_ACT_DETAIL_OK';
@@ -39,13 +32,15 @@ export const RESET_ACT_DETAIL = 'RESET_ACT_DETAIL';
 export const ADD_COMMENT_OK = 'ADD_COMMENT_OK';
 export const ADD_COMMENT_FAIL = 'ADD_COMMENT_FAIL';
 
+// actions for publish activity
+export const SAVE_TAXI_ACT = 'SAVE_TAXI_ACT';
+export const SAVE_ORDER_ACT = 'SAVE_ORDER_ACT';
+export const SAVE_TAKEOUT_ACT = 'SAVE_TAKEOUT_ACT';
+export const SAVE_OTHER_ACT = 'SAVE_OTHER_ACT';
+
 export const ON_LOADING_RECOMMEND = 'ON_LOADING_RECOMMEND';
 export const LOADING_RECOMMEND_OK = 'LOADING_RECOMMEND_FAIL';
 export const LOADING_RECOMMEND_FAIL = 'LOADING_RECOMMEND_FAIL';
-
-export const ON_LOADING_FOLLOW = 'ON_LOADING_FOLLOW';
-export const LOADING_FOLLOW_OK = 'LOADING_FOLLOW_OK';
-export const LOADING_FOLLOW_FAIL = 'LOADING_FOLLOW_FAIL';
 
 export const ON_LOADING_MY = 'ON_LOADING_MY';
 export const LOADING_MY_OK = 'LOADING_MY_OK';
@@ -64,7 +59,9 @@ export const PRESENCE_CHAT_ROOM = 'PRESENT_CHAT_ROOM';
 export const LOAD_PUBLISH_OK = 'LOAD_PUBLISH_OK';
 export const LOAD_PUBLISH_FAIL = 'LOAD_PUBLISH_fAIL';
 
-
+// actions for xmpp
+export const ADD_XMPP_MESSAGE = 'ADD_XMPP_MESSAGE';
+export const INIT_XMPP_CHATROOMLIST = 'INIT_XMPP_CHATROOMLIST';
 
 
 

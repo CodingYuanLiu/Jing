@@ -139,7 +139,22 @@ const onLoadPublishDraft = () => {
     }
 };
 
-
+const saveTaxiAct = (act) => ({
+    type: actionTypes.SAVE_TAXI_ACT,
+    act: act,
+});
+const saveOrderAct = (act) => ({
+    type: actionTypes.SAVE_ORDER_ACT,
+    act: act,
+});
+const saveTakeoutAct = (act) => ({
+    type: actionTypes.SAVE_TAKEOUT_ACT,
+    act: act,
+});
+const saveOtherAct = (act) => ({
+    type: actionTypes.SAVE_OTHER_ACT,
+    act: act,
+});
 export default {
     onLoadRecommendAct,
     onLoadMyAct,
@@ -148,4 +163,8 @@ export default {
     resetActDetail,
     addComment,
     onLoadPublishDraft,
+    saveTaxiAct,
+    saveTakeoutAct,
+    saveOrderAct,
+    saveOtherAct,
 }

@@ -6,6 +6,7 @@ import myAct from "./myAct";
 import typeAct from "./typeAct";
 import follow from "./follow";
 import currentUser from "./currentUser";
+import publishAct from "./publishAct";
 
 export default combineReducers({
     currentAct,
@@ -15,5 +16,6 @@ export default combineReducers({
     typeAct,
     follow,
     currentUser,
+    publishAct,
 })
 

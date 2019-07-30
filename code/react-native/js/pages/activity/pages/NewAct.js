@@ -78,12 +78,7 @@ class NewAct extends React.PureComponent{
             <ActItem
                 id={item.id}
                 endTime={item.endTime}
-                user={{
-                    id: item.user.id,
-                    nickname: item.user.nickname,
-                    signature: item.user.signature,
-                    avatar: item.user.avatar,
-                }}
+                sponsor={item.sponsor}
                 description={item.description}
                 title={item.title}
                 tags={item.tags}

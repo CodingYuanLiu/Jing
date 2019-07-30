@@ -46,8 +46,8 @@ class StartPage extends React.Component {
                         } else {
                             // login success
                             let password = Util.cryptoOnpenFire(data.username, data.password);
-                            //this.props.onGetFollowers(jwt);
-                            //this.props.onGetFollowings(jwt);
+                            this.props.onGetFollowers(jwt);
+                            this.props.onGetFollowings(jwt);
                             XmppApi.login(data.username, password)
                                 .then(async () => {
                                     this.props.setUserData(data);

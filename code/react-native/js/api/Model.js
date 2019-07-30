@@ -26,7 +26,7 @@ export default class Model {
         let act =  {
             id: data.act_id,
             endTime: data.end_time,
-            user: {
+            sponsor: {
                 id: data.sponsor_id,
                 nickname: data.sponsor_username,
                 signature: data.signature,

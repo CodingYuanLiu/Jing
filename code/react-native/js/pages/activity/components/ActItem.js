@@ -14,7 +14,7 @@ export default class ActItem extends React.PureComponent{
         }
     }
     render() {
-        let user = this.props.user;
+        let sponsor = this.props.sponsor;
         let tags = this.props.tags;
         let type = this.props.type;
         let title = this.props.title;
@@ -22,7 +22,7 @@ export default class ActItem extends React.PureComponent{
         let imageUri = this.props.image;
         let image = this.renderImage(imageUri);
         let actSpec = this.renderActSpec(type);
-        let userInfo = this.renderUserInfo(user);
+        let sponsorInfo = this.renderSponsorInfo(sponsor);
         let miniActionBar = this.renderMiniActionBar();
         let participantMeta = this.props.metadata.participants.toString();
         let commentMeta = this.props.metadata.comments.toString();
@@ -34,7 +34,7 @@ export default class ActItem extends React.PureComponent{
                 >
                     <View style={styles.container}>
                         <View style={styles.innerContainer}>
-                            {userInfo}
+                            {sponsorInfo}
                             <View style={styles.titleContainer}>
                                 <Text style={styles.title}>{title}</Text>
                             </View>
@@ -114,9 +114,9 @@ export default class ActItem extends React.PureComponent{
         return ActSpec
     };
 
-    renderUserInfo = user => {
-        let nickname = user.nickname;
-        let avatar = user.avatar;
+    renderSponsorInfo = sponsor => {
+        let nickname = sponsor.nickname;
+        let avatar = sponsor.avatar;
         // blank here, spare for future use
         return (
             <ListItem
@@ -177,7 +177,7 @@ const TakeoutSpecShape = {
     endTime: PropTypes.string,
     orderTime: PropTypes.string,
 };
-const UserShape = {
+const sponsorShape = {
     nickname: PropTypes.string.isRequired,
     signature: PropTypes.string.isRequired,
     avatar: PropTypes.string.isRequired,
@@ -188,7 +188,7 @@ const otherSpecShape = {
 };
 ActItem.propTypes = {
     id: PropTypes.number.isRequired,
-    user: PropTypes.shape(UserShape),
+    user: PropTypes.shape(sponsorShape),
     title: PropTypes.string.isRequired,
     taxiSpecInfo: PropTypes.shape(TaxiSpecShape),
     orderSpecInfo: PropTypes.shape(OrderSpecShape),

@@ -3,8 +3,12 @@ import PublishTaxiSpec from "./PublishSpec/PublishTaxiSpec";
 import PublishPage from "./PublishPage";
 import PublishTakeoutSpec from "./PublishSpec/PublishTakeoutSpec";
 import PublishOrderSpec from "./PublishSpec/PublishOrderSpec";
+import Publish from "./Publish";
 
 export default createStackNavigator({
+    Publish: {
+        screen: Publish
+    },
     PublishPage: {
         screen: PublishPage,
     },

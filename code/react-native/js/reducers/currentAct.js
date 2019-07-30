@@ -1,30 +1,10 @@
 import {
-    SET_CURRENT_ACT,
-    ADD_COMMENT,
-    CLEAR_CURRENT_ACT,
     LOAD_ACT_DETAIL_OK,
     LOAD_ACT_DETAIL_FAIL,
     ADD_COMMENT_OK,
     ADD_COMMENT_FAIL,
     ON_LOADING_ACT_DETAIL, RESET_ACT_DETAIL,
 } from "../common/constant/ActionTypes"
-
-
-// comment format listed as below
-/*
-{
-    id: "",
-    content: "",
-    time: "",
-
-    // comment publisher and who to reply
-    observer: "",
-    replyTo: "",
-
-    // activity publisher / the comment publish by ${replyTo}
-    replyUnder: "",
-}
-*/
 
 const initialState = {
     // actId for fetching act detail use,
@@ -34,7 +14,7 @@ const initialState = {
     comments: [],
 
     // who publish this activity
-    user: {
+    sponsor: {
         avatar: "",
         signature: "",
         nickname: "",

@@ -32,7 +32,7 @@ const currentUser = (state = initialState, action) => {
         case actionTypes.GET_USER_FOLLOWERS_OK:
             return {
                 ...state,
-                followerList: action.followerList,
+                followerList: action.data,
                 loadingFollowerList: false,
             };
         case actionTypes.GET_USER_FOLLOWERS_FAIL:
@@ -49,7 +49,7 @@ const currentUser = (state = initialState, action) => {
         case actionTypes.GET_USER_FOLLOWINGS_OK:
             return {
                 ...state,
-                followingList: action.followingList,
+                followingList: action.data,
                 loadingFollowingList: false,
             };
         case actionTypes.GET_USER_FOLLOWINGS_FAIL:
