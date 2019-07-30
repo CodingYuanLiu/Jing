@@ -48,6 +48,7 @@ func main() {
 func setupRouter() *gin.Engine {
 	router := gin.Default()
 
+	// handle CORS
 	router.Use(corsMiddleware())
 
 	router.Use(filter.AuthFilter)
