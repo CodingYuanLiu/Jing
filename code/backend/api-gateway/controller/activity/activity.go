@@ -646,3 +646,4 @@ func (activityController *Controller) RecommendActivity(c *gin.Context){
 	}
 	c.JSON(http.StatusOK, actJSONs)
 }
+

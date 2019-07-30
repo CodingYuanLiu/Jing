@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package handler
 
 import (
@@ -134,4 +135,5 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 	}
 	log.Println("Publish activity successfully")
 	return id,nil
+
 }

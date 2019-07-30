@@ -20,6 +20,47 @@ import (
 type Controller struct {
 }
 
+func (uc *Controller) FindAllUsers (c *gin.Context) {
+	var retJson []map[string]interface{}
+	users := dao.FindAllUsers()
+	for _, user := range users {
+		retJson = append(retJson, map[string]interface{} {
+			"id": user.ID,
+			"jaccount": user.Jaccount,
+			"nickname": user.Nickname,
+			"signature": user.Signature,
+			"ban_time": user.BanTime,
+		})
+	}
+	c.JSON(http.StatusOK, retJson)
+}
+
+func (uc *Controller) BanUser (c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'id' is not provided or bad"))
+		return
+	}
+	time, err := strconv.ParseInt(c.Query("time"), 10, 64)
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'time' is not provided or bad"))
+		return
+	}
+	isAdmin, err := dao.IsAdmin(id)
+	if isAdmin {
+		jing.SendError(c, jing.NewError(1, 400, "Can't ban an administrator"))
+		return
+	}
+	err = dao.SetBanTime(id, time)
+	if err != nil {
+		jing.SendError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string {
+		"message": "Ban user successfully",
+	})
+}
+
 func (uc *Controller) ChangePrivacyLevel (c *gin.Context) {
 	level, err := strconv.Atoi(c.Query("level"))
 	if err != nil || level == 0 {
@@ -238,7 +279,7 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 		jing.SendError(c, err)
 		return
 	} else if rsp.Id > 0 {
-		if rsp.Privacy == 0 || rsp.Privacy == 2 {
+		if rsp.Privacy == 0 || rsp.Privacy == 2 || rsp.SelfRequest {
 			c.JSON(http.StatusOK, map[string]interface {}{
 				"id" : rsp.Id,
 				"privacy": rsp.Privacy,

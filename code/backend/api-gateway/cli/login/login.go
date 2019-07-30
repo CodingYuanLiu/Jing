@@ -23,34 +23,28 @@ func init() {
 	Client = loginProto.NewLoginService("auth-service", client.DefaultClient)
 }
 
-func CallNewJwt(userId int) string {
+func CallNewJwt(userId int) (string, error) {
 	resp, err := Client.NewJwt(context.TODO(), &loginProto.JwtReq{
 		UserId: int32(userId),
 	})
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return resp.JwtToken
+	return resp.JwtToken, nil
 }
 
 func CallAuth(jwt string) (*loginProto.AuthResp, error) {
 	resp, err := Client.Auth(context.TODO(), &loginProto.AuthReq{
 		Jwt: jwt,
 	})
-	if err != nil {
-		// ...
-	}
-	return resp, nil
+	return resp, err
 }
 
 func CallLoginByJaccount(accessToken string) (*loginProto.TokenResp, error) {
 	resp, err := Client.LoginByJaccount(context.TODO(), &loginProto.LJReq{
 		AccessToken: accessToken,
 	})
-	if err != nil {
-		return resp, err
-	}
-	return resp, nil
+	return resp, err
 }
 
 func CallLoginByUP(username string, password string) (*loginProto.TokenResp, error) {
@@ -58,10 +52,6 @@ func CallLoginByUP(username string, password string) (*loginProto.TokenResp, err
 		Username: username,
 		Password: password,
 	})
-	if err != nil {
-		// ...
-	}
-
 	return resp, err
 }
 
@@ -70,10 +60,6 @@ func CallGetAccessToken(redirectUri string, code string) (*loginProto.AccessResp
 		RedirectUri: redirectUri,
 		Code:        code,
 	})
-	if err != nil {
-		// ...
-	}
-
 	return resp, err
 }
 
@@ -81,9 +67,6 @@ func CallGetWXOpenId(code string) (*loginProto.TokenResp, error) {
 	resp, err := Client.LoginByWx(context.TODO(), &loginProto.WxReq{
 		Code: code,
 	})
-	if err != nil {
-		// ...
-	}
 	return resp, err
 }
 
@@ -92,9 +75,6 @@ func CallGetJac(code string, redirectUri string) (*loginProto.JaccResp, error) {
 		Code:        code,
 		RedirectUri: redirectUri,
 	})
-	if err != nil {
-		// ...
-	}
 	return resp, err
 }
 

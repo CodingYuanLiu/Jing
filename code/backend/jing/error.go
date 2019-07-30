@@ -1,6 +1,7 @@
 package jing
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -14,7 +15,15 @@ type Error struct {
 }
 
 func Format(err error) error {
-	errStr := err.Error()
+	var errStr string
+	var j map[string]interface{}
+	_ = json.Unmarshal([]byte(err.Error()), &j)
+	errObject := j["detail"]
+	if errObject == nil {
+		errStr = err.Error()
+	} else {
+		errStr = errObject.(string)
+	}
 	arr := strings.Split(errStr, "\t")
 	errCode, _ := strconv.Atoi(arr[1])
 	respStatus, _ := strconv.Atoi(arr[2])

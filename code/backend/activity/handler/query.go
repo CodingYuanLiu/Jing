@@ -101,3 +101,4 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	//log.Println("Query successfully.")
 	return nil
 }
+
