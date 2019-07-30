@@ -1,7 +1,7 @@
 import React from "react"
 import NavigationUtil from '../../navigator/NavUtil';
 import { View } from "react-native"
-import Dao from "../../api/dao/Dao";
+import Dao from "../../api/Dao";
 import Api from "../../api/Api";
 import Util from "../../common/util";
 import XmppApi from "../../api/XmppApi";

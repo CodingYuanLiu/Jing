@@ -2,7 +2,7 @@ import React from "react";
 import {View, Text, StyleSheet} from "react-native";
 import NavigationUtil from '../../navigator/NavUtil';
 import {connect} from "react-redux";
-import Dao from "../../api/dao/Dao";
+import Dao from "../../api/Dao";
 import Api from "../../api/Api";
 import Util from "../../common/util";
 import XmppApi from "../../api/XmppApi";
@@ -80,23 +80,6 @@ class StartPage extends React.Component {
                 this.props.onLoginFail(err);
                 this.props.navigation.navigate("Home", null);
             })
-    };
-    dispatchSetUser = (data) => {
-        this.props.setUser({
-            avatar: data.avatar_url,
-            birthday: data.birthday,
-            dormitory: data.dormitory,
-            gender: data.gender,
-            id: data.id,
-            jaccount: data.jaccount,
-            jwt: data.jwt_token,
-            major: data.major,
-            nickname: data.nickname,
-            password: data.password,
-            phone: data.phone,
-            signature: data.signature,
-            username: data.username,
-        });
     };
     onStanza = async standaz => {
         console.log(standaz);

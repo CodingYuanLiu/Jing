@@ -1,24 +1,49 @@
-import {useDispatch} from "react-redux";
+import * as actionTypes from "../common/constant/ActionTypes";
 import Api from "../api/Api";
-import {
-    FOLLOW_FAIL,
-    FOLLOW_OK, GET_FOLLOWERS_FAIL, GET_FOLLOWERS_OK, GET_FOLLOWINGS_FAIL, GET_FOLLOWINGS_OK,
-    ON_FOLLOW, ON_GET_FOLLOWERS, ON_GET_FOLLOWINGS,
-    ON_UNFOLLOW,
-    UNFOLLOW_FAIL,
-    UNFOLLOW_OK
-} from "../common/constant/ActionTypes";
 
+// simple set user data and update data
+export const setToken = jwt => {
+    return dispatch => {
+        dispatch({
+            type: actionTypes.SET_USER_TOKNE,
+            jwt: jwt
+        });
+        Dao.saveString("@jwt", jwt)
+            .then(() => {
+                dispatch({
+                    type: actionTypes.SET_USER_LOGGED,
+                })
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+};
+export const setUserData = user => ({
+        type: actionTypes.SET_USER_DATA,
+        user: user
+    }
+);
+export const updateUserInfo = (data) => ({
+    type: actionTypes.UPDATE_USER_INFO,
+    data: data,
+});
+export const updateUserAvatar = (avatar) => ({
+    type: actionTypes.UPDATE_USER_AVATAR,
+    avatar: avatar,
+});
+
+// follow action & unfollow action, and get followers and followings
 export const onFollow = (from, to, jwt) => {
     return dispatch => {
         dispatch({
-            type: ON_FOLLOW,
+            type: actionTypes.ON_FOLLOW,
         });
 
         Api.follow(from.id, to.id, jwt)
             .then (data => {
                 dispatch({
-                    type: FOLLOW_OK,
+                    type: actionTypes.FOLLOW_OK,
                     user: to,
                 });
 
@@ -26,7 +51,7 @@ export const onFollow = (from, to, jwt) => {
             .catch(err => {
                 console.log(err);
                 dispatch({
-                    type: FOLLOW_FAIL,
+                    type: actionTypes.FOLLOW_FAIL,
                 })
             })
     }
@@ -34,19 +59,19 @@ export const onFollow = (from, to, jwt) => {
 export const onUnFollow = (from, to, jwt) => {
     return dispatch => {
         dispatch({
-            type: ON_UNFOLLOW,
+            type: actionTypes.ON_UNFOLLOW,
         });
         Api.follow(from.id, to.id, jwt)
             .then (data => {
                 dispatch({
-                    type: UNFOLLOW_OK,
+                    type: actionTypes.UNFOLLOW_OK,
                     user: to,
                 })
             })
             .catch(err => {
                 console.log(err);
                 dispatch({
-                    type: UNFOLLOW_FAIL,
+                    type: actionTypes.UNFOLLOW_FAIL,
                 })
             })
     }
@@ -55,12 +80,12 @@ export const onUnFollow = (from, to, jwt) => {
 export const onGetFollowings = (jwt) => {
     return dispatch => {
         dispatch({
-            type: ON_GET_FOLLOWINGS,
+            type: actionTypes.ON_GET_USER_FOLLOWINGS,
         });
         Api.getFollowings(jwt)
             .then(data => {
                 dispatch({
-                    type: GET_FOLLOWINGS_OK,
+                    type: actionTypes.GET_USER_FOLLOWINGS_OK,
                     data: data ? data : [],
                 });
                 console.log(data);
@@ -68,7 +93,7 @@ export const onGetFollowings = (jwt) => {
             .catch(err => {
                 console.log(err);
                 dispatch({
-                    type: GET_FOLLOWINGS_FAIL,
+                    type: actionTypes.GET_USER_FOLLOWINGS_FAIL,
                     err: err,
                 })
             })
@@ -78,12 +103,12 @@ export const onGetFollowings = (jwt) => {
 export const onGetFollowers = (jwt) => {
     return dispatch => {
         dispatch({
-            type: ON_GET_FOLLOWERS,
+            type: actionTypes.ON_GET_USER_FOLLOWERS,
         });
         Api.getFollowings(jwt)
             .then(data => {
                 dispatch({
-                    type: GET_FOLLOWERS_OK,
+                    type: actionTypes.GET_USER_FOLLOWERS_OK,
                     data: data ? data : [],
                 });
                 console.log(data);
@@ -91,9 +116,14 @@ export const onGetFollowers = (jwt) => {
             .catch(err => {
                 console.log(err);
                 dispatch({
-                    type: GET_FOLLOWERS_FAIL,
+                    type: actionTypes.GET_USER_FOLLOWERS_FAIL,
                     err: err,
                 })
             })
     }
 };
+
+
+
+
+

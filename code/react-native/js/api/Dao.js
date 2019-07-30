@@ -44,6 +44,7 @@ export default class Dao {
             return
         } catch (err) {
             err.status = 500;
+            err.message = "delete fail";
             throw new Error(err)
         }
     }
@@ -51,12 +52,4 @@ export default class Dao {
 
 
 
-export class Model {
-    static transferUserIntoCamel(data) {
-        return null;
-    }
 
-    static transferActivityIntoCamel(data) {
-        return null;
-    }
-}

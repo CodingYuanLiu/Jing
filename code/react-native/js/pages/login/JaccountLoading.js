@@ -4,7 +4,7 @@ import {Button, Image} from "react-native-elements"
 import Api from '../../api/Api';
 import {login, setUser} from '../../actions/user';
 import {connect} from 'react-redux';
-import Dao from '../../api/dao/Dao';
+import Dao from '../../api/Dao';
 import NavigationUtil from '../../navigator/NavUtil';
 import Default from "../../common/constant/Constant";
 import XmppApi from "../../api/XmppApi";

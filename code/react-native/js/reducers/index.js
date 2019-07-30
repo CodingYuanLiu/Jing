@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import user from "./user";
 import currentAct from "./currentAct";
 import publishAct from "./publishAct";
 import xmpp from "./xmpp";
@@ -7,9 +6,9 @@ import recommendAct from "./recommendAct";
 import myAct from "./myAct";
 import typeAct from "./typeAct";
 import follow from "./follow";
+import currentUser from "./currentUser";
 
 export default combineReducers({
-    user,
     currentAct,
     publishAct,
     xmpp,
@@ -17,5 +16,6 @@ export default combineReducers({
     myAct,
     typeAct,
     follow,
+    currentUser,
 })
 

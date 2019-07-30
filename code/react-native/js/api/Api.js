@@ -1,6 +1,7 @@
-import Dao from "./dao/Dao"
+import Dao from "./Dao"
 import axios from "axios"
 import qs from "qs"
+import Model from "./Model";
 
 axios.defaults.baseURL="http://202.120.40.8:30255";
 axios.defaults.withCredentials=true;
@@ -21,8 +22,6 @@ export default class Api {
     /**
      * user api
      */
-
-    static AUTH_TOKEN = null;
     static login(username, password) {
         return new Promise(
             (resolve, reject) => {
@@ -36,9 +35,7 @@ export default class Api {
                         }
                     })
                     .then(res => {
-                        const data = res.data
-                        this.AUTH_TOKEN = `Bearer ${data.jwt_token}`
-                        resolve(data.jwt_token)
+                        resolve(Model.transferToken(res.data))
                     })
                     .catch( err => {
                         Reject(err, reject)
@@ -53,7 +50,7 @@ export default class Api {
                     "Authorization" : "Bearer " + jwt
                 }
             }).then(res => {
-                resolve(res.data)
+                resolve(Model.transferUserInfo(res.data))
             }).catch(err => {
                 Reject(err, reject)
             })
@@ -67,6 +64,7 @@ export default class Api {
                 redirect_uri: redirectUri
             })
                 .then(res => {
+                    // what is this data?
                     resolve(res.data)
                 })
                 .catch(err => {
@@ -90,8 +88,6 @@ export default class Api {
                 })
         })
     };
-
-
     static updateInfo(data, jwt) {
         return new Promise((resolve, reject) => {
             axios.post("/api/user/info/update", data, {
@@ -101,6 +97,7 @@ export default class Api {
                 }
             })
                 .then(res => {
+                    // this data contains no useful message
                     resolve(res.data);
                 })
                 .catch(err => {
@@ -108,7 +105,6 @@ export default class Api {
                 })
         })
     }
-
     static updateAvatar(avatar, jwt) {
         return new Promise((resolve, reject) => {
             axios.post("/api/user/avatar/upload", avatar, {
@@ -118,7 +114,18 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(res.data);
+                    resolve(Model.transferUserAvatar(res.data));
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    }
+    static getUserInfo(id) {
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/public/detail?id=${id}`)
+                .then(res => {
+                    resolve(Model.transferUserInfo(res.data));
                 })
                 .catch(err => {
                     Reject(err, reject);

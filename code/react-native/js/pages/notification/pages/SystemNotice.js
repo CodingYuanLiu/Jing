@@ -1,7 +1,7 @@
 import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import NoticeHeader from '../components/NoticeHeader';
-import Dao from '../../../api/dao/Dao';
+import Dao from '../../../api/Dao';
 
 
 export default class SystemNoticeScreen extends React.PureComponent{

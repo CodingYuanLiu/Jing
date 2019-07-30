@@ -1,7 +1,7 @@
 import {
     FOLLOW_FAIL,
-    FOLLOW_OK, GET_FOLLOWERS_FAIL, GET_FOLLOWERS_OK, GET_FOLLOWINGS_FAIL, GET_FOLLOWINGS_OK,
-    ON_FOLLOW, ON_GET_FOLLOWERS, ON_GET_FOLLOWINGS,
+    FOLLOW_OK,
+    ON_FOLLOW, 
     ON_UNFOLLOW, UNFOLLOW_FAIL, UNFOLLOW_OK
 } from "../common/constant/ActionTypes";
 
@@ -57,40 +57,6 @@ const follow = (state=initialState, action) => {
                 followings: unFollow(state.followings, action.to.id),
                 isLoading: false,
                 err: null,
-            };
-        case ON_GET_FOLLOWINGS:
-            return {
-                ...state,
-                loadingFollowings: true,
-            };
-        case GET_FOLLOWINGS_FAIL:
-            return {
-                ...state,
-                loadingFollowings: false,
-                err: action.err,
-            };
-        case GET_FOLLOWINGS_OK:
-            return {
-                ...state,
-                loadingFollowings: false,
-                followings: action.data,
-            };
-        case ON_GET_FOLLOWERS:
-            return {
-                ...state,
-                loadingFollowers: true,
-            };
-        case GET_FOLLOWERS_FAIL:
-            return {
-                ...state,
-                loadingFollowers: false,
-                err: action.err,
-            };
-        case GET_FOLLOWERS_OK:
-            return {
-                ...state,
-                loadingFollowers: false,
-                followers: action.data,
             };
         default:
             return state;

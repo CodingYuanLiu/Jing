@@ -3,7 +3,7 @@ import {View, StyleSheet, ScrollView, Text, TouchableWithoutFeedback} from "reac
 import HeaderBar from "../../common/components/HeaderBar";
 import {ArrowLeftIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
-import Dao from "../../api/dao/Dao";
+import Dao from "../../api/Dao";
 import {Button, ListItem} from "react-native-elements";
 
 export default class Settings extends React.PureComponent {

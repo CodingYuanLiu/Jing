@@ -6,7 +6,7 @@ import Fontisto from "react-native-vector-icons/Fontisto";
 import { SafeAreaView } from 'react-navigation';
 import NavigationUtil from '../../navigator/NavUtil';
 import Api from "../../api/Api";
-import Dao from "../../api/dao/Dao"
+import Dao from "../../api/Dao"
 import {login, setUser, setUserInfo} from '../../actions/user';
 import {connect} from "react-redux";
 import Default from "../../common/constant/Constant";
