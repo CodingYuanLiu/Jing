@@ -68,3 +68,9 @@ export const GET_FOLLOWINGS_OK = 'GET_FOLLOWINGS_OK';
 export const GET_FOLLOWINGS_FAIL = 'GET_FOLLOWERS_FAIL';
 export const GET_FOLLOWERS_OK = 'GET_FOLLOWERS_OK';
 export const GET_FOLLOWERS_FAIL = 'GET_FOLLOWERS_OK';
+
+
+// current user action
+export const UPDATE_USER_INFO = 'UPDATE_USER_INFO';
+export const UPDATE_USER_AVATAR = 'UPDATE_USER_AVATAR';
+

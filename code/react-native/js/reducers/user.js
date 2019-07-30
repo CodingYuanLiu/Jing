@@ -1,8 +1,9 @@
 import {
     LOGIN, LOGIN_FAIL, LOGIN_OK,
     LOGOUT, ON_NATIVE_LOGIN,
-    SET_USER
+    SET_USER, UPDATE_USER_AVATAR, UPDATE_USER_INFO
 } from "../common/constant/ActionTypes"
+import {updateUserInfo} from "../actions/user";
 
 const initialState = {
     logged: false,
@@ -36,6 +37,16 @@ const user = (state=initialState, action) => {
                 ...state,
                 ...action.user,
                 logged: true,
+            };
+        case UPDATE_USER_INFO:
+            return {
+                ...state,
+                ...action.data,
+            };
+        case UPDATE_USER_AVATAR:
+            return {
+                ...state,
+                ...action.avatar,
             };
         default:
             return state;

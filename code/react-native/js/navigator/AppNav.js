@@ -12,7 +12,7 @@ import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch
 import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
 import ChatRoom from "../pages/notification/pages/ChatRoom";
-import Information from "../pages/me/Information";
+import Information from "../pages/me/ModifyInformation";
 import Settings from "../pages/me/Settings";
 import Following from "../pages/me/Following";
 import Follower from "../pages/me/Follower";

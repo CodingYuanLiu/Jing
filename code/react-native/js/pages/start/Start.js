@@ -48,6 +48,8 @@ class StartPage extends React.Component {
                         } else {
                             // login success
                             let password = Util.cryptoOnpenFire(data.username, data.password);
+                            this.props.onGetFollowers(jwt);
+                            this.props.onGetFollowings(jwt);
                             XmppApi.login(data.username, password)
                                 .then(async () => {
                                     await this.dispatchSetUser(data);
@@ -62,8 +64,6 @@ class StartPage extends React.Component {
                                     console.log(err);
                                     // this should not happen
                                 });
-                            this.props.onGetFollowers(jwt);
-                            this.props.onGetFollowings(jwt);
                         }
                     })
                     .catch(err => {

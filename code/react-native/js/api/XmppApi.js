@@ -35,7 +35,7 @@ export default class XmppApi {
     }
     static onError() {
         this.xmpp.on('error', err => {
-            console.error('❌', err.toString())
+            console.warn('❌', err.toString())
         });
     }
     static onOnline() {

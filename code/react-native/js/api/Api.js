@@ -92,9 +92,26 @@ export default class Api {
     };
 
 
-    static modifyInfo(jwt, data) {
+    static updateInfo(data, jwt) {
         return new Promise((resolve, reject) => {
             axios.post("/api/user/info/update", data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`,
+                }
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    }
+
+    static updateAvatar(avatar, jwt) {
+        return new Promise((resolve, reject) => {
+            axios.post("/api/user/avatar/upload", avatar, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${jwt}`,
