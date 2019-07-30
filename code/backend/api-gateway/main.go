@@ -5,6 +5,7 @@ import (
 	"github.com/micro/go-web"
 	k8s "github.com/micro/kubernetes/go/web"
 	"jing/app/api-gateway/controller/activity"
+	feedbackController "jing/app/api-gateway/controller/feedback"
 	functionController "jing/app/api-gateway/controller/function"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
@@ -62,6 +63,8 @@ func setupRouter() *gin.Engine {
 
 	fc := new(functionController.Controller)
 
+	fbc := new(feedbackController.Controller)
+
 	publicRouter := router.Group("/api/public")
 	{
 		// TODO: Confirm register's security
@@ -76,6 +79,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/act/findbytype",ac.FindActivityByType)
 		publicRouter.GET("/takeout/searchshop", fc.TakeoutSearchShop)
 		publicRouter.GET("/chat/members", ac.GetGroupChatInfo)
+		publicRouter.GET("/feedback/query",fbc.QueryFeedback)
 		publicRouter.GET("/act/findbyuser", ac.FindActByUser)
 	}
 	/*
@@ -109,6 +113,11 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/friends", uc.GetFriends)
 		userRouter.GET("/follow", uc.Follow)
 		userRouter.GET("/changeprivacy", uc.ChangePrivacyLevel)
+
+		// Feedback manipulation
+		userRouter.POST("/feedback/publish", fbc.PublishFeedback)
+		userRouter.POST("/feedback/delete",fbc.DeleteFeedback)
+		userRouter.POST("feedback/comment",fbc.CommentFeedback)
 	}
 
 	adminRouter := router.Group("/api/admin")

@@ -13,8 +13,6 @@ var db *gorm.DB
 
 type User struct {
 	ID 			int 				`gorm:"primary_key;auto_increment"`
-	IsAdmin     bool
-	BanTime     int64
 	Gender 		int
 	Birthday 	string
 	Major	 	string
@@ -52,36 +50,11 @@ type Follow struct {
 	To 		int
 }
 
-func FindAllUsers() (users []User) {
-	db.Find(&users)
-	return
-}
-
-func IsAdmin(Id int) (bool, error) {
-	user, err := FindUserById(Id)
-	if err != nil {
-		return false, err
-	} else {
-		return user.IsAdmin, nil
-	}
-}
-
-func SetBanTime(Id int, time int64) error {
-	user, err := FindUserById(Id)
-	if err != nil {
-		return err
-	} else {
-		user.BanTime = time
-		db.Save(&user)
-	}
-	return nil
-}
-
 func SetAvatarKey(Id int, key string) error {
 	user := User{}
 	db.Where("id = ?", Id).First(&user)
 	if user.ID == 0 {
-		return jing.NewError(1, 404, "Can't find such user")
+		return jing.NewError(301, 404, "Can't find such user")
 	}
 	user.AvatarKey = key
 	db.Save(&user)
@@ -92,7 +65,7 @@ func GetAvatarKey(Id int) (string, error) {
 	user := User{}
 	db.Where("id = ?", Id).First(&user)
 	if user.ID == 0 {
-		return "", jing.NewError(1, 404, "Can't find such user")
+		return "", jing.NewError(301, 404, "Can't find such user")
 	}
 	return user.AvatarKey, nil
 }
@@ -200,9 +173,9 @@ func JoinActivity(userId int, actId int) error {
 
 func GetActivityMembers(actId int) (ret []int, err error) {
 	var joins []Join
-	db.Where("act_id = ?", actId).Find(&joins)
+	db.Where("act_id = ? and is_admin <> ?", actId, -1).Find(&joins)
 	if len(joins) == 0 {
-		return nil, jing.NewError(1, 404, "Activity not found")
+		return nil, jing.NewError(301, 404, "Activity not found")
 	}
 	for _, v := range joins {
 		ret = append(ret, v.UserID)
@@ -246,7 +219,7 @@ func FindUserById(id int) (User, error) {
 	user := User{}
 	db.First(&user, id)
 	if user.ID == 0 {
-		return user, jing.NewError(1, 404, "User not found")
+		return user, jing.NewError(301, 404, "User not found")
 	}
 	return user, nil
 }
@@ -255,7 +228,7 @@ func FindUserByUsername(username string) (User, error) {
 	user := User{}
 	db.Where("username = ?", username).First(&user)
 	if user.ID == 0 {
-		return user, jing.NewError(1, 404, "User not found")
+		return user, jing.NewError(301, 404, "User not found")
 	}
 	return user, nil
 }
@@ -264,7 +237,7 @@ func UpdateUserById(id int, column string, value interface{}) error {
 	user := User{}
 	db.First(&user, id)
 	if user.ID == 0 {
-		return jing.NewError(1, 404, "User not found")
+		return jing.NewError(301, 404, "User not found")
 	}
 	db.Model(&user).Update(column, value)
 	return nil
@@ -305,7 +278,7 @@ func FindUserByJaccount(jaccount string) (User, error) {
 	user := User{}
 	db.Where("jaccount = ?", jaccount).First(&user)
 	if user.ID == 0 {
-		return user, jing.NewError(1, 404,"user not found")
+		return user, jing.NewError(301, 404,"user not found")
 	}
 	return user, nil
 }
@@ -314,7 +287,7 @@ func FindUserByOpenId(openId string) (User, error) {
 	user := User{}
 	db.Where("open_id = ?", openId).First(&user)
 	if user.ID == 0 {
-		return user, jing.NewError(1, 404,"user not found")
+		return user, jing.NewError(301, 404,"user not found")
 	}
 	return user, nil
 }
@@ -330,7 +303,7 @@ func BindJaccountById(id int, jaccount string) error {
 	user := User{}
 	db.First(&user, id)
 	if user.Jaccount != "" {
-		return jing.NewError(1, 400,"jaccount has been bound")
+		return jing.NewError(301, 404,"jaccount has been bound")
 	} else {
 		user.Jaccount = jaccount
 		db.Save(&user)
@@ -358,7 +331,7 @@ func GetAllTags() ([]string,error){
 		tags = append(tags,param.Tag)
 	}
 	if len(tags) == 0{
-		err := jing.NewError(1, 400,"fetch tags error")
+		err := jing.NewError(301, 404,"fetch tags error")
 		return tags,err
 	}
 	return tags,nil
@@ -370,6 +343,16 @@ func IsInTagDict(tag string) bool{
 	if len(tagFromDB) == 0 {
 		return false
 	}else{
+		return true
+	}
+}
+
+func HasUser(userId int) bool {
+	var user User
+	db.Where("id = ?",userId).Find(&user)
+	if user.ID == 0{
+		return false
+	} else{
 		return true
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"jing/app/jing"
 	"log"
 	"time"
 )
@@ -418,6 +419,20 @@ func GetMaxMemberStatus(actId int32,maxMember int32) int32{
 	}
 }
 
+<<<<<<< HEAD
+=======
+func GetActivity(actId int32) (act map[string] interface{},err error){
+	err = Collection.Find(bson.M{"actid": actId}).One(&act)
+	if err == mgo.ErrNotFound{
+		return act,jing.NewError(301,400,"can not find the activity in the mongoDB")
+	} else if err != nil{
+		return act,jing.NewError(302,400,"find activity in mongoDB error")
+	} else{
+		return act,err
+	}
+}
+
+>>>>>>> b0a5e3040461e86dadc83c39db7c874b64665afb
 func init(){
 	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
 	//session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")

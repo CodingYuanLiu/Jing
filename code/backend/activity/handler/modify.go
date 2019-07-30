@@ -53,9 +53,18 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	}
 
 	var newImages []string
+	var err2 error
 	for i,param := range req.Images{
 		name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
-		newImages = append(newImages,dao.UploadImgWithName(param,name))
+		imageUrl, err := dao.UploadImgWithName(param,name)
+		if err != nil{
+			err2 = err
+		}
+		newImages = append(newImages,imageUrl)
+	}
+	if err2 != nil{
+		log.Println(err2)
+		return err2
 	}
 
 	for _,param := range newImages{
@@ -112,3 +121,4 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	log.Println("Modify successfully")
 	return nil
 }
+

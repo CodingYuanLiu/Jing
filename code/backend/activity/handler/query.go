@@ -2,25 +2,17 @@ package handler
 
 import (
 	"context"
-	"fmt"
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
-	"jing/app/jing"
 	"log"
 )
 
 func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error {
 	//fmt.Println(req)
-	var result map[string] interface{}
-	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
-	if err == mgo.ErrNotFound{
-		fmt.Println(err)
-		resp.Status = 404
-		return jing.NewError(1, 404, "Can't find activity")
-	}else if err != nil{
-		log.Fatal(err)
+	result,err := dao.GetActivity(req.ActId)
+	if err != nil{
+		return err
 	}
 	//Use map to fetch the result.
 	mapBasicInfo := result["basicinfo"].(map[string] interface{})
@@ -109,3 +101,4 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 	//log.Println("Query successfully.")
 	return nil
 }
+
