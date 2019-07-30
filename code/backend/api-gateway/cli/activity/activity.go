@@ -49,7 +49,7 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	}
 	resp, err := Client.Query(context.TODO(), &qryReq)
 	if err != nil {
-		return nil, jing.NewError(1, 400, "Can't find such activity")
+		return nil, err
 	}
 	return resp, err
 }

@@ -255,7 +255,6 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||
 		jsonForm["type"].(string) == "other" && (jsonForm["activity_time"] == nil)
 	if check {
-		log.Println(err)
 		c.JSON(http.StatusBadRequest, map[string]string{
 			"message": "Miss some field",
 		})
