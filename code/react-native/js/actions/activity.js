@@ -60,7 +60,6 @@ const onLoadRecommendAct = (jwt) => {
                     type: actionTypes.LOADING_RECOMMEND_OK,
                     items: data // what if data is null or undefined ?
                 });
-                console.log(data);
             })
             .catch(err => {
                 console.log(err);
@@ -107,7 +106,6 @@ const onLoadTypeAct = (type) => {
                     items: data,
                     typeName: type,
                 });
-                console.log(data);
             })
             .catch(err => {
                 console.log(err);

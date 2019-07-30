@@ -19,8 +19,8 @@ class JaccountLoadingScreen extends React.PureComponent{
     }
 
     componentDidMount() {
-        const code = this.props.navigation.getParam("code")
-        const redirectUri = this.props.navigation.getParam("redirectUri")
+        const code = this.props.navigation.getParam("code");
+        const redirectUri = this.props.navigation.getParam("redirectUri");
 
         Api.loginWithJaccount(code, redirectUri)
             .then(data => {
@@ -102,7 +102,6 @@ class JaccountLoadingScreen extends React.PureComponent{
 }
 
 const mapDispatchToProps = dispatch => ({
-    onLogin: (jwt) => dispatch(login(jwt)),
     setUser: user => dispatch(setUser(user))
 });
 

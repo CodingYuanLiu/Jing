@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import {Input, Button, Overlay} from "react-native-elements"
 import Dao from "../../api/dao/Dao";
-import {login, setUser, setUserInfo} from "../../actions/user";
+import {login, setUser} from "../../actions/user";
 import {connect} from "react-redux";
 import Api from "../../api/Api"
 import NavigationUtil from "../../navigator/NavUtil";

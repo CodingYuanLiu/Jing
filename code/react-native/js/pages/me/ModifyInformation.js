@@ -145,7 +145,6 @@ class ModifyInformation extends React.PureComponent{
     showAvatarPicker = () => {
         ImagePicker.showImagePicker(imagePickerOptions, (response) => {
             console.log('Response = ', response);
-
             if (response.didCancel) {
                 // ... do nothing
             } else if (response.error) {
@@ -159,7 +158,8 @@ class ModifyInformation extends React.PureComponent{
                         ...this.state.avatar,
                         data: data,
                         type: type,
-                    }
+                    },
+                    avatarModified: true,
                 });
             }
         });
@@ -191,22 +191,23 @@ class ModifyInformation extends React.PureComponent{
             major: this.state.major,
             phone: this.state.phone,
         };
-        let jwt = this.state.jwt;
+        let jwt = this.props.user.jwt;
         let avatarData = this.state.avatar.data;
-
+        console.log(data, avatarData);
         if (this.state.avatarModified) {
             if (this.state.infoModified) {
                 // modified both avatar and user info
                 await Api.updateInfo(data, jwt);
                 this.props.updateUserInfo(data);
                 let avatarUri = await Api.updateAvatar(avatarData, jwt);
-                console.log(avatarUri);
                 this.props.updateUserAvatar(avatarUri.url);
                 this.setState({isSaving: false, saved: true});
             } else {
                 // only modified avatar
-                await Api.updateAvatar(avatarData, jwt);
+                let avatarUri = await Api.updateAvatar(avatarData, jwt);
+                this.props.updateUserAvatar(avatarUri.url);
                 this.setState({isSaving: false, saved: true});
+                return avatarUri;
             }
         } else {
             if (this.state.infoModified) {
@@ -233,11 +234,16 @@ class ModifyInformation extends React.PureComponent{
 
 const imagePickerOptions = {
     title: "选择",
+    cancelButtonTitle: "取消",
+    takePhotoButtonTitle: "拍摄",
+    chooseFromLibraryButtonTitle: "从相册选择",
     storageOptions: {
         skipBackup: true,
         path: 'images',
     },
+    quality: 0.4,
 };
+
 const mapStateToProps = state => ({
     user: state.user,
 });
