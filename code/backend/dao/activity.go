@@ -419,8 +419,6 @@ func GetMaxMemberStatus(actId int32,maxMember int32) int32{
 	}
 }
 
-<<<<<<< HEAD
-=======
 func GetActivity(actId int32) (act map[string] interface{},err error){
 	err = Collection.Find(bson.M{"actid": actId}).One(&act)
 	if err == mgo.ErrNotFound{
@@ -432,7 +430,6 @@ func GetActivity(actId int32) (act map[string] interface{},err error){
 	}
 }
 
->>>>>>> b0a5e3040461e86dadc83c39db7c874b64665afb
 func init(){
 	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
 	//session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")
