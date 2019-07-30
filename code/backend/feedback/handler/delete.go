@@ -17,7 +17,7 @@ func (feedbackSrv *FeedbackSrv) Delete(ctx context.Context,req *feedback.DltReq,
 	err := dao.FeedbackCollection.Find(bson.M{"_id":objectId}).One(&userFeedback)
 	if err != nil{
 		log.Println(err)
-		return jing.NewError(300,400,"cannot find the feedback when trying to delete it from mongoDB")
+		return jing.NewError(301,404,"cannot find the feedback when trying to delete it from mongoDB")
 	}
 	if req.UserId != userFeedback.UserId{
 		log.Printf("request userid is %d but feedback userid is %d\n",req.UserId,userFeedback.UserId)
