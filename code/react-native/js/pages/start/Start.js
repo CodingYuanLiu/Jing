@@ -10,6 +10,7 @@ import * as actionTypes from "../../common/constant/ActionTypes";
 import {addChatRoom, onSendMessage} from "../../actions/xmpp";
 import {CHAT_ROOM_LOADED} from "../../common/constant/ActionTypes";
 import {setUser} from "../../actions/user";
+import {onGetFollowers, onGetFollowings} from "../../actions/follow";
 
 
 // fix xmpp.js cannot find base64 module error
@@ -27,7 +28,6 @@ class StartPage extends React.Component {
     }
 
     componentWillUnmount() {
-        //this.timer && clearTimeout(this.timer)
     }
 
     render() {
@@ -46,31 +46,31 @@ class StartPage extends React.Component {
                         if (data.username === "") {
                             NavigationUtil.toPage(null, "Register");
                         } else {
+                            // login success
                             let password = Util.cryptoOnpenFire(data.username, data.password);
-                            console.log(password);
                             XmppApi.login(data.username, password)
                                 .then(async () => {
-                                    console.log("Login ok");
                                     await this.dispatchSetUser(data);
-                                    console.log(this.props.user);
-
-                                    // after login, set listener, on stanza
                                     await XmppApi.onStanza(this.onStanza);
 
                                     // after that, make self presence to group chat list
                                     await XmppApi.getChatList();
+
                                     this.props.navigation.navigate("Home", null);
                                 })
                                 .catch(err => {
                                     console.log(err);
                                     // this should not happen
-                                })
+                                });
+                            this.props.onGetFollowers(jwt);
+                            this.props.onGetFollowings(jwt);
                         }
                     })
                     .catch(err => {
                         console.log(err);
                         err.message="expired";
                         this.props.onLoginFail(err);
+                        this.props.navigation.navigate("Home", null);
                     })
             })
             .catch(err => {
@@ -162,6 +162,7 @@ class StartPage extends React.Component {
 const mapStateToProps = state => ({
     xmpp: state.xmpp,
     user: state.user,
+    followers: state.followers,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -170,6 +171,8 @@ const mapDispatchToProps = dispatch => ({
     chatRoomLoaded: () => dispatch({type: CHAT_ROOM_LOADED}),
     setUser: (user) => dispatch(setUser(user)),
     onLoginFail: (err) => dispatch({type: actionTypes.LOGIN_FAIL, err,}),
+    onGetFollowers: (jwt) => dispatch(onGetFollowers(jwt)),
+    onGetFollowings: (jwt) => dispatch(onGetFollowings(jwt)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(StartPage);
 

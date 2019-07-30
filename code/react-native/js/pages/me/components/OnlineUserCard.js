@@ -28,7 +28,7 @@ export default class OnlineUserCard extends React.PureComponent{
                 rightTitle={"个人主页"}
                 rightTitleStyle={styles.rightTitle}
                 containerStyle={styles.container}
-                contentContainerStyle={{flex: 1, marginLeft: -8, backgroundColor: "yellow"}}
+                contentContainerStyle={{flex: 1, marginLeft: -8}}
                 rightContentContainerStyle={styles.rightTitleContainer}
                 onPress={onPress}
             />
@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
         width: "100%",
         padding: 0,
         margin: 0,
-        backgroundColor: "red",
     },
     title: {
         fontWeight: "bold",
@@ -75,6 +74,5 @@ const styles = StyleSheet.create({
     rightTitleContainer: {
         marginRight: -18,
         flex: 0,
-        backgroundColor: "blue",
     },
 });

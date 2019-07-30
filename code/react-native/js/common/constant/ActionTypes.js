@@ -52,3 +52,19 @@ export const PRESENCE_CHAT_ROOM = 'PRESENT_CHAT_ROOM';
 
 export const LOAD_PUBLISH_OK = 'LOAD_PUBLISH_OK';
 export const LOAD_PUBLISH_FAIL = 'LOAD_PUBLISH_fAIL';
+
+
+// follow action
+export const ON_FOLLOW = 'ON_FOLLOW';
+export const FOLLOW_OK = 'FOLLOW_OK';
+export const FOLLOW_FAIL = 'FOLLOW_FAIL';
+
+export const ON_UNFOLLOW = 'ON_UNFOLLOW';
+export const UNFOLLOW_OK = 'UNFOLLOW_OK';
+export const UNFOLLOW_FAIL = 'UNFOLLOW_FAIL';
+export const ON_GET_FOLLOWINGS = 'ON_GET_FOLLOWING';
+export const ON_GET_FOLLOWERS = 'ON_GET_FOLLOWERS';
+export const GET_FOLLOWINGS_OK = 'GET_FOLLOWINGS_OK';
+export const GET_FOLLOWINGS_FAIL = 'GET_FOLLOWERS_FAIL';
+export const GET_FOLLOWERS_OK = 'GET_FOLLOWERS_OK';
+export const GET_FOLLOWERS_FAIL = 'GET_FOLLOWERS_OK';

@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text } from 'react-native';
 
 
-export default class SettingScreen extends React.PureComponent{
+export default class PersonalFeedback extends React.PureComponent{
     constructor(props) {
         super(props);
     }
@@ -10,11 +10,8 @@ export default class SettingScreen extends React.PureComponent{
     render() {
         return(
             <View>
-                <Text>
-                    This is Setting!
-                </Text>
+                <Text>其他用户对该用户的评价</Text>
             </View>
         )
     }
 }
-

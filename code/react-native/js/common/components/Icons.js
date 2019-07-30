@@ -1,12 +1,13 @@
 import React from "react";
 import { Icon } from "react-native-elements";
+import {TouchableWithoutFeedback} from "react-native-gesture-handler";
 
 class SearchIcon extends React.PureComponent{
     constructor(props) {
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"octicons"}
@@ -15,6 +16,7 @@ class SearchIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -32,6 +34,7 @@ class PlusIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -40,7 +43,7 @@ class TaxiIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"material-community"}
@@ -49,6 +52,7 @@ class TaxiIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -67,6 +71,7 @@ class FoodIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -75,7 +80,7 @@ class CalendarIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"material-community"}
@@ -84,6 +89,7 @@ class CalendarIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -101,6 +107,7 @@ class ArrowLeftIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -109,7 +116,7 @@ class MessageIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"material-community"}
@@ -118,6 +125,7 @@ class MessageIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -126,7 +134,7 @@ class UserIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"fontawesome"}
@@ -135,6 +143,7 @@ class UserIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -143,7 +152,7 @@ class LockIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"fontisto"}
@@ -152,6 +161,7 @@ class LockIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -160,7 +170,7 @@ class GreaterIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"entypo"}
@@ -169,6 +179,7 @@ class GreaterIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -178,7 +189,7 @@ class CloseIcon extends React.PureComponent{
         super(props)
     }
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"antdesign"}
@@ -187,6 +198,7 @@ class CloseIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -206,6 +218,7 @@ class CommentIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -225,6 +238,7 @@ class ReplyIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -234,7 +248,7 @@ class EmojiIcon extends React.PureComponent{
     }
 
     render() {
-        let {size, color, style, onPress} = this.props
+        let {size, color, style, onPress} = this.props;
         return (
             <Icon
                 type={"material"}
@@ -243,6 +257,7 @@ class EmojiIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -261,6 +276,7 @@ class LeftUpArrowIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -278,6 +294,7 @@ class CaretRightIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
@@ -295,10 +312,64 @@ class SettingIcon extends React.PureComponent{
                 size={size}
                 containerStyle={style}
                 onPress={onPress ? onPress : null}
+                {...this.props}
             />)
     }
 }
-
+class MessageOneToOneIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"antdesign"}
+                name={"message1"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class ChevronIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"feather"}
+                name={"chevron-right"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class CameraIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"font-awesome"}
+                name={"camera"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -318,4 +389,7 @@ export {
     CaretRightIcon,
     ReplyIcon,
     SettingIcon,
+    MessageOneToOneIcon,
+    ChevronIcon,
+    CameraIcon,
 }

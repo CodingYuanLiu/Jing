@@ -6,6 +6,7 @@ import xmpp from "./xmpp";
 import recommendAct from "./recommendAct";
 import myAct from "./myAct";
 import typeAct from "./typeAct";
+import follow from "./follow";
 
 export default combineReducers({
     user,
@@ -15,5 +16,6 @@ export default combineReducers({
     recommendAct,
     myAct,
     typeAct,
+    follow,
 })
 

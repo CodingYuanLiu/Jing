@@ -2,8 +2,6 @@ import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import { createAppContainer, createMaterialTopTabNavigator } from 'react-navigation';
 import { NoticeTabConfig, NoticeTopTab } from "./TopTabBar"
-import Dao from '../../api/dao/Dao';
-
 
 export default class NotificationScreen extends React.PureComponent{
     constructor(props) {
@@ -15,7 +13,7 @@ export default class NotificationScreen extends React.PureComponent{
             createMaterialTopTabNavigator(
                 NoticeTopTab, NoticeTabConfig
             )
-        )
+        );
         return(
             <View style={{flex:1}}>
                 <NoticeTab />
@@ -28,5 +26,5 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     }
-})
+});
 

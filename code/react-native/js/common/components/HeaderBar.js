@@ -29,7 +29,7 @@ export default class NavigationBar extends React.Component{
                     {titleView}
                 </View>
                 {this.getButtonElement(this.props.rightButton, this.props.rightBtnStyle)}
-            </View>
+            </View>;
 
         return (
             <View style={[styles.container, this.props.style]}>
@@ -51,7 +51,7 @@ NavigationBar.propTypes = {
     leftButton: PropTypes.element,
     leftBtnStyle: ViewPropTypes.style,
     rightBtnStyle: ViewPropTypes.style,
-}
+};
 
 const styles = StyleSheet.create({
     container: {

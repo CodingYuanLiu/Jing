@@ -6,7 +6,6 @@ import Start from '../pages/start/Start';
 import HomeScreen from '../pages/home/Home';
 import DetailScreen from '../pages/detail/ActDetail';
 import RegisterScreen from "../pages/login/Register";
-import SettingScreen from '../pages/setting/Setting';
 import SearchScreen from '../pages/search/Search';
 import PersonalHome from '../pages/me/PersonalHome';
 import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch"
@@ -14,6 +13,9 @@ import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
 import ChatRoom from "../pages/notification/pages/ChatRoom";
 import Information from "../pages/me/Information";
+import Settings from "../pages/me/Settings";
+import Following from "../pages/me/Following";
+import Follower from "../pages/me/Follower";
 
 const StartNav = createStackNavigator(
     {
@@ -24,7 +26,7 @@ const StartNav = createStackNavigator(
             }
         }
     }
-)
+);
 
 
 const MainNav = createStackNavigator(
@@ -45,7 +47,7 @@ const MainNav = createStackNavigator(
             screen: RegisterScreen,
         },
         Setting: {
-            screen: SettingScreen,
+            screen: Settings,
         },
         Search: {
             screen: SearchScreen,
@@ -64,7 +66,13 @@ const MainNav = createStackNavigator(
         },
         ChatRoom: {
             screen: ChatRoom,
-        }
+        },
+        Following: {
+            screen: Following,
+        },
+        Follower: {
+            screen: Follower,
+        },
     },
     {
         defaultNavigationOptions: {

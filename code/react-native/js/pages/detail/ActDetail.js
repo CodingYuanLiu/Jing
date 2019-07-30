@@ -11,12 +11,13 @@ import {connect} from "react-redux";
 import Util from "../../common/util";
 import Api from "../../api/Api";
 import CommentPreview from "./components/CommentPreview";
+import {onFollow, onUnFollow} from "../../actions/follow";
 class DetailScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state= {
             activity: {},
-            isJoining: false,
+            isLoading: false,
             isFriends: false,
         }
     }
@@ -101,19 +102,39 @@ class DetailScreen extends React.Component {
         let nickname = user.nickname;
         let avatarUri = user.avatarUri;
         let signature = user.signature;
-        let followBtn =
-            <Button
-                title={this.state.isFriends ? "取消关注" : "关注"}
-                icon={
-                    <PlusIcon
-                        size={24}
-                        color={"#0084ff"}
-                    />
+        let isFriends = false;
+        if (this.props.follow.followings) {
+            for (let item of this.props.follow.followings) {
+                if (item.id === user.id) {
+                    isFriends = true;
+                    console.log("detail, user id:", user.id, "sponsor ", item.id);
+                    break;
                 }
+            }
+        }
+        let followBtn =
+            isFriends ?
+            <Button
+                title={"取消关注"}
                 titleStyle={{color: "#0084ff"}}
                 buttonStyle={styles.followBtn}
-                onPress={this.followSponsor}
-            />;
+                onPress={this.unFollow}
+                loading={this.props.follow.isLoading}
+
+            />:
+                <Button
+                    title={"关注"}
+                    titleStyle={{color: "#9a9a9a"}}
+                    buttonStyle={styles.followBtn}
+                    onPress={this.follow}
+                    loading={this.props.follow.isLoading}
+                    icon={
+                        <PlusIcon
+                            size={24}
+                            color={"#0084ff"}
+                        />
+                    }
+                />;
         return (
             <ListItem
                 leftAvatar={{
@@ -175,7 +196,7 @@ class DetailScreen extends React.Component {
                     previewComments.map((comment, i) => {
                     return (
                         <CommentPreview
-                            avatar={comment.avatar_url ? comment.avatar_url : "https://pic.qqtn.com/up/2019-5/2019053019011498462.jpg"}
+                            avatar={comment.user_avatar}
                             content={comment.content}
                             username={comment.user_nickname}
                             key={i}
@@ -292,18 +313,49 @@ class DetailScreen extends React.Component {
         return previewComments
     };
 
-    followSponsor = () => {
-          
+    follow = () => {
+        if (!this.props.user.logged) {
+            //...
+        } else {
+            console.log(this.props.user);
+            let from = {
+                id: this.props.user.id,
+            };
+            let to = {
+                id: this.props.currentAct.sponsor_id,
+                nickname: this.props.currentAct.sponsor_nickname,
+                avatar_url: this.props.currentAct.sponsor_avatar,
+                signature: this.props.currentAct.signature,
+            };
+            console.log(this.props.currentAct);
+            this.props.onFollow(from, to, this.props.user.jwt);
+        }
+    };
+
+    unFollow = () => {
+        if (!this.props.user.logged) {
+            //...
+        } else {
+            let from = {
+                id: this.props.user.id,
+            };
+            let to = {
+                id: this.props.currentAct.sponsor_id,
+            };
+            this.props.onUnFollow(from, to, this.props.user.jwt);
+        }
     }
 }
 
 const mapStateToProps = state => ({
     currentAct: state.currentAct,
     user: state.user,
+    follow: state.follow,
 });
 const mapDispatchToProps = dispatch => ({
     onLoadActDetail: actId => dispatch(Activity.onLoadActDetail(actId)),
-
+    onFollow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
+    onUnFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
 });
 export default connect(mapStateToProps ,mapDispatchToProps)(DetailScreen);
 const imageWidth = Util.getVerticalWindowDimension().width * 0.4;

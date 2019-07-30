@@ -48,3 +48,15 @@ export default class Dao {
         }
     }
 }
+
+
+
+export class Model {
+    static transferUserIntoCamel(data) {
+        return null;
+    }
+
+    static transferActivityIntoCamel(data) {
+        return null;
+    }
+}

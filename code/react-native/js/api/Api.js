@@ -272,6 +272,72 @@ export default class Api {
         })
     }
 
+
+    // follow and unFollow
+    static follow(from, to, jwt) {
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/user/follow?id=${to}`, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                },
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        });
+    }
+    static unFollow(from, to, jwt) {
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/user/unfollow?id=${to}`, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                },
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        });
+    }
+    static getFollowings(jwt) {
+        return new Promise((resolve, reject) => {
+            axios.get("/api/user/followings", {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                },
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    console.log(err);
+                    Reject(err, reject);
+                })
+        })
+    }
+    static getFollowers(jwt) {
+        return new Promise((resolve, reject) => {
+            axios.get("/api/user/follow", {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                },
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    console.log(err);
+                    Reject(err, reject);
+                })
+        })
+    }
+
+
     /**
      * getSavedPublishAct
      */

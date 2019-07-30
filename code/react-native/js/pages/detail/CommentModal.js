@@ -59,6 +59,7 @@ class CommentModal extends React.PureComponent{
                 <Text style={styles.headerTitle}>全部{length}条评论</Text>
             </View>;
 
+
         // I did not find what i want, leave it blank for future refine
         // let rightIcon;
         return (
@@ -71,15 +72,14 @@ class CommentModal extends React.PureComponent{
     renderCommentItem = ({item}) => {
         return (
             <Comment
-                avatar={item.avatar_url ? item.avatar_url : "https://pic.qqtn.com/up/2019-5/2019053019011498462.jpg"}
+                avatar={item.user_avatar}
                 content={item.content}
                 time={item.time}
-                receiverName={item.receiver_name? item.receiver_name :"未知"}
+                receiverName={item.receiver_nickname ? item.receiver_nickname : ""}
                 username={item.user_nickname}
                 onPress={() => {
                     this.openCommentModal(item.user_id, item.user_nickname)
                 }}
-                receiverId={item.receiver_id}
             />
             );
     };
@@ -179,6 +179,7 @@ class CommentModal extends React.PureComponent{
     publishComment = () => {
         let comment = {
             receiver_id: this.state.receiverId,
+            receiver_nickname: this.state.receiverName,
             content: this.state.commentContent,
             act_id: this.props.currentAct.act_id,
             time: Util.dateTimeToString(new Date()),

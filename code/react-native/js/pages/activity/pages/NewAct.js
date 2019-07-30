@@ -22,59 +22,6 @@ class NewAct extends React.PureComponent{
         let {type} = this.state;
         onLoadTypeAct(type);
     };
-    renderItem = ({item}) => {
-        return (
-            <ActItem
-                id={item.act_id}
-                endTime={item.end_time}
-                user={{
-                    id: item.sponsor_id,
-                    nickname: item.sponsor_username,
-                    signature: item.signature,
-                    avatarUri: item.sponsor_avatar,
-                }}
-                bodyText={item.description}
-                title={item.title}
-                tags={item.tag}
-                type={item.type}
-                image={item.images && item.images.length > 0? item.images[0] : null}
-                taxiSpecInfo={
-                    item.type==="taxi" ? {
-                        departTime: item.depart_time,
-                        origin: item.origin,
-                        dest: item.destination,
-                    } : null}
-                shopSpecInfo={
-                    item.type === "order" ? {
-                        store: item.store,
-                    } : null
-                }
-                takeoutSpecInfo={
-                    item.type === "takeout" ? {
-                        orderTime: item.order_time,
-                        store: item.store,
-                    } : null
-                }
-                otherSpecInfo={
-                    item.type === "other" ? {
-                        activityTime: item.activity_time,
-                    } : null
-                }
-                metadata={
-                    {
-                        comments: item.comments.length,
-                        participants: 0, // we don't have participants data here
-                    }
-                }
-                onPress={() => {this._onPressItem(item.act_id)}}
-            />)
-    };
-    _onPressItem = (id: number) => {
-        NavigationUtil.toPage({id:id}, "ActDetail")
-    };
-    changeType = (type) => {
-        this.setState({type: type});
-    };
     render() {
         let {typeAct} = this.props;
         let {type} = this.state;
@@ -131,7 +78,60 @@ class NewAct extends React.PureComponent{
                 />
             </View>
         )
-    }
+    };
+    renderItem = ({item}) => {
+        return (
+            <ActItem
+                id={item.act_id}
+                endTime={item.end_time}
+                user={{
+                    id: item.sponsor_id,
+                    nickname: item.sponsor_username,
+                    signature: item.signature,
+                    avatarUri: item.sponsor_avatar,
+                }}
+                bodyText={item.description}
+                title={item.title}
+                tags={item.tag}
+                type={item.type}
+                image={item.images && item.images.length > 0? item.images[0] : null}
+                taxiSpecInfo={
+                    item.type==="taxi" ? {
+                        departTime: item.depart_time,
+                        origin: item.origin,
+                        dest: item.destination,
+                    } : null}
+                shopSpecInfo={
+                    item.type === "order" ? {
+                        store: item.store,
+                    } : null
+                }
+                takeoutSpecInfo={
+                    item.type === "takeout" ? {
+                        orderTime: item.order_time,
+                        store: item.store,
+                    } : null
+                }
+                otherSpecInfo={
+                    item.type === "other" ? {
+                        activityTime: item.activity_time,
+                    } : null
+                }
+                metadata={
+                    {
+                        comments: item.comments.length,
+                        participants: 0, // we don't have participants data here
+                    }
+                }
+                onPress={() => {this._onPressItem(item.act_id)}}
+            />)
+    };
+    _onPressItem = (id: number) => {
+        NavigationUtil.toPage({id:id}, "ActDetail")
+    };
+    changeType = (type) => {
+        this.setState({type: type});
+    };
 }
 
 const mapStateToProps = state => ({

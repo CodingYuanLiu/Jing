@@ -7,9 +7,7 @@ import NavigationUtil from '../../navigator/NavUtil';
 import OfflineUserCard from './components/OfflineUserCard';
 import { connect } from "react-redux"
 import { Button } from 'react-native-elements';
-import Dao from '../../api/dao/Dao';
 import {login, logout, setUser} from '../../actions/user';
-import SearchScreen from "../search/Search";
 import {SearchIcon, SettingIcon} from "../../common/components/Icons";
 import Theme from "../../common/constant/Theme";
 
@@ -52,7 +50,7 @@ class MeScreen extends React.PureComponent{
         let settingIcon = (
             <SettingIcon
             color={"#fff"}
-            onPress={this.toSettings}
+            onPress={() => {NavigationUtil.toPage(null, "Setting")}}
             />
         );
         return (
@@ -67,8 +65,12 @@ class MeScreen extends React.PureComponent{
         let topCard, userData;
         let dataList = [
             {data: 0, label: "我发布的",},
-            {data: 0, label: "关注",},
-            {data: 0, label: "粉丝",},
+            {data: 0, label: "关注",
+                onPress: () => {NavigationUtil.toPage({userId: this.props.user.id}, "Following")}
+            },
+            {data: 0, label: "粉丝",
+                onPress: () => {NavigationUtil.toPage({userId: this.props.user.id}, "Follower")}
+            },
             {data: 0, label: "最近浏览",}
         ];
         if (user.logged) {
@@ -98,6 +100,7 @@ class MeScreen extends React.PureComponent{
                                     i === 3 ? null :
                                         {borderRightWidth: 0.5, borderColor: "#efefef"}
                                 }
+                                onPress={item.onPress}
                             />
                         )
                     })
