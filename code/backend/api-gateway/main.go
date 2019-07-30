@@ -47,8 +47,10 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
-	router.Use(filter.AuthFilter)
+
 	router.Use(corsMiddleware())
+
+	router.Use(filter.AuthFilter)
 
 	// login service
 	lc := new(loginController.Controller)
