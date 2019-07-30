@@ -13,7 +13,7 @@ func (feedbackSrv *FeedbackSrv) Query(ctx context.Context,req *feedback.QryReq,r
 	receiverId := req.ReceiverId
 	var userFeedbacks []dao.Feedback
 	err := dao.FeedbackCollection.Find(bson.M{"receiverid":receiverId}).All(&userFeedbacks)
-	if err == mgo.ErrNotFound{
+	if err == mgo.ErrNotFound || len(userFeedbacks) == 0{
 		return jing.NewError(301,404,"cannot find the feedback in mongoDB")
 	} else if err!=nil{
 		return jing.NewError(300,400,"find feedback in mongoDB error")
@@ -31,6 +31,7 @@ func (feedbackSrv *FeedbackSrv) Query(ctx context.Context,req *feedback.QryReq,r
 			Honesty:			userFeedback.Honesty,
 			HonestyDesc:		userFeedback.HonestyDesc,
 			FbImages:			userFeedback.FbImages,
+			Time:				userFeedback.Time,
 		}
 		for _,comment := range userFeedback.FbComments{
 			respFeedback.FbComment = append(respFeedback.FbComment,&feedback.FeedbackComment{

@@ -19,6 +19,10 @@ func (feedbackSrv *FeedbackSrv) Delete(ctx context.Context,req *feedback.DltReq,
 		log.Println(err)
 		return jing.NewError(300,400,"cannot find the feedback when trying to delete it from mongoDB")
 	}
+	if req.UserId != userFeedback.UserId{
+		log.Printf("request userid is %d but feedback userid is %d\n",req.UserId,userFeedback.UserId)
+		return jing.NewError(104,403,"do not have the authority to delete the feedback")
+	}
 
 	imagesLen := len(userFeedback.FbImages)
 	var err2 error

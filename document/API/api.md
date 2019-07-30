@@ -7,6 +7,7 @@ Code | Description | Status
 101  | Need login | Status Unauthorized (401)
 102  | Bad Jwt token | Status Unauthorized (401)
 103  | Bad Credential | Status Unauthorized (401)
+104  | Authority Forbidden | Forbidden (403)
 201  | Parameter not provided or bad | Status Bad Request (400)
 202  | Miss some field | Status Bad Request (400)
 300  | Database CRUD error | Status Bad Request (400)

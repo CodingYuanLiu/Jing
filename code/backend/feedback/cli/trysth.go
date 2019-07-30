@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func main(){
+func try1(){
 	objectId := bson.NewObjectId()
 
 	feedback := dao.Feedback{
@@ -45,4 +45,14 @@ func main(){
 	objectIdOld := "5d3e637c1a4eb61308c26bf2"
 	fmt.Println(bson.IsObjectIdHex(objectIdOld))
 
+}
+
+func main(){
+	var act map[string]interface{}
+	err := dao.Collection.Find(bson.M{"actid": 1023}).One(&act)
+	if err != nil{
+		fmt.Print("err:" + err.Error())
+	}else{
+		fmt.Print("feedbacks:")
+	}
 }

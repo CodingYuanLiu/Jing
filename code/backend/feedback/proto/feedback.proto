@@ -20,6 +20,7 @@ message PubReq{
     string punctualityDesc = 8;
     string honestyDesc = 9;
     repeated string fbImages = 10;
+    string time = 11;
 }
 
 message PubResp{
@@ -29,6 +30,7 @@ message PubResp{
 
 message DltReq{
     string objectId = 1;
+    int32 userId = 2;
 }
 
 message DltResp{
@@ -57,7 +59,6 @@ message CmtResp{
 message FeedbackComment{
     int32 commentatorId = 1;
     string commentDesc = 2;
-    repeated string commentImages = 3;
     string time = 4;
 }
 
@@ -74,4 +75,5 @@ message Feedback{
     repeated string fbImages = 10;
     string id = 11;
     repeated FeedbackComment fbComment = 12;
+    string time = 13;
 }

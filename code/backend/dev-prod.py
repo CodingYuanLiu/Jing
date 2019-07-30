@@ -7,6 +7,8 @@ def change_file1(path, mode):
             s = s.replace('\t\tmicro.Address(":8080"),', '\t\tmicro.Address("127.0.0.1:10080"),')
         elif path == "./login/login.go":
             s = s.replace('\t\tmicro.Address(":8080"),', '\t\tmicro.Address("127.0.0.1:10090"),')
+        elif path == "./feedback/main.go":
+            s = s.replace('\t\tmicro.Address(":8080"),', '\t\tmicro.Address("127.0.0.1:10190"),')
         else:
             s = s.replace('\t\tmicro.Address(":8080"),', '\t\tmicro.Address("127.0.0.1:10180"),')
         s = s.replace('k8s.NewService(', 'micro.NewService(')
@@ -22,9 +24,10 @@ def change_file1(path, mode):
             s = s.replace('\t\tmicro.Address("127.0.0.1:10080"),','\t\tmicro.Address(":8080"),')
         elif path == "./login/login.go":
             s = s.replace('\t\tmicro.Address("127.0.0.1:10090"),','\t\tmicro.Address(":8080"),')
+        elif path == "./feedback/main.go":
+            s = s.replace('\t\tmicro.Address("127.0.0.1:10190"),','\t\tmicro.Address(":8080"),')
         else:
             s = s.replace('\t\tmicro.Address("127.0.0.1:10180"),','\t\tmicro.Address(":8080"),')
-        #s = s.replace('micro.Address("127.0.0.1:10080"),', 'micro.Address(":8080"),')
         s = s.replace('micro.NewService(', 'k8s.NewService(')
         s = s.replace('\t//k8s "github.com/micro/kubernetes/go/micro"', '\tk8s "github.com/micro/kubernetes/go/micro"')
         fw = open(path, 'w', encoding='utf-8')
@@ -65,8 +68,8 @@ mode = input("Change mode to development(0) or production(1): ")
 if mode != '0' and mode != '1':
     print("Mode should be 1 or 0. Aborted.")
     exit(-1)
-paths = ['./user/user.go', './login/login.go', './activity/main.go']
-paths2 = ['./api-gateway/cli/activity/activity.go', './api-gateway/cli/login/login.go', './api-gateway/cli/user/user.go']
+paths = ['./user/user.go', './login/login.go', './activity/main.go','./feedback/main.go']
+paths2 = ['./api-gateway/cli/activity/activity.go', './api-gateway/cli/login/login.go', './api-gateway/cli/user/user.go','./api-gateway/cli/feedback/feedback.go']
 for p in paths:
     change_file1(p, mode)
 for p in paths2:
@@ -92,6 +95,18 @@ if mode == '0':
     fw = open('./dao/activity.go', 'w', encoding='utf-8')
     fw.write(s)
     fw.close()
+
+    fr = open('./dao/feedback.go', 'r', encoding='utf-8')
+    s = fr.read()
+    fr.close()
+    s = s.replace('\tsession, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")',
+                  '\t//session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")')
+    s = s.replace('\t//session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")',
+                  '\tsession, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")')
+    fw = open('./dao/feedback.go', 'w', encoding='utf-8')
+    fw.write(s)
+    fw.close()
+
     fr = open('./api-gateway/main.go', 'r', encoding='utf-8')
     s = fr.read()
     fr.close()
@@ -131,6 +146,18 @@ else:
     fw = open('./dao/activity.go', 'w', encoding='utf-8')
     fw.write(s)
     fw.close()
+
+    fr = open('./dao/feedback.go', 'r', encoding='utf-8')
+    s = fr.read()
+    fr.close()
+    s = s.replace('\t//session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")',
+                  '\tsession, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")')
+    s = s.replace('\tsession, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")',
+                  '\t//session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")')
+    fw = open('./dao/feedback.go', 'w', encoding='utf-8')
+    fw.write(s)
+    fw.close()
+
     fr = open('./api-gateway/main.go', 'r', encoding='utf-8')
     s = fr.read()
     fr.close()

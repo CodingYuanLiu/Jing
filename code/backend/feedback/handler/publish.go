@@ -25,6 +25,7 @@ func (feedbackSrv *FeedbackSrv) Publish(ctx context.Context,req *feedback.PubReq
 		Honesty:req.Honesty,
 		HonestyDesc:req.HonestyDesc,
 		FbComments:[]dao.FeedbackComment{},
+		Time: req.Time,
 	}
 	for i,image := range req.FbImages{
 		name := fmt.Sprintf("feedbackImage/%s/img%s",objectId.Hex(),strconv.Itoa(i))

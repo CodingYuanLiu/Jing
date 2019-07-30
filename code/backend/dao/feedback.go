@@ -8,14 +8,6 @@ import (
 
 var FeedbackCollection *mgo.Collection
 
-func CheckStarValue(starValue int) bool{
-	if starValue < 1 || starValue > 5{
-		return false
-	}else{
-		return true
-	}
-}
-
 type Feedback struct{
 	Id					bson.ObjectId	"_id"
 	UserId				int32
@@ -29,6 +21,7 @@ type Feedback struct{
 	HonestyDesc			string
 	FbComments			[]FeedbackComment
 	FbImages			[]string
+	Time 				string
 }
 
 type FeedbackComment struct{
@@ -39,8 +32,8 @@ type FeedbackComment struct{
 
 func init(){
 	var err error
-	//session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
-	session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")
+	session, err := mgo.Dial("mongodb://jing:jing@10.107.149.143:27017/Jing")
+	//session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")
 	if err != nil {
 		log.Fatal(err)
 	}

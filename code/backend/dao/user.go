@@ -173,7 +173,7 @@ func JoinActivity(userId int, actId int) error {
 
 func GetActivityMembers(actId int) (ret []int, err error) {
 	var joins []Join
-	db.Where("act_id = ?", actId).Find(&joins)
+	db.Where("act_id = ? and is_admin <> ?", actId, -1).Find(&joins)
 	if len(joins) == 0 {
 		return nil, jing.NewError(301, 404, "Activity not found")
 	}
@@ -347,6 +347,16 @@ func IsInTagDict(tag string) bool{
 	}
 }
 
+func HasUser(userId int) bool {
+	var user User
+	db.Where("id = ?",userId).Find(&user)
+	if user.ID == 0{
+		return false
+	} else{
+		return true
+	}
+}
+
 func InsertCandidateTag(tag string,userId int) int32{
 	//return 1 for success, 0 for needlessness
 	var candidateTag CandidateTags
@@ -429,8 +439,8 @@ func GetFriends(userId int) (ret []int) {
 
 func init()  {
 	var err error
-	db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
-	//db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
+	//db, err = gorm.Open("mysql", "jing:jing@tcp(localhost:3306)/jing")
+	db, err = gorm.Open("mysql", "jing:jing@tcp(mysql.database:3306)/jing")
 	if err != nil {
 		fmt.Println(err)
 	}

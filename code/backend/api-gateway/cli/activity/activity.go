@@ -5,14 +5,14 @@ import (
 	"github.com/micro/go-micro/client"
 	"gopkg.in/mgo.v2/bson"
 
-	//"github.com/micro/go-micro/client/grpc"
-	//"github.com/micro/go-plugins/registry/kubernetes"
+	"github.com/micro/go-micro/client/grpc"
+	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/dao"
 	"jing/app/jing"
 	"jing/app/json"
 	"log"
-	//"os"
+	"os"
 )
 
 var (
@@ -21,10 +21,10 @@ var (
 
 func init()  {
 
-	/*os.Setenv("MICRO_REGISTRY", "kubernetes")
+	os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
-	)*/
+	)
 	Client = activityProto.NewActivitySrvService("act", client.DefaultClient)
 }
 
@@ -49,7 +49,7 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	}
 	resp, err := Client.Query(context.TODO(), &qryReq)
 	if err != nil {
-		return nil, jing.NewError(1, 400, "Can't find such activity")
+		return nil, err
 	}
 	return resp, err
 }
