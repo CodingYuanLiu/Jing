@@ -215,6 +215,62 @@ func (activityController *Controller) MyAct(c *gin.Context) {
 	c.JSON(http.StatusOK, actJSONs)
 }
 
+func (activityController *Controller) FindActByUser(c *gin.Context) {
+	userId, err := strconv.Atoi(c.Query("id"))
+	if err != nil || userId == 0 {
+		jing.SendError(c, jing.NewError(201, 400, "param 'id' not provided or bad"))
+		return
+	}
+	var actJSONs []myjson.JSON
+	acts := dao.GetManagingActivity(userId)
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		jing.SendError(c, jing.NewError(203, 400, "Can't get pages."))
+		return
+	}
+	for _, v := range retActs {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
+
+
+func (activityController *Controller) FindActivityByType(c *gin.Context){
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	actType := c.Query("type")
+	if actType == ""{
+		jing.SendError(c, jing.NewError(201, 400, "param 'type' not provided or bad"))
+		c.Abort()
+		return
+	}
+
+	var actJSONs []myjson.JSON
+
+	acts,err := dao.GetActsByType(actType)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": err.Error(),
+		})
+		c.Abort()
+		return
+	}
+
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		jing.SendError(c, jing.NewError(203, 400, "Can't get pages."))
+		return
+	}
+	for _, v := range retActs {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
+
 func (activityController *Controller) ManageAct(c *gin.Context) {
 	userId := c.GetInt("userId")
 	var actJSONs []myjson.JSON
@@ -223,9 +279,7 @@ func (activityController *Controller) ManageAct(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Query("size"))
 	retActs, status := getPages(index, size, acts)
 	if status == -1 {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't get such pages. Check whether your index and activity is correct.",
-		})
+		jing.SendError(c, jing.NewError(203, 400, "Can't get pages."))
 	}
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
@@ -570,44 +624,6 @@ func (activityController *Controller) AddTags(c *gin.Context) {
 	c.JSON(http.StatusOK,map[string]int32{
 		"num":num,
 	})
-}
-
-func (activityController *Controller) FindActivityByType(c *gin.Context){
-	index, _ := strconv.Atoi(c.Query("index"))
-	size, _ := strconv.Atoi(c.Query("size"))
-	actType := c.Query("type")
-	if actType == ""{
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Miss type param",
-		})
-		c.Abort()
-		return
-	}
-
-	var actJSONs []myjson.JSON
-
-	acts,err := dao.GetActsByType(actType)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": err.Error(),
-		})
-		c.Abort()
-		return
-	}
-
-	retActs, status := getPages(index, size, acts)
-	if status == -1 {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't get such pages. Check whether your index and activity is correct.",
-		})
-		c.Abort()
-		return
-	}
-	for _, v := range retActs {
-		resp, _ := getActivityJson(v)
-		actJSONs = append(actJSONs, resp)
-	}
-	c.JSON(http.StatusOK, actJSONs)
 }
 
 func (activityController *Controller) AddBehavior(c *gin.Context){

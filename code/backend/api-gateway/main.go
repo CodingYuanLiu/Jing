@@ -56,6 +56,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/act/findbytype",ac.FindActivityByType)
 		publicRouter.GET("/takeout/searchshop", fc.TakeoutSearchShop)
 		publicRouter.GET("/chat/members", ac.GetGroupChatInfo)
+		publicRouter.GET("/act/findbyuser", ac.FindActByUser)
 	}
 	/*
 		adminRouter := router.Group("/api/admin")
