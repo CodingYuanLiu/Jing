@@ -12,6 +12,22 @@ import (
 	"log"
 )
 
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(200)
+		} else {
+			c.Next()
+		}
+	}
+}
+
 func main() {
 	service := k8s.NewService(
 		web.Name("api"),
@@ -31,6 +47,9 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
+
+	router.Use(corsMiddleware())
+
 	router.Use(filter.AuthFilter)
 
 	// login service
@@ -56,6 +75,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/act/findbytype",ac.FindActivityByType)
 		publicRouter.GET("/takeout/searchshop", fc.TakeoutSearchShop)
 		publicRouter.GET("/chat/members", ac.GetGroupChatInfo)
+		publicRouter.GET("/act/findbyuser", ac.FindActByUser)
 	}
 	/*
 		adminRouter := router.Group("/api/admin")
@@ -94,6 +114,7 @@ func setupRouter() *gin.Engine {
 	{
 		adminRouter.GET("/banuser", uc.BanUser)
 		adminRouter.POST("/act/delete", ac.DeleteActivity)
+		adminRouter.GET("/findallusers", uc.FindAllUsers)
 	}
 
 	return router

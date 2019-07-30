@@ -11,6 +11,7 @@ Code | Description | Status
 105  | Need Admin Privileges | Status Forbidden (403)
 201  | Parameter not provided or bad | Status Bad Request (400)
 202  | Missing some field | Status Bad Request (400)
+203  | Can't get pages | Status Bad Request (400)
 
 ## Get User Status
 
@@ -531,7 +532,7 @@ GET /api/public/act/query?act_id={act_id}
 ```
 
 ## *Activity Pages*
-For `myact`,`manageact` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
+For `myact`, `manageact`, `findbytype`, `findbyuser` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
 
 ## Find All Activity
 
@@ -600,7 +601,6 @@ Status OK - 200
 ]
 ```
 
-####
 ## My Act
 
 #### Description
@@ -687,6 +687,48 @@ Get all acts a user manages.
 
 ```
 GET /api/user/act/manageact
+Authorization: Bearer jwt
+```
+
+#### Response
+
+Status OK - 200
+```json
+[
+    {
+        "act_id": 6,
+        "comments": [],
+        "create_time": "2019-7-15 15:17",
+        "depart_time": "2019-7-16 15:17",
+        "description": "desc",
+        "destination": {},
+        "end_time": "2019-7-17 15:17",
+        "images": null,
+        "origin": {},
+        "signature": "",
+        "sponsor_id": 6,
+        "sponsor_username": "孙笑川",
+        "tag": [
+            "g",
+            "a",
+            "t"
+        ],
+        "title": "title",
+        "type": "taxi"
+    }
+]
+```
+
+## Find Act By User
+
+#### Description
+
+Get all acts a user manages.
+
+#### Requests
+
+```
+GET /api/public/act/findbyuser?id=1
 Authorization: Bearer jwt
 ```
 
