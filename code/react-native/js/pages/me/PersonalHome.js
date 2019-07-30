@@ -5,7 +5,6 @@ import {ArrowLeftIcon, CaretRightIcon, ChevronIcon, MessageOneToOneIcon, PlusIco
 import NavigationUtil from "../../navigator/NavUtil";
 import Util from "../../common/util";
 import {Avatar, Button, Divider, Image} from "react-native-elements";
-import PersonalTab from "./PersonalTab/PersonalTab";
 
 const window = Util.getVerticalWindowDimension();
 const STICKY_HEADER_HEIGHT = 50;

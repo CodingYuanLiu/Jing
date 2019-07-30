@@ -3,7 +3,6 @@ import {View, Text, StyleSheet, FlatList, RefreshControl, ScrollView} from 'reac
 import {ListItem, SearchBar} from "react-native-elements";
 import {ArrowLeftIcon, LeftUpArrowIcon, SearchIcon} from "../../../common/components/Icons";
 import Api from "../../../api/Api";
-import {setPublishTakeoutStore} from "../../../actions/activity";
 import {connect} from "react-redux";
 import NavigationUtil from "../../../navigator/NavUtil";
 
@@ -132,11 +131,8 @@ class PublishTakeoutSpec extends React.PureComponent{
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-    setPublishTakeoutStore: (store) => dispatch(setPublishTakeoutStore(store))
-});
 
-export default connect(null, mapDispatchToProps)(PublishTakeoutSpec);
+export default connect(null, null)(PublishTakeoutSpec);
 
 const styles = StyleSheet.create({
     container: {

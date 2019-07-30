@@ -1,7 +1,6 @@
 import React from "react"
 import { View, Text, StatusBar, TextInput, StyleSheet, Dimensions } from 'react-native';
 import PublishHeader from "../components/PublishHeader";
-import {setPublishActSpec, setPublishTaxiDest, setPublishTaxiOrigin} from "../../../actions/activity";
 import {connect} from "react-redux";
 import {Icon, Input} from "react-native-elements";
 import NavigationUtil from "../../../navigator/NavUtil";
@@ -120,12 +119,8 @@ const mapStateToProps = state => ({
     origin: state.publishAct.origin,
     dest: state.publishAct.dest,
 });
-const mapDispatchToProps = dispatch => ({
-    setPublishTaxiOrigin: origin => dispatch(setPublishTaxiOrigin(origin)),
-    setPublishTaxiDest: dest => dispatch(setPublishTaxiDest(dest)),
-});
 
-export default connect(mapStateToProps, mapDispatchToProps)(PublishTaxiSpec);
+export default connect(mapStateToProps, null)(PublishTaxiSpec);
 
 
 const styles = StyleSheet.create({

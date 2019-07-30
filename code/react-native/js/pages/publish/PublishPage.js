@@ -2,12 +2,6 @@ import React from "react"
 import { View, StyleSheet, TextInput, TouchableHighlight, ScrollView} from 'react-native';
 import PublishHeader from "./components/PublishHeader";
 import NavigationUtil from "../../navigator/NavUtil";
-import {
-    setPublishActCommon,
-    setPublishActDetail, setPublishActivityTime,
-    setPublishTakeoutTime,
-    setPublishTaxiDepart
-} from "../../actions/activity";
 import { connect } from "react-redux";
 import {Icon, Image} from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
@@ -21,10 +15,12 @@ class PublishPage extends React.PureComponent{
         super(props);
         this.state = {
             type: "",
-            bodyText: "",
+            description: "",
             title: "",
             tags: [],
             images: [],
+
+
             endTimePickerVisible: false,
             specTimePickerVisible: false,
             saved: false,
@@ -33,9 +29,58 @@ class PublishPage extends React.PureComponent{
     }
 
     componentDidMount(){
-        this.setup(this.props.publishAct);
+        let from = this.props.navigation.getParam("from");
+        let type = this.props.navigation.getParam("type");
+        if (from === "session") {
+            this.initFromProps(type);
+        } else if (from === "local") {
+            this.initFromParams(type);
+        } else {
+            console.log("encounter unknown origin");
+        }
     }
 
+    render() {
+        let act = this.props.navigation.getParam("act");
+        let spec = this.props.navigation.getParam("spec");
+
+        let header = this.renderHeader();
+        let detailInput = this.renderDetailInput();
+        let imagePicker = this.renderImagePicker();
+        let commonMenubar = this.renderCommonMenu();
+        let specMenubar = this.renderSpecMenubar();
+        let endTimePicker = this.renderEndTimePicker();
+        let specTimePicker = this.renderSpecTimePicker();
+        let imageList = this.state.images;
+        return(
+            <View style={styles.container}>
+                {header}
+                <ScrollView style={styles.mainContainer}>
+                    {detailInput}
+                    <View style={styles.imageListContainer}>
+                        {
+                            imageList.map((img, i) => {
+                                return (
+                                    <Image
+                                        key={i}
+                                        containerStyle={styles.imageContainer}
+                                        style={styles.image}
+                                        source={{uri: `data:${img.type};base64,${img.data}`}}
+                                        resizeMode={"cover"}
+                                    />
+                                )
+                            })
+                        }
+                        {imagePicker}
+                    </View>
+                    {commonMenubar}
+                    {specMenubar}
+                    {endTimePicker}
+                    {specTimePicker}
+                </ScrollView>
+            </View>
+        )
+    }
     renderHeader = () => {
         return (
             <PublishHeader
@@ -60,7 +105,7 @@ class PublishPage extends React.PureComponent{
                     style={styles.textInputTitle}
                 />
                 <TextInput
-                    value={this.state.bodyText}
+                    value={this.state.description}
                     onChangeText={this.handleBodyTextChange}
                     onBlur={this.handleBodyTextBlur}
                     placeholder={"想对大家说点什么..."}
@@ -91,21 +136,20 @@ class PublishPage extends React.PureComponent{
         return imagePicker;
     };
 
-    renderCommonMenu = () => {
-        let act = this.props.publishAct;
+    renderCommonMenu = (endTime) => {
         return (
             <MenubarItem
                 onPress={this.handleClickEndTime}
                 iconName={"endTime"}
                 title={"加入截止时间"}
-                rightTitle={act.endTime ? act.endTime : ""}
-                active={Boolean(act.endTime && act.endTime !== "")}
+                rightTitle={endTime ? endTime : ""}
+                active={Boolean(endTime && endTime !== "")}
             />
         );
     };
-    renderSpecMenubar = () => {
-        let act = this.props.publishAct;
-        switch(act.type) {
+    renderSpecMenubar = (type, act) => {
+
+        switch(type) {
             case "taxi" : {
                 return (
                     <View>
@@ -198,47 +242,6 @@ class PublishPage extends React.PureComponent{
             />
         )
     };
-    render() {
-        let header = this.renderHeader();
-        let detailInput = this.renderDetailInput();
-        let imagePicker = this.renderImagePicker();
-        let commonMenubar = this.renderCommonMenu();
-        let specMenubar = this.renderSpecMenubar();
-        let endTimePicker = this.renderEndTimePicker();
-        let specTimePicker = this.renderSpecTimePicker();
-        let imageList = this.state.images;
-
-        return(
-            <View style={styles.container}>
-                {header}
-                <ScrollView style={styles.mainContainer}>
-                    {detailInput}
-                    <View style={styles.imageListContainer}>
-                        {
-                            imageList.map((img, i) => {
-                                return (
-                                    <Image
-                                        key={i}
-                                        containerStyle={styles.imageContainer}
-                                        style={styles.image}
-                                        source={{uri: `data:${img.type};base64,${img.data}`}}
-                                        resizeMode={"cover"}
-                                    />
-                                )
-                            })
-                        }
-                        {imagePicker}
-                    </View>
-
-                        {commonMenubar}
-                        {specMenubar}
-                        {endTimePicker}
-                        {specTimePicker}
-                </ScrollView>
-            </View>
-        )
-    }
-
     publish = () => {
         let publishAct = this.props.publishAct;
 
@@ -383,23 +386,12 @@ class PublishPage extends React.PureComponent{
         })
 
     };
-    setup = (act) => {
-        let {
-            title, endTime, images, tags, description,
-        } = act;
-        if (images && images.length > 0) {
-            this.setState({images: images});
-        }
-        if (description && description !== "") {
-            this.setState({bodyText: description});
-        }
-        if (endTime && endTime !== "") {
-            this.setState({title: title});
-        }
-        if (tags && tags.length > 0) {
-            this.setState({tags: tags});
-        }
+    initFromProps  = () => {
+
     };
+    initFromParams = () => {
+
+    }
 }
 
 const options = {
@@ -420,15 +412,8 @@ const mapStateToProps = state => ({
     publishAct: state.publishAct,
     user: state.user,
 });
-const mapDispatchToProps = dispatch => ({
-    setPublishActDetail: (images, description) => dispatch(setPublishActDetail(images, description)),
-    setPublishActCommon: (type, title, endTime) => dispatch(setPublishActCommon(type,title,endTime)),
-    setPublishTaxiDepart: departTime => dispatch(setPublishTaxiDepart(departTime)),
-    setPublishTakeoutTime: takeoutTime => dispatch(setPublishTakeoutTime(takeoutTime)),
-    setPublishActivityTime: activityTime => dispatch(setPublishActivityTime(activityTime)),
-});
 
-export default connect(mapStateToProps, mapDispatchToProps)(PublishPage)
+export default connect(mapStateToProps, null)(PublishPage)
 
 const imageContainerLen = Util.getVerticalWindowDimension().width * 0.293;
 const imageLen = Util.getVerticalWindowDimension().width * 0.270;

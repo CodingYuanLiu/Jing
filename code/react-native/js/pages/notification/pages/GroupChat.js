@@ -1,7 +1,6 @@
 import React from "react"
 import { View, Text, FlatList, RefreshControl } from 'react-native';
 import {Badge, ListItem } from "react-native-elements";
-import XmppApi from "../../../api/XmppApi";
 import {connect} from "react-redux";
 import {addChatRoom, onSendMessage} from "../../../actions/xmpp";
 import {ON_LOADING_CHAT_ROOM} from "../../../common/constant/ActionTypes";

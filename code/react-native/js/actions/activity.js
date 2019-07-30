@@ -1,51 +1,6 @@
 import * as actionTypes from "../common/constant/ActionTypes"
 import Api from "../api/Api";
 
-export const setPublishActCommon = (type, title, endTime) => ({
-    type: actionTypes.SET_PUBLISH_ACT_COMMON,
-    act: {
-        title: title,
-        endTime: endTime,
-        type: type,
-    }
-});
-export const setPublishTaxiDepart = (departTime) => ({
-    type: actionTypes.SET_PUBLISH_TAXI_DEPART,
-    departTime: departTime,
-});
-export const setPublishTaxiOrigin = (origin) => ({
-    type: actionTypes.SET_PUBLISH_TAXI_ORIGIN,
-    origin: origin,
-});
-export const setPublishTaxiDest = (dest) => ({
-    type: actionTypes.SET_PUBLISH_TAXI_DEST,
-    dest: dest,
-});
-export const setPublishTakeoutTime = (takeoutTime) => ({
-    type: actionTypes.SET_PUBLISH_TAKEOUT_TIME,
-    takeoutTime: takeoutTime,
-});
-export const setPublishTakeoutStore = (store) => ({
-    type: actionTypes.SET_PUBLISH_TAKEOUT_STORE,
-    store: store,
-});
-export const setPublishOrderStore = (store) => ({
-    type: actionTypes.SET_PUBLISH_ORDER_STORE,
-    store: store,
-});
-export const setPublishActivityTime = (activityTime) => ({
-    type: actionTypes.SET_PUBLISH_ACTIVITY_TIME,
-    activityTime: activityTime,
-});
-export const setPublishActDetail = (images, description) => ({
-    type: actionTypes.SET_PUBLISH_ACT_DETAIL,
-    act: {
-        images: images,
-        description: description,
-    }
-});
-
-
 /**
  * asynchronous action
  */
@@ -106,6 +61,7 @@ const onLoadTypeAct = (type) => {
                     items: data,
                     typeName: type,
                 });
+                console.log(data);
             })
             .catch(err => {
                 console.log(err);
@@ -128,7 +84,8 @@ const onLoadActDetail = (id) => {
                 dispatch({
                     type: actionTypes.LOAD_ACT_DETAIL_OK,
                     data: data,
-                })
+                });
+                console.log(data);
             })
             .catch(err => {
                 console.log(err);
@@ -139,7 +96,9 @@ const onLoadActDetail = (id) => {
             })
     }
 };
-
+const resetActDetail = () => ({
+   type: actionTypes.RESET_ACT_DETAIL,
+});
 const addComment = (comment, jwt) => {
     return dispatch => {
         Api.addComment(comment, jwt)
@@ -186,6 +145,7 @@ export default {
     onLoadMyAct,
     onLoadTypeAct,
     onLoadActDetail,
+    resetActDetail,
     addComment,
     onLoadPublishDraft,
 }

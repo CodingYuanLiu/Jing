@@ -18,7 +18,7 @@ const NativeLoginSwitch = createSwitchNavigator({
 },{
     initialRouteName: "NativeLogin"
     },
-)
+);
 
 
 export {

@@ -53,17 +53,6 @@ class  TakeoutSpec extends React.PureComponent{
         super(props)
     }
 
-    getTimeRange = time => {
-        let hour = new Date(time).getHours();
-        if (hour <= 14 && hour >= 10) {
-            return "吃午饭啦";
-        } else if (hour <= 20 && hour >= 16)
-            return "是晚餐哟";
-        else if (hour <= 24 && hour >= 21)
-            return "有夜宵哎";
-
-    };
-
     render() {
         let endTime = this.props.endTime;
         let orderTime = this.props.orderTime;
@@ -77,7 +66,6 @@ class  TakeoutSpec extends React.PureComponent{
                 <View style={styles.specContainer}>
                     <Text style={styles.text}>下单时间</Text>
                     <Text style={styles.time}>{orderTime}</Text>
-                    <Text style={styles.text}>{this.getTimeRange(orderTime)}</Text>
                 </View>
                 <View style={styles.storeContainer}>
                     <Text style={styles.text}>外卖店铺</Text>
@@ -94,11 +82,10 @@ TakeoutSpec.propTypes = {
     orderTime: PropTypes.string.isRequired,
 };
 
-class OnlineShopSpec extends React.PureComponent{
+class OrderSpec extends React.PureComponent{
     constructor(props) {
         super(props)
     }
-
     render() {
         let endTime = this.props.endTime;
         let store = this.props.store;
@@ -116,7 +103,7 @@ class OnlineShopSpec extends React.PureComponent{
         )
     }
 }
-OnlineShopSpec.propTypes = {
+OrderSpec.propTypes = {
     endTime: PropTypes.string.isRequired,
     store: PropTypes.string.isRequired,
 };
@@ -151,7 +138,7 @@ NormalActSpec.propTypes = {
 
 export {
     TaxiSpec,
-    OnlineShopSpec,
+    OrderSpec,
     TakeoutSpec,
     NormalActSpec,
 }

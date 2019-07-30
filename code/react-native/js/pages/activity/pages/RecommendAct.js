@@ -13,67 +13,6 @@ class RecommendAct extends React.Component{
     componentDidMount() {
         this.loadData();
     }
-
-    loadData = () => {
-        let {onLoadRecommendAct} = this.props;
-        let {jwt} = this.props.user;
-        if (jwt) {
-            onLoadRecommendAct(jwt);
-        } else {
-            //...
-        }
-    };
-    renderItem = ({item}) => {
-        return (
-        <ActItem
-            id={item.act_id}
-            endTime={item.end_time}
-            user={{
-                id: item.sponsor_id,
-                nickname: item.sponsor_username,
-                signature: item.signature,
-                avatarUri: Default.DEFAULT_AVATAR,
-            }}
-            bodyText={item.description}
-            title={item.title}
-            tags={item.tag}
-            type={item.type}
-            image={item.images && item.images.length > 0? item.images[0] : null}
-            taxiSpecInfo={
-                item.type==="taxi" ? {
-                    departTime: item.depart_time,
-                    origin: item.origin,
-                    dest: item.destination,
-                } : null}
-            shopSpecInfo={
-                item.type === "order" ? {
-                    store: item.store,
-                } : null
-            }
-            takeoutSpecInfo={
-                item.type === "takeout" ? {
-                    orderTime: item.order_time,
-                    store: item.store,
-                } : null
-            }
-            otherSpecInfo={
-                item.type === "other" ? {
-                    activityTime: item.activity_time,
-                } : null
-            }
-            metadata={
-                {
-                    comments: item.comments.length,
-                    participants: 0, // we don't have participants data here
-                }
-            }
-            onPress={() => {this._onPressItem(item.act_id)}}
-        />)
-    };
-    _onPressItem = (id: number) => {
-        NavigationUtil.toPage({id:id}, "ActDetail")
-    };
-
     render() {
         let {recommendAct} = this.props;
         let activities = recommendAct.items;
@@ -85,7 +24,7 @@ class RecommendAct extends React.Component{
                 <FlatList
                     data={activities}
                     renderItem={this.renderItem}
-                    keyExtractor={item => (item.act_id.toString())}
+                    keyExtractor={item => (item.id.toString())}
                     refreshControl={
                         <RefreshControl
                             title={"加载中..."}
@@ -99,12 +38,71 @@ class RecommendAct extends React.Component{
                 />
             </View>
         )
-    }
+    };
+    loadData = () => {
+        let {onLoadRecommendAct} = this.props;
+        let {jwt} = this.props.currentUser;
+        if (jwt) {
+            onLoadRecommendAct(jwt);
+        } else {
+            //...
+        }
+    };
+    renderItem = ({item}) => {
+        return (
+            <ActItem
+                id={item.id}
+                endTime={item.endTime}
+                user={{
+                    id: item.user.id,
+                    nickname: item.user.nickname,
+                    signature: item.user.signature,
+                    avatarUri: item.user.avatar,
+                }}
+                description={item.description}
+                title={item.title}
+                tags={item.tags}
+                type={item.type}
+                image={item.images.length > 0 ? item.images[0] : null}
+                taxiSpecInfo={
+                    item.type==="taxi" ? {
+                        departTime: item.departTime,
+                        origin: item.origin,
+                        dest: item.dest,
+                    } : null}
+                shopSpecInfo={
+                    item.type === "order" ? {
+                        store: item.store,
+                    } : null
+                }
+                takeoutSpecInfo={
+                    item.type === "takeout" ? {
+                        orderTime: item.orderTime,
+                        store: item.store,
+                    } : null
+                }
+                otherSpecInfo={
+                    item.type === "other" ? {
+                        activityTime: item.activityTime,
+                    } : null
+                }
+                metadata={
+                    {
+                        comments: item.comments.length,
+                        participants: 0, // we don't have participants data here
+                    }
+                }
+                onPress={() => {this._onPressItem(item.id)}}
+            />)
+    };
+    _onPressItem = (id: number) => {
+        NavigationUtil.toPage({id:id}, "ActDetail")
+    };
 }
 
 const mapStateToProps = state => ({
     recommendAct: state.recommendAct,
-    user: state.user,
+    currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
     onLoadRecommendAct: (jwt) => dispatch(Activity.onLoadRecommendAct(jwt))

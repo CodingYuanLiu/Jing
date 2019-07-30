@@ -1,6 +1,5 @@
 import React from "react";
 import {View, Text, StyleSheet, TouchableWithoutFeedback} from "react-native";
-import {CaretRightIcon} from "../../../common/components/Icons";
 import {Avatar} from "react-native-elements";
 import {PropTypes} from "prop-types";
 
@@ -10,9 +9,9 @@ export default class CommentPreview extends React.PureComponent {
     };
 
     render() {
-        let {avatar, content, username, onPress} = this.props;
+        let {avatar, content, nickname, onPress} = this.props;
         let leftAvatar = this.renderAvatar(avatar);
-        let title = this.renderTitle(username);
+        let title = this.renderTitle(nickname);
         let body = this.renderBody(content);
         return (
             <TouchableWithoutFeedback
@@ -28,10 +27,10 @@ export default class CommentPreview extends React.PureComponent {
             </TouchableWithoutFeedback>
         )
     };
-    renderTitle = (username) => {
+    renderTitle = (nickname) => {
         return (
             <View style={styles.titleContainer}>
-                <Text style={styles.title}>{username}</Text>
+                <Text style={styles.title}>{nickname}</Text>
             </View>
         )
     };
@@ -63,7 +62,7 @@ export default class CommentPreview extends React.PureComponent {
 CommentPreview.propTypes = {
     avatar: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired,
+    nickname: PropTypes.string.isRequired,
 };
 
 

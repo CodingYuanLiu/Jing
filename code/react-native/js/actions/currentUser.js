@@ -2,26 +2,9 @@ import * as actionTypes from "../common/constant/ActionTypes";
 import Api from "../api/Api";
 
 // simple set user data and update data
-export const setToken = jwt => {
-    return dispatch => {
-        dispatch({
-            type: actionTypes.SET_USER_TOKNE,
-            jwt: jwt
-        });
-        Dao.saveString("@jwt", jwt)
-            .then(() => {
-                dispatch({
-                    type: actionTypes.SET_USER_LOGGED,
-                })
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }
-};
 export const setUserData = user => ({
         type: actionTypes.SET_USER_DATA,
-        user: user
+        data: user
     }
 );
 export const updateUserInfo = (data) => ({

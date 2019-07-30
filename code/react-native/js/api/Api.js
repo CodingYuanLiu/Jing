@@ -35,6 +35,7 @@ export default class Api {
                         }
                     })
                     .then(res => {
+                        // native login response
                         resolve(Model.transferToken(res.data))
                     })
                     .catch( err => {
@@ -64,8 +65,11 @@ export default class Api {
                 redirect_uri: redirectUri
             })
                 .then(res => {
-                    // what is this data?
-                    resolve(res.data)
+                    // jaccount login response
+                    resolve({
+                        status: res.data.status,
+                        jwt: res.data.jwt_token,
+                    })
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -141,9 +145,11 @@ export default class Api {
         return new Promise((resolve, reject) => {
             axios.get("/api/public/act/findall")
                 .then(res => {
-                    resolve(res.data)
+                    resolve(Model.transferActivityList(res.data));
+                    console.log(res.data);
                 })
                 .catch(err => {
+                    err.message = "unknown error";
                     Reject(err, reject)
                 })
         })
@@ -155,11 +161,11 @@ export default class Api {
             return new Promise((resolve, reject) => {
                 axios.get(`/api/public/act/findbytype?type=${type}`, jwt ? {
                     headers: {
-                        'Authorization': `Bearer ${jwt}`,
+                        'Authorization': `Bearer $res.data){jwt}`,
                     }
                 } : null)
                     .then(res => {
-                        resolve(res.data);
+                        resolve(Model.transferActivityList(res.data));
                     })
                     .catch(err => {
                         Reject(err, reject);
@@ -177,7 +183,8 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(res.data)
+                    console.log(res.data);
+                    resolve(Model.transferActivityList(res.data))
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -187,11 +194,10 @@ export default class Api {
 
     static getActDetail(actId) {
         let id = actId;
-        console.log(id);
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/act/query?act_id=${id}`)
                 .then(res => {
-                    resolve(res.data)
+                    resolve(Model.transferActivityFromSnakeToCamel(res.data))
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -207,7 +213,7 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(res.data)
+                    resolve(Model.transferActivityList(res.data))
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -222,7 +228,7 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(res.data)
+                    resolve(Model.transferActivityList(res.data))
                 })
                 .catch(err => {
                     Reject(err, reject)

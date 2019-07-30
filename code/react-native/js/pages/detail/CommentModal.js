@@ -181,12 +181,13 @@ class CommentModal extends React.PureComponent{
             receiver_id: this.state.receiverId,
             receiver_nickname: this.state.receiverName,
             content: this.state.commentContent,
-            act_id: this.props.currentAct.act_id,
+            act_id: this.props.currentAct.id,
             time: Util.dateTimeToString(new Date()),
-            user_id: this.props.user.id,
-            user_nickname: this.props.user.nickname,
+            user_id: this.props.currentUser.id,
+            user_nickname: this.props.currentUser.nickname,
         };
-        this.props.addComment(comment, this.props.user.jwt);
+        console.log(this.props.currentUser);
+        //this.props.addComment(comment, this.props.currentUser.jwt);
     };
 
     openCommentModal = (receiverId, receiverName) => {
@@ -211,7 +212,7 @@ class CommentModal extends React.PureComponent{
 
 const mapStateToProps = state => ({
     currentAct: state.currentAct,
-    user: state.user,
+    currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
     addComment: (comment, jwt) => dispatch(Activity.addComment(comment, jwt)),

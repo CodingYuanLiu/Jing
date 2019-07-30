@@ -7,7 +7,7 @@ import {Avatar, Button, ListItem} from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import {connect} from "react-redux";
-import {updateUserAvatar, updateUserInfo} from "../../actions/user";
+import {updateUserAvatar, updateUserInfo} from "../../actions/currentUser";
 import Api from "../../api/Api";
 
 
@@ -30,19 +30,19 @@ class ModifyInformation extends React.PureComponent{
     }
     componentDidMount() {
         console.log(this.props);
-        let user = this.props.user;
+        let currentUser = this.props.currentUser;
         this.setState({
             avatar: {
                 data: null,
-                uri: user.avatar,
+                uri: currentUser.avatar,
             },
-            nickname: user.nickname,
-            signature: user.signature,
-            gender: user.gender,
-            birthday: user.birthday,
-            dormitory: user.dormitory,
-            major: user.major,
-            phone: user.phone,
+            nickname: currentUser.nickname,
+            signature: currentUser.signature,
+            gender: currentUser.gender,
+            birthday: currentUser.birthday,
+            dormitory: currentUser.dormitory,
+            major: currentUser.major,
+            phone: currentUser.phone,
         })
     }
 
@@ -245,7 +245,7 @@ const imagePickerOptions = {
 };
 
 const mapStateToProps = state => ({
-    user: state.user,
+    currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
     updateUserInfo: (data) => dispatch(updateUserInfo(data)),

@@ -1,6 +1,9 @@
 import * as actionTypes from "../common/constant/ActionTypes";
 
-const initialState = {};
+const initialState = {
+    followingList: [],
+    followerList: [],
+};
 
 const currentUser = (state = initialState, action) => {
     switch (action.type) {
@@ -15,9 +18,11 @@ const currentUser = (state = initialState, action) => {
                 jwt: action.jwt,
             };
         case actionTypes.SET_USER_DATA:
+            console.log(action);
             return {
                 ...state,
-                ...action.data
+                ...action.data,
+                logged: true,
             };
         case actionTypes.ON_GET_USER_FOLLOWERS:
             return {

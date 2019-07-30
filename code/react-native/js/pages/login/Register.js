@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import {Input, Button, Overlay} from "react-native-elements"
 import Dao from "../../api/Dao";
-import {login, setUser} from "../../actions/user";
+import {setUserData} from "../../actions/currentUser";
 import {connect} from "react-redux";
 import Api from "../../api/Api"
 import NavigationUtil from "../../navigator/NavUtil";
@@ -54,46 +54,31 @@ class RegisterScreen extends React.PureComponent{
                     Api.getSelfDetail(jwt)
                         .then(data => {
                             let password = Util.cryptoOnpenFire(data.username, data.password);
-                            console.log(password);
-                            console.log(data.username, password);
                             XmppApi.register(
                                 data.username,
                                 password,
                             )
                                 .then(() => {
-                                    this.props.setUser({
-                                        avatar: data.avatar_url,
-                                        birthday: data.birthday,
-                                        dormitory: data.dormitory,
-                                        gender: data.gender,
-                                        id: data.id,
-                                        jaccount: data.jaccount,
-                                        jwt: data.jwt_token,
-                                        major: data.major,
-                                        nickname: data.nickname,
-                                        password: data.password,
-                                        phone: data.phone,
-                                        signature: data.signature,
-                                        username: data.username,
-                                    });
+                                    this.props.setUser(data);
                                     this.setState({success: true});
                                     XmppApi.login(data.username, password);
                                 })
                                 .catch(err => {
+                                    // this is not very sure
                                     console.log(err)
                                 })
                         })
                         .catch(err => {
+                            // this should happen very rare
                             console.log(err);
                         });
                     Dao.saveString("@jwt", jwt)
-                        .then(() => {})
                         .catch(err => {
+                            // this should happen very rare
                             Console.log(err);
                         });
                 })
                 .catch(err => {
-                    console.log("Err: In Register APi err:" ,err);
                     if (err.status === 400){
                         this.setState({error: true, errorMessage: errors.duplicateUsername})
                     } else {
@@ -180,8 +165,7 @@ class RegisterScreen extends React.PureComponent{
 }
 
 const mapDispatchToProps = dispatch => ({
-    onLogin: jwt => dispatch(login(jwt)),
-    setUser: user => dispatch(setUser(user)),
+    setUserData: user => dispatch(setUserData(user)),
 });
 
 export default connect(null, mapDispatchToProps)(RegisterScreen)

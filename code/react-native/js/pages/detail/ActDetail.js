@@ -3,7 +3,6 @@ import {View, Text, StyleSheet, ScrollView, TouchableHighlight} from "react-nati
 import NavigationBar from "../../common/components/NavigationBar"
 import {Button, Icon, Image, ListItem, Avatar} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
-import Default from "../../common/constant/Constant";
 import {CommentIcon, PlusIcon} from "../../common/components/Icons";
 import Tag from "../../common/components/Tag";
 import Activity from "../../actions/activity";
@@ -11,7 +10,8 @@ import {connect} from "react-redux";
 import Util from "../../common/util";
 import Api from "../../api/Api";
 import CommentPreview from "./components/CommentPreview";
-import {onFollow, onUnFollow} from "../../actions/follow";
+import {onFollow, onUnFollow} from "../../actions/currentUser";
+
 class DetailScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -32,17 +32,17 @@ class DetailScreen extends React.Component {
     render() {
         let activity = this.props.currentAct;
         let {title, comments, tag, images,
-            create_time: publishTime, description: bodyText} = activity;
+            createTime, description} = activity;
         let sponsor = {
-            avatarUri: activity.sponsor_avatar,
-            nickname: activity.sponsor_username,
-            id: activity.sponsor_id,
-            signature: activity.signature,
+            avatar: activity.user.avatar,
+            nickname: activity.user.nickname,
+            id: activity.user.id,
+            signature: activity.user.signature,
         };
         let specInfo = {};
         let navBar = this.renderNavBar();
         let header = this.renderHeader(title, tag);
-        let body = this.renderBody(sponsor, specInfo, bodyText, images, publishTime, comments);
+        let body = this.renderBody(sponsor, specInfo, description, images, createTime, comments);
         let footer = this.renderFooter();
         return(
             <View style={{flex:1, alignItems:"center", width:"100%"}}>
@@ -61,7 +61,7 @@ class DetailScreen extends React.Component {
                 type={"material-community"}
                 name={"keyboard-backspace"}
                 color={"#d3d3d3"}
-                onPress={() => {NavigationUtil.back(this.props)}}
+                onPress={this.goBack}
             />;
         return(
             <NavigationBar
@@ -98,16 +98,48 @@ class DetailScreen extends React.Component {
             </View>
         );
     };
+    renderBody = (sponsor, specInfo, description, images, createTime, comments) => {
+        let comment = this.renderComment(comments);
+        let sponsorComponent = this.renderUser(sponsor);
+        return (
+            <View style={styles.bodyContainer}>
+                <View style={styles.bodyContent}>
+                    {sponsorComponent}
+                    <View style={styles.bodyTextContainer}>
+                        <Text style={styles.bodyText}>{description}</Text>
+                    </View>
+                    <View>
+                        {
+                            images && images.length > 0 ? images.map((item, i) => {
+                                return (
+                                    <Image
+                                        source={{uri: item}}
+                                        key={i}
+                                        style={styles.bodyImage}
+                                    />)
+                            }): null
+                        }
+                    </View>
+                    <View style={styles.bodyBottomContainer}>
+                        <Text style={styles.metadata}>发布于{createTime}</Text>
+                    </View>
+                </View>
+                <View>
+                    {comment}
+                </View>
+            </View>
+
+        )
+    };
     renderUser = user => {
         let nickname = user.nickname;
-        let avatarUri = user.avatarUri;
+        let avatar = user.avatar;
         let signature = user.signature;
         let isFriends = false;
         if (this.props.follow.followings) {
             for (let item of this.props.follow.followings) {
                 if (item.id === user.id) {
                     isFriends = true;
-                    console.log("detail, user id:", user.id, "sponsor ", item.id);
                     break;
                 }
             }
@@ -138,7 +170,7 @@ class DetailScreen extends React.Component {
         return (
             <ListItem
                 leftAvatar={{
-                    source: {uri: avatarUri },
+                    source: {uri: avatar === "" ? null : avatar },
                     title: "头像",
                     size: 36
                 }}
@@ -154,40 +186,6 @@ class DetailScreen extends React.Component {
             />
         )
     };
-    renderBody = (sponsor, specInfo, bodyText, images, publishTime, comments) => {
-        let comment = this.renderComment(comments);
-        let sponsorComponent = this.renderUser(sponsor);
-        return (
-            <View style={styles.bodyContainer}>
-                <View style={styles.bodyContent}>
-                    {sponsorComponent}
-                    <View style={styles.bodyTextContainer}>
-                        <Text style={styles.bodyText}>{bodyText}</Text>
-                    </View>
-                    <View>
-                        {
-                            images && images.length > 0 ? images.map((item, i) => {
-                                return (
-                                    <Image
-                                        source={{uri: item}}
-                                        key={i}
-                                        style={styles.bodyImage}
-                                    />)
-                            }): null
-                        }
-                    </View>
-                    <View style={styles.bodyBottomContainer}>
-                        <Text style={styles.metadata}>发布于{publishTime}</Text>
-                    </View>
-                </View>
-                <View>
-                    {comment}
-                </View>
-            </View>
-
-        )
-    };
-
     renderCommentPreview = (comments) => {
         let previewComments = this.getPreviewComments(comments);
         return (
@@ -198,7 +196,7 @@ class DetailScreen extends React.Component {
                         <CommentPreview
                             avatar={comment.user_avatar}
                             content={comment.content}
-                            username={comment.user_nickname}
+                            nickname={comment.user_nickname}
                             key={i}
                         />
                         );
@@ -216,14 +214,14 @@ class DetailScreen extends React.Component {
                     onPress={this.toComments}
                 >添加评论...</Text>
             </View>;
-        let user = this.props.user;
+        let currentUser = this.props.currentUser;
         return (
             <View style={styles.commentContainer}>
                 <Text style={styles.commentTitle}>评论</Text>
                 {commentPreview}
                 <View style={styles.commentButtonContainer}>
                     <Avatar
-                        source={{uri: user.avatarUri,}}
+                        source={{uri: currentUser.avatar,}}
                         rounded
                         size={24}
                     />
@@ -270,14 +268,18 @@ class DetailScreen extends React.Component {
         )
     };
     toUserPersonalPage = () => {
-        let id = this.state.activity.sponsor_id;
-        NavigationUtil.toPage({id:id}, "PersonalPage")
+        //let id = this.state.activity.sponsor_id;
+        //NavigationUtil.toPage({id:id}, "PersonalPage")
+    };
+    goBack = () => {
+        this.props.resetActDetail() ;
+        NavigationUtil.back(this.props)
     };
     toComments = () => {
-        let { comments, sponsor_username } = this.props.currentAct;
+        let { comments, user } = this.props.currentAct;
         NavigationUtil.toPage({
             comments: comments,
-            sponsor: sponsor_username
+            sponsor: user.nickname
         }, "ActComment");
 
     };
@@ -314,46 +316,50 @@ class DetailScreen extends React.Component {
     };
 
     follow = () => {
-        if (!this.props.user.logged) {
+        let user = this.props.currentUser;
+        let currentAct = this.props.currentAct;
+        if (!user.logged) {
             //...
         } else {
-            console.log(this.props.user);
+            console.log(user);
             let from = {
-                id: this.props.user.id,
+                id: user.id,
             };
             let to = {
-                id: this.props.currentAct.sponsor_id,
-                nickname: this.props.currentAct.sponsor_nickname,
-                avatar_url: this.props.currentAct.sponsor_avatar,
-                signature: this.props.currentAct.signature,
+                id: currentAct.user.id,
+                nickname: currentAct.user.nickname,
+                avatar_url: currentAct.user.avatar,
+                signature: currentAct.user.signature,
             };
-            console.log(this.props.currentAct);
-            this.props.onFollow(from, to, this.props.user.jwt);
+            console.log(currentAct);
+            this.props.onFollow(from, to, user.jwt);
         }
     };
 
     unFollow = () => {
-        if (!this.props.user.logged) {
+        let currentUser = this.props.currentUser;
+        if (!currentUser.logged) {
             //...
         } else {
             let from = {
-                id: this.props.user.id,
+                id: currentUser.id,
             };
             let to = {
-                id: this.props.currentAct.sponsor_id,
+                id: this.props.currentAct.user.id,
             };
-            this.props.onUnFollow(from, to, this.props.user.jwt);
+            this.props.onUnFollow(from, to, currentUser.jwt);
         }
     }
 }
 
 const mapStateToProps = state => ({
     currentAct: state.currentAct,
-    user: state.user,
+    currentUser: state.currentUser,
     follow: state.follow,
 });
 const mapDispatchToProps = dispatch => ({
     onLoadActDetail: actId => dispatch(Activity.onLoadActDetail(actId)),
+    resetActDetail: () => dispatch(Activity.resetActDetail()),
     onFollow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
     onUnFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
 });

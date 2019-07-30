@@ -2,7 +2,6 @@ import React from "react"
 import { View, Text, StyleSheet, ViewPropTypes } from 'react-native';
 import { PropTypes } from "prop-types";
 import { Avatar, Divider, ListItem } from 'react-native-elements';
-import Entypo from "react-native-vector-icons/Entypo";
 
 
 export default class OnlineUserCard extends React.PureComponent{

@@ -6,7 +6,7 @@ import {
     LOAD_ACT_DETAIL_FAIL,
     ADD_COMMENT_OK,
     ADD_COMMENT_FAIL,
-    ON_LOADING_ACT_DETAIL,
+    ON_LOADING_ACT_DETAIL, RESET_ACT_DETAIL,
 } from "../common/constant/ActionTypes"
 
 
@@ -28,30 +28,26 @@ import {
 
 const initialState = {
     // actId for fetching act detail use,
-    actId: "",
+    id: "",
 
     // comments for current activity detail
-    comments: [{
-        id: "",
-        content: "",
-        time: "",
-        // comment publisher and who to reply
-        observer: "",
-        replyTo: "",
-        // activity publisher / the comment publish by ${replyTo}
-        replyUnder: "",
-    }],
+    comments: [],
 
     // who publish this activity
-    sponsorName: "",
-    sponsorId: "",
-    sponsorSignature: "",
+    user: {
+        avatar: "",
+        signature: "",
+        nickname: "",
+        id: 0,
+    },
 
-    publishTime: "",
+    createTime: "",
     images: [],
     type: "",
     title: "",
     tags: [],
+    description: "",
+    isLoading: false,
 };
 
 
@@ -74,6 +70,8 @@ const currentAct = (state=initialState, action) => {
                 isLoading: false,
                 err: action.err,
             };
+        case RESET_ACT_DETAIL:
+            return initialState;
         case ADD_COMMENT_OK:
             return {
                 ...state,

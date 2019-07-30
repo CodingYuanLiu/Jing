@@ -79,7 +79,7 @@ const MainNav = createStackNavigator(
             header: null,
         }
     }
-)
+);
 
 export default createSwitchNavigator(
     {

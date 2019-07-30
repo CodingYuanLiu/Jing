@@ -2,7 +2,7 @@ import React from "react"
 import { View, Text, ViewPropTypes, StyleSheet, TouchableNativeFeedback } from 'react-native';
 import { ListItem, Icon, Image } from "react-native-elements";
 import { PropTypes } from "prop-types";
-import {TaxiSpec, TakeoutSpec, OnlineShopSpec, NormalActSpec} from "./SpecInfo";
+import {TaxiSpec, TakeoutSpec, OrderSpec, NormalActSpec} from "./SpecInfo";
 import Default from "../../../common/constant/Constant";
 import Tag from "../../../common/components/Tag";
 
@@ -13,105 +13,12 @@ export default class ActItem extends React.PureComponent{
             miniActionVisible: false,
         }
     }
-    renderTag = (tag, i) => (
-        <Tag
-            title={tag}
-            key={i}
-        />
-        );
-    renderActSpec = (type) => {
-        let ActSpec;
-        let endTime = this.props.endTime;
-        if (type === "taxi") {
-            let departTime = this.props.taxiSpecInfo.departTime;
-            let origin = this.props.taxiSpecInfo.origin;
-            let dest = this.props.taxiSpecInfo.dest;
-            ActSpec =
-                <TaxiSpec
-                    departTime={departTime}
-                    endTime={endTime}
-                    dest={dest}
-                    origin={origin}
-                />
-        } else if (type === "order") {
-            let store = this.props.shopSpecInfo.store;
-            ActSpec =
-                <OnlineShopSpec
-                    store={store}
-                    endTime={endTime}
-                />
-        } else if (type === "takeout") {
-            let store = this.props.takeoutSpecInfo.store;
-            let orderTime = this.props.takeoutSpecInfo.orderTime;
-            ActSpec =
-                <TakeoutSpec
-                    store={store}
-                    endTime={endTime}
-                    orderTime={orderTime}
-                />
-        } else {
-            let activityTime = this.props.otherSpecInfo.activityTime;
-            ActSpec =
-                <NormalActSpec
-                    endTime={endTime}
-                    activityTime={activityTime}
-                />
-        }
-        return ActSpec
-    };
-
-    renderUserInfo = user => {
-        let nickname = user.nickname;
-        let avatarUri = user.avatarUri;
-        // blank here, spare for future use
-        return (
-            <ListItem
-                leftAvatar={{
-                    source: {uri: avatarUri === "" ? Default.DEFAULT_AVATAR : avatarUri},
-                    size: 24
-                }}
-                title={nickname}
-                containerStyle={styles.userInfoContainer}
-                titleStyle={styles.userInfoTitle}
-                titleProps={{numberOfLines: 1, ellipsizeMode: "tail"}}
-            />
-        )
-    };
-    renderMiniActionBar = () => {
-        let rightIcon=
-            <Icon
-                type={"antdesign"}
-                name={"ellipsis1"}
-                containerStyle={styles.miniActionIcon}
-                color={"#bfbfbf"}
-                onPress={this.showMiniAction}
-            />;
-        return(
-            <View style={styles.miniActionContainer}>
-                {rightIcon}
-            </View>
-        );
-    };
-    renderImage = uri => {
-        return uri ?
-        <Image
-            source={{uri: uri}}
-            style={styles.bodyImage}
-            containerStyle={styles.bodyImageContainer}
-        /> : null
-    };
-    showMiniAction = () => {
-        this.setState({miniActionVisible: true})
-    };
-    toDetail = () => {
-        this.props.onPress(this.props.id)
-    };
     render() {
         let user = this.props.user;
         let tags = this.props.tags;
         let type = this.props.type;
         let title = this.props.title;
-        let bodyText = this.props.bodyText;
+        let description = this.props.description;
         let imageUri = this.props.image;
         let image = this.renderImage(imageUri);
         let actSpec = this.renderActSpec(type);
@@ -142,7 +49,7 @@ export default class ActItem extends React.PureComponent{
                                 <View style={styles.bodyTextContainer}>
                                     {actSpec}
                                     <Text style={styles.bodyText} ellipsizeMode={"tail"} numberOfLines={2}>
-                                        {bodyText}
+                                        {description}
                                     </Text>
                                 </View>
                                 {image}
@@ -159,22 +66,109 @@ export default class ActItem extends React.PureComponent{
                 {miniActionBar}
             </View>
         )
-    }
+    };
+    renderTag = (tag, i) => (
+        <Tag
+            title={tag}
+            key={i}
+        />
+    );
+    renderActSpec = (type) => {
+        let ActSpec;
+        let endTime = this.props.endTime;
+        if (type === "taxi") {
+            let departTime = this.props.taxiSpecInfo.departTime;
+            let origin = this.props.taxiSpecInfo.origin;
+            let dest = this.props.taxiSpecInfo.dest;
+            ActSpec =
+                <TaxiSpec
+                    departTime={departTime}
+                    endTime={endTime}
+                    dest={dest}
+                    origin={origin}
+                />
+        } else if (type === "order") {
+            let store = this.props.orderSpecInfo.store;
+            ActSpec =
+                <OrderSpec
+                    store={store}
+                    endTime={endTime}
+                />
+        } else if (type === "takeout") {
+            let store = this.props.takeoutSpecInfo.store;
+            let orderTime = this.props.takeoutSpecInfo.orderTime;
+            ActSpec =
+                <TakeoutSpec
+                    store={store}
+                    endTime={endTime}
+                    orderTime={orderTime}
+                />
+        } else {
+            let activityTime = this.props.otherSpecInfo.activityTime;
+            ActSpec =
+                <NormalActSpec
+                    endTime={endTime}
+                    activityTime={activityTime}
+                />
+        }
+        return ActSpec
+    };
+
+    renderUserInfo = user => {
+        let nickname = user.nickname;
+        let avatar = user.avatar;
+        // blank here, spare for future use
+        return (
+            <ListItem
+                leftAvatar={{
+                    source: {uri: avatar},
+                    size: 24
+                }}
+                title={nickname}
+                containerStyle={styles.userInfoContainer}
+                titleStyle={styles.userInfoTitle}
+                titleProps={{numberOfLines: 1, ellipsizeMode: "tail"}}
+            />
+        )
+    };
+    renderMiniActionBar = () => {
+        let rightIcon=
+            <Icon
+                type={"antdesign"}
+                name={"ellipsis1"}
+                containerStyle={styles.miniActionIcon}
+                color={"#bfbfbf"}
+                onPress={this.showMiniAction}
+            />;
+        return(
+            <View style={styles.miniActionContainer}>
+                {rightIcon}
+            </View>
+        );
+    };
+    renderImage = uri => {
+        return uri ?
+            <Image
+                source={{uri: uri}}
+                style={styles.bodyImage}
+                containerStyle={styles.bodyImageContainer}
+            /> : null
+    };
+    showMiniAction = () => {
+        this.setState({miniActionVisible: true})
+    };
+    toDetail = () => {
+        this.props.onPress(this.props.id)
+    };
 }
-const item =
-    <Icon
-    type={"material-community"}
-    name={"taxi"}
-    size={24}
-    color={"#bfbfbf"}
-/>;
+
 const TaxiSpecShape = {
     departTime: PropTypes.string,
     endTime: PropTypes.string,
     origin: PropTypes.object,
     dest: PropTypes.object,
 };
-const OnlineShopSpecShape = {
+const OrderSpecShape = {
     store: PropTypes.string,
     endTime: PropTypes.string,
 };
@@ -186,7 +180,7 @@ const TakeoutSpecShape = {
 const UserShape = {
     nickname: PropTypes.string.isRequired,
     signature: PropTypes.string.isRequired,
-    avatarUri: PropTypes.string.isRequired,
+    avatar: PropTypes.string.isRequired,
 };
 const otherSpecShape = {
     endTime: PropTypes.string,
@@ -197,10 +191,10 @@ ActItem.propTypes = {
     user: PropTypes.shape(UserShape),
     title: PropTypes.string.isRequired,
     taxiSpecInfo: PropTypes.shape(TaxiSpecShape),
-    shopSpecInfo: PropTypes.shape(OnlineShopSpecShape),
+    orderSpecInfo: PropTypes.shape(OrderSpecShape),
     takeoutSpecInfo: PropTypes.shape(TakeoutSpecShape),
     otherSpecInfo: PropTypes.shape(otherSpecShape),
-    bodyText: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
     tags: PropTypes.arrayOf(PropTypes.string),
     type: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,

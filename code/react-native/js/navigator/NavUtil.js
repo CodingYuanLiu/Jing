@@ -1,15 +1,10 @@
 
 export default class NavigationUtil {
-    static Navigation
+    static Navigation;
 
     static back(params) {
-        const { navigation } = params
+        const { navigation } = params;
         navigation.goBack()
-    }
-
-    static toHomePage(params) {
-        const { navigation } = params
-        navigation.navigate("Main")
     }
 
     static toPage(params, page) {
@@ -34,12 +29,6 @@ export default class NavigationUtil {
             } catch (e) {
                 console.warn(e)
             }
-        }
-    }
-    static backNStep(params, step) {
-        const { navigation } = params
-        for (i = 0; i < step; i++ ){
-            navigation.goBack()
         }
     }
 }

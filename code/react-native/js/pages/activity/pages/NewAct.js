@@ -1,7 +1,6 @@
 import React from "react"
 import {View, Text, FlatList, RefreshControl, StyleSheet, ScrollView} from 'react-native';
 import ActItem from "../components/ActItem";
-import Default from "../../../common/constant/Constant";
 import NavigationUtil from "../../../navigator/NavUtil";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
@@ -17,11 +16,6 @@ class NewAct extends React.PureComponent{
     componentDidMount() {
         this.loadData();
     }
-    loadData = () => {
-        let {onLoadTypeAct} = this.props;
-        let {type} = this.state;
-        onLoadTypeAct(type);
-    };
     render() {
         let {typeAct} = this.props;
         let {type} = this.state;
@@ -64,7 +58,7 @@ class NewAct extends React.PureComponent{
                 <FlatList
                     data={actStore.items}
                     renderItem={this.renderItem}
-                    keyExtractor={item => (item.act_id.toString())}
+                    keyExtractor={item => (item.id.toString())}
                     refreshControl={
                         <RefreshControl
                             title={"加载中..."}
@@ -82,24 +76,24 @@ class NewAct extends React.PureComponent{
     renderItem = ({item}) => {
         return (
             <ActItem
-                id={item.act_id}
-                endTime={item.end_time}
+                id={item.id}
+                endTime={item.endTime}
                 user={{
-                    id: item.sponsor_id,
-                    nickname: item.sponsor_username,
-                    signature: item.signature,
-                    avatarUri: item.sponsor_avatar,
+                    id: item.user.id,
+                    nickname: item.user.nickname,
+                    signature: item.user.signature,
+                    avatar: item.user.avatar,
                 }}
-                bodyText={item.description}
+                description={item.description}
                 title={item.title}
-                tags={item.tag}
+                tags={item.tags}
                 type={item.type}
-                image={item.images && item.images.length > 0? item.images[0] : null}
+                image={item.images.length > 0 ? item.images[0] : null}
                 taxiSpecInfo={
                     item.type==="taxi" ? {
-                        departTime: item.depart_time,
+                        departTime: item.departTime,
                         origin: item.origin,
-                        dest: item.destination,
+                        dest: item.dest,
                     } : null}
                 shopSpecInfo={
                     item.type === "order" ? {
@@ -108,35 +102,41 @@ class NewAct extends React.PureComponent{
                 }
                 takeoutSpecInfo={
                     item.type === "takeout" ? {
-                        orderTime: item.order_time,
+                        orderTime: item.orderTime,
                         store: item.store,
                     } : null
                 }
                 otherSpecInfo={
                     item.type === "other" ? {
-                        activityTime: item.activity_time,
+                        activityTime: item.activityTime,
                     } : null
                 }
                 metadata={
                     {
                         comments: item.comments.length,
-                        participants: 0, // we don't have participants data here
+                        participants: 1, // we don't have participants data here
                     }
                 }
-                onPress={() => {this._onPressItem(item.act_id)}}
+                onPress={() => {this._onPressItem(item.id)}}
             />)
+    };
+    loadData = () => {
+        let {onLoadTypeAct} = this.props;
+        let {type} = this.state;
+        onLoadTypeAct(type);
     };
     _onPressItem = (id: number) => {
         NavigationUtil.toPage({id:id}, "ActDetail")
     };
     changeType = (type) => {
         this.setState({type: type});
+        this.loadData();
     };
 }
 
 const mapStateToProps = state => ({
     typeAct: state.typeAct,
-    user: state.user,
+    currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
     onLoadTypeAct: (type) => dispatch(Activity.onLoadTypeAct(type))

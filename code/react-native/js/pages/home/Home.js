@@ -1,16 +1,7 @@
 import React from "react"
 import NavigationUtil from '../../navigator/NavUtil';
 import { View } from "react-native"
-import Dao from "../../api/Dao";
-import Api from "../../api/Api";
-import Util from "../../common/util";
-import XmppApi from "../../api/XmppApi";
-import * as actionTypes from "../../common/constant/ActionTypes";
-import {setUser} from "../../actions/user";
-import {addChatRoom, onSendMessage} from "../../actions/xmpp";
-import {CHAT_ROOM_LOADED} from "../../common/constant/ActionTypes";
 import {connect} from "react-redux";
-import {xml} from "@xmpp/client";
 import {createAppContainer, createBottomTabNavigator} from "react-navigation";
 import ActivityScreen from "../activity/Activity";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -35,7 +26,7 @@ class HomeScreen extends React.PureComponent{
     };
 
     render() {
-        let BottomTab = this.renderTab(this.props.user.logged);
+        let BottomTab = this.renderTab(this.props.currentUser.logged);
         return(
             <View style={{flex:1,}}>
                 <BottomTab/>
@@ -139,7 +130,7 @@ class HomeScreen extends React.PureComponent{
 
 const mapStateToProps = state => ({
     xmpp: state.xmpp,
-    user: state.user,
+    currentUser: state.currentUser,
 });
 
 

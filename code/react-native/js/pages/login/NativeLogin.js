@@ -7,11 +7,12 @@ import { SafeAreaView } from 'react-navigation';
 import NavigationUtil from '../../navigator/NavUtil';
 import Api from "../../api/Api";
 import Dao from "../../api/Dao"
-import {login, setUser, setUserInfo} from '../../actions/user';
+import {setUserData} from '../../actions/currentUser';
 import {connect} from "react-redux";
 import Default from "../../common/constant/Constant";
 import Theme from "../../common/constant/Theme";
 import XmppApi from "../../api/XmppApi";
+import Util from "../../common/util";
 
 class LoginScreen extends React.PureComponent {
     constructor(props) {
@@ -39,21 +40,7 @@ class LoginScreen extends React.PureComponent {
                                 let password = Util.cryptoOnpenFire(data.username, data.password);
                                 XmppApi.login(data.username, password)
                                     .then(() => {
-                                        this.props.setUser({
-                                            avatar: data.avatar_url,
-                                            birthday: data.birthday,
-                                            dormitory: data.dormitory,
-                                            gender: data.gender,
-                                            id: data.id,
-                                            jaccount: data.jaccount,
-                                            jwt: data.jwt_token,
-                                            major: data.major,
-                                            nickname: data.nickname,
-                                            password: data.password,
-                                            phone: data.phone,
-                                            signature: data.signature,
-                                            username: data.username,
-                                        });
+                                        this.props.setUserData(data);
                                         NavigationUtil.toPage(null,"Home");
                                     })
                                     .catch(err => {
@@ -190,8 +177,7 @@ class LoginScreen extends React.PureComponent {
 }
 
 const mapDispatchToProps = dispatch => ({
-    onLogin: (jwt) => dispatch(login(jwt)),
-    setUser: (user) => dispatch(setUser(user)),
+    setUserData: (user) => dispatch(setUserData(user)),
 });
 
 export default connect(null, mapDispatchToProps)(LoginScreen)

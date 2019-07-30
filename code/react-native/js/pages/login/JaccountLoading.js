@@ -2,13 +2,13 @@ import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
 import {Button, Image} from "react-native-elements"
 import Api from '../../api/Api';
-import {login, setUser} from '../../actions/user';
+import {setUserData} from '../../actions/currentUser';
 import {connect} from 'react-redux';
 import Dao from '../../api/Dao';
 import NavigationUtil from '../../navigator/NavUtil';
-import Default from "../../common/constant/Constant";
 import XmppApi from "../../api/XmppApi";
 import Util from "../../common/util";
+import Model from "../../api/Model";
 
 class JaccountLoadingScreen extends React.PureComponent{
     constructor(props) {
@@ -24,51 +24,44 @@ class JaccountLoadingScreen extends React.PureComponent{
 
         Api.loginWithJaccount(code, redirectUri)
             .then(data => {
-                Dao.saveString("@jwt", data.jwt_token)
+                Dao.saveString("@jwt", data.jwt)
                     .then(() => {
 
                         // status = 12, first login with our app, redirect to register page
                         if (data.status === 12) {
-                            NavigationUtil.toPage({jwt:data.jwt_token}, "Register")
+                            NavigationUtil.toPage({jwt:data.jwt}, "Register")
                         }
                         // status = 0, login success, redirect to home page
                         else if (data.status === 0) {
-                            // get user information, is there anyway that
-                            // don't get user status in this page, but in userinfo page
-                            Api.getSelfDetail(data.jwt_token)
+                            Api.getSelfDetail(data.jwt)
                                 .then(user => {
+                                    // xmpp password, crypt with username and password
                                     let password = Util.cryptoOnpenFire(user.username, user.password);
                                     XmppApi.login(user.username, password)
                                         .then(() => {
-                                            console.log("Login ok");
-                                            this.props.setUser({
-                                                avatar: user.avatar_url,
-                                                birthday: user.birthday,
-                                                dormitory: user.dormitory,
-                                                gender: user.gender,
-                                                id: user.id,
-                                                jaccount: user.jaccount,
-                                                jwt: user.jwt_token,
-                                                major: user.major,
-                                                nickname: user.nickname,
-                                                password: user.password,
-                                                phone: user.phone,
-                                                signature: user.signature,
-                                                username: user.username,
-                                            });
+                                            this.props.setUserData(Model.transferUserInfo(data));
+
+                                            // login ok, redirect to home page
                                             NavigationUtil.toPage(null,"Home");
                                         })
                                         .catch(err => {
+
+                                            // login fail, should display error message
                                             console.log(err);
                                         });
                                 })
                         } else {
-                            throw new Error("In jaccount loading, status is not 0 or 12")
+                            // this should not happen
+                            console.log(new Error("login status is not 0 or 12"));
                         }
+                    })
+                    .catch(err => {
+                        err.message = "save jwt fail";
+                        console.log(err);
                     })
             })
             .catch(err => {
-                console.log("In jaccount loading, ", err);
+                err.message = "jaccount login fail";
                 this.setState({error:true})
             })
     }
@@ -102,7 +95,7 @@ class JaccountLoadingScreen extends React.PureComponent{
 }
 
 const mapDispatchToProps = dispatch => ({
-    setUser: user => dispatch(setUser(user))
+    setUserData: user => dispatch(setUserData(user))
 });
 
 export default connect(null, mapDispatchToProps)(JaccountLoadingScreen)

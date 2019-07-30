@@ -7,7 +7,7 @@ import NavigationUtil from '../../navigator/NavUtil';
 import OfflineUserCard from './components/OfflineUserCard';
 import { connect } from "react-redux"
 import { Button } from 'react-native-elements';
-import {login, logout, setUser} from '../../actions/user';
+import {setUserData} from '../../actions/currentUser';
 import {SearchIcon, SettingIcon} from "../../common/components/Icons";
 import Theme from "../../common/constant/Theme";
 
@@ -61,25 +61,25 @@ class MeScreen extends React.PureComponent{
         )
     };
     renderUserCard = () => {
-        let {user} = this.props;
+        let { currentUser } = this.props;
         let topCard, userData;
         let dataList = [
             {data: 0, label: "我发布的",},
             {data: 0, label: "关注",
-                onPress: () => {NavigationUtil.toPage({userId: this.props.user.id}, "Following")}
+                onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Following")}
             },
             {data: 0, label: "粉丝",
-                onPress: () => {NavigationUtil.toPage({userId: this.props.user.id}, "Follower")}
+                onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Follower")}
             },
             {data: 0, label: "最近浏览",}
         ];
-        if (user.logged) {
+        if (currentUser.logged) {
             topCard = (
                 <OnlineUserCard
-                    avatar={user.avatar}
+                    avatar={currentUser.avatar}
                     onPress={this.toUserHome}
-                    nickname={user.nickname}
-                    signature={user.signature}
+                    nickname={currentUser.nickname}
+                    signature={currentUser.signature}
                 />
             )
         } else {
@@ -159,17 +159,15 @@ class MeScreen extends React.PureComponent{
     };
 
     toUserHome = () => {
-        NavigationUtil.toPage(this.props.user.id, "PersonalHome")
+        NavigationUtil.toPage(this.props.currentUser.id, "PersonalHome")
     };
 }
 const mapStateToProps = state => ({
-    user: state.user
+    currentUser: state.currentUser
 });
 
 const mapDispatchToProps = dispatch => ({
-    onLogin: (jwt) => dispatch(login(jwt)),
-    setUser: (user) => dispatch(setUser(user)),
-    onLogout: () => dispatch(logout()),
+    setUserData: (user) => dispatch(setUserData(user)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeScreen)

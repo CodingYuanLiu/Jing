@@ -35,7 +35,7 @@ export default class JaccountWebView extends React.Component{
         const jaccountUri =
             "https://jaccount.sjtu.edu.cn/oauth2/authorize?"+
             `client_id=${clientId}&client_secret=${clientSecret}&scope=${scope}`+
-            `&response_type=${responseType}&redirect_uri=${redirectUri}`
+            `&response_type=${responseType}&redirect_uri=${redirectUri}`;
 
         return(
             <WebView
