@@ -5,9 +5,9 @@ import (
 	"github.com/micro/go-web"
 	k8s "github.com/micro/kubernetes/go/web"
 	"jing/app/api-gateway/controller/activity"
+	functionController "jing/app/api-gateway/controller/function"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
-	functionController "jing/app/api-gateway/controller/function"
 	"jing/app/api-gateway/filter"
 	"log"
 )
