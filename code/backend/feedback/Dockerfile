@@ -1,5 +1,5 @@
 ############################################################
-# Dockerfile to build feedback container images
+# Dockerfile to build feedback container image
 ############################################################
 # Set the base image to Ubuntu
 FROM ubuntu
