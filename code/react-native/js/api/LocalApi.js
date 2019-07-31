@@ -55,5 +55,49 @@ export default class LocalApi {
                     reject(err);
                 })
         })
+    };
+    static saveRecentScan = async (item) => {
+        let recentList, res, data;
+        data = {
+            id: item.id,
+            title: item.title,
+            description: item.description,
+            type: item.type,
+        };
+        try {
+            res = await Dao.get("@recent");
+            recentList = JSON.parse(res);
+            console.log("data", recentList);
+            console.log(data);
+            recentList = [...recentList, data];
+            await Dao.saveJson("@recent", recentList);
+        } catch (err) {
+            console.log(err);
+            recentList = [data];
+            await Dao.saveJson("@recent", recentList)
+                .catch(e => {console.log(e)})
+        }
+    };
+    static getRecentScan = () => {
+        return new Promise((resolve, reject) => {
+            Dao.get("@recent")
+                .then(data => {
+                    resolve(JSON.parse(data));
+                })
+                .catch(err => {
+                    reject(err);
+                })
+        })
+    };
+    static clearRecentScan = () => {
+        return new Promise((resolve, reject) => {
+            Dao.remove("@recent")
+                .then(() => {
+                    resolve({status: 1});
+                })
+                .catch(err => {
+                    reject(err);
+                })
+        });
     }
 }

@@ -59,7 +59,6 @@ class CommentModal extends React.PureComponent{
                 <Text style={styles.headerTitle}>全部{length}条评论</Text>
             </View>;
 
-
         // I did not find what i want, leave it blank for future refine
         // let rightIcon;
         return (
@@ -188,8 +187,8 @@ class CommentModal extends React.PureComponent{
             user_avatar: this.props.currentUser.avatar,
             user_nickname: this.props.currentUser.nickname,
         };
-        console.log(this.props.currentUser);
         this.props.addComment(comment, this.props.currentUser.jwt);
+        this.setState({commentContent: ""});
     };
 
     openCommentModal = (receiverId, receiverName) => {

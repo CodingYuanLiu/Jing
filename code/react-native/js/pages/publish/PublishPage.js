@@ -33,18 +33,20 @@ class PublishPage extends React.PureComponent{
     }
 
     componentDidMount(){
-        this.type = this.props.navigation.getParam("type");
-        this.init(this.type);
+
     }
     render() {
+        this.type = this.props.navigation.getParam("type");
+        if (!this.type) this.type = "taxi";
+        let propsAct = this.buildAct(this.props.publishAct, this.type);
+        let {title, description, images, endTime} = propsAct;
         let header = this.renderHeader();
-        let detailInput = this.renderDetailInput();
+        let detailInput = this.renderDetailInput(title, description);
         let imagePicker = this.renderImagePicker();
-        let commonMenubar = this.renderCommonMenu();
+        let commonMenubar = this.renderCommonMenu(endTime);
         let specMenubar = this.renderSpecMenubar();
         let endTimePicker = this.renderEndTimePicker();
         let specTimePicker = this.renderSpecTimePicker();
-        let imageList = this.state.images;
         let saveModal = this.renderSaveModal();
         return(
             <View style={styles.container}>
@@ -53,7 +55,7 @@ class PublishPage extends React.PureComponent{
                     {detailInput}
                     <View style={styles.imageListContainer}>
                         {
-                            imageList.map((img, i) => {
+                            images.map((img, i) => {
                                 return (
                                     <Image
                                         key={i}
@@ -96,11 +98,11 @@ class PublishPage extends React.PureComponent{
             />
         );
     };
-    renderDetailInput = () => {
+    renderDetailInput = (title, description) => {
         return (
             <View>
                 <TextInput
-                    value={this.state.title}
+                    value={title}
                     onChangeText={this.handleTitleTextChange}
                     onBlur={this.handleTitleTextBlur}
                     autoFocus
@@ -109,7 +111,7 @@ class PublishPage extends React.PureComponent{
                     style={styles.textInputTitle}
                 />
                 <TextInput
-                    value={this.state.description}
+                    value={description}
                     onChangeText={this.handleBodyTextChange}
                     onBlur={this.handleBodyTextBlur}
                     placeholder={"想对大家说点什么..."}
@@ -140,8 +142,7 @@ class PublishPage extends React.PureComponent{
         return imagePicker;
     };
 
-    renderCommonMenu = () => {
-        let endTime = this.state.endTime;
+    renderCommonMenu = (endTime) => {
         return (
             <MenubarItem
                 onPress={this.handleClickEndTime}
@@ -153,8 +154,7 @@ class PublishPage extends React.PureComponent{
         );
     };
     renderSpecMenubar = () => {
-        let type = this.state.type;
-        let act = this.state;
+        let type = this.type;
         let props = this.props.publishAct;
         let propsAct;
         switch(type) {
@@ -166,8 +166,8 @@ class PublishPage extends React.PureComponent{
                             onPress={this.showSpecTimePicker}
                             iconName={"depart"}
                             title={"出发时间"}
-                            rightTitle={act.departTime ? act.departTime : ""}
-                            active={Boolean(act.departTime && act.departTime !== "")}
+                            rightTitle={propsAct.departTime ? propsAct.departTime : ""}
+                            active={Boolean(propsAct.departTime && propsAct.departTime !== "")}
                         />
                         <MenubarItem
                             onPress={this.handleClickOriginDest}
@@ -194,8 +194,8 @@ class PublishPage extends React.PureComponent{
                             onPress={this.showSpecTimePicker}
                             iconName={"takeoutTime"}
                             title={"下单时间"}
-                            rightTitle={act.orderTime ? act.orderTime : ""}
-                            active={Boolean(act.orderTime && act.orderTime !== "")}
+                            rightTitle={propsAct.orderTime ? propsAct.orderTime : ""}
+                            active={Boolean(propsAct.orderTime && propsAct.orderTime !== "")}
                         />
                     </View>
                 )
@@ -222,8 +222,8 @@ class PublishPage extends React.PureComponent{
                             onPress={this.showSpecTimePicker}
                             iconName={"activity"}
                             title={"活动时间"}
-                            rightTitle={act.activityTime ? act.activityTime : ""}
-                            active={Boolean(act.activityTime && act.activityTime !== "")}
+                            rightTitle={propsAct.activityTime ? propsAct.activityTime : ""}
+                            active={Boolean(propsAct.activityTime && propsAct.activityTime !== "")}
                         />
                     </View>
                 )
@@ -436,53 +436,6 @@ class PublishPage extends React.PureComponent{
         this.setState({saveModalVisible: false});
         NavigationUtil.toPage(null, "Home");
     };
-    init = (type) => {
-        let act;
-        if (type === "taxi")
-            act = this.props.publishAct.taxiAct;
-        else if (type === "order")
-            act = this.props.publishAct.orderAct;
-        else if (type === "takeout")
-            act = this.props.publishAct.takeoutAct;
-        else if (type === "other") {
-            act = this.props.publishAct.otherAct;
-        } else {
-            console.warn("type is invalid, ", type);
-        }
-        this.setState({
-            type: this.type,
-            title: act.title,
-            description: act.description,
-            images: act.images,
-            tags: act.tags,
-            endTime: act.endTime,
-        });
-        switch (this.type) {
-            case "taxi":
-                this.setState({
-                    departTime: act.departTime,
-                    origin: act.origin,
-                    dest: act.dest,
-                });
-                break;
-            case "takeout" :
-                this.setState({
-                    store: act.store,
-                    orderTime: act.orderTime,
-                });
-                break;
-            case "order" :
-                this.setState({
-                    store: act.store,
-                });
-                break;
-            case "other":
-                this.setState({
-                    activityTime: act.activityTime,
-                });
-                break;
-        }
-    }
 }
 
 const options = {

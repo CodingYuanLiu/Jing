@@ -226,7 +226,7 @@ class PublishDraft extends React.PureComponent{
                 console.log("invalid act type");
                 // this should not happen
         }
-        NavigationUtil.toPage(null, "PublishPage");
+        NavigationUtil.toPage({type: item.type}, "PublishPage");
     };
 }
 
