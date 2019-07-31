@@ -73,6 +73,28 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	return
 }
 
+func (activityController *Controller) FindActByUser(c *gin.Context) {
+	userId, err := strconv.Atoi(c.Query("id"))
+	if err != nil || userId == 0 {
+		jing.SendError(c, jing.NewError(201, 400, "param 'id' not provided or bad"))
+		return
+	}
+	var actJSONs []myjson.JSON
+	acts := dao.GetManagingActivity(userId)
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		jing.SendError(c, jing.NewError(203, 400, "Can't get pages."))
+		return
+	}
+	for _, v := range retActs {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
+
 func (activityController *Controller) GetGroupChatInfo(c *gin.Context) {
 	actId, err := strconv.Atoi(c.Query("act_id"))
 	if err != nil || actId == 0 {
