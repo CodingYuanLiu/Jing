@@ -17,9 +17,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
 	if err == mgo.ErrNotFound{
 		log.Println(err)
-		resp.Status=404
-		resp.Description="Not Found"
-		return err
+		return jing.NewError(301,404,"can not find the activity")
 	}
 
 	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
@@ -49,7 +47,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		err = dao.DeleteImgWithName(name)
 		if err != nil{
 			log.Printf("Catch delete error from dao,cannot delete pictures for act %d, pic %d\n",req.ActId,i)
-			continue
+			return jing.NewError(300,400,"can not delete pictures from qiniu")
 		}
 		log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)
 	}
@@ -66,7 +64,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	}
 	if err2 != nil{
 		log.Println(err2)
-		return err2
+		return jing.NewError(300,400,"can not upload image to qiniu when modifying")
 	}
 
 	for _,param := range newImages{
@@ -116,10 +114,9 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	}
 	if err!=nil{
 		log.Println(err)
-		return err
+		return jing.NewError(300,400,"can not update activity in mongoDB")
 	}
-	resp.Status=200
-	resp.Description="OK"
+	resp.Description="Modify activity successfully"
 	log.Println("Modify successfully")
 	return nil
 }

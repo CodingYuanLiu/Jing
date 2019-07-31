@@ -65,7 +65,7 @@ func DeleteActivity(actId int) error {
 	return nil
 }
 
-func ModifyActivity(userId int, jsonForm json.JSON) error {
+func ModifyActivity(userId int, jsonForm json.JSON) (*activityProto.MdfResp,error) {
 	actType := jsonForm["type"].(string)
 	var tags []string
 	var images []string
@@ -108,12 +108,9 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 	}
 	resp2, err := Client.Modify(context.TODO(), &mdfReq)
 	if err != nil {
-		return err
+		return nil,err
 	}
-	if resp2.Status != 200 {
-		return jing.NewError(1, int(resp2.Status), resp2.Description)
-	}
-	return nil
+	return resp2,nil
 }
 
 func PublishActivity(userId int, jsonForm json.JSON) (*activityProto.PubResp,error) {
