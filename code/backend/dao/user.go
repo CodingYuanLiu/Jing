@@ -13,6 +13,8 @@ var db *gorm.DB
 
 type User struct {
 	ID 			int 				`gorm:"primary_key;auto_increment"`
+	IsAdmin     bool
+	BanTime     int64
 	Gender 		int
 	Birthday 	string
 	Major	 	string
@@ -48,6 +50,31 @@ type Follow struct {
 	ID		int			`gorm:"primary_key;auto_increment"`
 	From 	int
 	To 		int
+}
+
+func FindAllUsers() (users []User) {
+	db.Find(&users)
+	return
+}
+
+func IsAdmin(Id int) (bool, error) {
+	user, err := FindUserById(Id)
+	if err != nil {
+		return false, err
+	} else {
+		return user.IsAdmin, nil
+	}
+}
+
+func SetBanTime(Id int, time int64) error {
+	user, err := FindUserById(Id)
+	if err != nil {
+		return err
+	} else {
+		user.BanTime = time
+		db.Save(&user)
+	}
+	return nil
 }
 
 func SetAvatarKey(Id int, key string) error {
