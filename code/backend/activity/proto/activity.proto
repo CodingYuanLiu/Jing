@@ -36,7 +36,6 @@ message PubReq{
 }
 
 message PubResp{
-    int32 status = 1;
     string description = 2;
     int32 actId = 3;
 }
