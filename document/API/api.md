@@ -763,6 +763,28 @@ Status OK - 200
 ]
 ```
 
+## Get Activity Participants
+#### Description
+Get all the participants of an activity
+#### Request
+```json
+GET /api/public/act/getactivitymember?act_id=1 HTTP/1.1
+```
+#### Response
+Status OK - 200
+``` json
+[
+    {
+        "user_id":1,
+        "user_nickname":"孙笑川",
+        "user_signature":"...",
+        "user_avatar":"http://image.jing855.cn/...",
+    },
+    ...
+]
+```
+
+
 ## Publish Activity
 
 #### Description
