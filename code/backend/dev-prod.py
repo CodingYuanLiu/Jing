@@ -174,4 +174,4 @@ else:
         '\tx:=gojieba.NewJieba("/home/app/dict/jieba.dict.utf8","/home/app/dict/hmm_model.utf8","/home/app/dict/user.dict.utf8","/home/app/dict/idf.utf8","/home/app/dict/stop_words.utf8")')
     fw = open('./activity/handler/tags.go', 'w', encoding='utf-8')
     fw.write(s)
-    fw.close(s)
+    fw.close()
