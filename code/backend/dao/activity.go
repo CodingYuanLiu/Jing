@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"jing/app/jing"
 	"log"
 	"time"
 )
@@ -46,7 +47,7 @@ type BasicInfo struct{
 	Tag []string
 	Images []string
 	MaxMember int32
-	Status int32
+	Status int32 // 0 for available, 1 for full members, 2 for expire, -1 for blocked
 }
 
 type TaxiInfo struct{
@@ -415,6 +416,17 @@ func GetMaxMemberStatus(actId int32,maxMember int32) int32{
 		return 1
 	} else{
 		return 0
+	}
+}
+
+func GetActivity(actId int32) (act map[string] interface{},err error){
+	err = Collection.Find(bson.M{"actid": actId}).One(&act)
+	if err == mgo.ErrNotFound{
+		return act,jing.NewError(301,400,"can not find the activity in the mongoDB")
+	} else if err != nil{
+		return act,jing.NewError(302,400,"find activity in mongoDB error")
+	} else{
+		return act,err
 	}
 }
 

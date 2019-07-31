@@ -36,7 +36,6 @@ message PubReq{
 }
 
 message PubResp{
-    int32 status = 1;
     string description = 2;
     int32 actId = 3;
 }
@@ -56,7 +55,6 @@ message MdfReq{
     OtherInfo otherInfo = 9;
 }
 message MdfResp{
-    int32 status = 1;
     string description = 2;
 }
 
@@ -65,7 +63,6 @@ message DltReq{
 }
 
 message DltResp{
-    int32 status = 1;
     string description = 2;
 }
 
@@ -74,7 +71,6 @@ message QryReq{
 }
 
 message QryResp{
-    int32 status = 6;
     BasicInfo basicInfo = 1;
     TaxiInfo taxiInfo = 2;
     TakeoutInfo takeoutInfo = 3;
@@ -111,7 +107,6 @@ message CmtReq{
 }
 
 message CmtResp{
-    int32 status = 1;
     string description = 2;
 }
 
@@ -128,7 +123,6 @@ message TagReq{
 }
 
 message TagResp{
-    int32 status = 1;
     repeated string tag = 2;
 }
 

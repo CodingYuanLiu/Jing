@@ -2,8 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
@@ -13,14 +11,9 @@ import (
 
 func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *activity.QryResp) error {
 	//fmt.Println(req)
-	var result map[string] interface{}
-	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
-	if err == mgo.ErrNotFound{
-		fmt.Println(err)
-		resp.Status = 404
-		return jing.NewError(1, 404, "Can't find activity")
-	}else if err != nil{
-		log.Fatal(err)
+	result,err := dao.GetActivity(req.ActId)
+	if err != nil{
+		return err
 	}
 	//Use map to fetch the result.
 	mapBasicInfo := result["basicinfo"].(map[string] interface{})
@@ -37,9 +30,10 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 		err = dao.Collection.Update(bson.M{"actid":req.ActId},
 		bson.M{"$set":bson.M{"basicinfo.status":int32(2)}})
 		log.Println("Update overdue status")
-		if err!=nil{
+		if err != nil{
 			log.Println("Update overdue status error")
 			log.Println(err)
+			return jing.NewError(300,400,"update overdue status error")
 		}
 	}
 
@@ -80,7 +74,6 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 			Destination: dest,
 		}
 		resp.TaxiInfo = &taxiInfo
-		resp.Status = 200
 	case "takeout":
 		mapTakeoutInfo :=result["takeoutinfo"].(map[string] interface{})
 		takeoutInfo := activity.TakeoutInfo{
@@ -88,14 +81,12 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 			OrderTime: mapTakeoutInfo["ordertime"].(string),
 		}
 		resp.TakeoutInfo = &takeoutInfo
-		resp.Status = 200
 	case "order":
 		mapOrderInfo := result["orderinfo"].(map[string] interface{})
 		orderInfo := activity.OrderInfo{
 			Store: mapOrderInfo["store"].(string),
 		}
 		resp.OrderInfo = &orderInfo
-		resp.Status = 200
 
 	case "other":
 		mapOtherInfo := result["otherinfo"].(map[string] interface{})
@@ -104,8 +95,7 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 
 		}
 		resp.OtherInfo = &otherInfo
-		resp.Status = 200
 	}
-	//log.Println("Query successfully.")
 	return nil
 }
+

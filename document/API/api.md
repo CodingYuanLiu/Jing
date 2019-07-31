@@ -7,8 +7,13 @@ Code | Description | Status
 101  | Need login | Status Unauthorized (401)
 102  | Bad Jwt token | Status Unauthorized (401)
 103  | Bad Credential | Status Unauthorized (401)
+104  | Banned | Status Unauthorized (401)
+105  | Need Admin Privileges | Status Forbidden (403)
 201  | Parameter not provided or bad | Status Bad Request (400)
 202  | Missing some field | Status Bad Request (400)
+203  | Can't get pages | Status Bad Request (400)
+300  | Database CRUD error | Status Bad Request (400)
+301  | No available data in database | Status Bad  (404)
 
 ## Get User Status
 
@@ -18,7 +23,7 @@ Get a user's detail by its jwt.
 
 #### Request
 ```json
-GET /api/user/status HTTP/1.1
+GET /api/user/status
 Authorization: Bearer jwt
 ```
 
@@ -140,7 +145,7 @@ Register a new user by username, password, phone, nickname and jwt.
 
 #### Request
 ```json
-POST /api/public/register HTTP/1.1
+POST /api/public/register
 Content-Type: application/json
 Authorization: Bearer jwt
 
@@ -180,7 +185,7 @@ Call Jaccount login by code and uri.
 
 #### Request
 ```json
-POST /api/public/register HTTP/1.1
+POST /api/public/register
 Content-Type: application/json
 
 {
@@ -223,7 +228,7 @@ Login by username and password
 
 #### Request
 ```json
-POST /api/public/login/native HTTP/1.1
+POST /api/public/login/native
 Content-Type: application/x-www-form-urlencoded
 
 username=hello&password=hello
@@ -255,7 +260,7 @@ Login by wechat. (or bind jaccount)
 
 #### Request
 ```json
-POST /api/public/login/wx HTTP/1.1
+POST /api/public/login/wx
 Content-Type: application/json
 
 {
@@ -303,7 +308,7 @@ Bind wechat and jaccount. (used for redirecting)
 #### Request
 
 ```json
-POST /api/public/wx/redirect?code={code}&jwt=jwt HTTP/1.1
+POST /api/public/wx/redirect?code={code}&jwt=jwt
 ```
 
 #### Response
@@ -479,7 +484,7 @@ Find an activity.
 #### Request
 
 ```json
-GET /api/public/act/query?act_id={act_id} HTTP/1.1
+GET /api/public/act/query?act_id={act_id}
 ```
 
 #### Response
@@ -529,7 +534,7 @@ GET /api/public/act/query?act_id={act_id} HTTP/1.1
 ```
 
 ## *Activity Pages*
-For `myact`,`manageact` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
+For `myact`, `manageact`, `findbytype`, `findbyuser` and `findall`, you can add param `index` and `size` to query a page. For example,`/api/public/act/findall?index=0&size=5`will find latest 5 activities.
 
 ## Find All Activity
 
@@ -540,7 +545,7 @@ Find all activity.
 #### Request
 
 ```json
-GET /api/public/act/findall HTTP/1.1
+GET /api/public/act/findall
 ```
 
 
@@ -577,7 +582,7 @@ Find activities of a designate type. If the user has already logined, a jwt is n
 
 #### Requests
 ```
-GET /api/public/act/findbytype?type=taxi HTTP/1.1
+GET /api/public/act/findbytype?type=taxi
 (Authorization: Bearer)
 ```
 
@@ -598,7 +603,6 @@ Status OK - 200
 ]
 ```
 
-####
 ## My Act
 
 #### Description
@@ -608,7 +612,7 @@ Get all acts a user joins.
 #### Requests
 
 ```
-GET /api/user/act/myact HTTP/1.1
+GET /api/user/act/myact
 Authorization: Bearer jwt
 ```
 
@@ -684,7 +688,7 @@ Get all acts a user manages.
 #### Requests
 
 ```
-GET /api/user/act/manageact HTTP/1.1
+GET /api/user/act/manageact
 Authorization: Bearer jwt
 ```
 
@@ -717,6 +721,70 @@ Status OK - 200
 ]
 ```
 
+## Find Act By User
+
+#### Description
+
+Get all acts a user manages.
+
+#### Requests
+
+```
+GET /api/public/act/findbyuser?id=1
+Authorization: Bearer jwt
+```
+
+#### Response
+
+Status OK - 200
+```json
+[
+    {
+        "act_id": 6,
+        "comments": [],
+        "create_time": "2019-7-15 15:17",
+        "depart_time": "2019-7-16 15:17",
+        "description": "desc",
+        "destination": {},
+        "end_time": "2019-7-17 15:17",
+        "images": null,
+        "origin": {},
+        "signature": "",
+        "sponsor_id": 6,
+        "sponsor_username": "孙笑川",
+        "tag": [
+            "g",
+            "a",
+            "t"
+        ],
+        "title": "title",
+        "type": "taxi"
+    }
+]
+```
+
+## Get Activity Participants
+#### Description
+Get all the participants of an activity
+#### Request
+```json
+GET /api/public/act/getactivitymember?act_id=1 HTTP/1.1
+```
+#### Response
+Status OK - 200
+``` json
+[
+    {
+        "user_id":1,
+        "user_nickname":"孙笑川",
+        "user_signature":"...",
+        "user_avatar":"http://image.jing855.cn/...",
+    },
+    ...
+]
+```
+
+
 ## Publish Activity
 
 #### Description
@@ -726,7 +794,7 @@ Publish an activity, its type can be taxi, takeout, order and other.
 #### Requests
 
 ```json
-POST /api/user/act/publish HTTP/1.1
+POST /api/user/act/publish
 Authorization: Bearer jwt
 
 {
@@ -775,7 +843,7 @@ Modify an activity, but can't modify title and type.
 #### Requests
 
 ```json
-POST /api/user/act/modify HTTP/1.1
+POST /api/user/act/modify
 Authorization: Bearer jwt
 
 {
@@ -786,6 +854,7 @@ Authorization: Bearer jwt
     "description": "desc",
     "tag": ["g", "a", "t"],
     "images": [],
+    "max_member":3,
 
     "depart_time": "2019-7-16 15:17",
     "origin": {},
@@ -828,7 +897,7 @@ Delete an activity.
 
 #### Request
 ```json
-POST /api/user/act/delete?act_id={act_id} HTTP/1.1
+POST /api/user/act/delete?act_id={act_id}
 Authorization: Bearer jwt
 ```
 
@@ -861,7 +930,7 @@ Send a comment under an activity.
 #### Request
 
 ```json
-POST /api/user/act/comment HTTP/1.1
+POST /api/user/act/comment
 Authorization: Bearer jwt
 
 {
@@ -894,7 +963,7 @@ Join an act.
 
 #### Request
 ```json
-POST /api/user/act/join?act_id={act_id} HTTP/1.1
+POST /api/user/act/join?act_id={act_id}
 Authorization: Bearer jwt
 ```
 
@@ -912,7 +981,7 @@ Get an activity along with its applicants.
 
 #### Request
 ```json
-GET /api/user/act/getjoinapp HTTP/1.1
+GET /api/user/act/getjoinapp
 Authorization: Bearer jwt
 ```
 
@@ -974,7 +1043,7 @@ Get an activity status to a user. -1: need acception, 0: joined, 1: admin, -2: n
 
 #### Request
 ```
-GET /api/user/act/status?act_id=7 HTTP/1.1
+GET /api/user/act/status?act_id=7
 Authorization: Bearer jwt
 ```
 
@@ -1211,3 +1280,271 @@ GET api/public/takeout/searchshop?key=鱼
     }
 ]
 ````
+
+## Ban User
+
+#### Description
+Ban a user by user_id and timestamp(accurate to ms)
+PS: You can use `Time.prototype.getTime()` in JavaScript to get timestamp.
+
+#### Request
+``` json
+GET api/admin/banuser?id=1&time=1564368642393
+Authorization: Bearer jwt
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Ban user successfully"
+}
+```
+
+## Delete Activity (Admin)
+
+#### Description
+
+Delete an activity.
+
+#### Request
+```json
+POST /api/admin/act/delete?act_id={act_id}
+Authorization: Bearer jwt
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Delete successfully"
+}
+
+
+## Feedback
+### Publish Feedback
+#### Description
+Publish a feedback to a designated user. The publisher or the critized user must be one of the members of the activity
+
+#### Request
+``` json
+POST api/user/feedback/publish HTTP/1.1
+Authentication:Bearer jwt
+
+{
+	"act_id":1,
+	"receiver_id":3,
+	"communication": 4,
+	"communication_desc": "good communication",
+	"punctuality": 4,
+	"punctuality_desc": "little bit later",
+	"honesty":5,
+	"honesty_desc":"good honesty",
+	"fb_images":[]
+}
+
+```
+
+#### Response
+Status OK - 200
+``` json
+{
+    "feedback_id": "5d3ff9691a4eb6145864aa65",
+    "message": "publish feedback succeed."
+}
+```
+
+Activity not found - 400
+``` json
+{
+    "errcode": 201,
+    "message": "Activity does not exist in mysql",
+    "status": 400
+}
+```
+Receiver not exist - 400
+``` json
+{
+    "errcode": 201,
+    "message": "The receiver does not exist",
+    "status": 400
+}
+````
+Receiver is not the member - 400
+``` json
+{
+    "errcode": 201,
+    "message": "The receiver is not the member of the activity",
+    "status": 400
+}
+```
+Feedback publisher is not the member - 403
+``` json
+{
+    "errcode": 104,
+    "message": "The user has no authority to make that feedback",
+    "status": 403
+}
+```
+Invalid starring parameter - 400
+``` json
+{
+    "errcode": 201,
+    "message": "invalid starring parameter",
+    "status": 400
+}
+```
+Database manipulation error is not written here
+
+### Query Feedback
+#### Description
+Get all the feedbacks of a designate user.
+#### Request
+```json
+GET api/public/feedback/query?receiver_id=3 HTTP/1.1
+```
+#### Response
+Status Ok - 200
+``` json
+[
+    {
+        "act_id": 1,
+        "act_title": "Basketball this afternoon",
+        "communication": 5,
+        "communication_desc": "good communication",
+        "fb_comments": [
+             {
+                "comment_desc": "乱说",
+                "commentator_avatar": "http://image.jing855.cn/...",
+                "commentator_id": 3,
+                "commentator_nickname": "孙笑川",
+                "time": "2019-7-29 17:17:36"
+            },
+            ...
+        ],
+        "fb_images": [
+            "http://image.jing855.cn/feedbackImage/5d3ff9691a4eb6145864aa65/img0",
+            ...
+        ],
+        "feedback_id": "5d3ff9691a4eb6145864aa65",
+        "honesty": 5,
+        "honesty_desc": "good honesty",
+        "punctuality": 4,
+        "punctuality_desc": "little bit later",
+        "time": "2019-07-30 15:25:12",
+        "user_avatar": "http://image.jing855.cn/...",
+        "user_id": 3,
+        "user_nickname": "孙笑川"
+    }
+]
+```
+Invalid parameter "receiver_id" - 400
+```json
+{
+    "errcode": 201,
+    "message": "Receiver_id is bad or don't exist",
+    "status": 400
+}
+```
+
+The receiver does not exist - 400
+``` json
+{
+    "errcode": 201,
+    "message": "Receiver does not exist",
+    "status": 400
+}
+```
+
+The receiver has no feedback - 404
+```json
+{
+    "errcode": 301,
+    "message": "cannot find the feedback in mongoDB",
+    "status": 404
+}
+```
+
+### Delete Feedback
+#### Description
+API for a user to delete one of his feedback identified by the object_id.
+#### Request
+``` json
+POST api/user/feedback/delete HTTP/1.1
+Authentication:Bearer jwt
+{
+	"object_id":"5d3ff1d31a4eb65d882f5916"
+}
+
+```
+
+#### Response
+Status OK - 200
+``` json
+{
+    "description": "Delete feedback succeed"
+}
+```
+Cannot find the feedback - 400
+``` json
+{
+    "errcode": 301,
+    "message": "cannot find the feedback when trying to delete it from mongoDB",
+    "status": 404
+}
+```
+Invalid objectId - 400
+``` json
+{
+    "errcode": 201,
+    "message": "Invalid objectId",
+    "status": 400
+}
+```
+Not the feedback publisher - 400
+``` json
+{
+    "errcode": 104,
+    "message": "do not have the authority to delete the feedback",
+    "status": 403
+}
+```
+
+### Comment the feedback
+#### Description
+API for a user to comment a feedback.
+#### Request
+``` json
+POST api/user/feedback/comment HTTP/1.1
+Authentication:Bearer jwt
+
+{
+	"object_id":"5d3fa9dd1a4eb63588c12edb",
+	"time":"2019-07-30 12:41:23",
+	"commentator_desc":"中文评论"
+}
+```
+
+#### Response
+Status OK - 200
+``` json
+{
+    "description": "Comment succeed"
+}
+```
+Can not find the feedback or other database error - 400
+```json
+{
+    "errcode": 300,
+    "message": "update comment error",
+    "status": 400
+}
+```
+Invalid object ID - 400
+``` json
+{
+    "errcode": 201,
+    "message": "Invalid objectId",
+    "status": 400
+}
+```

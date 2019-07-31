@@ -5,12 +5,29 @@ import (
 	"github.com/micro/go-web"
 	k8s "github.com/micro/kubernetes/go/web"
 	"jing/app/api-gateway/controller/activity"
+	feedbackController "jing/app/api-gateway/controller/feedback"
+	functionController "jing/app/api-gateway/controller/function"
 	loginController "jing/app/api-gateway/controller/login"
 	userController "jing/app/api-gateway/controller/user"
-	functionController "jing/app/api-gateway/controller/function"
 	"jing/app/api-gateway/filter"
 	"log"
 )
+
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(200)
+		} else {
+			c.Next()
+		}
+	}
+}
 
 func main() {
 	service := k8s.NewService(
@@ -31,6 +48,10 @@ func main() {
 
 func setupRouter() *gin.Engine {
 	router := gin.Default()
+
+	// handle CORS
+	router.Use(corsMiddleware())
+
 	router.Use(filter.AuthFilter)
 
 	// login service
@@ -41,6 +62,8 @@ func setupRouter() *gin.Engine {
 	ac := new(activity.Controller)
 
 	fc := new(functionController.Controller)
+
+	fbc := new(feedbackController.Controller)
 
 	publicRouter := router.Group("/api/public")
 	{
@@ -56,6 +79,9 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/act/findbytype",ac.FindActivityByType)
 		publicRouter.GET("/takeout/searchshop", fc.TakeoutSearchShop)
 		publicRouter.GET("/chat/members", ac.GetGroupChatInfo)
+		publicRouter.GET("/feedback/query",fbc.QueryFeedback)
+		publicRouter.GET("/act/findbyuser", ac.FindActByUser)
+		publicRouter.GET("/act/getactivitymember",ac.GetActivityMembers)
 	}
 	/*
 		adminRouter := router.Group("/api/admin")
@@ -88,7 +114,24 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/friends", uc.GetFriends)
 		userRouter.GET("/follow", uc.Follow)
 		userRouter.GET("/changeprivacy", uc.ChangePrivacyLevel)
+
+		// Feedback manipulation
+		userRouter.POST("/feedback/publish", fbc.PublishFeedback)
+		userRouter.POST("/feedback/delete",fbc.DeleteFeedback)
+		userRouter.POST("feedback/comment",fbc.CommentFeedback)
 	}
 
+	adminRouter := router.Group("/api/admin")
+	{
+		adminRouter.GET("/stat", fc.GetStatistics)
+		adminRouter.GET("/act/findavailable", ac.FindAvailableActivity)
+		adminRouter.GET("/banuser", uc.BanUser)
+		adminRouter.POST("/act/delete", ac.AdminDeleteActivity)
+		adminRouter.GET("/findallusers", uc.FindAllUsers)
+		adminRouter.GET("/queryuser", uc.AdminQueryUser)
+		adminRouter.GET("/findonlineusers", uc.GetOnlineUsers)
+		adminRouter.GET("/act/blockact",ac.BlockActivity)
+		adminRouter.GET("/act/unblockact",ac.UnblockActivity)
+	}
 	return router
 }

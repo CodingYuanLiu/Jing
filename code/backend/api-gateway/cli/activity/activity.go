@@ -9,7 +9,6 @@ import (
 	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/dao"
-	"jing/app/jing"
 	"jing/app/json"
 	"log"
 	"os"
@@ -28,7 +27,7 @@ func init()  {
 	Client = activityProto.NewActivitySrvService("act", client.DefaultClient)
 }
 
-func AddComment(actId int, userId int, receiverId int, content string, time string) error {
+func AddComment(actId int, userId int, receiverId int, content string, time string) (*activityProto.CmtResp,error) {
 	req := activityProto.CmtReq{
 		ActId: int32(actId),
 		UserId: int32(userId),
@@ -36,11 +35,11 @@ func AddComment(actId int, userId int, receiverId int, content string, time stri
 		Content: content,
 		Time: time,
 	}
-	resp, _ := Client.Comment(context.TODO(), &req)
-	if resp.Status != 200 {
-		return jing.NewError(1, int(resp.Status), resp.Description)
+	resp, err := Client.Comment(context.TODO(), &req)
+	if err != nil {
+		return nil,err
 	}
-	return nil
+	return resp,nil
 }
 
 func QueryActivity(actId int) (*activityProto.QryResp, error) {
@@ -49,23 +48,24 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	}
 	resp, err := Client.Query(context.TODO(), &qryReq)
 	if err != nil {
-		return nil, jing.NewError(1, 400, "Can't find such activity")
+		return nil, err
 	}
 	return resp, err
 }
 
-func DeleteActivity(userId int, actId int) error {
+func DeleteActivity(actId int) (*activityProto.DltResp,error) {
 	dltReq := activityProto.DltReq{
 		ActId: int32(actId),
 	}
-	resp, _ := Client.Delete(context.TODO(), &dltReq)
-	if resp.Status != 200 {
-		return jing.NewError(1, int(resp.Status), resp.Description)
+	resp, err := Client.Delete(context.TODO(), &dltReq)
+	if err != nil{
+		return nil,err
 	}
-	return nil
+
+	return resp,nil
 }
 
-func ModifyActivity(userId int, jsonForm json.JSON) error {
+func ModifyActivity(userId int, jsonForm json.JSON) (*activityProto.MdfResp,error) {
 	actType := jsonForm["type"].(string)
 	var tags []string
 	var images []string
@@ -108,15 +108,12 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 	}
 	resp2, err := Client.Modify(context.TODO(), &mdfReq)
 	if err != nil {
-		return err
+		return nil,err
 	}
-	if resp2.Status != 200 {
-		return jing.NewError(1, int(resp2.Status), resp2.Description)
-	}
-	return nil
+	return resp2,nil
 }
 
-func PublishActivity(userId int, jsonForm json.JSON) error {
+func PublishActivity(userId int, jsonForm json.JSON) (*activityProto.PubResp,error) {
 	actType := jsonForm["type"].(string)
 	var tags []string
 	var images []string
@@ -163,24 +160,22 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 	}
 	resp2, err := Client.Publish(context.TODO(), &pubReq)
 	if err != nil {
-		return err
-	}
-	if resp2.Status != 200 {
-		return jing.NewError(1, int(resp2.Status), resp2.Description)
+		return nil,err
 	}
 	_ = dao.PublishActivity(userId, int(resp2.ActId))
-	return nil
+	return resp2,nil
 }
 
-func GenerateTags(title string,desc string) []string{
+func GenerateTags(title string,desc string) (*activityProto.TagResp,error){
 	resp,err := Client.GenTags(context.TODO(),&activityProto.TagReq{
 		Title:title,
 		Description:desc,
 	})
 	if err!=nil{
 		log.Println(err)
+		return nil,err
 	}
-	return resp.Tag
+	return resp,nil
 }
 
 func AddTags(tags []string, userId int32) int32{

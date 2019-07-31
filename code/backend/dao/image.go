@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	b64 "encoding/base64"
+	"jing/app/jing"
 	"jing/app/lib/auth/qbox"
 	"jing/app/lib/storage"
 	"log"
@@ -83,7 +84,7 @@ func UploadImg(base64Img string) string{
 }
 
 
-func UploadImgWithName(base64Img string,name string) string{
+func UploadImgWithName(base64Img string,name string) (string,error){
 	// Init access key and secret key
 	upToken := getUpToken()
 	cfg := storage.Config{}
@@ -108,10 +109,11 @@ func UploadImgWithName(base64Img string,name string) string{
 	ret := storage.PutRet{}
 	err := formUploader.Put(context.Background(), &ret, upToken,name,bytes.NewReader(data),dataLen,&putExtra)
 	if err!=nil{
-		log.Fatal(err)
+		log.Println(err)
+		return "",jing.NewError(300,400,"Upload image to qiniu error")
 	}
 	url := "http://" + domain + "/"+ret.Key
-	return url
+	return url,nil
 }
 
 func getUpToken() string{

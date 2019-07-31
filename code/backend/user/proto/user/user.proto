@@ -41,6 +41,7 @@ message FindReq {
 }
 
 message FindResp {
+    bool self_request = 14;
     int32 gender = 1;
     int32 id = 3;
     string password = 2;

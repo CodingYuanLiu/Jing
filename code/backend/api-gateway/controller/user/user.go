@@ -3,6 +3,7 @@ package user
 import "C"
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"jing/app/api-gateway/cli/login"
@@ -18,6 +19,71 @@ import (
 )
 
 type Controller struct {
+}
+
+func (uc *Controller) FindAllUsers (c *gin.Context) {
+	var retJson []map[string]interface{}
+	users := dao.FindAllUsers()
+	for _, user := range users {
+		retJson = append(retJson, map[string]interface{} {
+			"id": user.ID,
+			"jaccount": user.Jaccount,
+			"nickname": user.Nickname,
+			"signature": user.Signature,
+			"ban_time": user.BanTime,
+		})
+	}
+	c.JSON(http.StatusOK, retJson)
+}
+
+func (uc *Controller) AdminQueryUser (c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'id' is not provided or bad"))
+		return
+	}
+	rsp, err := userClient.CallQueryUser(int32(id), int32(id))
+	if err != nil {
+		jing.SendError(c, err)
+	}
+	c.JSON(http.StatusOK, map[string]interface {}{
+		"id" : rsp.Id,
+		"privacy": rsp.Privacy,
+		"phone" : rsp.Phone,
+		"nickname" : rsp.Nickname,
+		"signature" : rsp.Signature,
+		"birthday": rsp.Birthday,
+		"major": rsp.Major,
+		"gender": rsp.Gender,
+		"dormitory": rsp.Dormitory,
+		"jaccount": rsp.Jaccount,
+	})
+}
+
+func (uc *Controller) BanUser (c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'id' is not provided or bad"))
+		return
+	}
+	time, err := strconv.ParseInt(c.Query("time"), 10, 64)
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'time' is not provided or bad"))
+		return
+	}
+	isAdmin, err := dao.IsAdmin(id)
+	if isAdmin {
+		jing.SendError(c, jing.NewError(1, 400, "Can't ban an administrator"))
+		return
+	}
+	err = dao.SetBanTime(id, time)
+	if err != nil {
+		jing.SendError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string {
+		"message": "Ban user successfully",
+	})
 }
 
 func (uc *Controller) ChangePrivacyLevel (c *gin.Context) {
@@ -217,6 +283,41 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 	}
 }
 
+func (uc *Controller) GetOnlineUsers (c *gin.Context) {
+	req, err := http.NewRequest("GET", "http://10.0.0.60:30257/plugins/restapi/v1/sessions", nil)
+	if err != nil {
+		fmt.Println(err)
+		jing.SendError(c, jing.NewError(1, 500, "Can't create http request"))
+		return
+	}
+	req.Header.Add("Authorization", "lqynb")
+	req.Header.Add("Accept", "application/json")
+	cli := &http.Client{}
+	resp, err := cli.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		jing.SendError(c, jing.NewError(1, 500, "Openfire server are unavailable"))
+		return
+	}
+	jsonStr, _ := ioutil.ReadAll(resp.Body)
+	var ret []map[string]interface{}
+	var j map[string]interface{}
+	_ = json.Unmarshal(jsonStr, &j)
+	sessions := j["sessions"].([]interface{})
+	for _, session := range sessions {
+		username := session.(map[string]interface{})["username"].(string)
+		user, _ := dao.FindUserByUsername(username)
+		ret = append(ret, map[string]interface{} {
+			"id": user.ID,
+			"jaccount": user.Jaccount,
+			"nickname": user.Nickname,
+			"signature": user.Signature,
+			"ban_time": user.BanTime,
+		})
+	}
+	c.JSON(http.StatusOK, ret)
+}
+
 func (uc *Controller) QueryUser (c *gin.Context) {
 	userId := -1
 	auth := c.Request.Header.Get("Authorization")
@@ -238,7 +339,7 @@ func (uc *Controller) QueryUser (c *gin.Context) {
 		jing.SendError(c, err)
 		return
 	} else if rsp.Id > 0 {
-		if rsp.Privacy == 0 || rsp.Privacy == 2 {
+		if rsp.Privacy == 0 || rsp.Privacy == 2 || rsp.SelfRequest {
 			c.JSON(http.StatusOK, map[string]interface {}{
 				"id" : rsp.Id,
 				"privacy": rsp.Privacy,

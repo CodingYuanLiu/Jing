@@ -2,12 +2,12 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
+	"jing/app/jing"
 	"log"
 	"strconv"
 )
@@ -17,18 +17,18 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
 	if err == mgo.ErrNotFound{
 		log.Println(err)
-		resp.Status=404
-		resp.Description="Not Found"
-		return err
+		return jing.NewError(301,404,"Can not find the activity")
 	}
 
 	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
 	if mapBasicInfo["status"].(int) == 2{
 		log.Println("cannot modify expired activity")
-		resp.Status = 500
-		resp.Description = "cannot modify expired activity"
-		return errors.New("cannot modify expired activity")
+		return jing.NewError(1,400,"Cannot modify expired activity")
+	}else if mapBasicInfo["status"].(int) == -1{
+		log.Println("cannot modify blocked activity")
+		return jing.NewError(1,400,"Cannot modify blocked activity")
 	}
+
 	fetchType:= mapBasicInfo["type"].(string)
 
 	basicInfo:=dao.BasicInfo{
@@ -47,15 +47,24 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		err = dao.DeleteImgWithName(name)
 		if err != nil{
 			log.Printf("Catch delete error from dao,cannot delete pictures for act %d, pic %d\n",req.ActId,i)
-			continue
+			return jing.NewError(300,400,"Can not delete pictures from qiniu")
 		}
 		log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)
 	}
 
 	var newImages []string
+	var err2 error
 	for i,param := range req.Images{
 		name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(int(req.ActId)),strconv.Itoa(i))
-		newImages = append(newImages,dao.UploadImgWithName(param,name))
+		imageUrl, err := dao.UploadImgWithName(param,name)
+		if err != nil{
+			err2 = err
+		}
+		newImages = append(newImages,imageUrl)
+	}
+	if err2 != nil{
+		log.Println(err2)
+		return jing.NewError(300,400,"Can not upload image to qiniu when modifying")
 	}
 
 	for _,param := range newImages{
@@ -105,10 +114,10 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	}
 	if err!=nil{
 		log.Println(err)
-		return err
+		return jing.NewError(300,400,"Can not update activity in mongoDB")
 	}
-	resp.Status=200
-	resp.Description="OK"
+	resp.Description="Modify activity successfully"
 	log.Println("Modify successfully")
 	return nil
 }
+

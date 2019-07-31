@@ -7,6 +7,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
+	"jing/app/jing"
 	"log"
 	"strconv"
 )
@@ -16,9 +17,8 @@ func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp 
 	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&result)
 	if err == mgo.ErrNotFound{
 		log.Println("Can not find the removed activity")
-		resp.Status = 404
 		resp.Description = "Not Found"
-		return err
+		return jing.NewError(301,404,"Can not find the removed activity")
 	}
 	mapBasicInfo := result["basicinfo"].(map[string] interface{})
 	imagesLen := len(mapBasicInfo["images"].([]interface{}))
@@ -31,15 +31,17 @@ func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp 
 		}
 		log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)
 	}
-	err = dao.Collection.Remove(bson.M{"actid": req.ActId})
+	if err != nil{
+		return jing.NewError(300,400,"Delete activity from qiniu error")
+	}
 
+	err = dao.Collection.Remove(bson.M{"actid": req.ActId})
 	if err!=nil{
 		log.Println(err)
-		return err
+		return jing.NewError(300,400,"Delete activity from mongoDB error")
 	} else{
 		log.Println("Delete activity successfully.")
-		resp.Status = 200
-		resp.Description = "OK"
+		resp.Description = "delete activity successfully"
 	}
 	return nil
 }
