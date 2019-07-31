@@ -73,6 +73,26 @@ func generateJSON(actId int, userId int, userName string, userSignature string, 
 	return
 }
 
+func (activityController *Controller) AdminDeleteActivity(c *gin.Context) {
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
+		})
+		c.Abort()
+		return
+	}
+	err = activityClient.DeleteActivity(actId)
+	if err != nil {
+		jing.SendError(c, err)
+		return
+	}
+	_ = dao.DeleteActivity(actId)
+	c.JSON(http.StatusOK, map[string]string {
+		"message": "Delete successfully",
+	})
+}
+
 func (activityController *Controller) FindActByUser(c *gin.Context) {
 	userId, err := strconv.Atoi(c.Query("id"))
 	if err != nil || userId == 0 {

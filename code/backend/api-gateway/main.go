@@ -123,8 +123,9 @@ func setupRouter() *gin.Engine {
 	adminRouter := router.Group("/api/admin")
 	{
 		adminRouter.GET("/banuser", uc.BanUser)
-		adminRouter.POST("/act/delete", ac.DeleteActivity)
+		adminRouter.POST("/act/delete", ac.AdminDeleteActivity)
 		adminRouter.GET("/findallusers", uc.FindAllUsers)
+		adminRouter.GET("/queryuser", uc.AdminQueryUser)
 	}
 
 	return router

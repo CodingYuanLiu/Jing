@@ -35,6 +35,30 @@ func (uc *Controller) FindAllUsers (c *gin.Context) {
 	c.JSON(http.StatusOK, retJson)
 }
 
+func (uc *Controller) AdminQueryUser (c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'id' is not provided or bad"))
+		return
+	}
+	rsp, err := userClient.CallQueryUser(int32(id), int32(id))
+	if err != nil {
+		jing.SendError(c, err)
+	}
+	c.JSON(http.StatusOK, map[string]interface {}{
+		"id" : rsp.Id,
+		"privacy": rsp.Privacy,
+		"phone" : rsp.Phone,
+		"nickname" : rsp.Nickname,
+		"signature" : rsp.Signature,
+		"birthday": rsp.Birthday,
+		"major": rsp.Major,
+		"gender": rsp.Gender,
+		"dormitory": rsp.Dormitory,
+		"jaccount": rsp.Jaccount,
+	})
+}
+
 func (uc *Controller) BanUser (c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	if err != nil {
