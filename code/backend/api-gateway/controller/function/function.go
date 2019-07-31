@@ -28,7 +28,7 @@ func (functionController *Controller) TakeoutSearchShop(c *gin.Context) {
 
 func (functionController *Controller) GetStatistics(c *gin.Context) {
 	var users, onlineUsers, acts, availableActs int
-	req, err := http.NewRequest("GET", "http://202.120.40.8:30257/plugins/restapi/v1/sessions", nil)
+	req, err := http.NewRequest("GET", "http://10.0.0.60:30257/plugins/restapi/v1/sessions", nil)
 	if err != nil {
 		fmt.Println(err)
 		jing.SendError(c, jing.NewError(1, 500, "Can't create http request"))
