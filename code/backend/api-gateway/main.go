@@ -128,7 +128,8 @@ func setupRouter() *gin.Engine {
 		adminRouter.GET("/findallusers", uc.FindAllUsers)
 		adminRouter.GET("/queryuser", uc.AdminQueryUser)
 		adminRouter.GET("/findonlineusers", uc.GetOnlineUsers)
+		adminRouter.GET("/act/blockact",ac.BlockActivity)
+		adminRouter.GET("/act/unblockact",ac.UnblockActivity)
 	}
-
 	return router
 }

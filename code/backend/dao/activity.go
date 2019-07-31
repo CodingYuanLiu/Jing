@@ -47,7 +47,7 @@ type BasicInfo struct{
 	Tag []string
 	Images []string
 	MaxMember int32
-	Status int32
+	Status int32 // 0 for available, 1 for full members, 2 for expire, -1 for blocked
 }
 
 type TaxiInfo struct{

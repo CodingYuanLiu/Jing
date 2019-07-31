@@ -832,6 +832,7 @@ Authorization: Bearer jwt
     "description": "desc",
     "tag": ["g", "a", "t"],
     "images": [],
+    "max_member":3,
 
     "depart_time": "2019-7-16 15:17",
     "origin": {},

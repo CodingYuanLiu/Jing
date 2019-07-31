@@ -368,6 +368,9 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 		})
 		c.Abort()
 		return
+	} else if status == -1 {
+		jing.SendError(c,jing.NewError(1,400,"The activity is blocked"))
+		return
 	}
 
 	_ = dao.JoinActivity(userId, actId)
@@ -417,6 +420,8 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 		})
 		c.Abort()
 		return
+	} else if status == -1 {
+		jing.SendError(c,jing.NewError(1,400,"The activity is blocked"))
 	}
 
 	acceptId, _ := strconv.Atoi(c.Query("user_id"))
@@ -716,3 +721,48 @@ func (activityController *Controller) RecommendActivity(c *gin.Context){
 	c.JSON(http.StatusOK, actJSONs)
 }
 
+func (activityController *Controller) BlockActivity(c *gin.Context){
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'act_id' is not provided or bad"))
+		return
+	}
+
+	err = dao.Collection.Update(bson.M{"actid":actId},
+		bson.M{"$set":bson.M{"basicinfo.status":int32(-1)}})
+	if err != nil{
+		jing.SendError(c,jing.NewError(300,400,"can not block the activity"))
+		return
+	}
+	c.JSON(http.StatusOK,map[string] string{
+		"message":"block activity successfully",
+	})
+}
+
+func (activityController *Controller) UnblockActivity(c *gin.Context){
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'act_id' is not provided or bad"))
+		return
+	}
+
+	var act map[string] interface{}
+	err = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	if err != nil{
+		jing.SendError(c,jing.NewError(301,404,"can not find the activity"))
+		return
+	}
+	basicInfo := act["basicinfo"].(map[string] interface{})
+	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),
+		dao.GetMaxMemberStatus(int32(actId),int32(basicInfo["maxmember"].(int))))
+
+	err = dao.Collection.Update(bson.M{"actid":actId},
+		bson.M{"$set":bson.M{"basicinfo.status":status}})
+	if err != nil{
+		jing.SendError(c,jing.NewError(300,400,"can not block the activity"))
+		return
+	}
+	c.JSON(http.StatusOK,map[string] string{
+		"message":"unblock activity successfully",
+	})
+}
