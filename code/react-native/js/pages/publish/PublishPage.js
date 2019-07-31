@@ -1,15 +1,19 @@
 import React from "react"
-import { View, StyleSheet, TextInput, TouchableHighlight, ScrollView} from 'react-native';
+import {View, StyleSheet, TextInput, TouchableHighlight, ScrollView, StatusBar} from 'react-native';
 import PublishHeader from "./components/PublishHeader";
 import NavigationUtil from "../../navigator/NavUtil";
 import { connect } from "react-redux";
-import {Icon, Image} from "react-native-elements";
+import {Button, Icon, Image} from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
 import Util from "../../common/util";
 import Api from "../../api/Api";
 import MenubarItem from "./components/menubarItem";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import Activity from "../../actions/activity";
+import LocalApi from "../../api/LocalApi";
+import Model from "../../api/Model";
+import {ConfirmModal} from "../../common/components/CustomModal";
+
 
 class PublishPage extends React.PureComponent{
     constructor(props) {
@@ -22,6 +26,7 @@ class PublishPage extends React.PureComponent{
             images: [],
             endTimePickerVisible: false,
             specTimePickerVisible: false,
+            saveModalVisible: false,
             saved: false,
             published: false,
         }
@@ -29,12 +34,8 @@ class PublishPage extends React.PureComponent{
 
     componentDidMount(){
         this.type = this.props.navigation.getParam("type");
-        console.log(this.props.navigation.state);
         this.init(this.type);
-        console.log(this.state);
-        console.log(this.props);
     }
-
     render() {
         let header = this.renderHeader();
         let detailInput = this.renderDetailInput();
@@ -44,6 +45,7 @@ class PublishPage extends React.PureComponent{
         let endTimePicker = this.renderEndTimePicker();
         let specTimePicker = this.renderSpecTimePicker();
         let imageList = this.state.images;
+        let saveModal = this.renderSaveModal();
         return(
             <View style={styles.container}>
                 {header}
@@ -70,10 +72,18 @@ class PublishPage extends React.PureComponent{
                     {endTimePicker}
                     {specTimePicker}
                 </ScrollView>
+                {saveModal}
             </View>
         )
     }
     renderHeader = () => {
+        let title = (
+                <Button
+                title={"草稿箱"}
+                type={"clear"}
+                onPress={this.toPublishDraft}
+                />
+        );
         return (
             <PublishHeader
                 style={styles.headerContainer}
@@ -81,6 +91,8 @@ class PublishPage extends React.PureComponent{
                 onPublish={this.publish}
                 buttonTitle={"发布"}
                 buttonType={"solid"}
+                titleView={title}
+                titleLayoutStyle={styles.headerTitle}
             />
         );
     };
@@ -143,8 +155,11 @@ class PublishPage extends React.PureComponent{
     renderSpecMenubar = () => {
         let type = this.state.type;
         let act = this.state;
+        let props = this.props.publishAct;
+        let propsAct;
         switch(type) {
             case "taxi" : {
+                propsAct = props.taxiAct;
                 return (
                     <View>
                         <MenubarItem
@@ -157,22 +172,23 @@ class PublishPage extends React.PureComponent{
                         <MenubarItem
                             onPress={this.handleClickOriginDest}
                             iconName={"originDest"}
-                            title={act.origin && act.dest && act.origin !== "" && act.dest !== "" ?
-                                act.origin + "——>" + act.dest : "出发、到达"}
-                            active={Boolean(act.origin && act.dest && act.origin !== "" && act.dest !== "")}
+                            title={propsAct.origin && propsAct.dest && propsAct.origin !== "" && propsAct.dest !== "" ?
+                                propsAct.origin + "——>" + propsAct.dest : "出发、到达"}
+                            active={Boolean(propsAct.origin && propsAct.dest && propsAct.origin !== "" && propsAct.dest !== "")}
                         />
                     </View>
                 )
             }
             case "takeout": {
+                propsAct = props.takeoutAct;
                 return (
                     <View>
                         <MenubarItem
                             onPress={this.handleClickTakeoutStore}
                             iconName={"store"}
                             title={"外卖店铺"}
-                            rightTitle={act.store ? act.store : ""}
-                            active={Boolean(act.store && act.store !== "")}
+                            rightTitle={propsAct.store ? propsAct.store : ""}
+                            active={Boolean(propsAct.store && propsAct.store !== "")}
                         />
                         <MenubarItem
                             onPress={this.showSpecTimePicker}
@@ -185,19 +201,21 @@ class PublishPage extends React.PureComponent{
                 )
             }
             case "order": {
+                propsAct = props.orderAct;
                 return (
                     <View>
                         <MenubarItem
                             onPress={this.handleClickOrderStore}
                             iconName={"store"}
                             title={"下单店铺"}
-                            rightTitle={act.store ? act.store : ""}
-                            active={Boolean(act.store && act.store !== "")}
+                            rightTitle={propsAct.store ? propsAct.store : ""}
+                            active={Boolean(propsAct.store && propsAct.store !== "")}
                         />
                     </View>
                 )
             }
             case "other": {
+                propsAct = props.otherAct;
                 return (
                     <View>
                         <MenubarItem
@@ -236,45 +254,22 @@ class PublishPage extends React.PureComponent{
             />
         )
     };
+    renderSaveModal = () => {
+        return (
+            <ConfirmModal
+                visible={this.state.saveModalVisible}
+                title={"是否保存"}
+                onCancel={this.handleCancelSave}
+                onConfirm={this.handleConfirmSave}
+            />
+        )
+    };
     publish = () => {
-        let publishAct = this.props.publishAct;
-
-        let images = new Array();
-        for (let img of publishAct.images) {
-            images.push(img.data);
-        }
-        let data = {
-            type: publishAct.type,
-            end_time: publishAct.endTime,
-            create_time: Util.dateTimeToString(new Date()),
-            title: publishAct.title,
-            description: publishAct.description,
-            tag: publishAct.tags,
-            images: images,
-            max_member: 5,
-        };
-        if (data.type === "taxi") {
-
-            data.depart_time = publishAct.departTime;
-            data.origin = {
-                title: publishAct.origin,
-            };
-            data.destination = {
-                title: publishAct.dest,
-            };
-        } else if (data.type === "order") {
-            data.store = publishAct.store;
-        } else if (data.type === "takeout") {
-
-            data.order_time = publishAct.orderTime;
-            data.store = publishAct.store;
-        } else {
-            // type === 'other'
-            data.activity_time = publishAct.activityTime;
-        }
+        let publishAct = this.buildAct(this.props.publishAct, this.type);
+        let data =
+            Model.transferActivityFromCamelToSnake(publishAct);
         console.log(data);
-
-        Api.publishAct(this.props.user.jwt, data)
+        Api.publishAct(this.props.currentUser.jwt, data)
             .then (res => {
                 console.log(res);
             })
@@ -285,9 +280,7 @@ class PublishPage extends React.PureComponent{
 
     handleBodyTextChange = text => {
         this.setState({description: text});
-        if (Number(text.length) % 10 === 0 ) {
-            this.saveByType({description: text}, this.type);
-        }
+        this.saveByType({description: text}, this.type);
     };
     handleBodyTextBlur = () => {
         let text = this.state.description;
@@ -295,10 +288,11 @@ class PublishPage extends React.PureComponent{
     };
     handleTitleTextChange = text => {
         this.setState({title: text});
+        this.saveByType({title: text}, this.type);
     };
     handleTitleTextBlur = () => {
-        // ...
-        this.saveByType({title: this.state.title}, this.type);
+        let title = this.state.title;
+        this.saveByType({title: title}, this.type);
     };
     handleClickEndTime = () => {
         this.setState({
@@ -370,12 +364,14 @@ class PublishPage extends React.PureComponent{
                 let type = res.type;
                 let img =  res.data;
                 let images = this.state.images;
+                let newImages = [{type: type, data: img}, ...images];
                 this.setState({
-                    images: [{type: type, data: img}, ...images],
+                    images: newImages,
                 });
                 this.saveByType({
-                    images: images
+                    images: newImages,
                 }, this.type);
+                console.log(newImages);
             }
         })
 
@@ -402,11 +398,43 @@ class PublishPage extends React.PureComponent{
     goBack = () => {
         let saved = this.state.saved;
         if (!saved) {
-            //
-            NavigationUtil.back(this.props);
+            this.setState({saveModalVisible: true});
         } else {
             NavigationUtil.back(this.props);
         }
+    };
+    toPublishDraft = () => {
+        NavigationUtil.toPage(null, "PublishDraft");
+    };
+    buildAct = (publishAct, type) => {
+        switch(type) {
+            case "taxi":
+                return publishAct.taxiAct;
+            case "takeout":
+                return publishAct.takeoutAct;
+            case "order":
+                return publishAct.orderAct;
+            case "other":
+                return publishAct.otherAct;
+            default:
+                console.log("invalid publish act type");
+                return publishAct.taxiAct;
+        }
+    };
+    handleConfirmSave = () => {
+        this.setState({saveModalVisible: false});
+        let item = this.buildAct(this.props.publishAct, this.type);
+        LocalApi.savePublishDraft(item)
+            .then(() => {
+                NavigationUtil.toPage(null, "Home");
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
+    handleCancelSave = () => {
+        this.setState({saveModalVisible: false});
+        NavigationUtil.toPage(null, "Home");
     };
     init = (type) => {
         let act;
@@ -492,6 +520,12 @@ const styles = StyleSheet.create({
     headerContainer: {
         marginTop: 0,
     },
+    headerTitle: {
+        alignItems: "flex-end",
+        justifyContent: "flex-end",
+        marginRight: 14,
+        flex: 1,
+    },
     mainContainer: {
         backgroundColor: "#fff",
     },
@@ -544,5 +578,4 @@ const styles = StyleSheet.create({
         marginRight: "2%",
         marginLeft: "2%",
     },
-
 });

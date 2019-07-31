@@ -4,6 +4,7 @@ import PublishPage from "./PublishPage";
 import PublishTakeoutSpec from "./PublishSpec/PublishTakeoutSpec";
 import PublishOrderSpec from "./PublishSpec/PublishOrderSpec";
 import Publish from "./Publish";
+import PublishDraft from "./PublishDraft";
 
 export default createStackNavigator({
     Publish: {
@@ -20,6 +21,9 @@ export default createStackNavigator({
     },
     PublishOrderSpec: {
         screen: PublishOrderSpec,
+    },
+    PublishDraft: {
+        screen: PublishDraft,
     },
 }, {
     defaultNavigationOptions: {

@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, StatusBar } from 'react-native';
 import { Icon, Button } from "react-native-elements";
 import NavigationUtil from '../../navigator/NavUtil';
 import {connect} from "react-redux";
+import {ArrowDownIcon, FoodIcon, MultiUserIcon, ShoppingBagIcon, TaxiIcon} from "../../common/components/Icons";
 
 class PublishScreen extends React.PureComponent{
     constructor(props) {
@@ -11,16 +12,18 @@ class PublishScreen extends React.PureComponent{
 
     componentDidMount(){
         this._navListener = this.props.navigation.addListener('didFocus',() => {
-            StatusBar.setHidden(true, "fade")
+            StatusBar.setBarStyle("dark-content", true);
+            StatusBar.setBackgroundColor("#efefef", true);
         })
     }
 
-    componentWillUnmount(): void {
+    componentWillUnmount() {
         this._navListener.remove();
     }
 
     fadeOut = () => {
-        StatusBar.setHidden(false, "fade");
+        StatusBar.setBarStyle("light-content", true);
+        StatusBar.setBackgroundColor("#0084ff", true);
         NavigationUtil.back(this.props)
     };
     toPublishPage = type => {
@@ -36,37 +39,29 @@ class PublishScreen extends React.PureComponent{
     };
     render() {
         const taxi =
-            <Icon
+            <TaxiIcon
             reverse
-            type={"font-awesome"}
-            name={"taxi"}
             color={"#0072ff"}
             onPress={() => {this.toPublishPage("taxi")}}
             />;
         const taxiTitle = "发起拼车";
         const shopping =
-            <Icon
+            <ShoppingBagIcon
                  reverse
-                 type={"font-awesome"}
-                 name={"shopping-bag"}
                  color={"#007bff"}
                  onPress={() => {this.toPublishPage("order")}}
             />;
         const shoppingTitle = "拼网购";
         const takeOut =
-            <Icon
+            <FoodIcon
                 reverse
-                type={"material-community"}
-                name={"food"}
                 color={"#0090ff"}
                 onPress={() => {this.toPublishPage("takeout")}}
             />;
         const takeOutTitle = "拼外卖";
         const activity =
-            <Icon
+            <MultiUserIcon
                 reverse
-                type={"ionicon"}
-                name={"md-contacts"}
                 color={"#009eff"}
                 onPress={() => {this.toPublishPage("other")}}
             />;
@@ -74,16 +69,10 @@ class PublishScreen extends React.PureComponent{
         return(
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Icon
-                    type={"simple-line-icon"}
-                    name={"arrow-down"}
+                    <ArrowDownIcon
                     size={32}
                     color={"#d3d3d3"}
                     onPress={this.fadeOut}
-                    />
-                    <Button
-                    title={"去测试页面"}
-                    onPress={() => {NavigationUtil.toPage(null, "Test")}}
                     />
                 </View>
                 <View style={styles.main}>
@@ -147,7 +136,5 @@ const styles = StyleSheet.create({
     },
     textContainer: {
         alignItems: "center",
-    },
-    text: {
     },
 });

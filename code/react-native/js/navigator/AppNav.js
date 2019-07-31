@@ -9,7 +9,7 @@ import RegisterScreen from "../pages/login/Register";
 import SearchScreen from '../pages/search/Search';
 import PersonalHome from '../pages/me/PersonalHome';
 import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch"
-import PublishPage from "../pages/publish/PublishPage";
+import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
 import ChatRoom from "../pages/notification/pages/ChatRoom";
 import Information from "../pages/me/ModifyInformation";
@@ -52,8 +52,8 @@ const MainNav = createStackNavigator(
         Search: {
             screen: SearchScreen,
         },
-        PublishPage: {
-            screen: PublishPage,
+        PublishStack: {
+            screen: PublishStack,
         },
         Information: {
             screen: Information,

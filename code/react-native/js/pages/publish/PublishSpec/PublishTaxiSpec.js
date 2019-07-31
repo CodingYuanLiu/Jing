@@ -4,6 +4,7 @@ import PublishHeader from "../components/PublishHeader";
 import {connect} from "react-redux";
 import {Icon, Input} from "react-native-elements";
 import NavigationUtil from "../../../navigator/NavUtil";
+import Activity from "../../../actions/activity";
 
 
 
@@ -18,20 +19,19 @@ class PublishTaxiSpec extends React.PureComponent{
 
         }
     }
-
     componentDidMount() {
-        if (this.props.dest && this.props.dest !== "") {
+        let act = this.props.publishAct.taxiAct;
+        if (act.dest && act.dest !== "") {
             this.setState({
-                dest: this.props.dest,
+                dest: act.dest,
             })
         }
-        if (this.props.origin && this.props.origin !== "") {
+        if (act.origin && act.origin !== "") {
             this.setState({
-                origin: this.props.origin,
+                origin: act.origin,
             })
         }
     }
-
     renderHeader = () => {
         return (
             <PublishHeader
@@ -74,11 +74,6 @@ class PublishTaxiSpec extends React.PureComponent{
             </View>
         );
     };
-
-    renderInputPromt = () => {
-
-    };
-
     renderMapView = () => {
         return null;
     };
@@ -98,12 +93,12 @@ class PublishTaxiSpec extends React.PureComponent{
 
     handleInputOrigin = value => {
         this.setState({origin: value});
-        this.props.setPublishTaxiOrigin(value);
+        this.props.saveTaxiAct({origin: value});
     };
 
     handleInputDest = dest => {
         this.setState({dest: dest});
-        this.props.setPublishTaxiDest(dest);
+        this.props.saveTaxiAct({dest: dest});
     };
     toNextPage = () => {
         if (this.state.origin === "" ||
@@ -116,11 +111,12 @@ class PublishTaxiSpec extends React.PureComponent{
 }
 
 const mapStateToProps = state => ({
-    origin: state.publishAct.origin,
-    dest: state.publishAct.dest,
+    publishAct: state.publishAct,
 });
-
-export default connect(mapStateToProps, null)(PublishTaxiSpec);
+const mapDispatchToProps = dispatch => ({
+    saveTaxiAct: (data) => dispatch(Activity.saveTaxiAct(data)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(PublishTaxiSpec);
 
 
 const styles = StyleSheet.create({

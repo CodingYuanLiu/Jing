@@ -61,11 +61,11 @@ class NewAct extends React.PureComponent{
                     keyExtractor={item => (item.id.toString())}
                     refreshControl={
                         <RefreshControl
+                            refreshing={actStore.isLoading}
+                            onRefresh={this.loadData}
                             title={"加载中..."}
                             titleColor={"#0084ff"}
                             colors={["#0084ff"]}
-                            refreshing={actStore.isLoading}
-                            onRefresh={this.loadData}
                             tintColor={"#0084ff"}
                         />
                     }

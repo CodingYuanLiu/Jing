@@ -16,7 +16,7 @@ const StatusBarShape = {
     barStyle: PropTypes.oneOf(["light-content", "default"]),
     hidden: PropTypes.bool,
     backgroundColor: PropTypes.string,
-}
+};
 
 
 export default class NavigationBar extends React.Component{
@@ -69,7 +69,7 @@ NavigationBar.propTypes = {
     leftButton: PropTypes.element,
     leftBtnStyle: ViewPropTypes.style,
     rightBtnStyle: ViewPropTypes.style,
-}
+};
 
 
 
@@ -79,7 +79,7 @@ NavigationBar.defaultProps = {
         barStyle: "light-content",
         hidden: false,
     }
-}
+};
 
 
 const styles = StyleSheet.create({
@@ -108,5 +108,5 @@ const styles = StyleSheet.create({
     statusBar: {
         height: Platform.OS === "ios" ? STATUS_BAR_HEIGHT : 0,
     }
-})
+});
 

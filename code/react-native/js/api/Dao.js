@@ -6,7 +6,6 @@ export default class Dao {
             await AsyncStorage.setItem(key, JSON.stringify(data));
             return data
         } catch (err) {
-            err.status = 500;
             throw new Error(err)
         }
     };
@@ -16,7 +15,6 @@ export default class Dao {
             await AsyncStorage.setItem(key, data);
             return data
         } catch (err) {
-            err.status = 500;
             throw new Error(err)
         }
     };
@@ -28,12 +26,10 @@ export default class Dao {
             if (value !== null) {
                 return value
             } else {
-                let err = new Error("not found");
-                err.status = 404;
+                let err = new Error("AsyncStorage did not found value, " + key);
                 throw err;
             }
         } catch (err) {
-            err.status = 500;
             throw new Error(err)
         }
     };
@@ -41,9 +37,8 @@ export default class Dao {
     static remove = async (key) => {
         try {
             await AsyncStorage.removeItem(key);
-            return
+            return;
         } catch (err) {
-            err.status = 500;
             err.message = "delete fail";
             throw new Error(err)
         }

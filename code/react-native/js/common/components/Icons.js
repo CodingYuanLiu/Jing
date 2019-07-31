@@ -46,8 +46,26 @@ class TaxiIcon extends React.PureComponent{
         let {size, color, style, onPress} = this.props;
         return (
             <Icon
-                type={"material-community"}
+                type={"font-awesome"}
                 name={"taxi"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class ShoppingBagIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"font-awesome"}
+                name={"shopping-bag"}
                 color={color}
                 size={size}
                 containerStyle={style}
@@ -66,7 +84,25 @@ class FoodIcon extends React.PureComponent{
         return (
             <Icon
                 type={"material-community"}
-                name={"taxi"}
+                name={"food"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class MultiUserIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"ionicon"}
+                name={"md-contacts"}
                 color={color}
                 size={size}
                 containerStyle={style}
@@ -103,6 +139,24 @@ class ArrowLeftIcon extends React.PureComponent{
             <Icon
                 type={"material-community"}
                 name={"keyboard-backspace"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class ArrowDownIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"simple-line-icon"}
+                name={"arrow-down"}
                 color={color}
                 size={size}
                 containerStyle={style}
@@ -370,14 +424,35 @@ class CameraIcon extends React.PureComponent{
             />)
     }
 }
+class DeleteIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material-community"}
+                name={"delete"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
     PlusIcon,
     TaxiIcon,
+    ShoppingBagIcon,
     FoodIcon,
+    MultiUserIcon,
     CalendarIcon,
     ArrowLeftIcon,
+    ArrowDownIcon,
     UserIcon,
     MessageIcon,
     LockIcon,
@@ -392,4 +467,5 @@ export {
     MessageOneToOneIcon,
     ChevronIcon,
     CameraIcon,
+    DeleteIcon,
 }

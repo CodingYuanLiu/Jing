@@ -31,11 +31,13 @@ export default class PublishHeader extends React.PureComponent{
         let style= this.props.style;
         return (
             <HeaderBar
-                style={[{backgroundColor: Theme.BACKGROUND_GREY, marginTop: 20}, style]}
+                style={[{backgroundColor: "#fff", marginTop: 20}, style]}
                 leftButton={closeIcon}
                 rightButton={rightBtn}
                 rightBtnStyle={{marginRight: 12}}
                 leftBtnStyle={{marginLeft: 16}}
+                titleView={this.props.titleView}
+                titleLayoutStyle={this.props.titleLayoutStyle}
             />
         )
     }
@@ -48,7 +50,9 @@ PublishHeader.propTypes = {
     onPublish: PropTypes.func,
     buttonTitle: PropTypes.string,
     buttonType: PropTypes.string,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    titleView: PropTypes.element,
+    titleLayoutStyle: ViewPropTypes.style,
 };
 
 PublishHeader.defaultProps = {

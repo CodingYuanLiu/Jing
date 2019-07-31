@@ -1,3 +1,5 @@
+import Util from "../common/util";
+
 export default class Model {
     static transferUserInfo(data) {
         return {
@@ -77,7 +79,40 @@ export default class Model {
     }
 
     // transfer from camel to snake,
-    static transferActivityFromCamelToSnake(data) {
+    static transferActivityFromCamelToSnake(publishAct) {
+        let images = new Array();
+        for (let img of publishAct.images) {
+            images.push(img.data);
+        }
+        let data = {
+            type: publishAct.type,
+            end_time: publishAct.endTime,
+            create_time: Util.dateTimeToString(new Date()),
+            title: publishAct.title,
+            description: publishAct.description,
+            tag: publishAct.tags,
+            images: images,
+            max_member: 5,
+        };
+        if (data.type === "taxi") {
 
+            data.depart_time = publishAct.departTime;
+            data.origin = {
+                title: publishAct.origin,
+            };
+            data.destination = {
+                title: publishAct.dest,
+            };
+        } else if (data.type === "order") {
+            data.store = publishAct.store;
+        } else if (data.type === "takeout") {
+
+            data.order_time = publishAct.orderTime;
+            data.store = publishAct.store;
+        } else {
+            // type === 'other'
+            data.activity_time = publishAct.activityTime;
+        }
+        return data;
     }
 }

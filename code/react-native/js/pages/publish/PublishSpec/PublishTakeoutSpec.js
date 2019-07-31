@@ -5,6 +5,7 @@ import {ArrowLeftIcon, LeftUpArrowIcon, SearchIcon} from "../../../common/compon
 import Api from "../../../api/Api";
 import {connect} from "react-redux";
 import NavigationUtil from "../../../navigator/NavUtil";
+import Activity from "../../../actions/activity";
 
 class PublishTakeoutSpec extends React.PureComponent{
     constructor(props) {
@@ -16,9 +17,6 @@ class PublishTakeoutSpec extends React.PureComponent{
             search: "",
 
         }
-    }
-    componentDidMount(){
-
     }
     renderHeader = () => {
         let returnIcon = (
@@ -126,12 +124,14 @@ class PublishTakeoutSpec extends React.PureComponent{
     };
     _onPressItem = (item) => {
         console.log(item.name);
-        this.props.setPublishTakeoutStore(item.name);
+        this.props.saveTakeoutAct({store: item.name});
         NavigationUtil.back(this.props);
     }
 }
 
-
+const mapDispatchToProps = dispatch => ({
+    saveTakeoutAct: (data) => dispatch(Activity.saveTakeoutAct(data)),
+});
 export default connect(null, null)(PublishTakeoutSpec);
 
 const styles = StyleSheet.create({

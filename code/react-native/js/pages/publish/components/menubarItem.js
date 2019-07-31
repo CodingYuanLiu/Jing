@@ -8,16 +8,6 @@ export default class MenubarItem extends React.PureComponent{
     constructor(props) {
         super(props);
     }
-
-    renderRightIcon = () => {
-        return (
-            <Button
-            title={this.props.rightTitle}
-
-            />
-        )
-    };
-
     renderLeftIcon = (name, color) => {
         switch (name) {
             // gps location icon

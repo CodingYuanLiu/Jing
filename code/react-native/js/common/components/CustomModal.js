@@ -1,29 +1,36 @@
 import Modal from "react-native-modal";
 import React from "react";
-import { View, ViewPropTypes, Text } from "react-native";
+import { View, ViewPropTypes, Text, StyleSheet } from "react-native";
 import { PropTypes } from "prop-types";
-import styles from "react-native-webview/lib/WebView.styles";
 import Theme from "../constant/Theme";
 
-class Confirm extends React.PureComponent {
+class ConfirmModal extends React.PureComponent {
     constructor(props) {
         super(props)
     }
     render() {
-        let {title, content, cancelTitle, confirmTitle, visible} =
+        let {title, content, cancelTitle, onConfirm, onCancel,
+            confirmTitle, visible} =
         this.props;
 
         return (
             <Modal
             isVisible={visible}
+            {...this.props}
             >
                 <View style={styles.confirmContainer}>
                     <View style={styles.innerContainer}>
                         <Text style={styles.title}>{title}</Text>
                         <Text style={styles.content}>{content}</Text>
                         <View style={styles.buttonContainer}>
-                            <Text style={styles.textBtn}>{cancelTitle}</Text>
-                            <Text style={styles.textBtn}>{confirmTitle}</Text>
+                            <Text
+                                onPress={onCancel}
+                                style={styles.textBtn}
+                            >{cancelTitle}</Text>
+                            <Text
+                                style={styles.textBtn}
+                                onPress={onConfirm}
+                            >{confirmTitle}</Text>
                         </View>
                     </View>
                 </View>
@@ -32,20 +39,23 @@ class Confirm extends React.PureComponent {
     }
 }
 
-Confirm.PropTypes={
+ConfirmModal.propTypes={
     title: PropTypes.string,
     content: PropTypes.string.isRequired,
     cancelTitle: PropTypes.string,
     confirmTitle: PropTypes.string,
     visible: PropTypes.bool,
-}
+    onConfirm: PropTypes.func,
+    onCancel: PropTypes.func,
+};
 
-Confirm.defaultProps = {
+ConfirmModal.defaultProps = {
     title: "确认",
+    content: "确认要退出吗？",
     cancelTitle: "取消",
     confirmTitle: "确认",
     visible: false,
-}
+};
 
 
 const styles = StyleSheet.create({
@@ -78,11 +88,8 @@ const styles = StyleSheet.create({
         minWidth: 28,
         minHeight: 16,
     },
-})
-
+});
 
 export {
-    Confirm,
+    ConfirmModal,
 }
-
-

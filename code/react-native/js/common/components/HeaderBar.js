@@ -20,7 +20,8 @@ export default class NavigationBar extends React.Component{
             this.props.titleView :
             <Text
                 ellipsizeMode={"tail"}
-                numberOfLines={1} style={styles.title}
+                numberOfLines={1}
+                style={[styles.title, this.props.titleStyle]}
             >{this.props.title}</Text> ;
         let content = this.props.hide ? null :
             <View style={styles.navBar}>
@@ -76,5 +77,5 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: "#fff",
     },
-})
+});
 
