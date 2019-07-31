@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"jing/app/dao"
+	//"jing/app/dao"
 	"log"
 )
-
+/*
 func try1(){
 	objectId := bson.NewObjectId()
 
@@ -46,13 +47,29 @@ func try1(){
 	fmt.Println(bson.IsObjectIdHex(objectIdOld))
 
 }
-
+*/
 func main(){
-	var act map[string]interface{}
-	err := dao.Collection.Find(bson.M{"actid": 1023}).One(&act)
+
+	session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")
+	if err != nil{
+		log.Println(err)
+	}
+
+	collection := session.DB("Jing").C("Activity")
+	index := mgo.Index{
+		Key: []string{"$text:basicinfo.description"},
+	}
+	err = collection.EnsureIndex(index)
+
 	if err != nil{
 		fmt.Print("err:" + err.Error())
+	}
+	var result []map[string]interface{}
+	err = collection.Find(bson.M{"$text":bson.M{"$search":"basketball"}}).All(&result)
+	if err != nil {
+		fmt.Print("err:" + err.Error())
 	}else{
-		fmt.Print("feedbacks:")
+		fmt.Println("result:")
+		fmt.Println(result)
 	}
 }
