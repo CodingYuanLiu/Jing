@@ -37,6 +37,7 @@ podTemplate(label: label, cloud: 'kubernetes') {
         }
         stage('Push') {
             echo 'Pushing...'
+
             sh """
             docker login -u jing855 -p summer855
             docker push jing855/apigateway:latest
@@ -44,6 +45,7 @@ podTemplate(label: label, cloud: 'kubernetes') {
             docker push jing855/user:latest
             docker push jing855/activity:latest
             docker push jing855/feedback:latest
+
             """
         }
     }
