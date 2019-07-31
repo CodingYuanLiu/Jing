@@ -3,6 +3,7 @@ package user
 import "C"
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"jing/app/api-gateway/cli/login"
@@ -280,6 +281,40 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 			"message" : "Update ok",
 		})
 	}
+}
+
+func (uc *Controller) GetOnlineUsers (c *gin.Context) {
+	req, err := http.NewRequest("GET", "http://202.120.40.8:30257/plugins/restapi/v1/sessions", nil)
+	if err != nil {
+		fmt.Println(err)
+		jing.SendError(c, jing.NewError(1, 500, "Can't create http request"))
+		return
+	}
+	req.Header.Add("Authorization", "lqynb")
+	req.Header.Add("Accept", "application/json")
+	cli := &http.Client{}
+	resp, err := cli.Do(req)
+	if err != nil {
+		jing.SendError(c, jing.NewError(1, 500, "Openfire server are unavailable"))
+		return
+	}
+	jsonStr, _ := ioutil.ReadAll(resp.Body)
+	var ret []map[string]interface{}
+	var j map[string]interface{}
+	_ = json.Unmarshal(jsonStr, &j)
+	sessions := j["sessions"].([]interface{})
+	for _, session := range sessions {
+		username := session.(map[string]interface{})["username"].(string)
+		user, _ := dao.FindUserByUsername(username)
+		ret = append(ret, map[string]interface{} {
+			"id": user.ID,
+			"jaccount": user.Jaccount,
+			"nickname": user.Nickname,
+			"signature": user.Signature,
+			"ban_time": user.BanTime,
+		})
+	}
+	c.JSON(http.StatusOK, ret)
 }
 
 func (uc *Controller) QueryUser (c *gin.Context) {
