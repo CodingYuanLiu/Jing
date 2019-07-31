@@ -283,10 +283,7 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Json parse error",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"json parse error"))
 		return
 	}
 	/* tag cannot be nil but images can.*/
@@ -297,20 +294,18 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||
 		jsonForm["type"].(string) == "other" && (jsonForm["activity_time"] == nil)
 	if check {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Miss some field",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(202,400,"Miss some field"))
 		return
 	}
 
-	err = activityClient.PublishActivity(int(userId), jsonForm)
+	resp,err := activityClient.PublishActivity(int(userId), jsonForm)
 	if err != nil {
 		jing.SendError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, map[string]string{
-		"message": "Publish successfully",
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"message": resp.Description,
+		"act_id": resp.ActId,
 	})
 }
 

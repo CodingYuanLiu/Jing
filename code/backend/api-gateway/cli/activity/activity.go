@@ -116,7 +116,7 @@ func ModifyActivity(userId int, jsonForm json.JSON) error {
 	return nil
 }
 
-func PublishActivity(userId int, jsonForm json.JSON) error {
+func PublishActivity(userId int, jsonForm json.JSON) (*activityProto.PubResp,error) {
 	actType := jsonForm["type"].(string)
 	var tags []string
 	var images []string
@@ -163,13 +163,10 @@ func PublishActivity(userId int, jsonForm json.JSON) error {
 	}
 	resp2, err := Client.Publish(context.TODO(), &pubReq)
 	if err != nil {
-		return err
-	}
-	if resp2.Status != 200 {
-		return jing.NewError(1, int(resp2.Status), resp2.Description)
+		return nil,err
 	}
 	_ = dao.PublishActivity(userId, int(resp2.ActId))
-	return nil
+	return resp2,nil
 }
 
 func GenerateTags(title string,desc string) []string{
