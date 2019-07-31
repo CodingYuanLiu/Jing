@@ -2,12 +2,12 @@ def label = "jenkins-jnlp-slave"
 podTemplate(label: label, cloud: 'kubernetes') {
     node(label){
         stage('Fetch') {
-            echo 'Fetching..'
+            echo 'Fetching...'
             git url: 'https://github.com/CodingYuanLiu/Jing.git', branch: 'develop'
             
         }
         stage('Build') {
-            echo 'Building..'
+            echo 'Building...'
             sh "go version"
             sh """
             cd code/backend/activity
@@ -36,7 +36,7 @@ podTemplate(label: label, cloud: 'kubernetes') {
             """
         }
         stage('Push') {
-            echo 'Pushing....'
+            echo 'Pushing...'
             sh """
             docker login -u jing855 -p summer855
             docker push jing855/apigateway:latest
