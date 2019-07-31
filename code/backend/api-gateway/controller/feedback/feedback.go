@@ -100,6 +100,11 @@ func (feedbackController *Controller) PublishFeedback(c *gin.Context){
 		return
 	}
 
+	if receiverId == userId{
+		jing.SendError(c,jing.NewError(201,400,"Can not feedback to yourself"))
+		return
+	}
+
 	memberIds,err := dao.GetActivityMembers(int(jsonForm["act_id"].(float64)))
 	if err != nil{
 		jing.SendError(c,jing.NewError(201,400,"Activity does not exist in mysql"))
