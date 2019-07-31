@@ -106,7 +106,7 @@ func (feedbackController *Controller) PublishFeedback(c *gin.Context){
 		return
 	}
 	if !isInMembers(userId,memberIds){
-		jing.SendError(c,jing.NewError(104,403,"The user has no authority to make that feedback"))
+		jing.SendError(c,jing.NewError(105,403,"The user has no authority to make that feedback"))
 		return
 	}
 	if !isInMembers(receiverId,memberIds){

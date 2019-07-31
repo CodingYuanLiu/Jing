@@ -82,14 +82,14 @@ func (activityController *Controller) AdminDeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.DeleteActivity(actId)
+	resp,err := activityClient.DeleteActivity(actId)
 	if err != nil {
 		jing.SendError(c, err)
 		return
 	}
 	_ = dao.DeleteActivity(actId)
 	c.JSON(http.StatusOK, map[string]string {
-		"message": "Delete successfully",
+		"message": resp.Description,
 	})
 }
 
@@ -235,9 +235,8 @@ func (activityController *Controller) FindAvailableActivity(c *gin.Context) {
 	}
 	retActs, status := getPages(index, size, acts)
 	if status == -1 {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't get such pages. Check whether your index and activity is correct.",
-		})
+		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		return
 	}
 	var actJSONs []myjson.JSON
 	for _, v := range retActs {
@@ -255,9 +254,8 @@ func (activityController *Controller) FindAllActivity(c *gin.Context) {
 	var actJSONs []myjson.JSON
 	retActs, status := getPages(index, size, acts)
 	if status == -1 {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't get such pages. Check whether your index and activity is correct.",
-		})
+		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		return
 	}
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
@@ -274,9 +272,8 @@ func (activityController *Controller) MyAct(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Query("size"))
 	retActs, status := getPages(index, size, acts)
 	if status == -1 {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't get such pages. Check whether your index and activity is correct.",
-		})
+		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		return
 	}
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
@@ -293,9 +290,8 @@ func (activityController *Controller) ManageAct(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Query("size"))
 	retActs, status := getPages(index, size, acts)
 	if status == -1 {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't get such pages. Check whether your index and activity is correct.",
-		})
+		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		return
 	}
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
@@ -455,10 +451,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Json parse error",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"Json parse error"))
 		return
 	}
 	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil || jsonForm["max_member"] == nil ||
@@ -469,10 +462,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		jsonForm["type"].(string) == "other" && (jsonForm["activity_time"] == nil)
 	if check {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Miss some field",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
 		return
 	}
 	acts := dao.GetManagingActivity(userId)
@@ -484,19 +474,16 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		}
 	}
 	if !flag {
-		c.JSON(http.StatusForbidden, map[string]string{
-			"message": "403 Forbidden",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(105,403,"not the admin of the activity"))
 		return
 	}
-	err = activityClient.ModifyActivity(userId, jsonForm)
+	resp,err := activityClient.ModifyActivity(userId, jsonForm)
 	if err != nil {
 		jing.SendError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, map[string]string{
-		"message": "Modify successfully",
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"message": resp.Description,
 	})
 }
 
@@ -519,26 +506,24 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		}
 	}
 	if !flag {
-		c.JSON(http.StatusForbidden, map[string]string{
-			"message": "403 Forbidden",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(105,403,"not the admin of the activity"))
 		return
 	}
-	err = activityClient.DeleteActivity(actId)
+	resp,err := activityClient.DeleteActivity(actId)
 	if err != nil {
 		jing.SendError(c, err)
 		return
 	}
 	_ = dao.DeleteActivity(actId)
 	c.JSON(http.StatusOK, map[string]string {
-		"message": "Delete successfully",
+		"message": resp.Description,
 	})
 }
 
 func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 	resp, err := activityClient.QueryActivity(actId)
 	if err != nil {
+		log.Printf("Find activity %d error,%s\n",actId,err.Error())
 		return nil, err
 	}
 	userId := dao.GetActivityAdmin(actId)
@@ -646,10 +631,7 @@ func (activityController *Controller) FindActivityByType(c *gin.Context){
 
 	retActs, status := getPages(index, size, acts)
 	if status == -1 {
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Can't get such pages. Check whether your index and activity is correct.",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
 		return
 	}
 	for _, v := range retActs {
