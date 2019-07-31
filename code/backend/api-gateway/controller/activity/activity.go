@@ -220,6 +220,34 @@ func getPages(index int, size int, acts []int) (retActs []int, status int) {
 	return
 }
 
+func (activityController *Controller) FindAvailableActivity(c *gin.Context) {
+	index, _ := strconv.Atoi(c.Query("index"))
+	size, _ := strconv.Atoi(c.Query("size"))
+	var results []map[string]interface{}
+	_ = dao.Collection.Find(bson.M{"basicinfo.status":int32(0)}).All(&results)
+	if results == nil {
+		c.JSON(http.StatusOK, results)
+		return
+	}
+	var acts []int
+	for _, result := range results {
+		acts = append(acts, result["actid"].(int))
+	}
+	retActs, status := getPages(index, size, acts)
+	if status == -1 {
+		c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Can't get such pages. Check whether your index and activity is correct.",
+		})
+	}
+	var actJSONs []myjson.JSON
+	for _, v := range retActs {
+		resp, _ := getActivityJson(v)
+		actJSONs = append(actJSONs, resp)
+	}
+	c.JSON(http.StatusOK, actJSONs)
+}
+
+
 func (activityController *Controller) FindAllActivity(c *gin.Context) {
 	index, _ := strconv.Atoi(c.Query("index"))
 	size, _ := strconv.Atoi(c.Query("size"))

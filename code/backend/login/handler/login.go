@@ -104,7 +104,6 @@ func (s *LoginService) LoginByWx(ctx context.Context, in *login.WxReq, out *logi
 	respJson, _ := ioutil.ReadAll(resp.Body)
 	j := json2.JSON{}
 	_ = json.Unmarshal(respJson, &j)
-	fmt.Println(respJson)
 	if j["errcode"] != nil {
 		errcode := int(j["errcode"].(float64))
 		if errcode == 40029 {
