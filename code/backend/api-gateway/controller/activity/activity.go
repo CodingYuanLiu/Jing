@@ -497,7 +497,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.DeleteActivity(userId, actId)
+	err = activityClient.DeleteActivity(actId)
 	if err != nil {
 		jing.SendError(c, err)
 		return

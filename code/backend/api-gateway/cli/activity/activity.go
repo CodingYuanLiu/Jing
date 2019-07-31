@@ -54,7 +54,7 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	return resp, err
 }
 
-func DeleteActivity(userId int, actId int) error {
+func DeleteActivity(actId int) error {
 	dltReq := activityProto.DltReq{
 		ActId: int32(actId),
 	}
