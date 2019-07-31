@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
 import HeaderBar from "../../common/components/HeaderBar";
 import {CameraIcon, CloseIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
@@ -115,10 +115,14 @@ class ModifyInformation extends React.PureComponent{
     };
     renderBasicInformation = () => {
         let title = this.renderInformationTitle("基本资料");
-        let nickname = this.renderInputWithoutChevron("昵称", "昵称将会作为您和别人交往的可见称呼");
-        let signature = this.renderInputWithTopLabel("个性签名", "简单介绍自己的兴趣");
-        let gender = this.renderInputWithOnPress("性别", this.showGenderPicker);
-        let birthday = this.renderInputWithOnPress("生日", this.showBirthdayPicker);
+        let nickname = this.renderNormalInput("昵称", "昵称将会作为您和别人交往的可见称呼"
+            , this.state.nickname, this.handleNicknameChange);
+        let signature = this.renderLongInput("个性签名", "简单介绍自己的兴趣"
+            , this.state.signature, this.handleSignatureChange);
+        let gender = this.renderOnPressInput("性别", this.showGenderPicker
+            , this.state.gender);
+        let birthday = this.renderOnPressInput("生日", this.showBirthdayPicker
+            , this.state.birthday);
         let dormitory = null;
         let major = null;
         return (
@@ -133,14 +137,43 @@ class ModifyInformation extends React.PureComponent{
             </View>
         );
     };
-    renderInputWithoutChevron = (label, placeholder) => {
-        return null;
+    renderNormalInput = (label, placeholder, onChangeText) => {
+
+        return (
+            <View style={styles.inputContainer}>
+                <Text style={styles.label}>{label}</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder={placeholder}
+                />
+            </View>
+        );
     };
-    renderInputWithTopLabel = (label, placeholder) => {
-        return null;
+    renderLongInput = (label, placeholder, value, onChangeText) => {
+        return (
+            <View style={styles.longInputContainer}>
+                <Text>{label}</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder={placeholder}
+                    value={value}
+                    onChangeText={onChangeText}
+                />
+            </View>
+        );
     };
-    renderInputWithOnPress = (label, onPress) => {
-        return null;
+    renderOnPressInput = (label, onPress) => {
+        return (
+            <View>
+                <TouchableWithoutFeedback>
+                    <Text>{label}</Text>
+                    <TextInput
+                        style={styles.input}
+                        onPress={onPress}
+                    />
+                </TouchableWithoutFeedback>
+            </View>
+        );
     };
     showAvatarPicker = () => {
         ImagePicker.showImagePicker(imagePickerOptions, (response) => {
@@ -164,6 +197,12 @@ class ModifyInformation extends React.PureComponent{
             }
         });
     };
+    handleNicknameChange = (text) => {
+        this.setState({nickname: text});
+    };
+    handleSignatureChange = (text) => {
+        this.setState({signature: text});
+    };
     showGenderPicker = () => {
 
     };
@@ -182,7 +221,7 @@ class ModifyInformation extends React.PureComponent{
     saveAsync = async () => {
         this.setState({isSaving: true});
         let data = {
-            id: this.props.user.id,
+            id: this.props.currentUser.id,
             nickname: this.state.nickname,
             signature: this.state.signature,
             gender: this.state.gender,
@@ -191,7 +230,7 @@ class ModifyInformation extends React.PureComponent{
             major: this.state.major,
             phone: this.state.phone,
         };
-        let jwt = this.props.user.jwt;
+        let jwt = this.props.currentUser.jwt;
         let avatarData = this.state.avatar.data;
         console.log(data, avatarData);
         if (this.state.avatarModified) {
@@ -212,7 +251,7 @@ class ModifyInformation extends React.PureComponent{
         } else {
             if (this.state.infoModified) {
                 // only modified info
-                await Api.updateInfo(data, this.props.user.jwt);
+                await Api.updateInfo(data, this.props.currentUser.jwt);
                 this.props.updateUserInfo(data);
             } else {
                 // nothing modified
@@ -298,4 +337,11 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderColor: "#cfcfcf",
     },
+    inputContainer: {
+        flexDirection: "row",
+    },
+    longInputContainer: {
+
+    },
+
 });

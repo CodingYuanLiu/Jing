@@ -57,7 +57,7 @@ export default class XmppApi {
     static onStanza(
         callback = async stanza => {
         console.log(stanza.toString());
-    }) {
+    }, props) {
         this.xmpp.on('stanza', callback);
     }
 
@@ -131,5 +131,12 @@ export default class XmppApi {
             )
         });
         return xmpp.start();
+    }
+}
+
+
+export class OpenFireApi{
+    register (username, password) {
+
     }
 }
