@@ -295,6 +295,7 @@ func (uc *Controller) GetOnlineUsers (c *gin.Context) {
 	cli := &http.Client{}
 	resp, err := cli.Do(req)
 	if err != nil {
+		fmt.Println(err)
 		jing.SendError(c, jing.NewError(1, 500, "Openfire server are unavailable"))
 		return
 	}
