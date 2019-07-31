@@ -126,7 +126,8 @@ func setupRouter() *gin.Engine {
 		adminRouter.POST("/act/delete", ac.AdminDeleteActivity)
 		adminRouter.GET("/findallusers", uc.FindAllUsers)
 		adminRouter.GET("/queryuser", uc.AdminQueryUser)
+		adminRouter.GET("/act/blockact",ac.BlockActivity)
+		adminRouter.GET("/act/unblockact",ac.UnblockActivity)
 	}
-
 	return router
 }

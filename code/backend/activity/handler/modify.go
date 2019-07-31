@@ -2,12 +2,12 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
+	"jing/app/jing"
 	"log"
 	"strconv"
 )
@@ -25,10 +25,12 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
 	if mapBasicInfo["status"].(int) == 2{
 		log.Println("cannot modify expired activity")
-		resp.Status = 500
-		resp.Description = "cannot modify expired activity"
-		return errors.New("cannot modify expired activity")
+		return jing.NewError(1,400,"cannot modify expired activity")
+	}else if mapBasicInfo["status"].(int) == -1{
+		log.Println("cannot modify blocked activity")
+		return jing.NewError(1,400,"cannot modify blocked activity")
 	}
+
 	fetchType:= mapBasicInfo["type"].(string)
 
 	basicInfo:=dao.BasicInfo{
