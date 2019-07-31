@@ -82,14 +82,14 @@ func (activityController *Controller) AdminDeleteActivity(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.DeleteActivity(actId)
+	resp,err := activityClient.DeleteActivity(actId)
 	if err != nil {
 		jing.SendError(c, err)
 		return
 	}
 	_ = dao.DeleteActivity(actId)
 	c.JSON(http.StatusOK, map[string]string {
-		"message": "Delete successfully",
+		"message": resp.Description,
 	})
 }
 
@@ -506,20 +506,17 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		}
 	}
 	if !flag {
-		c.JSON(http.StatusForbidden, map[string]string{
-			"message": "403 Forbidden",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(105,403,"not the admin of the activity"))
 		return
 	}
-	err = activityClient.DeleteActivity(actId)
+	resp,err := activityClient.DeleteActivity(actId)
 	if err != nil {
 		jing.SendError(c, err)
 		return
 	}
 	_ = dao.DeleteActivity(actId)
 	c.JSON(http.StatusOK, map[string]string {
-		"message": "Delete successfully",
+		"message": resp.Description,
 	})
 }
 

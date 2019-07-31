@@ -54,15 +54,16 @@ func QueryActivity(actId int) (*activityProto.QryResp, error) {
 	return resp, err
 }
 
-func DeleteActivity(actId int) error {
+func DeleteActivity(actId int) (*activityProto.DltResp,error) {
 	dltReq := activityProto.DltReq{
 		ActId: int32(actId),
 	}
-	resp, _ := Client.Delete(context.TODO(), &dltReq)
-	if resp.Status != 200 {
-		return jing.NewError(1, int(resp.Status), resp.Description)
+	resp, err := Client.Delete(context.TODO(), &dltReq)
+	if err != nil{
+		return nil,err
 	}
-	return nil
+
+	return resp,nil
 }
 
 func ModifyActivity(userId int, jsonForm json.JSON) (*activityProto.MdfResp,error) {

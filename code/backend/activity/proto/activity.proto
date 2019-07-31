@@ -63,7 +63,6 @@ message DltReq{
 }
 
 message DltResp{
-    int32 status = 1;
     string description = 2;
 }
 
