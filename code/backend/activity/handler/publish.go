@@ -24,7 +24,7 @@ func (actSrv *ActivitySrv) Publish(ctx context.Context,req *activity.PubReq,resp
 		resp.ActId = -1
 		return nil
 	}*/
-	resp.Description = "publish activity successfully"
+	resp.Description = "Publish activity successfully"
 	resp.ActId = id
 	return nil
 }
@@ -59,7 +59,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 			name := fmt.Sprintf("actImage/act%s/img%s",strconv.Itoa(intId+1),strconv.Itoa(i))
 			image,err2 := dao.UploadImgWithName(req.Info.Images[i],name)
 			if err2 != nil{
-				return 0,jing.NewError(300,400,"upload image to qiniu error")
+				return 0,jing.NewError(300,400,"Upload image to qiniu error")
 			}
 			basicInfo.Images = append(basicInfo.Images, image)
 		}
@@ -118,11 +118,11 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 		err = collection.Insert(newAct)
 	default:
 		log.Println("Undefined Type.")
-		return -1,jing.NewError(0,400,"undefined type")
+		return -1,jing.NewError(0,400,"Undefined type")
 	}
 	if err!=nil{
 		log.Println("Insert Fail!")
-		return -1, jing.NewError(300,400,"insert activity to mongoDB error")
+		return -1, jing.NewError(300,400,"Insert activity to mongoDB error")
 	}
 	err = idCollection.Update(
 		bson.M{"autoid": id-1},
@@ -130,7 +130,7 @@ func insert(req *activity.PubReq,collection *mgo.Collection,idCollection *mgo.Co
 	log.Println("Inserted autoid.")
 	if err!=nil{
 		log.Println(err)
-		return -1, jing.NewError(300,400,"update autoId error")
+		return -1, jing.NewError(300,400,"Update autoId error")
 	}
 	log.Println("Publish activity successfully")
 	return id,nil

@@ -17,16 +17,16 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	err := dao.Collection.Find(bson.M{"actid": req.ActId}).One(&act)
 	if err == mgo.ErrNotFound{
 		log.Println(err)
-		return jing.NewError(301,404,"can not find the activity")
+		return jing.NewError(301,404,"Can not find the activity")
 	}
 
 	mapBasicInfo :=act["basicinfo"].(map[string]interface{})
 	if mapBasicInfo["status"].(int) == 2{
 		log.Println("cannot modify expired activity")
-		return jing.NewError(1,400,"cannot modify expired activity")
+		return jing.NewError(1,400,"Cannot modify expired activity")
 	}else if mapBasicInfo["status"].(int) == -1{
 		log.Println("cannot modify blocked activity")
-		return jing.NewError(1,400,"cannot modify blocked activity")
+		return jing.NewError(1,400,"Cannot modify blocked activity")
 	}
 
 	fetchType:= mapBasicInfo["type"].(string)
@@ -47,7 +47,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		err = dao.DeleteImgWithName(name)
 		if err != nil{
 			log.Printf("Catch delete error from dao,cannot delete pictures for act %d, pic %d\n",req.ActId,i)
-			return jing.NewError(300,400,"can not delete pictures from qiniu")
+			return jing.NewError(300,400,"Can not delete pictures from qiniu")
 		}
 		log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)
 	}
@@ -64,7 +64,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	}
 	if err2 != nil{
 		log.Println(err2)
-		return jing.NewError(300,400,"can not upload image to qiniu when modifying")
+		return jing.NewError(300,400,"Can not upload image to qiniu when modifying")
 	}
 
 	for _,param := range newImages{
@@ -114,7 +114,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	}
 	if err!=nil{
 		log.Println(err)
-		return jing.NewError(300,400,"can not update activity in mongoDB")
+		return jing.NewError(300,400,"Can not update activity in mongoDB")
 	}
 	resp.Description="Modify activity successfully"
 	log.Println("Modify successfully")

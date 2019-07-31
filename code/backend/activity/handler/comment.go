@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
+	"jing/app/jing"
 	"log"
 )
 
@@ -20,18 +21,15 @@ func (actSrv *ActivitySrv) Comment(ctx context.Context,req *activity.CmtReq,resp
 		bson.M{"actid":req.ActId},
 		bson.M{"$push":bson.M{"comments":comment}})
 	if err == mgo.ErrNotFound{
-		resp.Status = 404
-		resp.Description = "Not Found"
+		resp.Description = "Not found"
 		log.Println("Can't find the activity")
-		return err
+		return jing.NewError(301,404,"Can not find the activity")
 	}	else if err!=nil{
-		resp.Status = 500
-		resp.Description = "Comment Error"
+		resp.Description = "Comment error"
 		log.Println("Comment Error")
-		return err
+		return jing.NewError(300,404,"Can not comment the activity")
 	}	else{
-		resp.Status = 200
-		resp.Description = "OK"
+		resp.Description = "Comment successfully"
 		log.Println("Comment successfully")
 	}
 	return nil

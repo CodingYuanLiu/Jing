@@ -188,14 +188,14 @@ func (activityController *Controller) Comment(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, int(jsonForm["receiver_id"].(float64)),
+	resp,err := activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, int(jsonForm["receiver_id"].(float64)),
 		jsonForm["content"].(string), jsonForm["time"].(string))
 	if err != nil {
 		jing.SendError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, map[string]string{
-		"message": "Comment successfully",
+		"message": resp.Description,
 	})
 }
 
@@ -461,7 +461,6 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||
 		jsonForm["type"].(string) == "other" && (jsonForm["activity_time"] == nil)
 	if check {
-		log.Println(err)
 		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
 		return
 	}
@@ -555,23 +554,21 @@ func (activityController *Controller) GetTags(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Json parse error",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"Json parse error"))
 		return
 	}
 	check := jsonForm["title"] == nil || jsonForm["description"] == nil
 	if check{
-		c.JSON(http.StatusBadRequest,map[string]string{
-			"message":"Miss some field",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
 		return
 	}
-	tags := activityClient.GenerateTags(jsonForm["title"].(string),jsonForm["description"].(string))
+	resp,err := activityClient.GenerateTags(jsonForm["title"].(string),jsonForm["description"].(string))
+	if err != nil{
+		jing.SendError(c,err)
+		return
+	}
 	c.JSON(http.StatusOK,map[string][]string{
-		"tags":tags,
+		"tags":resp.Tag,
 	})
 }
 
@@ -589,10 +586,7 @@ func (activityController *Controller) AddTags(c *gin.Context) {
 		return
 	}
 	if jsonForm["tags"] == nil{
-		c.JSON(http.StatusBadRequest,map[string]string{
-			"message":"Miss some field",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
 		return
 	}
 	/* transform []interface{} to []string*/

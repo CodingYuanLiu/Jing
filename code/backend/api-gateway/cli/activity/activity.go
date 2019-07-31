@@ -9,7 +9,6 @@ import (
 	"github.com/micro/go-plugins/registry/kubernetes"
 	activityProto "jing/app/activity/proto"
 	"jing/app/dao"
-	"jing/app/jing"
 	"jing/app/json"
 	"log"
 	"os"
@@ -28,7 +27,7 @@ func init()  {
 	Client = activityProto.NewActivitySrvService("act", client.DefaultClient)
 }
 
-func AddComment(actId int, userId int, receiverId int, content string, time string) error {
+func AddComment(actId int, userId int, receiverId int, content string, time string) (*activityProto.CmtResp,error) {
 	req := activityProto.CmtReq{
 		ActId: int32(actId),
 		UserId: int32(userId),
@@ -36,11 +35,11 @@ func AddComment(actId int, userId int, receiverId int, content string, time stri
 		Content: content,
 		Time: time,
 	}
-	resp, _ := Client.Comment(context.TODO(), &req)
-	if resp.Status != 200 {
-		return jing.NewError(1, int(resp.Status), resp.Description)
+	resp, err := Client.Comment(context.TODO(), &req)
+	if err != nil {
+		return nil,err
 	}
-	return nil
+	return resp,nil
 }
 
 func QueryActivity(actId int) (*activityProto.QryResp, error) {
@@ -167,15 +166,16 @@ func PublishActivity(userId int, jsonForm json.JSON) (*activityProto.PubResp,err
 	return resp2,nil
 }
 
-func GenerateTags(title string,desc string) []string{
+func GenerateTags(title string,desc string) (*activityProto.TagResp,error){
 	resp,err := Client.GenTags(context.TODO(),&activityProto.TagReq{
 		Title:title,
 		Description:desc,
 	})
 	if err!=nil{
 		log.Println(err)
+		return nil,err
 	}
-	return resp.Tag
+	return resp,nil
 }
 
 func AddTags(tags []string, userId int32) int32{

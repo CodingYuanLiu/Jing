@@ -18,7 +18,6 @@ func (actSrv *ActivitySrv) GenTags(ctx context.Context,req *activity.TagReq,resp
 	tags,err := dao.GetAllTags()
 	if err!=nil{
 		log.Println(err)
-		resp.Status=500
 		return err
 	}
 	for _,param := range tags{
@@ -37,7 +36,6 @@ func (actSrv *ActivitySrv) GenTags(ctx context.Context,req *activity.TagReq,resp
 		}
 	}
 	resp.Tag = results
-	resp.Status = 200
 	return nil
 }
 
