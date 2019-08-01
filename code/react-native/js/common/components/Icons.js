@@ -442,6 +442,78 @@ class DeleteIcon extends React.PureComponent{
             />)
     }
 }
+class EllipsisIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"antdesign"}
+                name={"ellipsis1"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class PaperPlaneIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"font-awesome"}
+                name={"paper-plane"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class EditIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"font-awesome"}
+                name={"edit"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class CheckIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"entypo"}
+                name={"check"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -468,4 +540,8 @@ export {
     ChevronIcon,
     CameraIcon,
     DeleteIcon,
+    EllipsisIcon,
+    PaperPlaneIcon,
+    EditIcon,
+    CheckIcon,
 }

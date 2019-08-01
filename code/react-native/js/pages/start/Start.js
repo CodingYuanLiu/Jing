@@ -25,9 +25,6 @@ class StartPage extends React.Component {
         this.getStatus();
     }
 
-    componentWillUnmount() {
-    }
-
     render() {
         return (
             <View style={styles.container}>
@@ -48,6 +45,7 @@ class StartPage extends React.Component {
                             let password = Util.cryptoOnpenFire(data.username, data.password);
                             this.props.onGetFollowers(jwt);
                             this.props.onGetFollowings(jwt);
+                            console.log(this.props);
                             XmppApi.login(data.username, password)
                                 .then(async () => {
                                     this.props.setUserData(data);

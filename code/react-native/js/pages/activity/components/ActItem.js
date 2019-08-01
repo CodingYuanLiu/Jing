@@ -3,9 +3,10 @@ import { View, Text, ViewPropTypes, StyleSheet, TouchableNativeFeedback } from '
 import { ListItem, Icon, Image } from "react-native-elements";
 import { PropTypes } from "prop-types";
 import {TaxiSpec, TakeoutSpec, OrderSpec, NormalActSpec} from "./SpecInfo";
-import Default from "../../../common/constant/Constant";
 import Tag from "../../../common/components/Tag";
 import NavigationUtil from "../../../navigator/NavUtil";
+import UserAvatar from "../../../common/components/UserAvatar";
+import UserNickname from "../../../common/components/UserNickname";
 
 export default class ActItem extends React.PureComponent{
     constructor(props) {
@@ -116,15 +117,24 @@ export default class ActItem extends React.PureComponent{
     };
 
     renderSponsorInfo = sponsor => {
-        let nickname = sponsor.nickname;
-        let avatar = sponsor.avatar;
-        // blank here, spare for future use
+        let nickname = (
+            <UserNickname
+                title={sponsor.nickname}
+                id={sponsor.id}
+            />
+        );
+        let avatar = (
+            <UserAvatar
+                source={{uri: sponsor.avatar}}
+                size={24}
+                id={sponsor.id}
+            />
+        );
+
+
         return (
             <ListItem
-                leftAvatar={{
-                    source: {uri: avatar},
-                    size: 24
-                }}
+                leftAvatar={avatar}
                 title={nickname}
                 containerStyle={styles.userInfoContainer}
                 titleStyle={styles.userInfoTitle}

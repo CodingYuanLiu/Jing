@@ -1,9 +1,15 @@
 import React from "react";
-import {View, Text, StyleSheet, ScrollView, TouchableHighlight} from "react-native"
-import NavigationBar from "../../common/components/NavigationBar"
+import {View, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, StatusBar} from "react-native"
 import {Button, Icon, Image, ListItem, Avatar} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
-import {CommentIcon, PlusIcon} from "../../common/components/Icons";
+import {
+    ArrowLeftIcon, CheckIcon,
+    CommentIcon,
+    EditIcon,
+    EllipsisIcon,
+    PaperPlaneIcon,
+    PlusIcon
+} from "../../common/components/Icons";
 import Tag from "../../common/components/Tag";
 import Activity from "../../actions/activity";
 import {connect} from "react-redux";
@@ -11,7 +17,10 @@ import Util from "../../common/util";
 import Api from "../../api/Api";
 import CommentPreview from "./components/CommentPreview";
 import {onFollow, onUnFollow} from "../../actions/currentUser";
-import LocalApi from "../../api/LocalApi";
+import UserAvatar from "../../common/components/UserAvatar";
+import UserNickname from "../../common/components/UserNickname";
+import HeaderBar from "../../common/components/HeaderBar";
+
 
 class DetailScreen extends React.Component {
     constructor(props) {
@@ -20,64 +29,71 @@ class DetailScreen extends React.Component {
             activity: {},
             isLoading: false,
             isFriends: false,
+            actionModalVisible: false,
+            joinStatus: 0,
         };
         this.actId = this.props.navigation.getParam("id");
     }
 
     componentDidMount(){
-        this.loadData(this.actId, this.props.currentUser.jwt);
+        this.loadData(this.actId, this.props.currentUser.jwt,
+            this.props.currentUser.id, this.props.currentUser.followingList);
     }
-    loadData = (id, jwt) => {
-        this.props.onLoadActDetail(id, jwt);
-    };
+
     render() {
         let activity = this.props.currentAct;
-        let {title, comments, tag, images,
+        let {title, comments, tags, images,
             createTime, description, sponsor} = activity;
         let specInfo = {};
-        let navBar = this.renderNavBar();
-        let header = this.renderHeader(title, tag);
+        let header = this.renderHeader();
+        let ActTitle = this.renderTitle(title, tags);
         let body = this.renderBody(sponsor, specInfo, description, images, createTime, comments);
         let footer = this.renderFooter();
         return(
-            <View style={{flex:1, alignItems:"center", width:"100%"}}>
-                {navBar}
+            <View style={{flex: 1,}}>
+                {header}
                 <ScrollView style={styles.container}>
-                    {header}
+                    {ActTitle}
                     {body}
                 </ScrollView>
                 {footer}
             </View>
         );
     };
-    renderNavBar = () => {
-        let backBtn=
-            <Icon
-                type={"material-community"}
-                name={"keyboard-backspace"}
-                color={"#d3d3d3"}
+    renderHeader = () => {
+        let leftIcon = (
+            <ArrowLeftIcon
+                color={"#5a5a5a"}
                 onPress={this.goBack}
-            />;
+                size={24}
+            />
+        );
+        let rightIcon = (
+            <EllipsisIcon
+                color={"#5a5a5a"}
+                onPress={this.showActionModal}
+                size={24}
+            />
+        );
         return(
-            <NavigationBar
-                leftButton={backBtn}
-                style={
-                    {
+            <HeaderBar
+                leftButton={leftIcon}
+                style={{
                         backgroundColor: "#fff",
-                        alignSelf: "flex-start",
                         marginLeft: 12,
-                    }
-                }
+                        marginRight: 12,
+                    }}
+                rightButton={rightIcon}
             />
         );
     };
-
-    renderHeader = (title, tags) => {
+    renderActionModal = () => {
+        return null;
+    };
+    renderTitle = (title, tags) => {
         return (
-            <View style={styles.header}>
-                <View style={styles.titleContainer}>
-                    <Text style={styles.title}>{title}</Text>
-                </View>
+            <View style={styles.titleContainer}>
+                <Text style={styles.title}>{title}</Text>
                 <View style={styles.tagContainer}>
                     {
                         tags && tags.length > 0 ?
@@ -127,54 +143,60 @@ class DetailScreen extends React.Component {
         )
     };
     renderSponsor = sponsor => {
-        let isFriends = false;
-        if (this.props.currentUser.followingList) {
-            for (let item of this.props.currentUser.followingList) {
-                if (item.id === sponsor.id) {
-                    isFriends = true;
-                    break;
-                }
-            }
-        }
         let followBtn =
-            isFriends ?
+            this.props.currentAct.isFriends ?
             <Button
                 title={"取消关注"}
-                titleStyle={{color: "#0084ff"}}
+                titleStyle={{color: "#9a9a9a"}}
                 buttonStyle={styles.followBtn}
                 onPress={this.unFollow}
-                loading={this.props.follow.isLoading}
-
+                loading={this.props.currentUser.isUnFollowing}
+                containerStyle={{width: 100,}}
             />:
                 <Button
                     title={"关注"}
-                    titleStyle={{color: "#9a9a9a"}}
+                    titleStyle={{color: "#0084ff"}}
                     buttonStyle={styles.followBtn}
                     onPress={this.follow}
-                    loading={this.props.follow.isLoading}
+                    loading={this.props.currentUser.isFollowing}
                     icon={
                         <PlusIcon
                             size={24}
                             color={"#0084ff"}
                         />
                     }
+                    containerStyle={{width: 100,}}
                 />;
+        let avatar = (
+            <UserAvatar
+                source={{uri: sponsor.avatar }}
+                title={""}
+                size={36}
+                id={sponsor.id}
+            />
+        );
+        let nickname = (
+            <UserNickname
+                title={sponsor.nickname}
+                id={sponsor.id}
+            />
+        );
         return (
             <ListItem
-                leftAvatar={{
-                    source: {uri: sponsor.avatar === "" ? null : sponsor.avatar },
-                    title: "头像",
-                    size: 36
+                leftAvatar={avatar}
+                title={nickname}
+                titleProps={{
+                    numberOfLines: 1,
+                    ellipsizeMode: "tail",
+                    onPress: this.toUserPersonalPage
                 }}
-                title={sponsor.nickname}
-                containerStyle={styles.userInfoContainer}
-                contentContainerStyle={{position: "relative", left: -5}}
                 titleStyle={styles.userInfoTitle}
                 subtitle={sponsor.signature}
                 subtitleProps={{ellipsizeMode: "tail", numberOfLines: 1}}
                 subtitleStyle={styles.userInfoSubtitle}
-                titleProps={{numberOfLines: 1, ellipsizeMode: "tail"}}
-                rightElement={followBtn}
+                rightElement={this.props.currentAct.isSelf ? null : followBtn}
+                containerStyle={styles.userInfoContainer}
+                contentContainerStyle={{position: "relative", left: -5}}
             />
         )
     };
@@ -187,6 +209,7 @@ class DetailScreen extends React.Component {
                     return (
                         <CommentPreview
                             avatar={comment.user_avatar}
+                            id={comment.user_id}
                             content={comment.content}
                             nickname={comment.user_nickname}
                             key={i}
@@ -212,10 +235,11 @@ class DetailScreen extends React.Component {
                 <Text style={styles.commentTitle}>评论</Text>
                 {commentPreview}
                 <View style={styles.commentButtonContainer}>
-                    <Avatar
+                    <UserAvatar
+                        title={""}
                         source={{uri: currentUser.avatar,}}
-                        rounded
                         size={24}
+                        id={currentUser.id}
                     />
                     {commentButton}
                 </View>
@@ -230,38 +254,134 @@ class DetailScreen extends React.Component {
                 size={24}
                 onPress={this.toComments}
             />;
+        let messageIcon = (
+            <PaperPlaneIcon
+                color={"#b4b4b4"}
+                size={24}
+                onPress={() => {alert("按到message icon了！")}}
+            />
+        );
+        let editIcon = (
+            <EditIcon
+                color={"#b4b4b4"}
+                size={24}
+                onPress={this.toPublishPage}
+            />
+        );
+        let messageOrEditButton = this.props.currentAct.isSelf ?
+            (
+                <TouchableWithoutFeedback
+                    onPress={this.toChatPage}
+                >
+                    <View>
+                        {editIcon}
+                        <Text style={styles.bottomIconText}>编辑</Text>
+                    </View>
+                </TouchableWithoutFeedback>
+            )
+            :
+            (
+            <TouchableWithoutFeedback
+                onPress={this.toChatPage}
+            >
+                <View style={styles.bottomRightIcon}>
+                    {messageIcon}
+                    <Text style={styles.bottomIconText}>私信</Text>
+                </View>
+            </TouchableWithoutFeedback>
+        );
+        let commentButton = (
+            <TouchableWithoutFeedback
+                onPress={this.toComments}
+            >
+                <View style={styles.bottomRightIcon}>
+                    {commentIcon}
+                    <Text style={styles.bottomIconText}>评论</Text>
+                </View>
+            </TouchableWithoutFeedback>
+        );
+        let footerLeftButton = this.renderFooterLeftButton();
+        return (
+            <View style={styles.footer}>
+                <View style={styles.bottomLeftIconContainer}>
+                    {footerLeftButton}
+                </View>
+                <View style={styles.bottomRightIconContainer}>
+                    {messageOrEditButton}
+                    {commentButton}
+                </View>
+            </View>
+        )
+    };
+    renderFooterLeftButton = () => {
         let joinIcon =
             <PlusIcon
                 color={"#0084ff"}
                 size={24}
             />;
-        return (
-            <View style={styles.footer}>
-                <View style={styles.bottomLeftIconContainer}>
-                    <Button
-                        icon={joinIcon}
-                        title={"加入"}
-                        titleStyle={styles.bottomButtonText}
-                        contaienrStyle={styles.bottomButtonContainer}
-                        buttonStyle={styles.bottomButton}
-                        loading={this.state.isJoining}
-                        onPress={this.joinAct}
-                    />
-                </View>
-                <View style={styles.bottomRightIconContainer}>
-                    <TouchableHighlight>
-                        <View>
-                            {commentIcon}
-                            <Text style={styles.bottomIconText}>评论</Text>
-                        </View>
-                    </TouchableHighlight>
-                </View>
-            </View>
-        )
+        let joinedIcon =
+            <CheckIcon
+                color={"#afafaf"}
+            />;
+        let joinButton = (
+            <Button
+                icon={joinIcon}
+                title={"加入"}
+                titleStyle={styles.bottomButtonText}
+                contaienrStyle={styles.bottomButtonContainer}
+                buttonStyle={styles.bottomButton}
+                loading={this.state.isJoining}
+                onPress={this.joinAct}
+                TouchableComponent={TouchableWithoutFeedback}
+            />
+        );
+        let joiningButton = (
+            <Button
+                title={"等待同意"}
+                titleStyle={styles.bottomButtonText}
+                contaienrStyle={styles.bottomButtonContainer}
+                buttonStyle={styles.bottomButton}
+                disabled
+            />
+        );
+        let joinedButton = (
+            <Button
+                icon={joinedIcon}
+                title={"已加入"}
+                titleStyle={styles.bottomButtonText}
+                contaienrStyle={styles.bottomButtonContainer}
+                buttonStyle={styles.bottomButton}
+                disabled
+            />
+        );
+        let footerLeftButton;
+        switch (this.state.joinStatus) {
+            case -1:
+                footerLeftButton = joiningButton;
+                break;
+            case -2:
+                footerLeftButton = joinButton;
+                break;
+            case 0:
+                footerLeftButton = joinedButton;
+                break;
+            case 1:
+                footerLeftButton = joinedButton;
+                break;
+            default:
+                footerLeftButton = joinButton;
+        }
+        return footerLeftButton;
     };
-    toUserPersonalPage = () => {
-        //let id = this.state.activity.sponsor_id;
-        //NavigationUtil.toPage({id:id}, "PersonalPage")
+
+    // function control view components
+    showActionModal = () => {
+
+    };
+
+    // function for jump between b\pages
+    toUserPersonalPage = (id) => {
+        NavigationUtil.toPage({id:id}, "PersonalHome")
     };
     goBack = () => {
         this.props.resetActDetail() ;
@@ -275,13 +395,51 @@ class DetailScreen extends React.Component {
         }, "ActComment");
 
     };
+    toPublishPage = () => {
+        let currentAct = this.props.currentAct;
+        switch (currentAct.type) {
+            case "taxi":
+                NavigationUtil.toPage({type: "taxi"}, "PublishPage");
+                break;
+            case "takeout":
+                NavigationUtil.toPage({type: "takeout"}, "PublishPage");
+                break;
+            case "order":
+                NavigationUtil.toPage({type: "order"}, "PublishPage");
+                break;
+            case "other":
+                NavigationUtil.toPage({type: "other"}, "PublishPage");
+                break;
+            default:
+                console.log("invalid type");
+        }
+    };
+    toChatPage = () => {
+        console.log("you pressed me!");
+    };
+
+    // function for act detail logic
+    loadData = (id, jwt, currentUserId, followingList) => {
+        this.getUserActStatus(id ,jwt);
+        this.props.onLoadActDetail(id, jwt, currentUserId, followingList);
+    };
+    getUserActStatus = (id, jwt) => {
+        Api.getUserActStatus(id, jwt)
+            .then(data => {
+                this.setState({joinStatus: data.status});
+                console.log(data);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
     joinAct = () => {
         let jwt = this.props.currentUser.jwt;
         let act = this.props.currentAct;
         this.setState({isJoining: true});
         Api.joinAct(act, jwt)
-            .then(message => {
-                console.log(message);
+            .then(() => {
+                this.setState({joinStatus: -1})
             })
             .catch(err => {
                 console.log(err)
@@ -291,7 +449,6 @@ class DetailScreen extends React.Component {
                     this.setState({isJoining: false});
                 }
             )
-
     };
 
     // generate preview comments from given comments
@@ -308,14 +465,13 @@ class DetailScreen extends React.Component {
     };
 
     follow = () => {
-        let user = this.props.currentUser;
+        let currentUser = this.props.currentUser;
         let currentAct = this.props.currentAct;
-        if (!user.logged) {
+        if (!currentUser.logged) {
             //...
         } else {
-            console.log(user);
             let from = {
-                id: user.id,
+                id: currentUser.id,
             };
             let to = {
                 id: currentAct.sponsor.id,
@@ -324,7 +480,7 @@ class DetailScreen extends React.Component {
                 signature: currentAct.sponsor.signature,
             };
             console.log(currentAct);
-            this.props.onFollow(from, to, user.jwt);
+            this.props.onFollow(from, to, currentUser.jwt);
         }
     };
 
@@ -339,6 +495,7 @@ class DetailScreen extends React.Component {
             let to = {
                 id: this.props.currentAct.sponsor.id,
             };
+            console.log(from, to,);
             this.props.onUnFollow(from, to, currentUser.jwt);
         }
     }
@@ -347,13 +504,17 @@ class DetailScreen extends React.Component {
 const mapStateToProps = state => ({
     currentAct: state.currentAct,
     currentUser: state.currentUser,
-    follow: state.follow,
 });
 const mapDispatchToProps = dispatch => ({
-    onLoadActDetail: (actId, jwt) => dispatch(Activity.onLoadActDetail(actId, jwt)),
+    onLoadActDetail: (actId, jwt, currentUserId, followingList) =>
+        dispatch(Activity.onLoadActDetail(actId, jwt, currentUserId, followingList)),
     resetActDetail: () => dispatch(Activity.resetActDetail()),
     onFollow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
     onUnFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
+    saveTaxiAct: data => dispatch(Activity.saveTaxiAct(data)),
+    saveTakeoutAct: data => dispatch(Activity.saveTakeoutAct(data)),
+    saveOrderAct: data => dispatch(Activity.saveOrderAct(data)),
+    saveOtherAct: data => dispatch(Activity.saveOtherAct(data)),
 });
 export default connect(mapStateToProps ,mapDispatchToProps)(DetailScreen);
 const imageWidth = Util.getVerticalWindowDimension().width * 0.4;
@@ -365,22 +526,15 @@ const styles = StyleSheet.create({
     },
 
     // header style, including title, tags
-    header:{
+    titleContainer:{
         backgroundColor: "#fff",
         paddingLeft:"6%",
         paddingRight:"6%",
-        marginTop: 5,
         marginBottom: 10,
-    },
-    titleContainer:{
-        flex:1,
-        marginTop: 10,
-        marginBottom: 16,
-
     },
     title:{
         fontSize: 24,
-        fontWeight: "800",
+        fontWeight: "bold",
         color: "#2a2a2a",
     },
     tagContainer: {
@@ -502,7 +656,12 @@ const styles = StyleSheet.create({
     bottomRightIconContainer: {
         flex: 5,
         justifyContent: "flex-end",
+        alignItems: "center",
         flexDirection: "row",
+    },
+    bottomRightIcon: {
+        paddingRight: 12,
+        paddingLeft: 12,
     },
     bottomButtonContainer: {
         padding: 0,
@@ -527,4 +686,4 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#b7b7b7",
     },
-})
+});

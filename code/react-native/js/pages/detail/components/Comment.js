@@ -4,6 +4,7 @@ import {CaretRightIcon} from "../../../common/components/Icons";
 import {Avatar} from "react-native-elements";
 import {PropTypes} from "prop-types";
 import {ReplyIcon} from "../../../common/components/Icons";
+import UserAvatar from "../../../common/components/UserAvatar";
 
 export default class Comment extends React.PureComponent {
     constructor(props){
@@ -11,7 +12,7 @@ export default class Comment extends React.PureComponent {
     }
 
     render() {
-        let {avatar, content, time, receiverName, nickname, onPress, receiverId} = this.props;
+        let {avatar, content, time, receiverName, nickname, onPress, receiverId, id} = this.props;
         let leftAvatar = this.renderAvatar(avatar);
         let footer = this.renderFooter(time);
         let title = this.renderTitle(nickname, receiverName, receiverId);
@@ -60,13 +61,13 @@ export default class Comment extends React.PureComponent {
             </View>
         )
     };
-    renderAvatar = (avatar) => {
+    renderAvatar = (avatar, id) => {
         return (
-            <Avatar
+            <UserAvatar
                 source={{uri: avatar}}
                 rounded
-                onPress={() => {alert("you pressed avatar")}}
                 containerStyle={styles.avatar}
+                id={id}
             />
         )
     };

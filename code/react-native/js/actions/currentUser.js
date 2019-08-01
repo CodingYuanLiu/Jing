@@ -16,7 +16,7 @@ export const updateUserAvatar = (avatar) => ({
     avatar: avatar,
 });
 
-// follow action & unfollow action, and get followers and followings
+// follow action & unFollow action, and get followers and followings
 export const onFollow = (from, to, jwt) => {
     return dispatch => {
         dispatch({
@@ -29,7 +29,9 @@ export const onFollow = (from, to, jwt) => {
                     type: actionTypes.FOLLOW_OK,
                     user: to,
                 });
-
+                dispatch({
+                    type: actionTypes.SET_DETAIL_IS_FRIENDS,
+                });
             })
             .catch(err => {
                 console.log(err);
@@ -44,12 +46,15 @@ export const onUnFollow = (from, to, jwt) => {
         dispatch({
             type: actionTypes.ON_UNFOLLOW,
         });
-        Api.follow(from.id, to.id, jwt)
+        Api.unFollow(from.id, to.id, jwt)
             .then (data => {
                 dispatch({
                     type: actionTypes.UNFOLLOW_OK,
                     user: to,
-                })
+                });
+                dispatch({
+                    type: actionTypes.SET_DETAIL_IS_NOT_FRIENDS,
+                });
             })
             .catch(err => {
                 console.log(err);
@@ -71,7 +76,7 @@ export const onGetFollowings = (jwt) => {
                     type: actionTypes.GET_USER_FOLLOWINGS_OK,
                     data: data ? data : [],
                 });
-                console.log(data);
+                console.log("followings: ", data);
             })
             .catch(err => {
                 console.log(err);
@@ -88,13 +93,13 @@ export const onGetFollowers = (jwt) => {
         dispatch({
             type: actionTypes.ON_GET_USER_FOLLOWERS,
         });
-        Api.getFollowings(jwt)
+        Api.getFollowers(jwt)
             .then(data => {
                 dispatch({
                     type: actionTypes.GET_USER_FOLLOWERS_OK,
                     data: data ? data : [],
                 });
-                console.log(data);
+                console.log("followers: ", data);
             })
             .catch(err => {
                 console.log(err);
@@ -105,8 +110,4 @@ export const onGetFollowers = (jwt) => {
             })
     }
 };
-
-
-
-
 

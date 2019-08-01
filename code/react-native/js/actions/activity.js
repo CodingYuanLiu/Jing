@@ -74,13 +74,22 @@ const onLoadTypeAct = (type) => {
     }
 };
 
-const onLoadActDetail = (id, jwt) => {
+const onLoadActDetail = (id, jwt, currentUserId, followingList) => {
     return dispatch => {
         dispatch({
             type: actionTypes.ON_LOADING_ACT_DETAIL,
         });
         Api.getActDetail(id, jwt)
             .then(data => {
+                let isSelf = data.sponsor.id === currentUserId,
+                    isFriends = false;
+                for (let item of followingList) {
+                    if (item.id === data.sponsor.id) {
+                        isFriends = true;
+                    }
+                }
+                data.isSelf = isSelf;
+                data.isFriends = isFriends;
                 dispatch({
                     type: actionTypes.LOAD_ACT_DETAIL_OK,
                     data: data,

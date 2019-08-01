@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, ScrollView, StyleSheet, TextInput, FlatList} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TextInput, FlatList, RefreshControl} from 'react-native';
 import NoXXX from "../../common/components/NoXXX";
 import {Button, Icon } from "react-native-elements";
 import {CloseIcon, EmojiIcon} from "../../common/components/Icons";
@@ -77,6 +77,7 @@ class CommentModal extends React.PureComponent{
                 receiverName={item.receiver_nickname ? item.receiver_nickname : ""}
                 receiverId={item.receiver_id}
                 nickname={item.user_nickname}
+                id={item.user_id}
                 onPress={() => {
                     this.openCommentModal(item.user_id, item.user_nickname)
                 }}
@@ -89,6 +90,12 @@ class CommentModal extends React.PureComponent{
                 <FlatList
                     data={comments}
                     renderItem={this.renderCommentItem}
+                    keyExtractor={item => (item.create_time)}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={false}
+                        />
+                    }
                 />
             )
 

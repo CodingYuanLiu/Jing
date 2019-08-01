@@ -3,7 +3,7 @@ import {
     LOAD_ACT_DETAIL_FAIL,
     ADD_COMMENT_OK,
     ADD_COMMENT_FAIL,
-    ON_LOADING_ACT_DETAIL, RESET_ACT_DETAIL,
+    ON_LOADING_ACT_DETAIL, RESET_ACT_DETAIL, SET_DETAIL_IS_FRIENDS, SET_DETAIL_IS_NOT_FRIENDS,
 } from "../common/constant/ActionTypes"
 
 const initialState = {
@@ -28,6 +28,8 @@ const initialState = {
     tags: [],
     description: "",
     isLoading: false,
+    isSelf: false,
+    isFriends: false,
 };
 
 
@@ -49,6 +51,16 @@ const currentAct = (state=initialState, action) => {
                 ...state,
                 isLoading: false,
                 err: action.err,
+            };
+        case SET_DETAIL_IS_FRIENDS:
+            return {
+                ...state,
+                isFriends: true,
+            };
+        case SET_DETAIL_IS_NOT_FRIENDS:
+            return {
+                ...state,
+                isFriends: false,
             };
         case RESET_ACT_DETAIL:
             return initialState;

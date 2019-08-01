@@ -2,6 +2,8 @@ import React from "react";
 import {View, Text, StyleSheet, TouchableWithoutFeedback} from "react-native";
 import {Avatar} from "react-native-elements";
 import {PropTypes} from "prop-types";
+import UserNickname from "../../../common/components/UserNickname";
+import UserAvatar from "../../../common/components/UserAvatar";
 
 export default class CommentPreview extends React.PureComponent {
     constructor(props){
@@ -9,9 +11,9 @@ export default class CommentPreview extends React.PureComponent {
     };
 
     render() {
-        let {avatar, content, nickname, onPress} = this.props;
-        let leftAvatar = this.renderAvatar(avatar);
-        let title = this.renderTitle(nickname);
+        let {avatar, content, nickname, onPress, id} = this.props;
+        let leftAvatar = this.renderAvatar(avatar, id);
+        let title = this.renderTitle(nickname, id);
         let body = this.renderBody(content);
         return (
             <TouchableWithoutFeedback
@@ -27,10 +29,14 @@ export default class CommentPreview extends React.PureComponent {
             </TouchableWithoutFeedback>
         )
     };
-    renderTitle = (nickname) => {
+    renderTitle = (nickname, id) => {
         return (
             <View style={styles.titleContainer}>
-                <Text style={styles.title}>{nickname}</Text>
+                <UserNickname
+                    style={styles.title}
+                    title={nickname}
+                    id={id}
+                />
             </View>
         )
     };
@@ -47,13 +53,13 @@ export default class CommentPreview extends React.PureComponent {
             </View>
         )
     };
-    renderAvatar = (avatar) => {
+    renderAvatar = (avatar, id) => {
         return (
-            <Avatar
+            <UserAvatar
                 source={{uri: avatar}}
                 rounded
                 size={24}
-                onPress={() => {alert("you pressed avatar")}}
+                id={id}
             />
         )
     };

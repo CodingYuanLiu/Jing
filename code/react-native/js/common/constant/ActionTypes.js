@@ -31,6 +31,8 @@ export const LOAD_ACT_DETAIL_OK = 'LOAD_ACT_DETAIL_OK';
 export const RESET_ACT_DETAIL = 'RESET_ACT_DETAIL';
 export const ADD_COMMENT_OK = 'ADD_COMMENT_OK';
 export const ADD_COMMENT_FAIL = 'ADD_COMMENT_FAIL';
+export const SET_DETAIL_IS_FRIENDS = 'SET_DETAIL_IS_FRIENDS';
+export const SET_DETAIL_IS_NOT_FRIENDS = 'SET_DETAIL_IS_NOT_FRIENDS';
 
 // actions for publish activity
 export const SAVE_TAXI_ACT = 'SAVE_TAXI_ACT';

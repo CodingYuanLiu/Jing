@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, ScrollView, StyleSheet, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
-import {ArrowLeftIcon, CaretRightIcon, ChevronIcon, MessageOneToOneIcon, PlusIcon} from "../../common/components/Icons";
+import {ArrowLeftIcon, ChevronIcon, MessageOneToOneIcon, PlusIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
 import Util from "../../common/util";
 import {Avatar, Button, Divider, Image} from "react-native-elements";
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     },
     fixedHeaderContainer: {
         backgroundColor: "transparent",
-        height: 50,
+        height: STICKY_HEADER_HEIGHT,
         width: window.width,
         flexDirection: "row",
         alignItems: "center",

@@ -233,7 +233,6 @@ export default class Api {
                 })
         })
     }
-
     static getMyAct(jwt) {
         return new Promise((resolve, reject) => {
             axios.get("/api/user/act/myact", {
@@ -322,6 +321,41 @@ export default class Api {
         })
     }
 
+    static getActApplicants(jwt) {
+        return new Promise((resolve, reject) => {
+            axios.get("/api/user/act/getjoinapp", {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`
+                }
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    }
+    static getUserActStatus = (actId, jwt) => {
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/user/act/status?act_id=${actId}`, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                }
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    };
+    static acceptActApplicant() {
+        return new Promise((resolve, reject) => {
+
+        })
+    }
     static searchTakeoutStore (keyword) {
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/takeout/searchshop?key=${keyword}`)
@@ -363,6 +397,7 @@ export default class Api {
                 })
                 .catch(err => {
                     Reject(err, reject);
+                    console.log(err);
                 })
         });
     }
@@ -377,14 +412,13 @@ export default class Api {
                     resolve(res.data);
                 })
                 .catch(err => {
-                    console.log(err);
                     Reject(err, reject);
                 })
         })
     }
     static getFollowers(jwt) {
         return new Promise((resolve, reject) => {
-            axios.get("/api/user/follow", {
+            axios.get("/api/user/followers", {
                 headers: {
                     'Authorization': `Bearer ${jwt}`,
                 },
@@ -393,7 +427,6 @@ export default class Api {
                     resolve(res.data);
                 })
                 .catch(err => {
-                    console.log(err);
                     Reject(err, reject);
                 })
         })
