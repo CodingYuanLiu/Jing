@@ -11,13 +11,7 @@ Page({
      */
     data: {
         avatar_src: "../../images/icons/timg.jpg",
-        user: {
-            username: "sebastianj1w",
-            nickname: "Seb",
-            phone: "18766699977",
-            avatar_id: "1",
-            signature: "签名功能不实现"
-        },
+        user: {},
         gendershow: '女',
         genders: [{
             id: 1,
@@ -62,23 +56,42 @@ Page({
     onLoad: function() {
         console.log('onLoad')
         var that = this
-        if (app.globalData.userInfo.avatar_url !== "http://puo7ltwok.bkt.clouddn.com/") {
-            that.setData({
-                avatar_src: app.globalData.userInfo.avatar_url
-            })
-        }
-        this.setData({
-            user: app.globalData.userInfo
-        });
-        that.setData({
-            // phone: that.data.user.phone,
-            // nickname: that.data.user.nickname,
-            gendershow: that.data.genders[that.data.user.gender].name,
-            levelshow: that.data.levels[that.data.user.privacy+1].name
-        });
+        wx.request({
+            url: 'https://jing855.cn/api/user/status',
+            method: 'GET',
+            header: {
+                "Authorization": "Bearer " + app.globalData.jwt,
+            },
+            success: function(res) {
+                app.globalData.userid = res.data.id;
+                console.log(res);
+                console.log(221);
+                app.globalData.userInfo = res.data;
+                if (app.globalData.userInfo.avatar_url !== "http://image.jing855.cn/") {
+                    that.setData({
+                        avatar_src: app.globalData.userInfo.avatar_url
+                    })
+                }
+                that.setData({
+                    user: app.globalData.userInfo
+                });
+                that.setData({
+                    // phone: that.data.user.phone,
+                    // nickname: that.data.user.nickname,
+                    gendershow: that.data.genders[that.data.user.gender].name,
+                    levelshow: that.data.levels[that.data.user.privacy + 1].name,
+                    birthday: that.data.user.birthday,
+                    level: that.data.user.privacy + 1
+                });
+            }
+        })
+        
+       
     },
 
-    handleGenderChange({detail = {}}) {
+    handleGenderChange({
+        detail = {}
+    }) {
         this.setData({
             gendershow: detail.value
         });
@@ -93,7 +106,9 @@ Page({
         }
     },
 
-    handleLevelChange({ detail = {} }) {
+    handleLevelChange({
+        detail = {}
+    }) {
         this.setData({
             levelshow: detail.value
         });
@@ -134,7 +149,8 @@ Page({
                     'dormitory': that.data.dorm,
                     'major': that.data.major,
                     'birthday': that.data.birthday,
-                    'gender': that.data.gender
+                    'gender': that.data.gender,
+                    'privacy_level': that.data.level - 1
                 },
                 success: function(res) {
                     if (res.statusCode !== 200) {
@@ -144,20 +160,6 @@ Page({
                         // app.globalData.userInfo.phone = that.data.phone;
                         // app.globalData.userInfo.nickname = that.data.nickname;
                         // app.globalData.userInfo.signature = that.data.signature;
-                        wx.request({
-                            url: 'https://jing855.cn/api/user/status',
-                            method: 'GET',
-                            header: {
-                                "Authorization": "Bearer " + app.globalData.jwt,
-                            },
-                            success: function(res) {
-                                app.globalData.userid = res.data.id;
-                                app.globalData.userInfo = res.data;
-                                // that.setData({
-                                //     user: res.data
-                                // });
-                            }
-                        })
                         wx.switchTab({
                             url: '/pages/my/my',
                         })
@@ -269,6 +271,10 @@ Page({
         })
 
     },
-
+    bindDateChange: function(event) {
+        this.setData({
+            birthday: event.detail.value
+        })
+    },
 
 })

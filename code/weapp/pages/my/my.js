@@ -88,7 +88,7 @@ Page({
                                             type: 'success',
                                             duration: 1
                                         });
-                                        if (app.globalData.userInfo.avatar_url !== "http://puo7ltwok.bkt.clouddn.com/") {
+                                        if (app.globalData.userInfo.avatar_url !== "http://image.jing855.cn/") {
                                             that.setData({
                                                 avatar_src: app.globalData.userInfo.avatar_url
                                             })
@@ -102,9 +102,31 @@ Page({
                                     header: {
                                         "Authorization": "Bearer " + app.globalData.jwt,
                                     },
-                                    success: function(res) {
+                                    success: function (res) {
                                         console.log(res)
                                         app.globalData.following = res.data
+                                    }
+                                })
+                                wx.request({
+                                    url: 'https://jing855.cn/api/user/followers',
+                                    method: 'GET',
+                                    header: {
+                                        "Authorization": "Bearer " + app.globalData.jwt,
+                                    },
+                                    success: function (res) {
+                                        console.log(res)
+                                        app.globalData.followers = res.data
+                                    }
+                                })
+                                wx.request({
+                                    url: 'https://jing855.cn/api/user/friends',
+                                    method: 'GET',
+                                    header: {
+                                        "Authorization": "Bearer " + app.globalData.jwt,
+                                    },
+                                    success: function (res) {
+                                        console.log(res)
+                                        app.globalData.friends = res.data
                                     }
                                 })
                             } else {
@@ -129,7 +151,7 @@ Page({
             that.setData({
                 log: true
             });
-            if (app.globalData.userInfo.avatar_url !== "http://puo7ltwok.bkt.clouddn.com/") {
+            if (app.globalData.userInfo.avatar_url !== "http://image.jing855.cn/") {
                 that.setData({
                     avatar_src: app.globalData.userInfo.avatar_url
                 })
@@ -159,4 +181,24 @@ Page({
             url: '/pages/my/myjoin/myjoin',
         })
     },
+    handleFeedback: function() {
+        wx.navigateTo({
+            url: '/pages/feedback/feedback',
+        })
+    },
+    handleFollower: function() {
+        wx.navigateTo({
+            url: '/pages/follow/follow?mode=follower',
+        })
+    },
+    handleFollowing: function () {
+        wx.navigateTo({
+            url: '/pages/follow/follow?mode=following',
+        })
+    },
+    handleLook: function() {
+        wx.navigateTo({
+            url: './history/history',
+        })
+    }
 })

@@ -2,6 +2,9 @@
     "usingComponents": {
         "i-button": "../../dist/button/index",
         "i-input": "../../dist/input/index",
-        "i-panel": "../../dist/panel/index"
+        "i-panel": "../../dist/panel/index",
+        "i-tabs": "../../dist/tabs/index",
+        "i-tab": "../../dist/tab/index",
+        "i-rate": "../../dist/rate/index"
     }
 }

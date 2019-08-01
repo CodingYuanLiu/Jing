@@ -242,6 +242,10 @@ func GetJoinApplication(userId int) []map[string]int{
 	return applications
 }
 
+func CancelApplicationOfBlockedActivity(actId int){
+	db.Delete(Join{},"act_id=? and is_admin=?",actId,-1)
+}
+
 func FindUserById(id int) (User, error) {
 	user := User{}
 	db.First(&user, id)

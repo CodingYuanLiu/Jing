@@ -18,7 +18,11 @@
         "pages/avatar/upload",
         "pages/map/map",
         "pages/showroutine/showroutine",
-        "pages/selectstore/selectstore"
+        "pages/selectstore/selectstore",
+        "pages/feedback/myfeedback/myfeedback",
+        "pages/feedback/feedbackact/feedbackact",
+        "pages/follow/follow",
+        "pages/my/history/history"
     ],
     "permission": {
         "scope.userLocation": {
