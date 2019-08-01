@@ -19,18 +19,21 @@
 
         <i-input value="{{ user.signature }}" bind:change="handleSignInput" type="text" title="个性签名" maxlength="50" disabled="{{!editing}}" />
         <i-input value="{{ user.phone }}" bind:change="handlePhoneInput" type="number" title="联系电话" maxlength="11" disabled="{{!editing}}" />
-        <i-input value="{{ user.birthday }}" bind:change="handleBirthInput" type="text" title="生日" maxlength="11" disabled="{{!editing}}" />
+        <i-input wx:if="{{ !editing }}" value="{{ birthday }}" bind:change="handleBirthInput" type="text" title="生日" maxlength="11" disabled="{{!editing}}" />
+        <picker wx:if="{{ editing }}" mode="date" value="{{date}}" bindchange="bindDateChange">
+            <i-input value="{{birthday}}" disabled="true" type="text" maxlength="20 " title="生日" placeholder="生日" />
+        </picker>
         <i-input value="{{ user.dormitory }}" bind:change="handleDormInput" type="text" title="宿舍" maxlength="11" disabled="{{!editing}}" />
         <i-input value="{{ user.major }}" bind:change="handleMajorInput" type="text" title="专业" maxlength="11" disabled="{{!editing}}" />
         <i-panel wx:if="{{editing}}" title="性别">
-            <i-radio-group  current="{{gendershow}}" bindchange="handleGenderChange">
+            <i-radio-group current="{{gendershow}}" bindchange="handleGenderChange">
                 <i-radio wx:for="{{genders}}" position="left" wx:key="{{item.id}}" value="{{item.name}}" disabled="{{!editing}}">
                 </i-radio>
             </i-radio-group>
         </i-panel>
         <i-input value="{{ gendershow }}" wx:if="{{!editing}}" bind:change="handleGenderInput" type="text" title="性别" maxlength="11" disabled="{{!editing}}" />
         <i-panel wx:if="{{editing}}" title="隐私级别">
-            <i-radio-group  current="{{levelshow}}" bindchange="handleLevelChange">
+            <i-radio-group current="{{levelshow}}" bindchange="handleLevelChange">
                 <i-radio wx:for="{{levels}}" position="left" wx:key="{{item.id}}" value="{{item.name}}" disabled="{{!editing}}">
                 </i-radio>
             </i-radio-group>

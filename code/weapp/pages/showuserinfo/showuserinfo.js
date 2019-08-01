@@ -9,17 +9,14 @@ Page({
     data: {
         id: -1,
         avatar_src: "../../images/icons/timg.jpg",
-        user: {
-            username: "sebastianj1w",
-            nickname: "Seb",
-            phone: "18766699977",
-            avatar_id: "1",
-            signature: "签名功能不实现"
-        },
+        user: {},
         error: false,
         button_message: "编辑个人信息",
         editing: false,
         userInfo: {},
+        genders: ['女', '男', '保密'],
+        levels: ['不可见', '全部可见', '好友可见'],
+        current: 'tab1',
     },
 
     /**
@@ -46,62 +43,35 @@ Page({
                 that.setData({
                     user: res.data
                 });
-                if (res.data.avatar_url !== 'http://puo7ltwok.bkt.clouddn.com/') {
+                if (res.data.avatar_url !== 'http://image.jing855.cn/') {
                     that.setData({
                         avatar_src: res.data.avatar_url
                     })
                 }
             }
         })
+        wx.request({
+            url: 'https://jing855.cn/api/public/feedback/query?receiver_id=' + that.data.id,
+            method: 'GET',
+            success: function(res) {
+                console.log(res)
+                if (res.statusCode === 200)
+                    that.setData({
+                        feedback: res.data
+                    })
+                else that.setData({
+                    feedback: []
+                })
+            }
+        })
 
     },
 
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady: function() {
-
+    handleChange({
+        detail
+    }) {
+        this.setData({
+            current: detail.key
+        });
     },
-
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow: function() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide: function() {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload: function() {
-
-    },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh: function() {
-
-    },
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom: function() {
-
-    },
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage: function() {
-
-    }
 })

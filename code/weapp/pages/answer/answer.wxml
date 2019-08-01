@@ -100,11 +100,11 @@
             <view class="chat-item flex-wrp"  data-id="{{item.user_id}}" data-nick="{{item.title}}">
                 <view class="avatar flex-item" bindtap="handleToShowInfo" data-id="{{item.user_id}}" data-nick="{{item.title}}">
                     <!-- <image src="{{item.avatar}}"></image> -->
-                    <image src="{{item.avatar_src}}"></image>
+                    <image src="{{item.user_avatar !== 'http://image.jing855.cn/'?item.user_avatar:non_avatar}}"></image>
                 </view>
                 <view  bindtap="handleCommentToUser" data-id="{{item.user_id}}" data-nick="{{item.title}}" class="chat-content flex-item">
                     <view class="chat-source">
-                        <text class="chatmate">{{item.user_nickname}}</text>
+                        <text class="chatmate">{{item.user_nickname}} {{item.receiver_id !== -1?'->'+item.receiver_nickname:''}}</text>
                         <text class="lasttime">{{item.time}}</text>
                     </view>
                     <text class="chat-txt">{{item.content}}</text>

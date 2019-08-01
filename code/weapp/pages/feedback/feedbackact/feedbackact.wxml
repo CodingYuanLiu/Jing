@@ -1,0 +1,22 @@
+<!--pages/feedback/feedbackact/feedbackact.wxml-->
+<text>pages/feedback/feedbackact/feedbackact.wxml</text>
+<block wx:for="{{participants}}" wx:key="id" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+    <i-panel title="{{item.user_nickname}}">
+        <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+            <label style="display:inline-block">沟通</label>
+            <i-rate style="display:inline-block; float: right; padding-right: 20px" size="30" bind:change="onChangeC" value="{{starIndexC[item.id]}}" data-id="{{item.id}}">
+            </i-rate>
+        </view>
+        <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+            <label style="display:inline-block">守时</label>
+            <i-rate style="display:inline-block; float: right; padding-right: 20px" size="30" bind:change="onChangeP" value="{{starIndexP[item.id]}}" data-id="{{item.id}}">
+            </i-rate>
+        </view>
+        <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+            <label style="display:inline-block">诚信</label>
+            <i-rate style="display:inline-block; float: right; padding-right: 20px" size="30" bind:change="onChangeH" value="{{starIndexH[item.id]}}" data-id="{{item.id}}">
+            </i-rate>
+        </view>
+    </i-panel>
+</block>
+<i-button bindtap="handleSubmit" type="primary">提交</i-button>

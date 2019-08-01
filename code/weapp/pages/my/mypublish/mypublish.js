@@ -22,14 +22,14 @@ Page({
                 "Authorization": "Bearer " + app.globalData.jwt,
             },
             success: function(res) {
-                if (res.data === null) {
+                if (res.data.acts === null) {
                     that.setData({
                         no_content: true
                     });
                 }
                 console.log(res);
                 that.setData({
-                    acts: res.data
+                    acts: res.data.acts
                 })
             }
         })
@@ -56,7 +56,7 @@ Page({
             success: function(res) {
                 console.log(res);
                 that.setData({
-                    acts: res.data
+                    acts: res.data.acts
                 })
             }
         })

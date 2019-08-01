@@ -1,34 +1,23 @@
-// pages/my/myjoin/myjoin.js
-let app = getApp();
+
+let app = getApp()
 Page({
 
     /**
      * 页面的初始数据
      */
     data: {
-        acts: [],
-        no_content: false
+
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad: function (options) {
-        let that = this;
+        let id = app.globalData.userInfo.id
         wx.request({
-            url: 'https://jing855.cn/api/user/act/myact',
+            url: 'https://jing855.cn/api/public/feedback/query?receiver_id=' + id,
             method: 'GET',
-            header: {
-                "Authorization": "Bearer " + app.globalData.jwt,
-            },
             success: function (res) {
-                if (res.data.acts === null) {
-                    that.setData({no_content: true});
-                }
-                console.log(res);
-                that.setData({ acts: res.data.acts })
-            },
-            fail: function(res) {
                 console.log(res)
             }
         })
@@ -81,19 +70,5 @@ Page({
      */
     onShareAppMessage: function () {
 
-    },
-    bindQueTap: function (event) {
-        let actid = event.currentTarget.dataset.id
-        console.log(actid);
-        console.log(23);
-        wx.navigateTo({
-            url: '/pages/answer/answer?id=' + actid
-        })
-    },
-    handleFeedback: function(e) {
-        let id = e.currentTarget.dataset.id
-        wx.navigateTo({
-            url: '/pages/feedback/feedbackact/feedbackact?id='+id,
-        })
     }
 })

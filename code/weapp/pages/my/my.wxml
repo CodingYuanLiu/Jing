@@ -34,15 +34,15 @@
                 <text>我加入的</text>
             </view>
         </view>
-        <view class="my-item flex-wrp">
+        <!-- <view class="my-item flex-wrp" bindtap="">
             <view class="myitem-icon flex-item">
                 <image src="../../images/icons/editing_line.png"></image>
             </view>
             <view class="myitem-name flex-item">
                 <text>我的草稿</text>
             </view>
-        </view>
-        <view class="my-item flex-wrp">
+        </view> -->
+        <view class="my-item flex-wrp" bindtap="handleLook"> 
             <view class="myitem-icon flex-item">
                 <image src="../../images/icons/recent_line.png"></image>
             </view>
@@ -50,9 +50,33 @@
                 <text>最近浏览</text>
             </view>
         </view>
+        <view class="my-item flex-wrp" bindtap="handleFollowing">
+            <view class="myitem-icon flex-item">
+                <image src="../../images/icons/following.png"></image>
+            </view>
+            <view class="myitem-name flex-item">
+                <text>我关注的</text>
+            </view>
+        </view>
+        <view class="my-item flex-wrp" bindtap="handleFollower">
+            <view class="myitem-icon flex-item">
+                <image src="../../images/icons/follower.png"></image>
+            </view>
+            <view class="myitem-name flex-item">
+                <text>关注我的</text>
+            </view>
+        </view>
+        <!-- <view class="my-item flex-wrp" bindtap="handleFeedback">
+            <view class="myitem-icon flex-item">
+                <image src="../../images/icons/feedback.png"></image>
+            </view>
+            <view class="myitem-name flex-item">
+                <text>用户反馈</text>
+            </view>
+        </view> -->
 
     </view>
-    <view  hidden="{{!log}}" style="width: 100%; background: white">
+    <view hidden="{{!log}}" style="width: 100%; background: white">
         <i-button style="width: 100%" type="error" bind:click="handleLogout">退出登录</i-button>
     </view>
     <i-toast id="toast" />
