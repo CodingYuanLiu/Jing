@@ -44,7 +44,7 @@ func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.Reco
 	//Find users partially randomly
 	start,number := GetComparedUsers(count)
 	for i:=0;i<start;i++{
-		iter.Next(anotherUser)
+		iter.Next(&anotherUser)
 	}
 
 	var nearestAngle float64 = 0
@@ -96,7 +96,7 @@ func GetAngle(user dao.UserBehavior, anotherUser dao.UserBehavior) float64{
 }
 
 func GetComparedUsers(count int) (start int, number int){
-	if count < userTotal + 1{
+	if count <= userTotal + 1{
 		start = 0
 		number = count - 1
 		return
