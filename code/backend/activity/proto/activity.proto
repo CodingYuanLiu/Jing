@@ -107,7 +107,6 @@ message CmtReq{
 }
 
 message CmtResp{
-    int32 status = 1;
     string description = 2;
 }
 
@@ -124,7 +123,6 @@ message TagReq{
 }
 
 message TagResp{
-    int32 status = 1;
     repeated string tag = 2;
 }
 

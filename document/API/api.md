@@ -763,6 +763,28 @@ Status OK - 200
 ]
 ```
 
+## Get Activity Participants
+#### Description
+Get all the participants of an activity
+#### Request
+```json
+GET /api/public/act/getactivitymember?act_id=1 HTTP/1.1
+```
+#### Response
+Status OK - 200
+``` json
+[
+    {
+        "user_id":1,
+        "user_nickname":"孙笑川",
+        "user_signature":"...",
+        "user_avatar":"http://image.jing855.cn/...",
+    },
+    ...
+]
+```
+
+
 ## Publish Activity
 
 #### Description
@@ -1292,23 +1314,28 @@ Authorization: Bearer jwt
 ```
 
 #### Response
+
 Status OK - 200
+
 ```json
 {
     "message": "Delete successfully"
 }
-
+```
 
 ## Feedback
+
 ### Publish Feedback
+
 #### Description
+
 Publish a feedback to a designated user. The publisher or the critized user must be one of the members of the activity
 
 #### Request
+
 ``` json
 POST api/user/feedback/publish HTTP/1.1
 Authentication:Bearer jwt
-
 {
 	"act_id":1,
 	"receiver_id":3,
@@ -1318,9 +1345,9 @@ Authentication:Bearer jwt
 	"punctuality_desc": "little bit later",
 	"honesty":5,
 	"honesty_desc":"good honesty",
+    "time": "2019-08-01 10:01:31",
 	"fb_images":[]
 }
-
 ```
 
 #### Response
@@ -1369,6 +1396,14 @@ Invalid starring parameter - 400
 {
     "errcode": 201,
     "message": "invalid starring parameter",
+    "status": 400
+}
+```
+Repetitive feedback - 403
+```json
+{
+    "errcode": 1,
+    "message": "You have already given the feedback",
     "status": 400
 }
 ```

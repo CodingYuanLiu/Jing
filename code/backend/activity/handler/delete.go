@@ -18,7 +18,7 @@ func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp 
 	if err == mgo.ErrNotFound{
 		log.Println("Can not find the removed activity")
 		resp.Description = "Not Found"
-		return jing.NewError(301,404,"can not find the removed activity")
+		return jing.NewError(301,404,"Can not find the removed activity")
 	}
 	mapBasicInfo := result["basicinfo"].(map[string] interface{})
 	imagesLen := len(mapBasicInfo["images"].([]interface{}))
@@ -32,13 +32,13 @@ func (actSrv *ActivitySrv) Delete(ctx context.Context,req *activity.DltReq,resp 
 		log.Printf("Deleted pictures for act %d, pic %d\n",req.ActId,i)
 	}
 	if err != nil{
-		return jing.NewError(300,400,"delete activity from qiniu error")
+		return jing.NewError(300,400,"Delete activity from qiniu error")
 	}
 
 	err = dao.Collection.Remove(bson.M{"actid": req.ActId})
 	if err!=nil{
 		log.Println(err)
-		return jing.NewError(300,400,"delete activity from mongoDB error")
+		return jing.NewError(300,400,"Delete activity from mongoDB error")
 	} else{
 		log.Println("Delete activity successfully.")
 		resp.Description = "delete activity successfully"

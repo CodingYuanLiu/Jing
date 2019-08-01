@@ -63,17 +63,6 @@ func generateJSON(feedback *feedbackProto.Feedback) (myjson.JSON,error){
 	return returnJSON,nil
 }
 
-func isInMembers(user int,members []int) bool{
-	isIn := false
-	for _,member := range members{
-		if user == member{
-			isIn = true
-			return isIn
-		}
-	}
-	return false
-}
-
 func (feedbackController *Controller) PublishFeedback(c *gin.Context){
 	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
@@ -95,22 +84,13 @@ func (feedbackController *Controller) PublishFeedback(c *gin.Context){
 	}
 
 	var receiverId = int(jsonForm["receiver_id"].(float64))
-	if !dao.HasUser(receiverId){
-		jing.SendError(c,jing.NewError(201,400,"The receiver does not exist"))
-		return
-	}
+	var actId = int(jsonForm["act_id"].(float64))
 
-	memberIds,err := dao.GetActivityMembers(int(jsonForm["act_id"].(float64)))
+
+
+	err = feedbackClient.CheckValidFeedbackToAct(userId,receiverId,actId)
 	if err != nil{
-		jing.SendError(c,jing.NewError(201,400,"Activity does not exist in mysql"))
-		return
-	}
-	if !isInMembers(userId,memberIds){
-		jing.SendError(c,jing.NewError(105,403,"The user has no authority to make that feedback"))
-		return
-	}
-	if !isInMembers(receiverId,memberIds){
-		jing.SendError(c,jing.NewError(201,400,"The receiver is not the member of the activity"))
+		jing.SendError(c,err)
 		return
 	}
 
