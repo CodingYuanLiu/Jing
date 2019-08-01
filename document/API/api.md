@@ -1314,23 +1314,28 @@ Authorization: Bearer jwt
 ```
 
 #### Response
+
 Status OK - 200
+
 ```json
 {
     "message": "Delete successfully"
 }
-
+```
 
 ## Feedback
+
 ### Publish Feedback
+
 #### Description
+
 Publish a feedback to a designated user. The publisher or the critized user must be one of the members of the activity
 
 #### Request
+
 ``` json
 POST api/user/feedback/publish HTTP/1.1
 Authentication:Bearer jwt
-
 {
 	"act_id":1,
 	"receiver_id":3,
@@ -1342,7 +1347,6 @@ Authentication:Bearer jwt
 	"honesty_desc":"good honesty",
 	"fb_images":[]
 }
-
 ```
 
 #### Response
