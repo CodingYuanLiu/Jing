@@ -35,9 +35,10 @@ func CallUpdateUser(id int, jsonForm map[string]interface{}) (*userProto.UpdateR
 	req.Signature = jsonForm["signature"].(string)
 	req.Nickname = jsonForm["nickname"].(string)
 	req.Gender = int32(jsonForm["gender"].(float64))
+	req.PrivacyLevel = int32(jsonForm["privacy_level"].(float64))
 	rsp, err := Client.Update(context.TODO(), req)
 	if err != nil {
-		return nil, jing.Format(err)
+		return nil, err
 	}
 	return rsp, nil
 }

@@ -86,19 +86,6 @@ func (uc *Controller) BanUser (c *gin.Context) {
 	})
 }
 
-func (uc *Controller) ChangePrivacyLevel (c *gin.Context) {
-	level, err := strconv.Atoi(c.Query("level"))
-	if err != nil || level == 0 {
-		jing.SendError(c, jing.NewError(201, 400, "param 'level' is not provided or bad"))
-		return
-	}
-	userId := c.GetInt("userId")
-	_ = dao.ChangePrivacyLevel(userId, level)
-	c.JSON(http.StatusOK, map[string]string {
-		"message": "update successfully",
-	})
-}
-
 func (uc *Controller) UnFollow (c *gin.Context) {
 	userId := c.GetInt("userId")
 	id, err := strconv.Atoi(c.Query("id"))
@@ -268,6 +255,9 @@ func (uc *Controller) UpdateUser (c *gin.Context) {
 	}
 	if jsonForm["major"] == nil {
 		jsonForm["major"] = ""
+	}
+	if jsonForm["privacy_level"] == nil {
+		jsonForm["privacy_level"] = float64(-2)
 	}
 
 	rsp, err := userClient.CallUpdateUser(id, jsonForm)
