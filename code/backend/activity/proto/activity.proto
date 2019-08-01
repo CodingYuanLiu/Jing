@@ -140,11 +140,5 @@ message RecommendReq{
 }
 
 message RecommendResp{
-    /*
-        0 for the user or all the another users have no behavior
-        1 for the nearest user has no activity
-        2 for OK.
-    */
-    int32 status = 2;
     repeated int32 actId = 1;
 }

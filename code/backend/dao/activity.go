@@ -176,14 +176,13 @@ func AddBehavior(behavior string, userId int,type_ string) error{
 			Portrait:[4]float64{0,0,0,0},
 		}
 		err2 := BehaviorCollection.Insert(userBehavior)
-		if err2 !=nil {
+		if err2 != nil {
 			log.Println("Dao error: Insert new user behavior error")
-			log.Println(err2)
-			return err2
+			return jing.NewError(300,400,"Insert new user behavior error")
 		}
 	}else if err!=nil{
 		log.Println("Dao error: fetch behavior error")
-		return err
+		return jing.NewError(300,400,"fetch behavior error")
 	}
 
 	switch type_{
@@ -202,12 +201,12 @@ func AddBehavior(behavior string, userId int,type_ string) error{
 		err = BehaviorCollection.Update(bson.M{"userid":userId},bson.M{"$set":bson.M{"taxi":userBehavior.Taxi}})
 		if err != nil{
 			log.Println("Dao error: update behavior error")
-			return err
+			return jing.NewError(300,400,"update behavior error")
 		}
 		err = BehaviorCollection.Update(bson.M{"id":-1},bson.M{"$inc":bson.M{"taxi":1}})
 		if err != nil{
 			log.Println("Dao error: update total behavior error")
-			return err
+			return jing.NewError(300,400,"update total behavior error")
 		}
 	case "takeout":
 		switch behavior{
@@ -225,12 +224,12 @@ func AddBehavior(behavior string, userId int,type_ string) error{
 		err = BehaviorCollection.Update(bson.M{"userid":userId},bson.M{"$set":bson.M{"takeout":userBehavior.Takeout}})
 		if err != nil{
 			log.Println("Dao error: update behavior error")
-			return err
+			return jing.NewError(300,400,"update behavior error")
 		}
 		err = BehaviorCollection.Update(bson.M{"id":-1},bson.M{"$inc":bson.M{"takeout":1}})
 		if err != nil{
 			log.Println("Dao error: update total behavior error")
-			return err
+			return jing.NewError(300,400,"update total behavior error")
 		}
 
 	case "order":
@@ -248,12 +247,12 @@ func AddBehavior(behavior string, userId int,type_ string) error{
 		err = BehaviorCollection.Update(bson.M{"userid":userId},bson.M{"$set":bson.M{"order":userBehavior.Order}})
 		if err != nil{
 			log.Println("Dao error: update behavior error")
-			return err
+			return jing.NewError(300,400,"update behavior error")
 		}
 		err = BehaviorCollection.Update(bson.M{"id":-1},bson.M{"$inc":bson.M{"order":1}})
 		if err != nil{
 			log.Println("Dao error: update total behavior error")
-			return err
+			return jing.NewError(300,400,"update total behavior error")
 		}
 
 	case "other":
@@ -271,12 +270,12 @@ func AddBehavior(behavior string, userId int,type_ string) error{
 		err = BehaviorCollection.Update(bson.M{"userid":userId},bson.M{"$set":bson.M{"other":userBehavior.Other}})
 		if err != nil{
 			log.Println("Dao error: update behavior error")
-			return err
+			return jing.NewError(300,400,"update behavior error")
 		}
 		err = BehaviorCollection.Update(bson.M{"id":-1},bson.M{"$inc":bson.M{"other":1}})
 		if err != nil{
 			log.Println("Dao error: update total behavior error")
-			return err
+			return jing.NewError(300,400,"update total behavior error")
 		}
 	}
 
@@ -289,12 +288,14 @@ func AddBehavior(behavior string, userId int,type_ string) error{
 	if err != nil{
 		log.Println("Dao error: fetch total behavior error.")
 		log.Println(err)
+		return jing.NewError(300,400,"fetch total behavior error")
 	}
 
 	portrait := CalculateWeight(userBehavior,totalBehavior)
 	err = BehaviorCollection.Update(bson.M{"userid":userId},bson.M{"$set":bson.M{"portrait":portrait}})
 	if err != nil{
 		log.Println("Dao error: update portrait error")
+		return jing.NewError(300,400,"update portrait error")
 	}
 	return nil
 }

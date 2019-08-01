@@ -174,18 +174,11 @@ func (activityController *Controller) Comment(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Json parse error",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"json parse error"))
 		return
 	}
 	if jsonForm["receiver_id"] == nil || jsonForm["content"] == nil || jsonForm["act_id"] == nil || jsonForm["time"] == nil {
-		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Miss some field",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
 		return
 	}
 	resp,err := activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, int(jsonForm["receiver_id"].(float64)),
@@ -579,10 +572,7 @@ func (activityController *Controller) AddTags(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Json parse error",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"json parse error"))
 		return
 	}
 	if jsonForm["tags"] == nil{
@@ -642,17 +632,12 @@ func (activityController *Controller) AddBehavior(c *gin.Context){
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusBadRequest, map[string]string{
-			"message": "Json parse error",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"json parse error"))
+
 		return
 	}
 	if jsonForm["behavior"] == nil || jsonForm["type"] == nil{
-		c.JSON(http.StatusBadRequest,map[string]string{
-			"message":"Miss some field",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
 		return
 	}
 	behavior := jsonForm["behavior"].(string)
@@ -660,18 +645,12 @@ func (activityController *Controller) AddBehavior(c *gin.Context){
 	check := (behavior != "search" && behavior != "scanning" && behavior != "join" && behavior != "publish") ||
 		(type_ != "taxi" && type_ != "takeout" && type_ != "other" && type_ != "order")
 	if check{
-		c.JSON(http.StatusBadRequest,map[string]string{
-			"message":"Wrong behavior or wrong type",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(201,400,"Wrong behavior or wrong type"))
 		return
 	}
 	err = dao.AddBehavior(behavior,userId,type_)
 	if err!=nil{
-		c.JSON(http.StatusInternalServerError,map[string] string{
-			"message":error.Error(err),
-		})
-		c.Abort()
+		jing.SendError(c,err)
 		return
 	} 	else{
 		c.JSON(http.StatusOK,map[string] string{
@@ -683,10 +662,12 @@ func (activityController *Controller) AddBehavior(c *gin.Context){
 func (activityController *Controller) RecommendActivity(c *gin.Context){
 	userId := c.GetInt("userId")
 	var actJSONs []myjson.JSON
-	recommendActs := activityClient.GetRecommendation(int32(userId))
-
-	for _, v := range recommendActs {
-		resp, _ := getActivityJson(v)
+	resp,err := activityClient.GetRecommendation(int32(userId))
+	if err != nil{
+		jing.SendError(c,err)
+	}
+	for _, v := range resp.ActId {
+		resp, _ := getActivityJson(int(v))
 		actJSONs = append(actJSONs, resp)
 	}
 	c.JSON(http.StatusOK, actJSONs)
