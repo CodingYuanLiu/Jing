@@ -304,6 +304,10 @@ export default class Api {
         })
     }
 
+    /**
+     *
+     * activity applicants api
+     */
     static joinAct(act, jwt) {
         return new Promise((resolve, reject) => {
             axios.post(`/api/user/act/join?act_id=${act.id}`, null, {
@@ -369,7 +373,14 @@ export default class Api {
     }
 
 
-    // follow and unFollow
+    /**
+     *
+     * @param from
+     * @param to
+     * @param jwt
+     * @returns {Promise<R>}
+     */
+
     static follow(from, to, jwt) {
         return new Promise((resolve, reject) => {
             axios.get(`/api/user/follow?id=${to}`, {
@@ -431,7 +442,6 @@ export default class Api {
                 })
         })
     }
-
 
     /**
      * getSavedPublishAct
