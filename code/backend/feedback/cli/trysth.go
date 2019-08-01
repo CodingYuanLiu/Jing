@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"jing/app/dao"
+
 	//"jing/app/dao"
-	"log"
 )
 /*
 func try1(){
@@ -50,26 +50,13 @@ func try1(){
 */
 func main(){
 
-	session, err := mgo.Dial("mongodb://jing:jing@localhost:27017/Jing")
-	if err != nil{
-		log.Println(err)
-	}
 
-	collection := session.DB("Jing").C("Activity")
-	index := mgo.Index{
-		Key: []string{"$text:basicinfo.description"},
+	//var existFb []map[string] interface{}
+	query := []bson.M{
+		{"receiverid": int32(3)},
+		{"userid": int32(2)},
+		{"actid": int32(1)},
 	}
-	err = collection.EnsureIndex(index)
-
-	if err != nil{
-		fmt.Print("err:" + err.Error())
-	}
-	var result []map[string]interface{}
-	err = collection.Find(bson.M{"$text":bson.M{"$search":"basketball"}}).All(&result)
-	if err != nil {
-		fmt.Print("err:" + err.Error())
-	}else{
-		fmt.Println("result:")
-		fmt.Println(result)
-	}
+	count,_ := dao.FeedbackCollection.Find(bson.M{"$and":query}).Count()
+	fmt.Println(count)
 }

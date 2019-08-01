@@ -5,7 +5,10 @@ import (
 	"github.com/micro/go-micro/client"
 	"github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
+	"gopkg.in/mgo.v2/bson"
+	"jing/app/dao"
 	feedbackProto "jing/app/feedback/proto"
+	"jing/app/jing"
 	"jing/app/json"
 	"os"
 )
@@ -81,4 +84,52 @@ func CommentFeedback(commentatorId int32, objectId string, commentDesc string, t
 	} else{
 		return resp,nil
 	}
+}
+
+func CheckValidFeedbackToAct(userId int,receiverId int,actId int) error{
+	if !dao.HasUser(receiverId){
+		return jing.NewError(201,400,"The receiver does not exist")
+	}
+
+	if receiverId == userId{
+		return jing.NewError(201,400,"Can not feedback to yourself")
+	}
+
+	memberIds,err := dao.GetActivityMembers(actId)
+	if err != nil{
+		return jing.NewError(201,400,"Activity does not exist in mysql")
+	}
+	if !isInMembers(userId,memberIds){
+		return jing.NewError(105,403,"The user has no authority to make that feedback")
+	}
+	if !isInMembers(receiverId,memberIds){
+		return jing.NewError(201,400,"The receiver is not the member of the activity")
+	}
+
+	query := []bson.M{
+		{"receiverid": int32(receiverId)},
+		{"userid": int32(userId)},
+		{"actid": int32(actId)},
+	}
+	count,err := dao.FeedbackCollection.Find(bson.M{"$and":query}).Count()
+	if err != nil{
+		return jing.NewError(300,400,"Can not find and check repetitive feedback in mongo")
+	}
+	if count > 0 {
+		return jing.NewError(1,403,"You have already given the feedback")
+	}
+
+	return nil
+}
+
+
+func isInMembers(user int,members []int) bool{
+	isIn := false
+	for _,member := range members{
+		if user == member{
+			isIn = true
+			return isIn
+		}
+	}
+	return false
 }
