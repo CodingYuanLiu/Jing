@@ -11,7 +11,7 @@
             <text>{{notify_length}} 条未读</text>
             <image src="../../images/allread.png"></image>
         </view>
-        <block wx:for="{{applicant}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+        <block wx:for="{{applicant}}"  wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <view class="notify-item flex-wrp" bindtap="handleToAccept" data-aid="{{item.act_id}}" data-uid="{{item.applicant_id}}" data-nick="{{item.app_nick}}">
                 <view class="avatar flex-item">
                     <!-- <image src="{{item.avatar}}"></image> -->

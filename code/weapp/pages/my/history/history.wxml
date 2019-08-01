@@ -2,7 +2,7 @@
 <view hidden="{{!no_content}}"> 暂无 </view>
 <scroll-view scroll-y="true" class="container discovery">
     <view class="ctnt0">
-        <block wx:for="{{acts}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+        <block wx:for="{{feed}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <view class="feed-item">
                 <view class="feed-source">
                     <a class="">
@@ -38,7 +38,7 @@
                             <!-- <view class="follow-it">
                                 <a>{{item.comment_num}} 关注</a>
                             </view> -->
-                            <label wx:if="{{item.status===2}}" style="width: 5vh; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleFeedback" data-id="{{item.act_id}}">评价</label>
+                            <label wx:if="{{item.status===2}}" style="width: 10vh; display: inline-block;float:right;font-size: 14px" bindtap="handleFeedback" data-id="{{item.act_id}}">评价</label>
                         </view>
                     </view>
                 </view>

@@ -98,7 +98,7 @@ Page({
             method: 'GET',
             success: function(res) {
                 console.log(res);
-                feed_data = res.data;
+                feed_data = res.data.acts;
                 that.setData({
                     feed: feed_data,
                     feed_length: feed_data.length
@@ -118,7 +118,7 @@ Page({
             method: 'GET',
             success: function(res) {
                 console.log(res);
-                next_data = res.data;
+                next_data = res.data.acts;
                 that.setData({
                     feed: that.data.feed.concat(next_data),
                     feed_length: that.data.feed_length + next_data.length
@@ -156,7 +156,7 @@ Page({
             // },
             success: function(res) {
                 console.log(res);
-                let feed_data = res.data;
+                let feed_data = res.data.acts;
                 that.setData({
                     feed: feed_data,
                     // feed_length: feed_data.length

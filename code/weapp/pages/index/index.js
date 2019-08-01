@@ -5,7 +5,7 @@ const {
 let app = getApp()
 Page({
     data: {
-        navTab: ["全部", "推荐", "我的"],
+        navTab: ["全部", "推荐", "关注"],
         currentNavtab: "0",
         indicatorDots: false,
         autoplay: true,
@@ -104,7 +104,7 @@ Page({
             method: 'GET',
             success: function(res) {
                 console.log(res);
-                feed_data = res.data;
+                feed_data = res.data.acts;
                 that.setData({
                     feed: feed_data,
                     feed_length: feed_data.length,
@@ -125,7 +125,7 @@ Page({
                 },
                 success: function(res) {
                     console.log(res);
-                    feed_data = res.data;
+                    feed_data = res.data.acts;
                     if (feed_data !== null)
                         that.setData({
                             feed_sugg: feed_data,
@@ -136,33 +136,49 @@ Page({
             that.setData({
                 myacts: []
             })
-            wx.request({
-                url: 'https://jing855.cn/api/user/act/myact',
-                method: 'GET',
-                header: {
-                    "Authorization": "Bearer " + app.globalData.jwt,
-                },
-                success: function(res) {
-                    console.log(res);
-                    if (feed_data !== null)
-                        that.setData({
-                            myacts: that.data.myacts.concat(res.data)
-                        })
-                }
-            })
-            wx.request({
-                url: 'https://jing855.cn/api/user/act/manageact',
-                method: 'GET',
-                header: {
-                    "Authorization": "Bearer " + app.globalData.jwt,
-                },
-                success: function(res) {
-                    console.log(res);
-                    that.setData({
-                        myacts: that.data.myacts.concat(res.data)
-                    })
-                }
-            })
+            let following = app.globalData.following;
+            for (let i =0; i < following.length; i++) {
+                wx.request({
+                    url: 'https://jing855.cn/api/public/act/findbyuser?id='+following[i].id,
+                    method: 'GET',
+                    // header: {
+                    //     "Authorization": "Bearer " + app.globalData.jwt,
+                    // }
+                    success: function(res) {
+                        if (res.data !== null)
+                            that.setData({
+                                myacts: that.data.myacts.concat(res.data.acts)
+                            })
+                    }
+                })
+            }
+            // wx.request({
+            //     url: 'https://jing855.cn/api/user/act/myact',
+            //     method: 'GET',
+            //     header: {
+            //         "Authorization": "Bearer " + app.globalData.jwt,
+            //     },
+            //     success: function(res) {
+            //         console.log(res);
+            //         if (feed_data !== null)
+            //             that.setData({
+            //                 myacts: that.data.myacts.concat(res.data)
+            //             })
+            //     }
+            // })
+            // wx.request({
+            //     url: 'https://jing855.cn/api/user/act/manageact',
+            //     method: 'GET',
+            //     header: {
+            //         "Authorization": "Bearer " + app.globalData.jwt,
+            //     },
+            //     success: function(res) {
+            //         console.log(res);
+            //         that.setData({
+            //             myacts: that.data.myacts.concat(res.data)
+            //         })
+            //     }
+            // })
         }
     },
 
@@ -184,7 +200,7 @@ Page({
                     return;
                 } else {
                     console.log(res);
-                    next_data = res.data;
+                    next_data = res.data.acts;
                     that.setData({
                         feed: that.data.feed.concat(next_data),
                         feed_length: that.data.feed_length + next_data.length,

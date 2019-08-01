@@ -21,6 +21,7 @@ Page({
         your_comment: '',
         place_holder: '添加评论',
         avatar_src: '../../images/icons/timg.jpg',
+        non_avatar: '../../images/icons/timg.jpg',
         to_user: -1,
         visible1: false,
         actions3: [{
@@ -28,7 +29,7 @@ Page({
             color: '#2d8cf0',
         }],
         mode: "net",
-        images: ["http://puo7ltwok.bkt.clouddn.com/Fj0kHQJU5c_EiVQAJy_vrsCosnSZ"],
+        images: [],
         status_show: ["", "[人满]", "[已过期]"]
     },
     //事件处理函数
@@ -50,33 +51,26 @@ Page({
                 that.setData({
                     comment_length: res.data.comments.length
                 })
-                for (let i = 0; i < app.globalData.following.length; i++) {
-                    console.log("finding")
-                    if (app.globalData.following[i].id === res.data.sponsor_id) {
-                        that.setData({
-                            followed: true
-                        })
-                        console.log("followed!!!!!!")
-                        break
+                if (app.globalData.userInfo !== null)
+                    for (let i = 0; i < app.globalData.following.length; i++) {
+                        console.log("finding")
+                        if (app.globalData.following[i].id === res.data.sponsor_id) {
+                            that.setData({
+                                followed: true
+                            })
+                            console.log("followed!!!!!!")
+                            break
+                        }
                     }
-                }
             }
         });
     },
     onLoad: function(options) {
         console.log('onLoad')
         var that = this
-        //调用应用实例的方法获取全局数据
-        // app.getUserInfo(function(userInfo){
-        //   //更新数据
-        //   that.setData({
-        //     userInfo:userInfo
-        //   })
-        // })
         this.setData({
             act_id: options.id
         });
-
         console.log("id是" + options.id);
         wx.request({
             url: 'https://jing855.cn/api/public/act/query?act_id=' + that.data.act_id,
@@ -89,31 +83,11 @@ Page({
                     comment_length: res.data.comments.length
                 });
                 console.log(res);
-                if (res.data.sponsor_avatar !== 'http://puo7ltwok.bkt.clouddn.com/')
+                if (res.data.sponsor_avatar !== 'http://image.jing855.cn/')
                     that.setData({
                         avatar_src: res.data.sponsor_avatar
                     })
                 let d = res.data;
-                // wx.request({
-                //     url: 'https://jing855.cn/api/public/detail?id=' + res.data.sponsor_id,
-                //     method: 'GET',
-                //     success: function(res) {
-                //         console.log(res);
-
-                //     }
-                // })
-                for (let i = 0; i < res.data.comments.length; i++) {
-                    wx.request({
-                        url: 'https://jing855.cn/api/public/detail?id=' + res.data.comments[i].user_id,
-                        method: 'GET',
-                        success: function(res) {
-                            d.comments[i].avatar_src = res.data.avatar_url;
-                            that.setData({
-                                content: d
-                            })
-                        }
-                    })
-                }
                 if (app.globalData.userInfo !== null) {
                     wx.request({
                         url: 'https://jing855.cn/api/user/act/addbehavior',
@@ -129,20 +103,44 @@ Page({
                             console.log(res);
                         }
                     })
-                }
-                for (let i = 0; i < app.globalData.following.length; i++) {
-                    console.log("finding")
-                    if (app.globalData.following[i].id === res.data.sponsor_id) {
-                        that.setData({
-                            followed: true
-                        })
-                        console.log("followed!!!!!!")
-                        break
+                    for (let i = 0; i < app.globalData.following.length; i++) {
+                        console.log("finding")
+                        if (app.globalData.following[i].id === res.data.sponsor_id) {
+                            that.setData({
+                                followed: true
+                            })
+                            console.log("followed!!!!!!")
+                            break
+                        }
                     }
                 }
+
             }
         });
-
+        wx.getStorage({
+            key: 'history',
+            success: function(res) {
+                console.log(res)
+                res.data.push(that.data.act_id)
+                wx.setStorage({
+                    key: 'history',
+                    data: res.data,
+                    success: function() {
+                        console.log(res)
+                    }
+                })
+            },
+            fail: function(res) {
+                console.log(res)
+                wx.setStorage({
+                    key: 'history',
+                    data: [],
+                })
+            },
+            complete: function() {
+                console.log("storage")
+            }
+        })
 
     },
     tapName: function(event) {
@@ -380,38 +378,84 @@ Page({
         })
     },
     handleFollow: function(event) {
+        if (app.globalData.userInfo === null) {
+            $Toast({
+                content: '请登录',
+                type: 'warning',
+            });
+            return
+        }
         let id = event.currentTarget.dataset.id;
         let that = this;
-        // console.log(id);
-        wx.request({
-            url: 'https://jing855.cn/api/user/follow?id=' + id,
-            header: {
-                "Authorization": "Bearer " + app.globalData.jwt,
-            },
-            method: 'GET',
-            success: function(res) {
-                // console.log(100000);
-                console.log(res);
-                // $Toast.hide();
-                if (res.statusCode === 200)
-                    $Toast({
-                        content: '成功',
-                        type: 'success',
-                    });
-                wx.request({
-                    url: 'https://jing855.cn/api/user/followings',
-                    method: 'GET',
-                    header: {
-                        "Authorization": "Bearer " + app.globalData.jwt,
-                    },
-                    success: function (res) {
-                        console.log(res)
-                        app.globalData.following = res.data
-                        that.refresh();
+        if (!that.data.followed) {
+            // console.log(id);
+            wx.request({
+                url: 'https://jing855.cn/api/user/follow?id=' + id,
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                method: 'GET',
+                success: function(res) {
+                    // console.log(100000);
+                    console.log(res);
+                    // $Toast.hide();
+                    if (res.statusCode === 200)
+                        $Toast({
+                            content: '成功',
+                            type: 'success',
+                        });
+                    else {
+                        $Toast({
+                            content: res.data.message,
+                            type: 'success',
+                        });
                     }
-                })
-                
-            }
-        })
+                    wx.request({
+                        url: 'https://jing855.cn/api/user/followings',
+                        method: 'GET',
+                        header: {
+                            "Authorization": "Bearer " + app.globalData.jwt,
+                        },
+                        success: function(res) {
+                            console.log(res)
+                            app.globalData.following = res.data
+                            that.refresh();
+                        }
+                    })
+
+                }
+            })
+        } else {
+            wx.request({
+                url: 'https://jing855.cn/api/user/unfollow?id=' + id,
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                method: 'GET',
+                success: function(res) {
+                    // console.log(100000);
+                    console.log(res);
+                    // $Toast.hide();
+                    if (res.statusCode === 200)
+                        $Toast({
+                            content: '成功',
+                            type: 'success',
+                        });
+                    wx.request({
+                        url: 'https://jing855.cn/api/user/followings',
+                        method: 'GET',
+                        header: {
+                            "Authorization": "Bearer " + app.globalData.jwt,
+                        },
+                        success: function(res) {
+                            console.log(res)
+                            app.globalData.following = res.data
+                            that.refresh();
+                        }
+                    })
+
+                }
+            })
+        }
     }
 })

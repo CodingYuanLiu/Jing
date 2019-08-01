@@ -1,0 +1,17 @@
+<!--pages/follow/follow.wxml-->
+<block wx:for="{{users}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+    <view class="bg-half"></view>
+    <view class="answerer flex-wrp">
+        <view class="avatar flex-item" bindtap="handleToShowInfo" data-id="{{item.id}}">
+            <image src="{{item.avatar_url}}"></image>
+        </view>
+        <view class="answerer-info flex-item" bindtap="handleToShowInfo" data-id="{{item.id}}">
+            <text class="answerer-name">{{item.nickname}}</text>
+            <text class="answerer-des">{{item.signature}}</text>
+        </view>
+        <!-- <view class="follow flex-item" bindtap="handleFollow" data-id="{{item.id}}">
+            <text wx:if="{{!followed}}">十 关注</text>
+            <text wx:if="{{followed}}">已关注</text>
+        </view> -->
+    </view>
+</block>

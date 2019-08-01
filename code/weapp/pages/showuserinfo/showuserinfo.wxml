@@ -11,12 +11,49 @@
     </view>
 </view>
 <view hidden="{{error}}">
-    <i-panel title="个人信息">
-        <i-input value="{{ user.username }}" disabled type="text" maxlength="10" title="用户名" disabled/>
-        <i-input value="{{ user.nickname }}" disabled type="text" maxlength="10" title="昵称" disabled="{{!editing}}" />
+    <i-tabs current="{{ current }}" bindchange="handleChange">
+        <i-tab key="tab1" title="个人信息">
 
-        <i-input value="{{ user.signature }}" disabled type="text" title="个性签名" maxlength="50" disabled="{{!editing}}" />
-        <i-input value="{{ user.phone }}" disabled type="number" title="联系电话" maxlength="11" disabled="{{!editing}}" />
-    </i-panel>
+        </i-tab>
+        <i-tab key="tab2" title="累计评价">
+            <!-- <i-panel title="活动评价"> -->
 
+            <!-- </i-panel> -->
+        </i-tab>
+        <!-- <i-tab key="tab3" title="选项3"></i-tab> -->
+    </i-tabs>
+    <!-- <i-panel title="个人信息"> -->
+    <view wx:if="{{current === 'tab1'}}">
+        <i-input value="{{ user.username }}" disabled type="text" maxlength="10" title="用户名" />
+        <i-input value="{{ user.nickname }}" disabled type="text" maxlength="10" title="昵称" />
+        <i-input value="{{ user.signature }}" disabled type="text" title="个性签名" maxlength="50" />
+        <i-input value="{{ user.phone }}" wx:if="{{user.privacy === 0}}" disabled type="number" title="联系电话" maxlength="11" />
+        <i-input value="{{ user.birthday }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="生日" maxlength="11" />
+        <i-input value="{{ user.dormitory }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="宿舍" maxlength="11" />
+        <i-input value="{{ user.major }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="专业" maxlength="11" />
+        <i-input value="{{ genders[user.gender] }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="性别" maxlength="11" />
+        <i-input value="{{ levels[user.privacy+1] }}" disabled type="text" title="隐私设置" maxlength="11" />
+    </view>
+    <!-- </i-panel> -->
+    <view wx:if="{{current === 'tab2'}}">
+        <block wx:for="{{feedback}}" wx:key="id" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+            <i-panel title="{{item.act_title}}">
+                <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+                    <label style="display:inline-block">沟通</label>
+                    <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="30" value="{{item.communication}}" data-id="{{item.id}}">
+                    </i-rate>
+                </view>
+                <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+                    <label style="display:inline-block">守时</label>
+                    <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="30" value="{{item.punctuality}}" data-id="{{item.id}}">
+                    </i-rate>
+                </view>
+                <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+                    <label style="display:inline-block">诚信</label>
+                    <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="30" value="{{item.honesty}}" data-id="{{item.id}}">
+                    </i-rate>
+                </view>
+            </i-panel>
+        </block>
+    </view>
 </view>

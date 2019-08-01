@@ -1,0 +1,10 @@
+/* pages/feedback/feedbackact/feedbackact.wxss */
+
+.textinput {
+    flex: 1;
+    width: 100%;
+    padding: 15px;
+    height: 350rpx;
+    line-height: 26px;
+    color: #000;
+}
