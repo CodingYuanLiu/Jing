@@ -11,6 +11,7 @@ import Util from "../../common/util";
 import Api from "../../api/Api";
 import CommentPreview from "./components/CommentPreview";
 import {onFollow, onUnFollow} from "../../actions/currentUser";
+import LocalApi from "../../api/LocalApi";
 
 class DetailScreen extends React.Component {
     constructor(props) {

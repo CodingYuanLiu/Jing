@@ -270,8 +270,9 @@ class PublishPage extends React.PureComponent{
             Model.transferActivityFromCamelToSnake(publishAct);
         console.log(data);
         Api.publishAct(this.props.currentUser.jwt, data)
-            .then (res => {
-                console.log(res);
+            .then (id => {
+                console.log(id);
+                NavigationUtil.toPage({id: id}, "ActDetail");
             })
             .catch(err => {
                 console.log(err);

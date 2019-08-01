@@ -1,6 +1,6 @@
 import { PropTypes } from "prop-types";
 import React from "react";
-import { ViewPropTypes, View, Text, StatusBar, StyleSheet, Platform } from "react-native";
+import { ViewPropTypes, View, Text, StatusBar, StyleSheet, Platform, } from "react-native";
 
 
 const NAV_BAR_HEIGHT_IOS = 44;
@@ -45,6 +45,7 @@ export default class NavigationBar extends React.Component{
 NavigationBar.propTypes = {
     style: ViewPropTypes.style,
     title: PropTypes.string,
+    titleStyle: PropTypes.object,
     titleView: PropTypes.element,
     titleLayoutStyle: ViewPropTypes.style,
     hide: PropTypes.bool,

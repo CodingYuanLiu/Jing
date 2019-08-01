@@ -166,11 +166,13 @@ class ModifyInformation extends React.PureComponent{
         return (
             <View>
                 <TouchableWithoutFeedback>
-                    <Text>{label}</Text>
-                    <TextInput
-                        style={styles.input}
-                        onPress={onPress}
-                    />
+                    <View>
+                        <Text>{label}</Text>
+                        <TextInput
+                            style={styles.input}
+                            onPress={onPress}
+                        />
+                    </View>
                 </TouchableWithoutFeedback>
             </View>
         );

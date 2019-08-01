@@ -132,7 +132,7 @@ class PublishTakeoutSpec extends React.PureComponent{
 const mapDispatchToProps = dispatch => ({
     saveTakeoutAct: (data) => dispatch(Activity.saveTakeoutAct(data)),
 });
-export default connect(null, null)(PublishTakeoutSpec);
+export default connect(null, mapDispatchToProps)(PublishTakeoutSpec);
 
 const styles = StyleSheet.create({
     container: {

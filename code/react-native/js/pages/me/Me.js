@@ -71,7 +71,9 @@ class MeScreen extends React.PureComponent{
             {data: 0, label: "粉丝",
                 onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Follower")}
             },
-            {data: 0, label: "最近浏览",}
+            {data: 0, label: "最近浏览",
+                onPress: () => {NavigationUtil.toPage(null, "RecentScan")}
+            }
         ];
         if (currentUser.logged) {
             topCard = (
@@ -159,7 +161,7 @@ class MeScreen extends React.PureComponent{
     };
 
     toUserHome = () => {
-        NavigationUtil.toPage(this.props.currentUser.id, "PersonalHome")
+        NavigationUtil.toPage({id: this.props.currentUser.id}, "PersonalHome")
     };
 }
 const mapStateToProps = state => ({

@@ -5,25 +5,37 @@ import {ArrowLeftIcon, CaretRightIcon, ChevronIcon, MessageOneToOneIcon, PlusIco
 import NavigationUtil from "../../navigator/NavUtil";
 import Util from "../../common/util";
 import {Avatar, Button, Divider, Image} from "react-native-elements";
+import {connect} from "react-redux";
+
 
 const window = Util.getVerticalWindowDimension();
 const STICKY_HEADER_HEIGHT = 50;
 const PARALLAX_HEADER_HEIGHT = 180;
 
-export default class  extends React.PureComponent {
+class PersonalHome extends React.PureComponent {
     constructor(props) {
         super(props);
-        this.state = {};
-        //this.displayUser = this.props.navigation.getParam("id");
-        this.displayUser = -1;
-        this.displaySelf = this.props.user && this.displayUser === this.props.user.id;
+        this.state = {
+            user: {},
+            isSelf: false,
+            avatarVisible: false,
+        };
     }
-    displayUser = -1;
-    displaySelf = false;
 
     componentDidMount(){
-        console.log(this.props);
-    }
+        let id = this.props.navigation.getParam("id");
+        if (id === this.props.currentUser.id) {
+            this.setState({
+                user: this.props.currentUser,
+                isSelf: true,
+            })
+        } else {
+            this.loadData(id);
+            this.setState({
+                isSelf: true,
+            })
+        }
+    };
 
     render() {
         let userComponent = this.renderUser();
@@ -59,7 +71,7 @@ export default class  extends React.PureComponent {
         )
     };
     renderStickyHeader = () => {
-        let nickname = "赵胜龙";
+        let nickname = this.state.user.nickname;
         return (
             <View style={styles.stickyHeaderContainer}>
                 <Text style={styles.stickyHeaderText}>{nickname}</Text>
@@ -81,19 +93,21 @@ export default class  extends React.PureComponent {
         )
     };
     renderUser = () => {
+        let user = this.state.user;
         let avatar = (
             <Avatar
-            source={{uri: "http://image.jing855.cn/actImage/act16/img0"}}
-            rounded
-            containerStyle={styles.avatarContainer}
-            size={100}
+                source={{uri: user.avatar}}
+                rounded
+                containerStyle={styles.avatarContainer}
+                size={100}
+                onPress={this.showAvatarPicker}
             />
         );
         let rightButton = (
             <Button
-                title={this.displaySelf ? "编辑资料" : "关注" }
+                title={this.state.isSelf ? "编辑资料" : "关注" }
                 icon={
-                    this.displaySelf ?
+                    this.state.isSelf ?
                         null :
                         <PlusIcon
                             color={"#fff"}
@@ -103,16 +117,20 @@ export default class  extends React.PureComponent {
                 containerStyle={styles.userRightButtonContainer}
                 buttonStyle={styles.userRightButton}
                 TouchableComponent={TouchableWithoutFeedback}
-                onPress={() => {NavigationUtil.toPage(null, "Information")}}
+                onPress={this.state.isSelf ?
+                    () => {NavigationUtil.toPage({user: user}, "Information")} :
+                    () => {this.follow(user.id)}
+                }
             />
         );
-        let rightIcon = this.displaySelf? null : (
+        let rightIcon = this.state.isSelf? null : (
             <MessageOneToOneIcon
-            reverse
-            color={"#6a6a6a"}
-            reverseColor={"#fff"}
-            size={14}
-            containerStyle={styles.userRightIconContainer}
+                reverse
+                color={"#6a6a6a"}
+                reverseColor={"#fff"}
+                size={14}
+                containerStyle={styles.userRightIconContainer}
+                onPress={() => {alert("去聊天吗")}}
             />
         );
         let avatarComponent = (
@@ -125,14 +143,14 @@ export default class  extends React.PureComponent {
         let nickname = (
             <View>
                 <Text style={styles.nicknameTitle}>
-                    赵胜龙
+                    {user.nickname}
                 </Text>
             </View>
         );
         let signature = (
             <View>
                 <Text style={styles.signatureTitle}>
-                    这里一无所有，直到你
+                    {user.signature === "" ? "这里一无所有，直到你" : user.signature}
                 </Text>
             </View>
         );
@@ -194,8 +212,19 @@ export default class  extends React.PureComponent {
     };
     renderTabNav = () => {
         return null;
-    }
+    };
+    showAvatarPicker = () => {
+        this.setState({avatarVisible: true});
+    };
+    handleAvatarPicker = () => {
+
+    };
 }
+
+const mapStateToProps = state => ({
+    currentUser: state.currentUser
+});
+export default connect(mapStateToProps, null)(PersonalHome);
 
 const styles = StyleSheet.create({
     fixedHeaderContainer: {

@@ -67,10 +67,16 @@ export default class LocalApi {
         try {
             res = await Dao.get("@recent");
             recentList = JSON.parse(res);
-            console.log("data", recentList);
-            console.log(data);
-            recentList = [...recentList, data];
-            await Dao.saveJson("@recent", recentList);
+            let saved = false;
+            for (let i of recentList) {
+                if (i.id === item.id) {
+                    saved = true;
+                }
+            }
+            if (!saved) {
+                recentList = [...recentList, data];
+                await Dao.saveJson("@recent", recentList);
+            }
         } catch (err) {
             console.log(err);
             recentList = [data];

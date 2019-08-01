@@ -2,6 +2,7 @@ import Dao from "./Dao"
 import axios from "axios"
 import qs from "qs"
 import Model from "./Model";
+import LocalApi from "./LocalApi";
 
 axios.defaults.baseURL="http://202.120.40.8:30255";
 axios.defaults.withCredentials=true;
@@ -197,8 +198,12 @@ export default class Api {
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/act/query?act_id=${id}`)
                 .then(res => {
-                    resolve(Model.transferActivityFromSnakeToCamel(res.data))
-                })
+                        let data = Model.transferActivityFromSnakeToCamel(res.data);
+                        resolve(data);
+                        LocalApi.saveRecentScan(data)
+                            .catch(err => {
+                            });
+                    })
                 .catch(err => {
                     Reject(err, reject)
                 })
@@ -244,7 +249,7 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(res.data)
+                    resolve({id: res.data.act_id});
                 })
                 .catch(err => {
                     Reject(err, reject)
