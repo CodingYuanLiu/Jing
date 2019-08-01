@@ -224,6 +224,7 @@ func getPages(index int, size int, acts []int) (retActs []int, status int, maxEl
 			return
 		}
 		retActs = append(retActs, acts[i])
+		status = 1
 	}
 	return
 }
