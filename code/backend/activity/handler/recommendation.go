@@ -2,11 +2,11 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	activity "jing/app/activity/proto"
 	"jing/app/dao"
+	"jing/app/jing"
 	"log"
 	"math"
 	"math/rand"
@@ -16,14 +16,18 @@ import (
 const userTotal = 10
 
 func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.RecommendReq,resp *activity.RecommendResp) error {
+	/*
+	   Error code:
+	   0 for the user or all the another users have no behavior
+	   1 for the nearest user has no activity.
+	*/
+
 	userId := req.UserId
 	userBehavior := dao.UserBehavior{}
 	err := dao.BehaviorCollection.Find(bson.M{"userid":userId}).One(&userBehavior)
 	if err == mgo.ErrNotFound{
 		log.Println("Recommendation srv error: no behavior yet")
-		resp.Status = 0
-		resp.ActId = []int32{}
-		return nil
+		return jing.NewError(301,404,"Recommendation srv error: no behavior yet")
 	}
 
 
@@ -64,21 +68,16 @@ func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.Reco
 	}
 	/* All the other users have no behavior*/
 	if nearestAngle == 0{
-		resp.Status = 0
-		resp.ActId = make([]int32,0)
-		return errors.New("the user or all the other users have no behavior")
+		return jing.NewError(0,400,"the user or all the other users have no behavior")
 	}
 
 	//For debug
 	log.Printf("The nearest user is %d\n",nearestUserId)
 	acts := dao.GetAllUserActivityInt32(int(nearestUserId))
 	if len(acts) == 0{
-		resp.ActId = make([]int32,0)
-		resp.Status = 1
-		return errors.New("the nearest user has no activity")
+		return jing.NewError(1,400,"the nearest user has no activity")
 	}
 
-	resp.Status = 2
 	resp.ActId = acts
 	return nil
 }

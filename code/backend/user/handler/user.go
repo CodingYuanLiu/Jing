@@ -41,6 +41,9 @@ func (h *UserService) Update(ctx context.Context, in *user.UpdateReq, out *user.
 	if in.Dormitory != "" {
 		_ = dao.UpdateUserById(int(in.Id), "dormitory", in.Dormitory)
 	}
+	if in.PrivacyLevel != -2 {
+		_ = dao.UpdateUserById(int(in.Id), "privacy_level", in.PrivacyLevel)
+	}
 	out.Status = 200
 	return nil
 }
