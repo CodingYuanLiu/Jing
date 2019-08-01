@@ -74,12 +74,12 @@ const onLoadTypeAct = (type) => {
     }
 };
 
-const onLoadActDetail = (id) => {
+const onLoadActDetail = (id, jwt) => {
     return dispatch => {
         dispatch({
             type: actionTypes.ON_LOADING_ACT_DETAIL,
         });
-        Api.getActDetail(id)
+        Api.getActDetail(id, jwt)
             .then(data => {
                 dispatch({
                     type: actionTypes.LOAD_ACT_DETAIL_OK,

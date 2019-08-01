@@ -25,10 +25,10 @@ class DetailScreen extends React.Component {
     }
 
     componentDidMount(){
-        this.loadData(this.actId);
+        this.loadData(this.actId, this.props.currentUser.jwt);
     }
-    loadData = (id) => {
-        this.props.onLoadActDetail(id);
+    loadData = (id, jwt) => {
+        this.props.onLoadActDetail(id, jwt);
     };
     render() {
         let activity = this.props.currentAct;
@@ -128,7 +128,6 @@ class DetailScreen extends React.Component {
     };
     renderSponsor = sponsor => {
         let isFriends = false;
-        console.log(this.props.currentUser.followingList, sponsor);
         if (this.props.currentUser.followingList) {
             for (let item of this.props.currentUser.followingList) {
                 if (item.id === sponsor.id) {
@@ -351,7 +350,7 @@ const mapStateToProps = state => ({
     follow: state.follow,
 });
 const mapDispatchToProps = dispatch => ({
-    onLoadActDetail: actId => dispatch(Activity.onLoadActDetail(actId)),
+    onLoadActDetail: (actId, jwt) => dispatch(Activity.onLoadActDetail(actId, jwt)),
     resetActDetail: () => dispatch(Activity.resetActDetail()),
     onFollow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
     onUnFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
