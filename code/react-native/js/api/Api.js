@@ -176,7 +176,27 @@ export default class Api {
             })
         }
     }
-
+    // why front end post to back end?
+    static recordBehavior(jwt, type, behavior) {
+        if (!jwt) return ;
+        return new Promise((resolve, reject) => {
+            axios.post("/api/user/act/addbehavior", {
+                type: type,
+                behavior: behavior,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`
+                },
+            })
+                .then(res => {
+                    resolve(res);
+                })
+                .catch(err => {
+                    console.log(err);
+                    reject(err);
+                })
+        })
+    }
     static getRecommendAct(jwt) {
         let token = jwt;
         return new Promise((resolve, reject) => {
@@ -188,7 +208,7 @@ export default class Api {
                 .then(res => {
                     console.log(res.data);
                     let acts = res.data ? res.data.acts : [];
-                    resolve(Model.transferActivityList(acts))
+                    resolve(Model.transferActivityList(acts));
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -196,7 +216,7 @@ export default class Api {
         })
     }
 
-    static getActDetail(actId) {
+    static getActDetail(actId, jwt=null) {
         let id = actId;
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/act/query?act_id=${id}`)
@@ -206,6 +226,7 @@ export default class Api {
                         LocalApi.saveRecentScan(data)
                             .catch(err => {
                             });
+                        this.recordBehavior(jwt, data.type, "scanning");
                     })
                 .catch(err => {
                     Reject(err, reject)
@@ -254,6 +275,7 @@ export default class Api {
             })
                 .then(res => {
                     resolve({id: res.data.act_id});
+                    this.recordBehavior(jwt, data.type, "publish");
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -283,15 +305,16 @@ export default class Api {
         })
     }
 
-    static joinAct(actId, jwt) {
+    static joinAct(act, jwt) {
         return new Promise((resolve, reject) => {
-            axios.post(`/api/user/act/join?act_id=${actId}`, null, {
+            axios.post(`/api/user/act/join?act_id=${act.id}`, null, {
                 headers: {
                     'Authorization': `Bearer ${jwt}`,
                 }
             })
                 .then(res => {
                     resolve(res.data);
+                    this.recordBehavior(jwt, act.type, "join");
                 })
                 .catch(err => {
                     Reject(err, reject);

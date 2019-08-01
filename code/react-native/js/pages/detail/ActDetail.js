@@ -20,11 +20,11 @@ class DetailScreen extends React.Component {
             activity: {},
             isLoading: false,
             isFriends: false,
-        }
+        };
+        this.actId = this.props.navigation.getParam("id");
     }
 
     componentDidMount(){
-        this.actId = this.props.navigation.getParam("id");
         this.loadData(this.actId);
     }
     loadData = (id) => {
@@ -277,10 +277,10 @@ class DetailScreen extends React.Component {
 
     };
     joinAct = () => {
-        let jwt = this.props.user.jwt;
-        let actId = this.actId;
+        let jwt = this.props.currentUser.jwt;
+        let act = this.props.currentAct;
         this.setState({isJoining: true});
-        Api.joinAct(actId, jwt)
+        Api.joinAct(act, jwt)
             .then(message => {
                 console.log(message);
             })

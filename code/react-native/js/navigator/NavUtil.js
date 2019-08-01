@@ -19,16 +19,4 @@ export default class NavigationUtil {
             }
         }
     }
-    static replacePage(params, page) {
-        const navigation = this.Navigation;
-        if (!navigation) {
-            console.log("No navigation found!")
-        } else {
-            try {
-                navigation.replace(page)
-            } catch (e) {
-                console.warn(e)
-            }
-        }
-    }
 }
