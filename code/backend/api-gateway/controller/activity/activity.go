@@ -435,6 +435,7 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 		return
 	} else if status == -1 {
 		jing.SendError(c,jing.NewError(1,400,"The activity is blocked"))
+		return
 	}
 
 	acceptId, _ := strconv.Atoi(c.Query("user_id"))
@@ -699,6 +700,7 @@ func (activityController *Controller) RecommendActivity(c *gin.Context){
 	resp,err := activityClient.GetRecommendation(int32(userId))
 	if err != nil{
 		jing.SendError(c,err)
+		return
 	}
 	for _, v := range resp.ActId {
 		resp, _ := getActivityJson(int(v))

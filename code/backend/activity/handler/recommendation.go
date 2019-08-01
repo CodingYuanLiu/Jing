@@ -38,6 +38,7 @@ func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.Reco
 	if err !=nil{
 		log.Println("get count error")
 		log.Println(err)
+		return jing.NewError(300,400,"get count error")
 	}
 	var anotherUser dao.UserBehavior
 	//Find users partially randomly
