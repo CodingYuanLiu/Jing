@@ -7,6 +7,8 @@ import Util from "../../common/util";
 import {Avatar, Button, Divider, Image} from "react-native-elements";
 import {connect} from "react-redux";
 import ImagePicker from "react-native-image-picker";
+import Api from "../../api/Api";
+import PersonalTab from "./PersonalTab/PersonalTab";
 
 
 const window = Util.getVerticalWindowDimension();
@@ -20,6 +22,8 @@ class PersonalHome extends React.PureComponent {
         this.state = {
             user: {},
             isSelf: false,
+            followed: false,
+            privacy: 0,
             avatarVisible: false,
             backgroundVisible: false,
             avatar: {},
@@ -35,9 +39,10 @@ class PersonalHome extends React.PureComponent {
                 isSelf: true,
             })
         } else {
-            this.loadData(id);
+            this.loadData(id)
+                .catch(err => {console.log(err)});
             this.setState({
-                isSelf: true,
+                isSelf: false,
             })
         }
     };
@@ -45,7 +50,7 @@ class PersonalHome extends React.PureComponent {
     render() {
         let userComponent = this.renderUser();
         let infoComponent = this.renderInfo();
-        //let tabNav = this.renderTabNav();
+        let personalTab = this.renderTabNav();
         return (
             <ParallaxScrollView
                 parallaxHeaderHeight={PARALLAX_HEADER_HEIGHT}
@@ -59,8 +64,11 @@ class PersonalHome extends React.PureComponent {
             >
 
                 <View style={styles.container}>
-                    {userComponent}
-                    {infoComponent}
+                    <View style={styles.topContainer}>
+                        {userComponent}
+                        {infoComponent}
+                    </View>
+                    {personalTab}
                 </View>
             </ParallaxScrollView>
         )
@@ -96,7 +104,6 @@ class PersonalHome extends React.PureComponent {
             <ArrowLeftIcon
                 color={"#fff"}
                 onPress={() => {NavigationUtil.back(this.props)}}
-                style={styles.fixedHeaderIcon}
             />
         );
         return (
@@ -132,7 +139,7 @@ class PersonalHome extends React.PureComponent {
                             size={18}
                         />
                 }
-                containerStyle={styles.userRightButtonContainer}
+                //containerStyle={styles.userRightButtonContainer}
                 buttonStyle={styles.userRightButton}
                 TouchableComponent={TouchableWithoutFeedback}
                 onPress={this.state.isSelf ?
@@ -229,7 +236,16 @@ class PersonalHome extends React.PureComponent {
         );
     };
     renderTabNav = () => {
-        return null;
+        return <PersonalTab/>;
+    };
+    loadData = async (id) => {
+        try {
+            let data = await Api.getUserInfo(id);
+            this.setState({user: data});
+        } catch (err) {
+            console.log(err)
+        }
+
     };
     showAvatarPicker = () => {
         ImagePicker.showImagePicker(imagePickerOptions, (response) => {
@@ -289,6 +305,18 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, null)(PersonalHome);
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        minHeight: 500,
+    },
+    topContainer: {
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        position: "relative",
+        paddingLeft: 20,
+        paddingRight: 20,
+        marginBottom: 30,
+    },
     fixedHeaderContainer: {
         backgroundColor: "transparent",
         height: 50,
@@ -298,19 +326,17 @@ const styles = StyleSheet.create({
         position: "absolute",
         marginLeft: 20,
     },
-    fixedHeaderIcon: {
-        //marginLeft: 20,
-    },
     stickyHeaderContainer: {
         flexDirection: "row",
         alignItems: "center",
         height: STICKY_HEADER_HEIGHT,
-        backgroundColor: "#5293ff",
+        backgroundColor: "#1f9fff",
     },
     stickyHeaderText: {
         marginLeft: 60,
         color: "#fff",
         fontSize: 20,
+        fontWeight: "bold",
     },
     contentContainer: {
         borderTopLeftRadius: 10,
@@ -319,14 +345,8 @@ const styles = StyleSheet.create({
         position: "relative",
         top: -10,
     },
-    container: {
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-        position: "relative",
-        paddingLeft: 20,
-        paddingRight: 20,
-        marginBottom: 30,
-    },
+
+    // top user information container
     userTopContainer: {
         marginBottom: 8,
         flexDirection: "row",

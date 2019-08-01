@@ -5,6 +5,7 @@ import { PropTypes } from "prop-types";
 import {TaxiSpec, TakeoutSpec, OrderSpec, NormalActSpec} from "./SpecInfo";
 import Default from "../../../common/constant/Constant";
 import Tag from "../../../common/components/Tag";
+import NavigationUtil from "../../../navigator/NavUtil";
 
 export default class ActItem extends React.PureComponent{
     constructor(props) {
@@ -128,6 +129,7 @@ export default class ActItem extends React.PureComponent{
                 containerStyle={styles.userInfoContainer}
                 titleStyle={styles.userInfoTitle}
                 titleProps={{numberOfLines: 1, ellipsizeMode: "tail"}}
+                onPress={() => {this.toPersonalHome(sponsor.id)}}
             />
         )
     };
@@ -159,6 +161,9 @@ export default class ActItem extends React.PureComponent{
     };
     toDetail = () => {
         this.props.onPress(this.props.id)
+    };
+    toPersonalHome = (id) => {
+        NavigationUtil.toPage({id: id}, "PersonalHome");
     };
 }
 

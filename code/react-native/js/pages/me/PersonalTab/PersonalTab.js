@@ -3,8 +3,24 @@ import PersonalTrack from "./PersonalTrack";
 import PersonalPublish from "./PersonalPublish";
 import PersonalFeedback from "./Feedback";
 import PersonalJoin from "./PersonalJoin";
+import React from "react";
+import {View} from "react-native";
 
-export default createAppContainer(
+export default class PersonalTab extends React.Component{
+    constructor(props){
+        super(props);
+    }
+
+    render() {
+        return (
+            <View style={{flex: 1}}>
+                <Tab/>
+            </View>
+        )
+    }
+
+}
+const Tab = createAppContainer(
     createMaterialTopTabNavigator(
         {
             PersonalTrack: {
@@ -35,15 +51,19 @@ export default createAppContainer(
             tabBarOptions: {
                 style: {
                     backgroundColor: "#0084ff",
-                    height: 40,
-                    borderTop: 0
+                    height: 60,
+                    borderTop: 0,
+                    elevation: 2,
                 },
                 tabStyle: {
                     height: 40,
                 },
+                labelStyle: {
+                    color: "#7a7a7a",
+                },
                 indicatorStyle: {
-                    color: "#fff",
-                }
+                    backgroundColor: "#fff",
+                },
             }
         }
     )

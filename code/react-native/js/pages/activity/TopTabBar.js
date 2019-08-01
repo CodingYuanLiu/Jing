@@ -29,13 +29,14 @@ const ActTabConfig = {
         style: {
             backgroundColor: "#0084ff",
             height: 40,
-            borderTop: 0
+            borderTop: 0,
         },
         tabStyle: {
             height: 40,
+            alignItems: "center",
         },
         indicatorStyle: {
-            color: "#fff",
+            backgroundColor: "#fff",
         }
     }
 };

@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 
 export default class PersonalFeedback extends React.PureComponent{
@@ -9,9 +9,17 @@ export default class PersonalFeedback extends React.PureComponent{
 
     render() {
         return(
-            <View>
+            <View style={styles.container}>
                 <Text>其他用户对该用户的评价</Text>
             </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+        minHeight: 200,
+        flex: 1,
+    },
+
+});
