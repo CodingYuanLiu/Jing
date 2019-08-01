@@ -344,6 +344,10 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		return
 	}
 
+	if int(jsonForm["max_member"].(float64))<1 {
+		jing.SendError(c,jing.NewError(201,400,"Max member of the activity must be greater than 1"))
+	}
+
 	resp,err := activityClient.PublishActivity(int(userId), jsonForm)
 	if err != nil {
 		jing.SendError(c, err)

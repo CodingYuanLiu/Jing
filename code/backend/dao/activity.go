@@ -394,8 +394,8 @@ func InitBehaviorCollection(){
 	Else, return status in the parameter
 */
 func GetOverdueStatus(endTime string,status int32) int32{
-	if status == 2{
-		return 2
+	if status == 2 || status == -1{
+		return status
 	}
 
 	timeEnd,_ := time.Parse("2006-01-02 15:04:05",endTime)
