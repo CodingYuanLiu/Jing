@@ -112,7 +112,7 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/followers", uc.GetFollowers)
 		userRouter.GET("/friends", uc.GetFriends)
 		userRouter.GET("/follow", uc.Follow)
-		userRouter.GET("/changeprivacy", uc.ChangePrivacyLevel)
+		userRouter.GET("/unfollow", uc.UnFollow)
 
 		// Feedback manipulation
 		userRouter.POST("/feedback/publish", fbc.PublishFeedback)

@@ -16,6 +16,7 @@ message UpdateReq {
     string birthday = 9;
     string dormitory = 11;
     string major = 12;
+    int32 privacy_level = 5;
     int32 gender = 4;
 }
 

@@ -2,6 +2,7 @@ package activity
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2/bson"
 	"io/ioutil"
@@ -103,16 +104,21 @@ func (activityController *Controller) FindActByUser(c *gin.Context) {
 	acts := dao.GetManagingActivity(userId)
 	index, _ := strconv.Atoi(c.Query("index"))
 	size, _ := strconv.Atoi(c.Query("size"))
-	retActs, status := getPages(index, size, acts)
+	retActs, status, maxEle, maxPages := getPages(index, size, acts)
+	object := myjson.JSON{}
 	if status == -1 {
-		jing.SendError(c, jing.NewError(203, 400, "Can't get pages."))
+		jing.SendError(c,jing.NewError(203,400,fmt.Sprintf("Can not get page. There are %d elements totally.", maxEle)))
 		return
+	} else if status == 1 {
+		object["max_pages"] = maxPages
 	}
+	object["total_elements"] = maxEle
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
-	c.JSON(http.StatusOK, actJSONs)
+	object["acts"] = actJSONs
+	c.JSON(http.StatusOK, object)
 }
 
 func (activityController *Controller) GetGroupChatInfo(c *gin.Context) {
@@ -200,8 +206,9 @@ func (activityController *Controller) Comment(c *gin.Context) {
 }
 
 // 0: correct,  1: not complete,  -1: error / can't get such pages
-func getPages(index int, size int, acts []int) (retActs []int, status int) {
+func getPages(index int, size int, acts []int) (retActs []int, status int, maxElements int, maxPages int) {
 	sort.Sort(sort.Reverse(sort.IntSlice(acts)))
+	maxElements = len(acts)
 	if size == 0 {
 		retActs = acts
 		return
@@ -210,6 +217,7 @@ func getPages(index int, size int, acts []int) (retActs []int, status int) {
 		status = -1
 		return
 	}
+	maxPages = len(acts) / size + 1
 	for i := size*index; i < (index+1) * size; i++ {
 		if i == len(acts) {
 			status = 1
@@ -233,17 +241,22 @@ func (activityController *Controller) FindAvailableActivity(c *gin.Context) {
 	for _, result := range results {
 		acts = append(acts, result["actid"].(int))
 	}
-	retActs, status := getPages(index, size, acts)
+	retActs, status, maxEle, maxPages := getPages(index, size, acts)
+	object := myjson.JSON{}
 	if status == -1 {
-		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		jing.SendError(c,jing.NewError(203,400,fmt.Sprintf("Can not get page. There are %d elements totally.", maxEle)))
 		return
+	} else if status == 1 {
+		object["max_pages"] = maxPages
 	}
+	object["total_elements"] = maxEle
 	var actJSONs []myjson.JSON
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
-	c.JSON(http.StatusOK, actJSONs)
+	object["acts"] = actJSONs
+	c.JSON(http.StatusOK, object)
 }
 
 
@@ -252,16 +265,21 @@ func (activityController *Controller) FindAllActivity(c *gin.Context) {
 	size, _ := strconv.Atoi(c.Query("size"))
 	acts := dao.GetAllActId()
 	var actJSONs []myjson.JSON
-	retActs, status := getPages(index, size, acts)
+	retActs, status, maxEle, maxPages := getPages(index, size, acts)
+	object := myjson.JSON{}
 	if status == -1 {
-		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		jing.SendError(c,jing.NewError(203,400,fmt.Sprintf("Can not get page. There are %d elements totally.", maxEle)))
 		return
+	} else if status == 1 {
+		object["max_pages"] = maxPages
 	}
+	object["total_elements"] = maxEle
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
-	c.JSON(http.StatusOK, actJSONs)
+	object["acts"] = actJSONs
+	c.JSON(http.StatusOK, object)
 }
 
 func (activityController *Controller) MyAct(c *gin.Context) {
@@ -270,16 +288,21 @@ func (activityController *Controller) MyAct(c *gin.Context) {
 	acts := dao.GetJoinedActivity(userId)
 	index, _ := strconv.Atoi(c.Query("index"))
 	size, _ := strconv.Atoi(c.Query("size"))
-	retActs, status := getPages(index, size, acts)
+	retActs, status, maxEle, maxPages := getPages(index, size, acts)
+	object := myjson.JSON{}
 	if status == -1 {
-		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		jing.SendError(c,jing.NewError(203,400,fmt.Sprintf("Can not get page. There are %d elements totally.", maxEle)))
 		return
+	} else if status == 1 {
+		object["max_pages"] = maxPages
 	}
+	object["total_elements"] = maxEle
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
-	c.JSON(http.StatusOK, actJSONs)
+	object["acts"] = actJSONs
+	c.JSON(http.StatusOK, object)
 }
 
 func (activityController *Controller) ManageAct(c *gin.Context) {
@@ -288,16 +311,21 @@ func (activityController *Controller) ManageAct(c *gin.Context) {
 	acts := dao.GetManagingActivity(userId)
 	index, _ := strconv.Atoi(c.Query("index"))
 	size, _ := strconv.Atoi(c.Query("size"))
-	retActs, status := getPages(index, size, acts)
+	retActs, status, maxEle, maxPages := getPages(index, size, acts)
+	object := myjson.JSON{}
 	if status == -1 {
-		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		jing.SendError(c,jing.NewError(203,400,fmt.Sprintf("Can not get page. There are %d elements totally.", maxEle)))
 		return
+	} else if status == 1 {
+		object["max_pages"] = maxPages
 	}
+	object["total_elements"] = maxEle
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
-	c.JSON(http.StatusOK, actJSONs)
+	object["acts"] = actJSONs
+	c.JSON(http.StatusOK, object)
 }
 
 func (activityController *Controller) PublishActivity(c *gin.Context) {
@@ -629,16 +657,21 @@ func (activityController *Controller) FindActivityByType(c *gin.Context){
 		return
 	}
 
-	retActs, status := getPages(index, size, acts)
+	retActs, status, maxEle, maxPages := getPages(index, size, acts)
+	object := myjson.JSON{}
 	if status == -1 {
-		jing.SendError(c,jing.NewError(203,400,"can not get page,"))
+		jing.SendError(c,jing.NewError(203,400,fmt.Sprintf("Can not get page. There are %d elements totally.", maxEle)))
 		return
+	} else if status == 1 {
+		object["max_pages"] = maxPages
 	}
+	object["total_elements"] = maxEle
 	for _, v := range retActs {
 		resp, _ := getActivityJson(v)
 		actJSONs = append(actJSONs, resp)
 	}
-	c.JSON(http.StatusOK, actJSONs)
+	object["acts"] = actJSONs
+	c.JSON(http.StatusOK, object)
 }
 
 func (activityController *Controller) AddBehavior(c *gin.Context){
