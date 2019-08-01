@@ -463,10 +463,30 @@ func (activityController *Controller) GetJoinApplication(c *gin.Context){
 	userId := c.GetInt("userId")
 	applications := dao.GetJoinApplication(userId)
 	var appJSONs []myjson.JSON
+
 	for _, v := range applications{
-		application,_ := getActivityJson(v["act_id"])
-		application["applicant_id"] = v["user_id"]
-		appJSONs = append(appJSONs,application)
+		actId := v["act_id"]
+		applicantId := v["user_id"]
+
+		applicant,err := dao.FindUserById(applicantId)
+		if err != nil{
+			jing.SendError(c,jing.NewError(300,400,"Query applicant infomation error"))
+			return
+		}
+
+		resp, err := activityClient.QueryActivity(actId)
+		if err != nil {
+			jing.SendError(c,jing.NewError(300,400,"Find applied activity error"))
+			return
+		}
+		appJSONs = append(appJSONs,myjson.JSON{
+			"applicant_id":applicantId,
+			"applicant_nickname":applicant.Nickname,
+			"applicant_avatar":"http://image.jing855.cn/" + applicant.AvatarKey,
+			"act_id":actId,
+			"act_title":resp.BasicInfo.Title,
+			"type":resp.BasicInfo.Type,
+		})
 	}
 	c.JSON(http.StatusOK,appJSONs)
 }
@@ -672,7 +692,6 @@ func (activityController *Controller) AddBehavior(c *gin.Context){
 	if err != nil {
 		log.Println(err)
 		jing.SendError(c,jing.NewError(203,400,"json parse error"))
-
 		return
 	}
 	if jsonForm["behavior"] == nil || jsonForm["type"] == nil{
@@ -726,6 +745,9 @@ func (activityController *Controller) BlockActivity(c *gin.Context){
 		jing.SendError(c,jing.NewError(300,400,"can not block the activity"))
 		return
 	}
+
+	dao.CancelApplicationOfBlockedActivity(actId)
+
 	c.JSON(http.StatusOK,map[string] string{
 		"message":"block activity successfully",
 	})
