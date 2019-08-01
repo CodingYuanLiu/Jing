@@ -12,6 +12,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import DiscoverScreen from "../discover/Discover";
 import MeScreen from "../me/Me";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import BottomTab from "./BottomTab";
 
 class HomeScreen extends React.PureComponent{
     constructor(props) {
@@ -26,110 +27,19 @@ class HomeScreen extends React.PureComponent{
     };
 
     render() {
-        let BottomTab = this.renderTab(this.props.currentUser.logged);
         return(
             <View style={{flex:1,}}>
-                <BottomTab/>
+                <BottomTab
+                logged={this.props.currentUser.logged}
+                />
             </View>
 
         )
     };
-
-    renderTab = (logged) => {
-
-        return createAppContainer(
-            createBottomTabNavigator(
-            {
-                Activity: {
-                    screen : ActivityScreen,
-                    navigationOptions: {
-                        tabBarLabel: "告示墙",
-                        tabBarIcon: ({focused, tintColor}) => {
-                            return (
-                                <Entypo
-                                    name={"blackboard"}
-                                    size = {26}
-                                    color = {tintColor}
-                                />
-                            )
-                        },
-                    }
-                },
-                Notification: {
-                    screen : NotificationScreen,
-                    navigationOptions: {
-                        tabBarLabel: "消息",
-                        tabBarIcon: ({focused, tintColor}) => {
-                            return (
-                                <Ionicons
-                                    name={"ios-notifications"}
-                                    size = {26}
-                                    color = {tintColor}
-                                />
-                            )
-                        },
-                    }
-                },
-                Publish: {
-                    screen : PublishScreen,
-                    navigationOptions: {
-                        tabBarLabel: "发布",
-                        tabBarIcon: ({focused, tintColor}) => {
-                            return (
-                                <AntDesign
-                                    name={"pluscircle"}
-                                    size = {28}
-                                    color = {"#0084ff"}
-                                />
-                            )
-                        },
-                    },
-                },
-                Discover: {
-                    screen : DiscoverScreen,
-                    navigationOptions: {
-                        tabBarLabel: "发现",
-                        tabBarIcon: ({focused, tintColor}) => {
-                            return (
-                                <AntDesign
-                                    name={"search1"}
-                                    size = {26}
-                                    color = {tintColor}
-                                />
-                            )
-                        },
-                    }
-                },
-                Me: {
-                    screen : MeScreen,
-                    navigationOptions: {
-                        tabBarLabel: logged ? "我的" : "未登录",
-                        tabBarIcon: ({focused, tintColor}) => {
-                            return (
-                                <FontAwesome5
-                                    name={"user-alt"}
-                                    size = {26}
-                                    color = {tintColor}
-                                />
-                            )
-                        },
-                    }
-                }
-            },
-            {
-                tabBarOptions: {
-                    inactiveTintColor: "#bfbfbf",
-                    activeTintColor: "#0084ff",
-                },
-            }
-        )
-        );
-    }
 }
 
 
 const mapStateToProps = state => ({
-    xmpp: state.xmpp,
     currentUser: state.currentUser,
 });
 

@@ -146,7 +146,8 @@ export default class Api {
         return new Promise((resolve, reject) => {
             axios.get("/api/public/act/findall")
                 .then(res => {
-                    resolve(Model.transferActivityList(res.data));
+                    let acts = res.data ? res.data.acts : [];
+                    resolve(Model.transferActivityList(acts));
                     console.log(res.data);
                 })
                 .catch(err => {
@@ -166,7 +167,8 @@ export default class Api {
                     }
                 } : null)
                     .then(res => {
-                        resolve(Model.transferActivityList(res.data));
+                        let acts = res.data ? res.data.acts : [];
+                        resolve(Model.transferActivityList(acts));
                     })
                     .catch(err => {
                         Reject(err, reject);
@@ -185,7 +187,8 @@ export default class Api {
             })
                 .then(res => {
                     console.log(res.data);
-                    resolve(Model.transferActivityList(res.data))
+                    let acts = res.data ? res.data.acts : [];
+                    resolve(Model.transferActivityList(acts))
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -218,7 +221,8 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(Model.transferActivityList(res.data))
+                    let acts = res.data ? res.data.acts : [];
+                    resolve(Model.transferActivityList(acts))
                 })
                 .catch(err => {
                     Reject(err, reject)

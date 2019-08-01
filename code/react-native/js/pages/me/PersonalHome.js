@@ -6,11 +6,13 @@ import NavigationUtil from "../../navigator/NavUtil";
 import Util from "../../common/util";
 import {Avatar, Button, Divider, Image} from "react-native-elements";
 import {connect} from "react-redux";
+import ImagePicker from "react-native-image-picker";
 
 
 const window = Util.getVerticalWindowDimension();
 const STICKY_HEADER_HEIGHT = 50;
 const PARALLAX_HEADER_HEIGHT = 180;
+const BACKGROUND_IMAGE_HEIGHT = 180;
 
 class PersonalHome extends React.PureComponent {
     constructor(props) {
@@ -19,6 +21,9 @@ class PersonalHome extends React.PureComponent {
             user: {},
             isSelf: false,
             avatarVisible: false,
+            backgroundVisible: false,
+            avatar: {},
+            background: {},
         };
     }
 
@@ -61,13 +66,21 @@ class PersonalHome extends React.PureComponent {
         )
     }
     renderBackground = () => {
+        let background = this.state;
         return (
+            <TouchableWithoutFeedback
+                onPress={this.showBackgroundPicker}
+            >
                 <Image
                     source={{
-                        uri: "http://image.jing855.cn/actImage/act16/img0",
+                        uri: background.data ?
+                        `data:base64;${background.type},${background.data}` :
+                            "http://image.jing855.cn/actImage/act16/img0"
+                        ,
                     }}
-                    style={{width: window.width, height: 180}}
+                    style={{width: window.width, height: BACKGROUND_IMAGE_HEIGHT}}
                 />
+            </TouchableWithoutFeedback>
         )
     };
     renderStickyHeader = () => {
@@ -94,9 +107,14 @@ class PersonalHome extends React.PureComponent {
     };
     renderUser = () => {
         let user = this.state.user;
+        let newAvatar = this.state.avatar;
         let avatar = (
             <Avatar
-                source={{uri: user.avatar}}
+                source={{
+                    uri: newAvatar.data ?
+                    `data:base64;${newAvatar.type},${newAvatar.data}`
+                        : user.avatar
+                }}
                 rounded
                 containerStyle={styles.avatarContainer}
                 size={100}
@@ -214,13 +232,57 @@ class PersonalHome extends React.PureComponent {
         return null;
     };
     showAvatarPicker = () => {
-        this.setState({avatarVisible: true});
-    };
-    handleAvatarPicker = () => {
+        ImagePicker.showImagePicker(imagePickerOptions, (response) => {
+            console.log('Response = ', response);
+            if (response.didCancel) {
+                // ... do nothing
+            } else if (response.error) {
+                console.log('Avatar picker error: ', response.error);
+            } else {
+                let data = response.data;
+                let type = response.type;
 
+                this.setState({
+                    avatar: {
+                        data: data,
+                        type: type,
+                    },
+                });
+            }
+        });
+    };
+    showBackgroundPicker = () => {
+        ImagePicker.showImagePicker(imagePickerOptions, (response) => {
+            console.log('Response = ', response);
+            if (response.didCancel) {
+                // ... do nothing
+            } else if (response.error) {
+                console.log('Background picker error: ', response.error);
+            } else {
+                let data = response.data;
+                let type = response.type;
+
+                this.setState({
+                    background: {
+                        data: data,
+                        type: type,
+                    },
+                });
+            }
+        });
     };
 }
-
+const imagePickerOptions = {
+    title: "选择",
+    cancelButtonTitle: "取消",
+    takePhotoButtonTitle: "拍摄",
+    chooseFromLibraryButtonTitle: "从相册选择",
+    storageOptions: {
+        skipBackup: true,
+        path: 'images',
+    },
+    quality: 0.4,
+};
 const mapStateToProps = state => ({
     currentUser: state.currentUser
 });
