@@ -97,12 +97,15 @@ func GetAngle(user dao.UserBehavior, anotherUser dao.UserBehavior) float64{
 
 func GetComparedUsers(count int) (start int, number int){
 	if count <= userTotal + 1{
+		log.Println("All the users is comparable")
 		start = 0
 		number = count - 1
 		return
 	} else{
 		number = userTotal
-		start = rand.Intn(count-userTotal-1)
+		log.Printf("start index range:%d\n" ,count - userTotal - 1)
+		start = rand.Intn(count - userTotal - 1)
+		log.Printf("start index:%d\n" ,start)
 		return
 	}
 }
