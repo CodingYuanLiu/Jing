@@ -9,6 +9,8 @@ import {UNFOLLOW_OK} from "../common/constant/ActionTypes";
 const initialState = {
     followingList: [],
     followerList: [],
+    isFollowing: false,
+    isUnFollowing: false,
 };
 
 const unFollow = (followings, unFollowId) => {

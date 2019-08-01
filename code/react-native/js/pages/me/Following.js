@@ -9,6 +9,8 @@ import {onFollow, onGetFollowers, onGetFollowings, onUnFollow} from "../../actio
 import UserAvatar from "../../common/components/UserAvatar";
 import Api from "../../api/Api";
 import * as actionTypes from "../../common/constant/ActionTypes";
+import UserNickname from "../../common/components/UserNickname";
+import FollowItem from "./components/FollowItem";
 
 
 class Following extends React.PureComponent{
@@ -35,11 +37,11 @@ class Following extends React.PureComponent{
                 keyExtractor={item => (item.id.toString())}
                 refreshControl={
                     <RefreshControl
+                        refreshing={this.state.isLoading}
+                        onRefresh={this.loadData}
                         title={"加载中..."}
                         titleColor={"#0084ff"}
                         colors={["#0084ff"]}
-                        refreshing={this.state.isFollowing}
-                        onRefresh={this.loadData}
                         tintColor={"#0084ff"}
                     />
                 }
@@ -48,48 +50,14 @@ class Following extends React.PureComponent{
         )
     };
     renderItem = ({item}) => {
-        let avatar = (
-            <UserAvatar
-                source={{uri: item.avatar_url}}
-                rounded
-                id={item.id}
-            />
-        );
-        let rightElement = (
-            item.followed ?
-                <Button
-                    title={"已关注"}
-                    titleStyle={styles.followedText}
-                    buttonStyle={styles.followedButton}
-                    containerStyle={styles.listItemButtonContainer}
-                    onPress={() => {this.unFollow(item)}}
-                    loading={this.props.currentUser.isFollowing}
-                /> :
-                <Button
-                    title={"关注"}
-                    icon={
-                        <PlusIcon
-                            color={"#0084ff"}
-                        />
-                    }
-                    titleStyle={styles.unFollowedText}
-                    buttonStyle={styles.unFollowedButton}
-                    containerStyle={styles.listItemButtonContainer}
-                    onPress={() => {this.follow(item)}}
-                    loading={this.props.currentUser.isUnFollowing}
-                />
-        );
+
         return (
-            <ListItem
-                leftAvatar={avatar}
-                title={item.nickname}
-                titleStyle={styles.listItemTitle}
-                titleProps={{ellipsizeMode: "tail", numberOfLines: 1}}
-                subtitle={item.signature}
-                subtitleStyle={item.listItemSubtitle}
-                subtitleProps={{ellipsizeMode: "tail", numberOfLines: 1}}
-                rightElement={rightElement}
-                containerStyle={styles.listItemContainer}
+            <FollowItem
+                item={item}
+                onFollow={() => {this.follow(item)}}
+                onUnFollow={() => {this.unFollow(item)}}
+                isFollowing={this.props.currentUser.isFollowing}
+                isUnFollowing={this.props.currentUser.isUnFollowing}
             />
         )
     };
@@ -98,8 +66,8 @@ class Following extends React.PureComponent{
             <HeaderBar
             leftButton={
                 <ArrowLeftIcon
-                onPress={() => {NavigationUtil.back(this.props)}}
-                color={"#ffffff"}
+                onPress={() => {NavigationUtil.toPage(null, "Home")}}
+                color={"#fff"}
                 style={styles.headerIcon}
                 />
             }
@@ -113,11 +81,12 @@ class Following extends React.PureComponent{
     };
 
     loadData = () => {
+        this.setState({isLoading: true});
         let currentUser = this.props.currentUser;
         Api.getFollowings(currentUser.jwt)
             .then(data => {
                 this.props.dispatch({
-                    type: actionTypes.GET_USER_FOLLOWERS_OK,
+                    type: actionTypes.GET_USER_FOLLOWINGS_OK,
                     data: data ? data : [],
                 });
                 for (let item of data) {
@@ -129,7 +98,10 @@ class Following extends React.PureComponent{
             })
             .catch(err => {
                 console.log(err);
-            });
+            })
+            .finally(() => {
+                this.setState({isLoading: false});
+            })
     };
 
     follow = (item) => {
@@ -163,7 +135,6 @@ const mapDispatchToProps = dispatch => ({
     follow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
     unFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
     onGetFollowings: (jwt) => dispatch(onGetFollowings(jwt)),
-    onGetFollowers: (jwt) => dispatch(onGetFollowers(jwt)),
     dispatch: dispatch
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Following);
@@ -187,38 +158,5 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         elevation: 10,
-    },
-    listItemContainer: {
-        width: "100%",
-        borderBottomWidth: 0.8,
-        borderBottomColor: "#efefef",
-        height: 80,
-    },
-    listItemTitle: {
-        fontWeight: "bold",
-        fontSize: 15,
-        color: "#3a3a3a",
-    },
-    listItemSubtitle: {
-        color: "#bfbfbf",
-    },
-    followedButton: {
-        backgroundColor: "#e0e0e0",
-        height: 35,
-        width: 80,
-    },
-    followedText: {
-        color: "#8a8a8a",
-    },
-    unFollowedButton: {
-        backgroundColor: "#e0e0e0",
-        height: 35,
-        width: 80,
-    },
-    unFollowedText: {
-        color: "#0084ff",
-    },
-    listItemButtonContainer: {
-        width: 100,
     },
 });

@@ -12,6 +12,8 @@ export default class UserNickname extends React.PureComponent{
         let {title, id} = this.props;
         return (
             <Text
+                ellipsizeMode={"tail"}
+                numberOfLines={1}
                 {...this.props}
                 onPress={() => {this.toPersonalHome(id)}}
             >{title}</Text>

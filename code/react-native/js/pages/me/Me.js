@@ -16,7 +16,6 @@ class MeScreen extends React.PureComponent{
         super(props);
     }
     render() {
-        const user = this.props.user;
         let header = this.renderHeader();
         let userCard = this.renderUserCard();
         let actMenu = this.renderActMenu();
@@ -65,10 +64,10 @@ class MeScreen extends React.PureComponent{
         let topCard, userData;
         let dataList = [
             {data: 0, label: "我发布的",},
-            {data: 0, label: "关注",
+            {data: currentUser.followingList.length, label: "关注",
                 onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Following")}
             },
-            {data: 0, label: "粉丝",
+            {data: currentUser.followerList.length, label: "粉丝",
                 onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Follower")}
             },
             {data: 0, label: "最近浏览",
