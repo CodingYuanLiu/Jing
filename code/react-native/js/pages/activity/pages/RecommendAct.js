@@ -39,15 +39,6 @@ class RecommendAct extends React.Component{
             </View>
         )
     };
-    loadData = () => {
-        let {onLoadRecommendAct} = this.props;
-        let {jwt} = this.props.currentUser;
-        if (jwt) {
-            onLoadRecommendAct(jwt);
-        } else {
-            //...
-        }
-    };
     renderItem = ({item}) => {
         return (
             <ActItem
@@ -89,6 +80,16 @@ class RecommendAct extends React.Component{
                 }
                 onPress={() => {this._onPressItem(item.id)}}
             />)
+    };
+    loadData = () => {
+        console.log(this.props);
+        let {onLoadRecommendAct} = this.props;
+        let {jwt} = this.props.currentUser;
+        if (jwt) {
+            onLoadRecommendAct(jwt);
+        } else {
+            //...
+        }
     };
     _onPressItem = (id: number) => {
         NavigationUtil.toPage({id:id}, "ActDetail")

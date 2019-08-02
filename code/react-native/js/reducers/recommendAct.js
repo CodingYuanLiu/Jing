@@ -19,6 +19,7 @@ const recommendAct = (state=initialState, action) => {
                 err: action.err,
             };
         case LOADING_RECOMMEND_OK:
+            console.log(action);
             return {
                 ...state,
                 items: action.items,

@@ -207,7 +207,7 @@ export default class Api {
             })
                 .then(res => {
                     console.log(res.data);
-                    let acts = res.data ? res.data.acts : [];
+                    let acts = res.data ? res.data : [];
                     resolve(Model.transferActivityList(acts));
                 })
                 .catch(err => {
