@@ -461,7 +461,12 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 
 func (activityController *Controller) GetJoinApplication(c *gin.Context){
 	userId := c.GetInt("userId")
-	applications := dao.GetJoinApplication(userId)
+	applications,err := dao.GetJoinApplication(userId)
+	if err != nil {
+		jing.SendError(c,err)
+		return
+	}
+
 	var appJSONs []myjson.JSON
 
 	for _, v := range applications{
@@ -807,4 +812,29 @@ func (activityController *Controller) GetActivityMembers(c *gin.Context){
 		})
 	}
 	c.JSON(http.StatusOK,returnJSON)
+}
+
+func (activityController *Controller) GetUnacceptedApplication(c *gin.Context){
+	userId := c.GetInt("userId")
+	log.Printf("Get unaccepted application of user %d\n",userId)
+	actIds,err := dao.GetUnacceptedApplication(userId)
+	if err != nil{
+		jing.SendError(c,err)
+		return
+	}
+	var returnJSONs []myjson.JSON
+	for _,actId := range actIds{
+		resp, err := activityClient.QueryActivity(actId)
+		if err != nil {
+			jing.SendError(c,jing.NewError(300,400,"Find applied activity error"))
+			return
+		}
+		returnJSONs = append(returnJSONs,myjson.JSON{
+			"act_id":actId,
+			"act_title":resp.BasicInfo.Title,
+			"type":resp.BasicInfo.Type,
+			"description":resp.BasicInfo.Description,
+		})
+	}
+	c.JSON(http.StatusOK,returnJSONs)
 }

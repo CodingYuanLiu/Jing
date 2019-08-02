@@ -225,7 +225,7 @@ func AcceptJoinActivity(userId int, actId int) error{
 	return nil
 }
 
-func GetJoinApplication(userId int) []map[string]int{
+func GetJoinApplication(userId int) ([]map[string]int,error){
 	myActs := GetManagingActivity(userId)
 	var applications []map[string] int
 	var joins []Join
@@ -239,7 +239,23 @@ func GetJoinApplication(userId int) []map[string]int{
 			applications = append(applications,application)
 		}
 	}
-	return applications
+	if len(applications) == 0{
+		return applications,jing.NewError(301,404,"Cannot find any application")
+	}
+	return applications,nil
+}
+
+func GetUnacceptedApplication(userId int) ([]int,error){
+	var joins []Join
+	var actId []int
+	db.Where("user_id=? and is_admin=?",userId,-1).Find(&joins)
+	if len(joins) == 0{
+		return actId,jing.NewError(301,404,"Can not find any unaccepted application")
+	}
+	for _,join := range joins{
+		actId = append(actId,join.ActID)
+	}
+	return actId,nil
 }
 
 func CancelApplicationOfBlockedActivity(actId int){

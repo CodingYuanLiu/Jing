@@ -991,27 +991,73 @@ Status OK - 200
 [
     {
         "act_id": 6,
-        "applicant_id": 5,
-        "comments": [],
-        "create_time": "2019-7-15 15:17",
-        "depart_time": "2019-7-16 15:17",
-        "description": "desc",
-        "destination": {},
-        "end_time": "2019-7-17 15:17",
-        "images": null,
-        "origin": {},
-        "signature": "",
-        "sponsor_id": 6,
-        "sponsor_username": "孙笑川",
-        "tag": [
-            "g",
-            "a",
-            "t"
-        ],
-        "title": "title",
-        "type": "taxi"
+        "act_title": "title",
+        "type": "taxi",
+        "applicant_id":1,
+        "applicant_nickname":"孙笑川",
+        "applicant_avatar":"...",
     }
 ]
+```
+Can not find any application of the user - 404
+```json
+{
+    "errcode": 301,
+    "message": "Cannot find any application",
+    "status": 404
+}
+```
+Can not find fetch user's information - 400
+``` json
+{
+    "errcode": 300,
+    "message": "Query applicant infomation error",
+    "status": 400
+}
+```
+
+Can not find fetch activity's information - 400
+``` json
+{
+    "errcode": 300,
+    "message": "Find applied activity error",
+    "status": 400
+}
+```
+
+## Get Unaccepted Application
+#### Description
+Get all of the unaccepted application of a logined user.
+#### Request
+```json
+GET /api/user/act/getunacceptedapp
+Authorization: Bearer jwt
+```
+#### Response
+Status OK - 200 
+```json
+{
+    "act_id":1,
+    "act_title":"...",
+    "type":"...",
+    "description":"..."
+}
+```
+Can not find the information of the activity - 400
+```json
+{
+    "errcode": 300,
+    "message": "Find applied activity error",
+    "status": 400
+}
+```
+No unaccepted application hitherto
+```json
+{
+    "errcode": 301,
+    "message": "Can not find any unaccepted application",
+    "status": 404
+}
 ```
 
 ## Accept Applicants
