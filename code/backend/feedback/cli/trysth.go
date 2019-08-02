@@ -1,12 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	"gopkg.in/mgo.v2/bson"
-	"jing/app/dao"
-
-	//"jing/app/dao"
+	"github.com/gomodule/redigo/redis"
+	"log"
+	"time"
 )
+
 /*
 func try1(){
 	objectId := bson.NewObjectId()
@@ -48,21 +49,64 @@ func try1(){
 
 }
 */
+
+type testRedis struct{
+	actIds []int
+}
+
 func main(){
+	conn,err := redis.Dial("tcp","localhost:6379")
+	if err != nil{
+		return
+	}
+
+	var actIds = []int{21,22,23}
+
+	n, err := conn.Do("SET","key",actIds)
+	if err != nil{
+		log.Fatal(err)
+	}
+
+	fmt.Print("set value:")
+	fmt.Println(n)
 
 
-	//var existFb []map[string] interface{}
-	query := []bson.M{
-		{"receiverid": int32(3)},
-		{"userid": int32(2)},
-		{"actid": int32(1)},
+	n, err = redis.String(conn.Do("GET", "key"))
+	if err != nil{
+		log.Fatal(err)
 	}
-	count,_ := dao.FeedbackCollection.Find(bson.M{"$and":query}).Count()
-	fmt.Println(count)
-	for i := 5;i<12;i++{
-		err := dao.AddBehavior("search",i,"taxi")
-		if err!=nil{
-			fmt.Println(err.Error())
-		}
+	b := []byte(n.(string))
+
+	_ = json.Unmarshal(b,actIds)
+	fmt.Println(actIds[1])
+
+
+	_,err = conn.Do("expire","key",10)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
+	time.Sleep(5*time.Second)
+	n,err = conn.Do("ttl","key")
+	if err != nil{
+		log.Fatal(err)
+	}
+	fmt.Println(n)
+
+	time.Sleep(6 * time.Second)
+	n,err = conn.Do("ttl","key")
+	if err != nil{
+		log.Fatal(err)
+	}
+	fmt.Println(n)
+	n,err = conn.Do("get","key")
+	if err == redis.ErrNil{
+		log.Println("NILNILNIL!!!")
+	} else if err != nil{
+		log.Fatal(err)
+	}
+	if n!= nil{
+		fmt.Println(n)
+	}
+
 }
