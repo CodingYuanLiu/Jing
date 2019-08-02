@@ -82,6 +82,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/feedback/query",fbc.QueryFeedback)
 		publicRouter.GET("/act/findbyuser", ac.FindActByUser)
 		publicRouter.GET("/act/getactivitymember",ac.GetActivityMembers)
+		publicRouter.GET("/act/search", ac.SearchAct)
 	}
 	/*
 		adminRouter := router.Group("/api/admin")
