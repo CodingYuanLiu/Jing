@@ -8,13 +8,13 @@ import (
 	login "jing/app/login/proto/login"
 
 	"github.com/micro/go-micro"
-	//k8s "github.com/micro/kubernetes/go/micro"
+	k8s "github.com/micro/kubernetes/go/micro"
 )
 
 func main() {
-	service := micro.NewService(
+	service := k8s.NewService(
 		micro.Name("auth-service"),
-		micro.Address("127.0.0.1:10090"),
+		micro.Address(":8080"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*10),
 	)

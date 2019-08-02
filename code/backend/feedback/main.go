@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/micro/go-micro"
-	//k8s "github.com/micro/kubernetes/go/micro"
+	k8s "github.com/micro/kubernetes/go/micro"
 	"jing/app/feedback/handler"
 	feedback "jing/app/feedback/proto"
 	"log"
@@ -10,9 +10,9 @@ import (
 )
 
 func main() {
-	service := micro.NewService(
+	service := k8s.NewService(
 		micro.Name("feedback"),
-		micro.Address("127.0.0.1:10190"),
+		micro.Address(":8080"),
 		micro.RegisterTTL(time.Second*30),
 		micro.RegisterInterval(time.Second*10),
 	)
