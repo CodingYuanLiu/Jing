@@ -355,9 +355,31 @@ export default class Api {
                 })
         })
     };
-    static acceptActApplicant() {
+    static acceptApplicant(actId, userId, jwt) {
         return new Promise((resolve, reject) => {
-
+            axios.post(`/api/user/act/acceptjoin?act_id=${actId}&user_id=${userId}`,
+                null, {
+                headers: {
+                    "Authorization": `Bearer ${jwt}`
+                }
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    }
+    static rejectApplicant() {
+        return new Promise((resolve, reject) => {
+            try {
+                setTimeout(() => {
+                    resolve({status: 1, message: "reject ok"})
+                }, 1500)
+            }catch (err) {
+                console.log(err)
+            }
         })
     }
     static searchTakeoutStore (keyword) {

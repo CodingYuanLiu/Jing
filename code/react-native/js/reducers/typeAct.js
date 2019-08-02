@@ -3,7 +3,12 @@ import {
     ON_LOADING_TYPE,
 } from "../common/constant/ActionTypes"
 
-const initialState = {};
+const initialState = {
+    taxi: {},
+    other: {},
+    takeout: {},
+    order: {},
+};
 
 const typeAct = (state=initialState, action) => {
     switch (action.type) {

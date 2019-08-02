@@ -90,7 +90,7 @@ class NewAct extends React.PureComponent{
                         origin: item.origin,
                         dest: item.dest,
                     } : null}
-                shopSpecInfo={
+                orderSpecInfo={
                     item.type === "order" ? {
                         store: item.store,
                     } : null

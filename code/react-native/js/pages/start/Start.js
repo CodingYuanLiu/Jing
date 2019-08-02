@@ -59,6 +59,7 @@ class StartPage extends React.Component {
                                 .catch(err => {
                                     console.log(err);
                                     // this should not happen
+                                    this.props.navigation.navigate("Home", null);
                                 });
                         }
                     })
