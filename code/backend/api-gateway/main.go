@@ -84,13 +84,7 @@ func setupRouter() *gin.Engine {
 		publicRouter.GET("/act/getactivitymember",ac.GetActivityMembers)
 		publicRouter.GET("/act/search", ac.SearchAct)
 	}
-	/*
-		adminRouter := router.Group("/api/admin")
-		{
-			adminRouter.GET("/users")
-			adminRouter.GET("/activities")
-		}
-	*/
+
 	userRouter := router.Group("/api/user")
 	{
 		userRouter.GET("/status", lc.GetUserStatus)
@@ -101,6 +95,7 @@ func setupRouter() *gin.Engine {
 		userRouter.POST("/act/join", ac.JoinActivity)
 		userRouter.GET("/act/getjoinapp",ac.GetJoinApplication)
 		userRouter.POST("/act/acceptjoin",ac.AcceptJoinActivity)
+		userRouter.GET("/act/getunacceptedapp",ac.GetUnacceptedApplication)
 		userRouter.POST("/act/delete", ac.DeleteActivity)
 		userRouter.POST("/act/comment", ac.Comment)
 		userRouter.GET("/act/status", ac.Status)

@@ -24,12 +24,13 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	if mapBasicInfo["status"].(int) == 2{
 		log.Println("cannot modify expired activity")
 		return jing.NewError(1,400,"Cannot modify expired activity")
-	}else if mapBasicInfo["status"].(int) == -1{
-		log.Println("cannot modify blocked activity")
-		return jing.NewError(1,400,"Cannot modify blocked activity")
 	}
 
 	fetchType:= mapBasicInfo["type"].(string)
+	status := int32(mapBasicInfo["status"].(int))
+	if status != -1{
+		status = dao.GetMaxMemberStatus(req.ActId,req.MaxMember)
+	}
 
 	basicInfo:=dao.BasicInfo{
 		Type:        fetchType,
@@ -39,7 +40,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		Description: req.Description,
 		Tag:         req.Tag,
 		MaxMember:   req.MaxMember,
-		Status :     dao.GetOverdueStatus(req.EndTime,dao.GetMaxMemberStatus(req.ActId,req.MaxMember)),
+		Status :     dao.GetOverdueStatus(req.EndTime,dao.GetMaxMemberStatus(req.ActId,status)),
 	}
 
 	for i:=0;i<len(mapBasicInfo["images"].([]interface{}));i++{

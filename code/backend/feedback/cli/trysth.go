@@ -59,4 +59,10 @@ func main(){
 	}
 	count,_ := dao.FeedbackCollection.Find(bson.M{"$and":query}).Count()
 	fmt.Println(count)
+	for i := 5;i<12;i++{
+		err := dao.AddBehavior("search",i,"taxi")
+		if err!=nil{
+			fmt.Println(err.Error())
+		}
+	}
 }
