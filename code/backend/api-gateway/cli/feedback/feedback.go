@@ -3,14 +3,14 @@ package feedback
 import (
 	"context"
 	"github.com/micro/go-micro/client"
-	"github.com/micro/go-micro/client/grpc"
-	"github.com/micro/go-plugins/registry/kubernetes"
+	//"github.com/micro/go-micro/client/grpc"
+	//"github.com/micro/go-plugins/registry/kubernetes"
 	"gopkg.in/mgo.v2/bson"
 	"jing/app/dao"
 	feedbackProto "jing/app/feedback/proto"
 	"jing/app/jing"
 	"jing/app/json"
-	"os"
+	//"os"
 )
 
 var (
@@ -18,10 +18,10 @@ var (
 )
 
 func init() {
-	os.Setenv("MICRO_REGISTRY", "kubernetes")
+	/*os.Setenv("MICRO_REGISTRY", "kubernetes")
 	client.DefaultClient = grpc.NewClient(
 		client.Registry(kubernetes.NewRegistry()),
-	)
+	)*/
 	Client = feedbackProto.NewFeedbackSrvService("feedback", client.DefaultClient)
 }
 

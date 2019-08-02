@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/micro/go-web"
-	k8s "github.com/micro/kubernetes/go/web"
+	//k8s "github.com/micro/kubernetes/go/web"
 	"jing/app/api-gateway/controller/activity"
 	feedbackController "jing/app/api-gateway/controller/feedback"
 	functionController "jing/app/api-gateway/controller/function"
@@ -30,7 +30,7 @@ func corsMiddleware() gin.HandlerFunc {
 }
 
 func main() {
-	service := k8s.NewService(
+	service := web.NewService(
 		web.Name("api"),
 		web.Address(":8080"),
 	)
