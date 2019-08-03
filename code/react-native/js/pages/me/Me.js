@@ -10,11 +10,19 @@ import { Button } from 'react-native-elements';
 import {setUserData} from '../../actions/currentUser';
 import {SearchIcon, SettingIcon} from "../../common/components/Icons";
 import Theme from "../../common/constant/Theme";
+import LocalApi from "../../api/LocalApi";
 
 class MeScreen extends React.PureComponent{
     constructor(props) {
         super(props);
+        this.state = {
+            recentData: 0,
+        }
     }
+    componentDidMount() {
+        this.getRecentData();
+    }
+
     render() {
         let header = this.renderHeader();
         let userCard = this.renderUserCard();
@@ -62,15 +70,17 @@ class MeScreen extends React.PureComponent{
     renderUserCard = () => {
         let { currentUser } = this.props;
         let topCard, userData;
+        let recentScanData = this.state.recentData;
         let dataList = [
-            {data: 0, label: "我发布的",},
+            {data: 0, label: "我的活动",
+                onPress: () => {NavigationUtil.toPage(null, "MyAct")}},
             {data: currentUser.followingList.length, label: "关注",
                 onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Following")}
             },
             {data: currentUser.followerList.length, label: "粉丝",
                 onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Follower")}
             },
-            {data: 0, label: "最近浏览",
+            {data: recentScanData, label: "最近浏览",
                 onPress: () => {NavigationUtil.toPage(null, "RecentScan")}
             }
         ];
@@ -120,9 +130,9 @@ class MeScreen extends React.PureComponent{
         return (
             <View style={styles.actContainer}>
                 <ListItem
-                title={"我发布的"}
+                title={"我的活动"}
                 chevron
-                onPress={() => {NavigationUtil.toPage(null, "MyPublishAct")}}
+                onPress={() => {NavigationUtil.toPage(null, "MyAct")}}
                 />
                 <ListItem
                 title={"正在参与"}
@@ -162,6 +172,15 @@ class MeScreen extends React.PureComponent{
     toUserHome = () => {
         NavigationUtil.toPage({id: this.props.currentUser.id}, "PersonalHome")
     };
+    getRecentData = () => {
+        LocalApi.getRecentScan()
+            .then((data) => {
+                this.setState({recentData: data.length});
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
 }
 const mapStateToProps = state => ({
     currentUser: state.currentUser

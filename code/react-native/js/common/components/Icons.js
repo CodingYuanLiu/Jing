@@ -514,6 +514,24 @@ class CheckIcon extends React.PureComponent{
             />)
     }
 }
+class DotIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"entypo"}
+                name={"dot-single"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -544,4 +562,5 @@ export {
     PaperPlaneIcon,
     EditIcon,
     CheckIcon,
+    DotIcon,
 }

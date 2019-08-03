@@ -22,9 +22,6 @@ export default createStackNavigator({
     PublishOrderSpec: {
         screen: PublishOrderSpec,
     },
-    PublishDraft: {
-        screen: PublishDraft,
-    },
 }, {
     defaultNavigationOptions: {
         header: null,

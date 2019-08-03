@@ -41,6 +41,7 @@ export default class Model {
             images: data.images ? data.images : [],
             comments: data.comments,
             createTime: data.create_time,
+            status: data.status,
         };
         if(act.type === "taxi") {
             act.departTime = data.depart_time;

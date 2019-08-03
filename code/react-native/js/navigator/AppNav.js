@@ -17,6 +17,8 @@ import Settings from "../pages/me/Settings";
 import Following from "../pages/me/Following";
 import Follower from "../pages/me/Follower";
 import RecentScan from "../pages/me/RecentScan";
+import MyAct from "../pages/me/MyAct";
+import PublishDraft from "../pages/publish/PublishDraft";
 
 const StartNav = createStackNavigator(
     {
@@ -76,7 +78,13 @@ const MainNav = createStackNavigator(
         },
         RecentScan: {
             screen: RecentScan,
-        }
+        },
+        PublishDraft: {
+            screen: PublishDraft,
+        },
+        MyAct: {
+            screen: MyAct,
+        },
     },
     {
         defaultNavigationOptions: {

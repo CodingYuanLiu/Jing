@@ -67,6 +67,7 @@ class SystemNoticeScreen extends React.PureComponent{
     loadData = () => {
         this.setState({isLoading: true});
         let currentUser = this.props.currentUser;
+        console.log(this.props);
         Api.getActApplicants(currentUser.jwt)
             .then(data => {
                 data = data ? data: [];

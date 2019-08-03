@@ -26,22 +26,45 @@ const onLoadRecommendAct = (jwt) => {
     }
 };
 
-const onLoadMyAct = (jwt) => {
+const onLoadMyManageAct = (jwt) => {
     return dispatch => {
         dispatch({
-            type: actionTypes.ON_LOADING_MY,
+            type: actionTypes.ON_LOADING_MY_MANAGE,
         });
-        Api.getMyAct(jwt)
+        Api.getMyManagedAct(jwt)
             .then(data => {
                 dispatch({
-                    type: actionTypes.LOADING_MY_OK,
+                    type: actionTypes.LOADING_MY_MANAGE_OK,
                     items: data,
-                })
+                });
+                console.log(data);
             })
             .catch(err => {
                 console.log(err);
                 dispatch({
-                    type: actionTypes.LOADING_MY_FAIL,
+                    type: actionTypes.LOADING_MY_MANAGE_FAIL,
+                    err,
+                })
+            })
+    }
+};
+const onLoadMyJoinAct = (jwt) => {
+    return dispatch => {
+        dispatch({
+            type: actionTypes.ON_LOADING_MY_JOIN,
+        });
+        Api.getMyJoinAct(jwt)
+            .then(data => {
+                dispatch({
+                    type: actionTypes.LOADING_MY_JOIN_OK,
+                    items: data,
+                });
+                console.log(data);
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch({
+                    type: actionTypes.LOADING_MY_JOIN_FAIL,
                     err,
                 })
             })
@@ -166,7 +189,8 @@ const saveOtherAct = (act) => ({
 });
 export default {
     onLoadRecommendAct,
-    onLoadMyAct,
+    onLoadMyJoinAct,
+    onLoadMyManageAct,
     onLoadTypeAct,
     onLoadActDetail,
     resetActDetail,

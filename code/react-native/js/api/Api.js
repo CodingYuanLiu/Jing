@@ -233,7 +233,7 @@ export default class Api {
                 })
         })
     }
-    static getMyAct(jwt) {
+    static getMyJoinAct(jwt) {
         return new Promise((resolve, reject) => {
             axios.get("/api/user/act/myact", {
                 headers: {
@@ -242,14 +242,14 @@ export default class Api {
             })
                 .then(res => {
                     let acts = res.data ? res.data.acts : [];
-                    resolve(Model.transferActivityList(acts))
+                    resolve(Model.transferActivityList(acts));
                 })
                 .catch(err => {
                     Reject(err, reject)
                 })
         })
     }
-    static getManagedAct(jwt) {
+    static getMyManagedAct(jwt) {
         return new Promise((resolve, reject) => {
             axios.get("/api/user/act/manageact", {
                 headers: {
@@ -257,7 +257,8 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(Model.transferActivityList(res.data))
+                    let acts = res.data ? res.data.acts : [];
+                    resolve(Model.transferActivityList(acts));
                 })
                 .catch(err => {
                     Reject(err, reject)

@@ -84,11 +84,11 @@ class Following extends React.PureComponent{
         this.setState({isLoading: true});
         let currentUser = this.props.currentUser;
         Api.getFollowings(currentUser.jwt)
-            .then(data => {
+            .then(data => {/*
                 this.props.dispatch({
                     type: actionTypes.GET_USER_FOLLOWINGS_OK,
                     data: data ? data : [],
-                });
+                });*/
                 for (let item of data) {
                     item.followed = true;
                 }
