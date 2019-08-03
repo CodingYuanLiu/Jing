@@ -7,7 +7,7 @@
                 <block wx:for="{{item.r}}" wx:for-index="idx" wx:for-item="item_r" data-idx="{{idx}}">
                     <view bindtap="handleClick" data-idx="{{item_r.idx}}" class="feed-item" style="width:17%; float: left;  background: white">
                         <view class="feed-source" style="border-radius: 13px">
-                            <a class=""  style="border-radius: 3px; background: white">
+                            <a class="" style="border-radius: 3px; background: white">
                                 <view class="avatar">
                                     <image src="{{item_r.icon}}"></image>
                                 </view>

@@ -8,7 +8,7 @@ Page({
      */
     data: {
         id: -1,
-        avatar_src: "../../images/icons/timg.jpg",
+        avatar_src: "http://image.jing855.cn/defaultAvatar.png",
         user: {},
         error: false,
         button_message: "编辑个人信息",

@@ -25,7 +25,7 @@ Page({
         loged: true,
         applicant: [],
         notify_length: 0,
-        navTab: ["通知", "私信", "群聊"],
+        navTab: ["通知"],
         currentNavtab: "0",
         visible: false,
         message: {

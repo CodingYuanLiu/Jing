@@ -38,7 +38,6 @@
                             <!-- <view class="follow-it">
                                 <a>{{item.comment_num}} 关注</a>
                             </view> -->
-                            <label wx:if="{{item.status===2}}" style="width: 10vh; display: inline-block;float:right;font-size: 14px" bindtap="handleFeedback" data-id="{{item.act_id}}">评价</label>
                         </view>
                     </view>
                 </view>
