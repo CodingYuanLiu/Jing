@@ -51,7 +51,7 @@ func GetRecommendationResultFromRedis(userId int32) []int32{
 
 func init(){
 	var err error
-	conn,err = redis.Dial("tcp","localhost:6379")
+	conn,err = redis.Dial("tcp","redis.database:6379")
 	if err != nil{
 		log.Println("Connect to redis failed")
 		return
