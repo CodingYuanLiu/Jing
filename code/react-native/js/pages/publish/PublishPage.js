@@ -304,6 +304,7 @@ class PublishPage extends React.PureComponent{
         let dateString = Util.dateTimeToString(date);
         this.setState({endTime: dateString});
         this.saveByType({endTime: dateString}, this.type);
+        this.setState({endTImePickerVisible: false});
     };
     cancelEndTime = () => {
         this.setState({

@@ -2,6 +2,7 @@ import React from "react";
 import {StyleSheet, View, Text, FlatList, RefreshControl} from "react-native";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
+import ManageItem from "../components/MyManageItem";
 
 class MyManage extends React.Component{
     constructor(props) {
@@ -41,9 +42,14 @@ class MyManage extends React.Component{
     }
     renderItem = ({item}) => {
         return (
-            <View style={{flex: 1}}>
-                <Text>{JSON.stringify(item)}</Text>
-            </View>
+            <ManageItem
+                title={item.title}
+                description={item.description}
+                createTime={item.createTime}
+                status={item.status}
+                type={item.type}
+                id={item.id}
+            />
         )
     };
     loadData = () => {

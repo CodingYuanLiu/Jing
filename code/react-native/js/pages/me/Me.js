@@ -175,9 +175,12 @@ class MeScreen extends React.PureComponent{
     getRecentData = () => {
         LocalApi.getRecentScan()
             .then((data) => {
+                console.log(" in me, update");
                 this.setState({recentData: data.length});
             })
             .catch(err => {
+                console.log(" in me, err" +
+                    "");
                 console.log(err);
             })
     }
