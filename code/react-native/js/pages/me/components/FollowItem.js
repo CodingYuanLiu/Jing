@@ -20,7 +20,6 @@ export default class FollowItem extends React.PureComponent{
         return (
             <UserAvatar
                 source={{uri: avatar}}
-                rounded
                 id={id}
             />
         )

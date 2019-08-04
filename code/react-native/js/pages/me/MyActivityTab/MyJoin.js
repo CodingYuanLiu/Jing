@@ -2,6 +2,7 @@ import React from "react";
 import {View, StyleSheet, Text, FlatList, RefreshControl} from "react-native";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
+import MyJoinItem from "../components/MyJoinItem";
 
 class MyJoin extends React.Component{
     constructor(props) {
@@ -39,9 +40,15 @@ class MyJoin extends React.Component{
 
     renderItem = ({item}) => {
         return (
-            <View>
-                <Text>{JSON.stringify(item)}</Text>
-            </View>
+            <MyJoinItem
+                sponsor={item.sponsor}
+                title={item.title}
+                description={item.description}
+                createTime={item.createTime}
+                status={item.status}
+                endTime={item.endTime}
+                applicants={[]}
+            />
         )
     };
     loadData = () => {
@@ -62,5 +69,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(MyJoin)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "#eee",
+        minHeight: 600,
     },
 });

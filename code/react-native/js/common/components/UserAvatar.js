@@ -14,6 +14,7 @@ export default class UserAvatar extends React.PureComponent{
             <Avatar
                 {...this.props}
                 rounded
+                title={'A'}
                 onPress={() => {this.toPersonalHome(id)}}
             />
             )
@@ -26,4 +27,5 @@ export default class UserAvatar extends React.PureComponent{
 
 UserAvatar.propTypes = {
     id: PropTypes.number,
+    source: PropTypes.object,
 };
