@@ -12,13 +12,13 @@ var (
 )
 
 func SetRecommendationResultToRedis(userId int32, acts []int32) {
-	recommendKey := fmt.Sprintf("Rec%d",userId)
-	data,_ := json.Marshal(acts)
-	_, err := conn.Do("SET",recommendKey,data)
-	if err != nil{
+	recommendKey := fmt.Sprintf("Rec%d", userId)
+	data, _ := json.Marshal(acts)
+	_, err := conn.Do("SET", recommendKey, data)
+	if err != nil {
 		log.Println(err)
 	}
-	_,err = conn.Do("expire",recommendKey,300)
+	_, err = conn.Do("expire", recommendKey, 300)
 	if err != nil {
 		log.Println(err)
 		return
@@ -26,33 +26,33 @@ func SetRecommendationResultToRedis(userId int32, acts []int32) {
 
 }
 
-func GetRecommendationResultFromRedis(userId int32) []int32{
-	recommendKey:= fmt.Sprintf("Rec%d",userId)
+func GetRecommendationResultFromRedis(userId int32) []int32 {
+	recommendKey := fmt.Sprintf("Rec%d", userId)
 	raw, err := redis.String(conn.Do("GET", recommendKey))
-	if err == redis.ErrNil{
+	if err == redis.ErrNil {
 		return nil
-	}else if err!=nil{
-		log.Printf("Get result from redis error:%s",err.Error())
+	} else if err != nil {
+		log.Printf("Get result from redis error:%s", err.Error())
 		return nil
 	}
 
 	var actIds []int32
-	err = json.Unmarshal([]byte(raw),&actIds)
-	if err!=nil{
+	err = json.Unmarshal([]byte(raw), &actIds)
+	if err != nil {
 		log.Println(err)
 	}
 
-	if len(actIds) == 0{
+	if len(actIds) == 0 {
 		log.Println("The length of actIds is 0")
 		return nil
 	}
 	return actIds
 }
 
-func init(){
+func init() {
 	var err error
-	conn,err = redis.Dial("tcp","redis.database:6379")
-	if err != nil{
+	conn, err = redis.Dial("tcp", "redis.database:6379")
+	if err != nil {
 		log.Println("Connect to redis failed")
 		return
 	}
