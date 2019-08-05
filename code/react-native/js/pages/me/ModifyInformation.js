@@ -1,14 +1,16 @@
 import React from "react"
 import { View, Text, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
 import HeaderBar from "../../common/components/HeaderBar";
-import {CameraIcon, CloseIcon} from "../../common/components/Icons";
+import {CameraIcon, CaretRightIcon, ChevronIcon, CloseIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
-import {Avatar, Button, ListItem} from "react-native-elements";
+import {Avatar, Button, CheckBox, ListItem} from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import Modal from "react-native-modal";
 import {connect} from "react-redux";
 import {updateUserAvatar, updateUserInfo} from "../../actions/currentUser";
 import Api from "../../api/Api";
+import Util from "../../common/util";
 
 
 class ModifyInformation extends React.PureComponent{
@@ -23,27 +25,16 @@ class ModifyInformation extends React.PureComponent{
             nickname: "",
             signature: "",
             gender: 2,
+            genderText: "保密",
             birthday: "",
             dormitory: "",
             major: "",
+            birthdayPickerVisible: false,
+            genderPickerVisible: false,
         }
     }
     componentDidMount() {
-        console.log(this.props);
-        let currentUser = this.props.currentUser;
-        this.setState({
-            avatar: {
-                data: null,
-                uri: currentUser.avatar,
-            },
-            nickname: currentUser.nickname,
-            signature: currentUser.signature,
-            gender: currentUser.gender,
-            birthday: currentUser.birthday,
-            dormitory: currentUser.dormitory,
-            major: currentUser.major,
-            phone: currentUser.phone,
-        })
+        this.loadData();
     }
 
     render() {
@@ -115,14 +106,16 @@ class ModifyInformation extends React.PureComponent{
     };
     renderBasicInformation = () => {
         let title = this.renderInformationTitle("基本资料");
-        let nickname = this.renderNormalInput("昵称", "昵称将会作为您和别人交往的可见称呼"
-            , this.state.nickname, this.handleNicknameChange);
-        let signature = this.renderLongInput("个性签名", "简单介绍自己的兴趣"
-            , this.state.signature, this.handleSignatureChange);
-        let gender = this.renderOnPressInput("性别", this.showGenderPicker
-            , this.state.gender);
-        let birthday = this.renderOnPressInput("生日", this.showBirthdayPicker
-            , this.state.birthday);
+        let nickname = this.renderNormalInput("昵称", "昵称是您交往使用的称呼",
+            this.state.nickname, this.handleNicknameChange);
+        let signature = this.renderLongInput("个性签名", "简单介绍自己，兴趣，爱好",
+            this.state.signature, this.handleSignatureChange);
+        let gender = this.renderOnPressInput("性别", "填写您的性别",
+            this.state.genderText, this.showGenderPicker);
+        let birthday = this.renderOnPressInput("生日", "填写您的生日",
+            this.state.birthday, this.showBirthdayPicker);
+        let genderPicker = this.renderGenderPicker(this.state.gender);
+        let birthdayPicker = this.renderBirthdayPicker(this.state.birthday);
         let dormitory = null;
         let major = null;
         return (
@@ -131,28 +124,18 @@ class ModifyInformation extends React.PureComponent{
                 {nickname}
                 {signature}
                 {gender}
+                {genderPicker}
                 {birthday}
+                {birthdayPicker}
                 {dormitory}
                 {major}
             </View>
         );
     };
-    renderNormalInput = (label, placeholder, onChangeText) => {
-
+    renderNormalInput = (label, placeholder, value, onChangeText) => {
         return (
-            <View style={styles.inputContainer}>
+            <View style={styles.normalInputContainer}>
                 <Text style={styles.label}>{label}</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder={placeholder}
-                />
-            </View>
-        );
-    };
-    renderLongInput = (label, placeholder, value, onChangeText) => {
-        return (
-            <View style={styles.longInputContainer}>
-                <Text>{label}</Text>
                 <TextInput
                     style={styles.input}
                     placeholder={placeholder}
@@ -162,20 +145,96 @@ class ModifyInformation extends React.PureComponent{
             </View>
         );
     };
-    renderOnPressInput = (label, onPress) => {
+    renderLongInput = (label, placeholder, value, onChangeText) => {
         return (
-            <View>
-                <TouchableWithoutFeedback>
-                    <View>
-                        <Text>{label}</Text>
-                        <TextInput
-                            style={styles.input}
-                            onPress={onPress}
-                        />
-                    </View>
-                </TouchableWithoutFeedback>
+            <View style={styles.longInputContainer}>
+                <Text style={styles.label}>{label}</Text>
+                <TextInput
+                    style={styles.longInput}
+                    placeholder={placeholder}
+                    value={value}
+                    onChangeText={onChangeText}
+                />
             </View>
         );
+    };
+    renderOnPressInput = (label, placeholder, value, onPress) => {
+        let rightIcon = (
+            <ChevronIcon
+                color={"#7a7a7a"}
+                size={20}
+            />
+        );
+        return (
+            <TouchableWithoutFeedback
+                onPress={onPress}
+            >
+                <View style={styles.normalInputContainer}>
+                    <Text style={styles.label}>{label}</Text>
+                    <Text
+                        style={styles.input}
+                    >
+                        {value === "" ? placeholder : value}
+                    </Text>
+                    {rightIcon}
+                </View>
+            </TouchableWithoutFeedback>
+        );
+    };
+
+    renderGenderPicker = (gender) => {
+        let title = this.renderInformationTitle("选择性别");
+        let handleCheckGender = this.handleCheckGender;
+        let secretCheckBox = (
+            <CheckBox
+                title={"保密"}
+                checked={gender === 2}
+                onPress={() => {handleCheckGender(2)}}
+            />
+        );
+        let maleCheckBox = (
+            <CheckBox
+                title={"男"}
+                checked={gender === 1}
+                onPress={() => {handleCheckGender(1)}}
+            />
+        );
+        let femaleCheckBox = (
+            <CheckBox
+                title={"女"}
+                checked={gender === 0}
+                onPress={() => {handleCheckGender(0)}}
+            />
+        );
+
+        return (
+            <Modal
+                isVisible={this.state.genderPickerVisible}
+                backdropOpacity={0.5}
+                useNativeDriver={true}
+                onBackdropPress={this.hideGenderPicker}
+            >
+               <View style={styles.genderModalContainer}>
+                   {title}
+                   {secretCheckBox}
+                   {maleCheckBox}
+                   {femaleCheckBox}
+               </View>
+            </Modal>
+        )
+    };
+
+    renderBirthdayPicker = (birthday) => {
+          return (
+            <DateTimePicker
+                isVisible={this.state.birthdayPickerVisible}
+                onConfirm={this.handleCheckBirthday}
+                onCancel={this.hideBirthdayPicker}
+                datePickerModeAndroid={"spinner"}
+                date={birthday === "" ? new Date() : new Date(birthday)}
+                minimumDate={new Date("1900-01-01")}
+            />
+          )
     };
     showAvatarPicker = () => {
         ImagePicker.showImagePicker(imagePickerOptions, (response) => {
@@ -206,11 +265,38 @@ class ModifyInformation extends React.PureComponent{
         this.setState({signature: text});
     };
     showGenderPicker = () => {
-
+        this.setState({genderPickerVisible: true});
     };
+    hideGenderPicker = () => {
+        this.setState({genderPickerVisible: false});
+    };
+    handleCheckGender = (gender) => {
+        this.setState({
+            gender: gender,
+            genderText: gender === 2 ? "保密" : gender === 1 ? "男" : "女"
+        });
+        this.hideGenderPicker();
+    };
+
     showBirthdayPicker = () => {
-
+        this.setState({birthdayPickerVisible: true});
     };
+    handleCheckBirthday = (date) => {
+        let birthday;
+        let year = date.getUTCFullYear();
+        let month = date.getUTCMonth() + 1;
+        let day = date.getUTCDate();
+        birthday = `${year}年${month}月${day}日`;
+        this.setState({
+            birthday: birthday,
+        });
+        this.hideBirthdayPicker();
+    };
+    hideBirthdayPicker = () => {
+        this.setState({birthdayPickerVisible: false});
+    };
+
+
     handleSavePress = () => {
         this.saveAsync()
             .then(res => {
@@ -261,6 +347,23 @@ class ModifyInformation extends React.PureComponent{
             }
         }
     };
+    loadData = () => {
+        let currentUser = this.props.currentUser;
+        this.setState({
+            avatar: {
+                data: null,
+                uri: currentUser.avatar,
+            },
+            nickname: currentUser.nickname,
+            signature: currentUser.signature,
+            gender: currentUser.gender,
+            genderText: currentUser.gender === 2 ? "保密" : currentUser.gender === 1 ? "男" : "女",
+            birthday: currentUser.birthday,
+            dormitory: currentUser.dormitory,
+            major: currentUser.major,
+            phone: currentUser.phone,
+        });
+    };
     quit = () => {
         if (!this.saved){
             this.setState({showQuitDialog: true});
@@ -303,6 +406,9 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "#fff",
     },
+    headerRightButton: {
+        marginRight: 20,
+    },
     headerTitle: {
         alignItems: "flex-start",
         justifyContent: "flex-start",
@@ -321,6 +427,8 @@ const styles = StyleSheet.create({
         left: 28,   //28 for 40 (radius of avatar) - 12 (radius of icon),
         top: 28,
     },
+
+
     infoTitleContainer: {
         marginTop: 20,
         marginBottom: 20
@@ -328,22 +436,48 @@ const styles = StyleSheet.create({
     infoTitle: {
         fontWeight: "bold",
         fontSize: 20,
+        color: "#2a2a2a",
     },
-    headerRightButton: {
-        marginRight: 20,
-    },
+
+
     basicInformationContainer: {
         marginLeft: 20,
+        marginRight: 16,
     },
-    input: {
-        borderBottomWidth: 0.5,
-        borderColor: "#cfcfcf",
-    },
-    inputContainer: {
+    normalInputContainer: {
         flexDirection: "row",
+        borderBottomWidth: 0.5,
+        borderColor: "#eee",
+        alignItems: "center",
+        height: 50,
     },
     longInputContainer: {
-
+        borderBottomWidth: 0.5,
+        borderColor: "#eee",
+        marginTop: 20,
+        height: 80,
+    },
+    label: {
+        fontSize: 16,
+        color: "#7a7a7a",
+        width: 80,
+    },
+    input: {
+        color: "#3a3a3a",
+        fontSize: 16,
+        flex: 1,
+    },
+    longInput: {
+        color: "#3a3a3a",
+        fontSize: 16,
+        backgroundColor: "transparent",
+        width: "100%",
     },
 
+    genderModalContainer: {
+        backgroundColor: "#fff",
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 16,
+    },
 });
