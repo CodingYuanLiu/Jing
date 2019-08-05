@@ -93,6 +93,7 @@ func setupRouter() *gin.Engine {
 		userRouter.POST("/act/publish", ac.PublishActivity)
 		userRouter.POST("/act/modify", ac.ModifyActivity)
 		userRouter.POST("/act/join", ac.JoinActivity)
+		userRouter.POST("/act/quit",ac.QuitActivity)
 		userRouter.GET("/act/getjoinapp",ac.GetJoinApplication)
 		userRouter.POST("/act/acceptjoin",ac.AcceptJoinActivity)
 		userRouter.GET("/act/getunacceptedapp",ac.GetUnacceptedApplication)

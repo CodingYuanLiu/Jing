@@ -404,10 +404,7 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
 	actId, err := strconv.Atoi(c.Query("act_id"))
 	if err != nil || actId == 0 {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message": "param 'act_id' not exists",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(201,400,"param 'act_id' not exists"))
 		return
 	}
 	var act map[string] interface{}
@@ -415,26 +412,43 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 	basicInfo := act["basicinfo"].(map [string]interface{})
 	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),int32(basicInfo["status"].(int)))
 	if status == 1{
-		c.JSON(http.StatusBadRequest,map[string]string{
-			"message": "The member of the activity is already full",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(201,400,"The activity is already full"))
 		return
 	} else if status == 2{
-		c.JSON(http.StatusBadRequest,map[string] string{
-			"message": "The activity has expired",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(201,400,"The activity has already expired"))
+
 		return
 	} else if status == -1 {
 		jing.SendError(c,jing.NewError(1,400,"The activity is blocked"))
 		return
 	}
 
-	_ = dao.JoinActivity(userId, actId)
+	err = dao.JoinActivity(userId, actId)
+	if err != nil{
+		jing.SendError(c,err)
+		return
+	}
 	c.JSON(http.StatusOK, map[string]string{
 		"message": "Join activity successfully",
 	})
+}
+
+func (activityController *Controller) QuitActivity(c *gin.Context){
+	userId := c.GetInt("userId")
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		jing.SendError(c,jing.NewError(201,400,"param 'act_id' not exists"))
+		return
+	}
+	err = dao.QuitActivity(userId,actId)
+	if err != nil{
+		jing.SendError(c,err)
+		return
+	} else{
+		c.JSON(http.StatusOK, map[string]string{
+			"message": "Quit activity successfully",
+		})
+	}
 }
 
 func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
