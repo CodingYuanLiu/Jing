@@ -18,7 +18,7 @@ func SetRecommendationResultToRedis(userId int32, acts []int32) {
 	if err != nil{
 		log.Println(err)
 	}
-	_,err = conn.Do("expire",recommendKey,120)
+	_,err = conn.Do("expire",recommendKey,300)
 	if err != nil {
 		log.Println(err)
 		return
