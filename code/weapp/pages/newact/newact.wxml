@@ -1,4 +1,5 @@
 <!--pages/newact/newact.wxml-->
+<i-toast id="toast" />
 <form bindsubmit="handleClick" report-submit='true'>
     <i-panel title="基本信息">
         <i-input value="{{title}}" bind:blur="handleTitleInput" type="text" maxlength="20" title="标题" placeholder="活动标题" />

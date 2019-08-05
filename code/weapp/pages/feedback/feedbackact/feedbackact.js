@@ -26,30 +26,30 @@ Page({
             url: 'https://jing855.cn/api/public/act/getactivitymember?act_id=' + act_id,
             method: 'GET',
             success: function(res) {
-                let starIndex1 = []
-                let starIndex2 = []
-                let starIndex3 = []
+                // let starIndex1 = []
+                // let starIndex2 = []
+                // let starIndex3 = []
                 let list = []
                 let i = 0;
-                let j = 0;
+                // let j = 0;
                 while (i < res.data.length) {
                     if (res.data[i].user_id !== app.globalData.userInfo.id) {
-                        res.data[i].id = j;
+                        // res.data[i].id = j;
                         list.push(res.data[i])
-                        starIndex1.push(5);
-                        starIndex2.push(5);
-                        starIndex3.push(5);
+                        // starIndex1.push(5);
+                        // starIndex2.push(5);
+                        // starIndex3.push(5);
                         i++;
-                        j++;
+                        // j++;
                     } else {
                         i++
                     }
                 }
                 that.setData({
                     participants: list,
-                    starIndexC: starIndex1,
-                    starIndexH: starIndex2,
-                    starIndexP: starIndex3
+                    // starIndexC: starIndex1,
+                    // starIndexH: starIndex2,
+                    // starIndexP: starIndex3
                 })
                 console.log(res)
             }
@@ -109,5 +109,11 @@ Page({
                 }
             })
         }
+    },
+    handleFeedUser: function(e) {
+        const id = e.currentTarget.dataset.id;
+        wx.navigateTo({
+            url: '../feedbackuser/feedbackuser?id='+id+"&act_id="+this.data.act_id,
+        })
     }
 })

@@ -18,7 +18,9 @@ Page({
         index: 0,
         myacts: [],
         log: false,
-        status_show: ["","[人满]","[已过期]"]
+        status_show: ["", "[人满]", "[已过期]"],
+        no_content: false,
+        no_content_f: false
     },
     onLoad: function() {
         console.log('onLoad')
@@ -110,7 +112,6 @@ Page({
                     feed_length: feed_data.length,
                     index: that.data.index + 1
                 });
-
             }
         })
         if (app.globalData.userInfo !== null) {
@@ -124,12 +125,17 @@ Page({
                     "Authorization": "Bearer " + app.globalData.jwt
                 },
                 success: function(res) {
+                    console.log(111)
                     console.log(res);
-                    feed_data = res.data.acts;
-                    if (feed_data !== null)
+                    console.log(111)
+                    feed_data = res.data;
+                    if (feed_data !== null && feed_data !== undefined && feed_data.length !== 0)
                         that.setData({
                             feed_sugg: feed_data,
                         });
+                    else that.setData({
+                        no_content: true
+                    });
 
                 }
             })
@@ -137,48 +143,21 @@ Page({
                 myacts: []
             })
             let following = app.globalData.following;
-            for (let i =0; i < following.length; i++) {
+            for (let i = 0; i < following.length; i++) {
                 wx.request({
-                    url: 'https://jing855.cn/api/public/act/findbyuser?id='+following[i].id,
+                    url: 'https://jing855.cn/api/public/act/findbyuser?id=' + following[i].id,
                     method: 'GET',
                     // header: {
                     //     "Authorization": "Bearer " + app.globalData.jwt,
                     // }
                     success: function(res) {
-                        if (res.data !== null)
+                        if (res.data.acts !== null)
                             that.setData({
                                 myacts: that.data.myacts.concat(res.data.acts)
                             })
                     }
                 })
             }
-            // wx.request({
-            //     url: 'https://jing855.cn/api/user/act/myact',
-            //     method: 'GET',
-            //     header: {
-            //         "Authorization": "Bearer " + app.globalData.jwt,
-            //     },
-            //     success: function(res) {
-            //         console.log(res);
-            //         if (feed_data !== null)
-            //             that.setData({
-            //                 myacts: that.data.myacts.concat(res.data)
-            //             })
-            //     }
-            // })
-            // wx.request({
-            //     url: 'https://jing855.cn/api/user/act/manageact',
-            //     method: 'GET',
-            //     header: {
-            //         "Authorization": "Bearer " + app.globalData.jwt,
-            //     },
-            //     success: function(res) {
-            //         console.log(res);
-            //         that.setData({
-            //             myacts: that.data.myacts.concat(res.data)
-            //         })
-            //     }
-            // })
         }
     },
 

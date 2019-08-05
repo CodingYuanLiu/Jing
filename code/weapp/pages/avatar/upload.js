@@ -1,5 +1,7 @@
 import WeCropper from '../../we-cropper/we-cropper.js'
-const { $Toast } = require('../../dist/base/index');
+const {
+    $Toast
+} = require('../../dist/base/index');
 
 
 const app = getApp()
@@ -50,32 +52,43 @@ Page({
                     content: err.message
                 })
             } else {
-                const base64 = wx.getFileSystemManager().readFileSync(path, "base64");
+                console.log("path:" + path)
+                wx.getFileSystemManager().readFile({
+                    filePath: path,
+                    encoding: "base64",
+                    success: function(res) {
+                        // console.log(res)
+                        // console.log(res.data)
+
+                        wx.request({
+                            url: 'https://jing855.cn/api/user/avatar/upload',
+                            method: 'POST',
+                            header: {
+                                "Authorization": "Bearer " + app.globalData.jwt,
+                                'Content-type': 'text/plain'
+                            },
+                            data: res.data,
+                            success: function(res) {
+                                console.log(res.data)
+                                // console.log(res)
+                                // console.log(10088);
+                                // console.log(base64[0])
+                                $Toast({
+                                    content: '成功',
+                                    type: 'success'
+                                });
+                                app.globalData.userInfo.avatar_url = res.data.url;
+                                wx.navigateBack({})
+                            }
+                        })
+                    }
+                });
                 // console.log(base64);
                 // wx.previewImage({
                 //     current: '', // 当前显示图片的 http 链接
                 //     urls: [path] // 需要预览的图片 http 链接列表
                 // })
-                wx.request({
-                    url: 'https://jing855.cn/api/user/avatar/upload',
-                    method: 'POST',
-                    header: {
-                        "Authorization": "Bearer " + app.globalData.jwt,
-                        'Content-type': 'text/plain'
-                    },
-                    data: base64,
-                    success: function(res) {
-                        // console.log(res)
-                        // console.log(10088);
-                        // console.log(base64[0])
-                        $Toast({
-                            content: '成功',
-                            type: 'success'
-                        });
-                        app.globalData.userInfo.avatar_url = res.data.url;
-                        wx.navigateBack({})
-                    }
-                })
+
             }
         })
     },
