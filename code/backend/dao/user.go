@@ -163,6 +163,18 @@ func GetJoinedActivity(userId int) (acts []int) {
 	return
 }
 
+func GetJoinedActivityNumber(userId int) int{
+	var count int
+	db.Model(&Join{}).Where("user_id = ? and is_admin = ?",userId,0).Count(&count)
+	return count
+}
+
+func GetQuitActivityNumber(userId int) int{
+	var count int
+	db.Model(&Join{}).Where("user_id = ? and is_admin = ?",userId,-2).Count(&count)
+	return count
+}
+
 func GetActivityAdmin(actId int) int {
 	join := Join{}
 	db.Where("act_id = ? and is_admin = ?", actId, 1).First(&join)
@@ -194,7 +206,7 @@ func JoinActivity(userId int, actId int) error {
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&findJoin)
 	if findJoin.ID != 0{
 		if findJoin.IsAdmin == -2{
-			return jing.NewError(1,400,"The user has quited the activity yet")
+			return jing.NewError(2,400,"The user has quited the activity yet")
 		} else{
 			return jing.NewError(201,400,"The user is the publisher of the activity or " +
 				"has applied for the activity yet")
@@ -219,7 +231,7 @@ func QuitActivity(userId int, actId int) error{
 	if join.IsAdmin == 1 {
 		return jing.NewError(201, 400, "Activity publisher cannot quit the activity")
 	}else if join.IsAdmin != 0 {
-		return jing.NewError(201,400,"The user is only an applicant of the activity")
+		return jing.NewError(201,400,"The user is not a participant of the activity")
 	}
 	db.Model(&join).Update("is_admin",-2)
 	return nil

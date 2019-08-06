@@ -975,6 +975,112 @@ Status OK - 200
 }
 ```
 
+Full activity - 400
+```json
+{
+    "errcode": 201,
+    "message": "The activity is already full",
+    "status": 400
+}
+```
+Expired activity - 400
+```json
+{
+    "errcode": 201,
+    "message": "he activity has already expired",
+    "status": 400
+}
+```
+Blocked activity - 400
+```json
+{
+    "errcode": 1,
+    "message": "The activity is blocked",
+    "status": 400
+}
+```
+Already quit the activity - 400
+```json
+{
+    "errcode": 2,
+    "message": "The user has quited the activity yet",
+    "status": 400
+}
+```
+Already applied for the activity or is the publisher - 400
+```json
+{
+    "errcode": 201,
+    "message": "The user is the publisher of the activity or has applied for the activity yet",
+    "status": 400
+}
+```
+
+## Quit Activity and Quit Ratio
+### Quit an Activity
+#### Description
+A user can quit an activity via the API, but cannot rejoin the activity again.
+#### Request
+```json
+POST /api/user/act/join?act_id=1 HTTP/1.1
+Authorization: Bearer jwt
+```
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Quit activity successfully"
+}
+```
+Can not find the join information - 404
+```json
+{
+    "errcode": 301,
+    "message": "Information not found",
+    "status": 404
+}
+```
+Activity publisher can not quit the activity - 400
+```json
+{
+    "errcode": 201,
+    "message": "Activity publisher cannot quit the activity",
+    "status": 400
+}
+```
+Not a participant - 400
+```json
+{
+    "errcode": 201,
+    "message": "The user is not a participant of the activity",
+    "status": 400
+}
+```
+
+### Get Quit Ratio
+#### Description
+Get the quit ratio of a user.
+#### Request
+```json
+GET /api/public/act/quitratio?user_id=1
+```
+#### Response
+Status OK - 200
+```json
+{
+    "ratio":0.5
+}
+```
+The user does not exist or hasn't join any activity yet - 404
+```json
+{
+    "errcode": 301,
+    "message": "The user doesn't exist or has not joint any activity yet",
+    "status": 404
+}
+```
+
+
 ## Get Activity Applicants
 
 Get an activity along with its applicants.

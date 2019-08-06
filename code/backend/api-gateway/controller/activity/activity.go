@@ -893,3 +893,20 @@ func (activityController *Controller) GetUnacceptedApplication(c *gin.Context){
 	}
 	c.JSON(http.StatusOK,returnJSONs)
 }
+
+func (activityController *Controller) GetUserQuitRatio(c *gin.Context){
+	userId, err := strconv.Atoi(c.Query("user_id"))
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'user_id' is not provided or bad"))
+		return
+	}
+	ratio,err := activityClient.GetUserQuitRatio(userId)
+	if err != nil{
+		jing.SendError(c,err)
+		return
+	}else{
+		c.JSON(http.StatusOK,map[string]interface{}{
+			"ratio":ratio,
+		})
+	}
+}
