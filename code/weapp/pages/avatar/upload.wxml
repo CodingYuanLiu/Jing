@@ -5,9 +5,9 @@
 </view>
 <view class="cropper-buttons" style="color: {{cropperOpt.boundStyle.color}}">
     <view class="upload btn" bindtap="uploadTap">
-        上传图片
+        更换图片
     </view>
     <view class="getCropperImage btn" style="background-color: {{cropperOpt.boundStyle.color}};" bindtap="getCropperImage">
-        生成图片
+        确定
     </view>
 </view>

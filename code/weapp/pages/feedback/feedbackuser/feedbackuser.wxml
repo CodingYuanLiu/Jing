@@ -1,0 +1,21 @@
+<!--pages/feedback/feedbackuser/feedbackuser.wxml-->
+<!-- <text>pages/feedback/feedbackuser/feedbackuser.wxml</text> -->
+<view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+    <label style="display:inline-block">沟通</label>
+    <i-rate style="display:inline-block; float: right; padding-right: 20px" size="30" bind:change="onChangeC" value="{{starIndexC}}">
+    </i-rate>
+</view>
+<textarea placeholder="对沟通情况的详细描述(可选)" bindblur="bindTextAreaBlurC" value="{{details}}" class="textinput" />
+<view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+    <label style="display:inline-block">守时</label>
+    <i-rate style="display:inline-block; float: right; padding-right: 20px" size="30" bind:change="onChangeP" value="{{starIndexP}}">
+    </i-rate>
+</view>
+<textarea placeholder="对守时情况的详细描述(可选)" bindblur="bindTextAreaBlurP" value="{{details}}" class="textinput" />
+<view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+    <label style="display:inline-block">诚信</label>
+    <i-rate style="display:inline-block; float: right; padding-right: 20px" size="30" bind:change="onChangeH" value="{{starIndexH}}">
+    </i-rate>
+</view>
+<textarea placeholder="对诚信情况的详细描述(可选)" bindblur="bindTextAreaBlurH" value="{{details}}" class="textinput" />
+<i-button bindtap="handleSubmit" type="primary">提交</i-button>

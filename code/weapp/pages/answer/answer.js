@@ -20,8 +20,8 @@ Page({
         comment_length: 0,
         your_comment: '',
         place_holder: '添加评论',
-        avatar_src: '../../images/icons/timg.jpg',
-        non_avatar: '../../images/icons/timg.jpg',
+        avatar_src: 'http://image.jing855.cn/defaultAvatar.png',
+        non_avatar: 'http://image.jing855.cn/defaultAvatar.png',
         to_user: -1,
         visible1: false,
         actions3: [{
@@ -51,17 +51,29 @@ Page({
                 that.setData({
                     comment_length: res.data.comments.length
                 })
-                if (app.globalData.userInfo !== null)
-                    for (let i = 0; i < app.globalData.following.length; i++) {
-                        console.log("finding")
-                        if (app.globalData.following[i].id === res.data.sponsor_id) {
-                            that.setData({
-                                followed: true
-                            })
-                            console.log("followed!!!!!!")
-                            break
+                if (app.globalData.userInfo !== null) {
+                    if (app.globalData.following !== null) {
+                        let i = 0;
+                        for (i = 0; i < app.globalData.following.length; i++) {
+                            console.log("finding")
+                            if (app.globalData.following[i].id === res.data.sponsor_id) {
+                                that.setData({
+                                    followed: true
+                                })
+                                console.log("followed!!!!!!")
+                                break
+                            }
+
                         }
-                    }
+                        if (i == app.globalData.following.length)
+                            that.setData({
+                                followed: false
+                            })
+                    } else
+                        that.setData({
+                            followed: false
+                        })
+                }
             }
         });
     },
@@ -103,15 +115,28 @@ Page({
                             console.log(res);
                         }
                     })
-                    for (let i = 0; i < app.globalData.following.length; i++) {
-                        console.log("finding")
-                        if (app.globalData.following[i].id === res.data.sponsor_id) {
+                    if (app.globalData.userInfo !== null) {
+                        if (app.globalData.following !== null) {
+                            let i = 0;
+                            for (i = 0; i < app.globalData.following.length; i++) {
+                                console.log("finding")
+                                if (app.globalData.following[i].id === res.data.sponsor_id) {
+                                    that.setData({
+                                        followed: true
+                                    })
+                                    console.log("followed!!!!!!")
+                                    break
+                                }
+
+                            }
+                            if (i == app.globalData.following.length)
+                                that.setData({
+                                    followed: false
+                                })
+                        } else
                             that.setData({
-                                followed: true
+                                followed: false
                             })
-                            console.log("followed!!!!!!")
-                            break
-                        }
                     }
                 }
 
@@ -407,7 +432,7 @@ Page({
                     else {
                         $Toast({
                             content: res.data.message,
-                            type: 'success',
+                            // type: 'success',
                         });
                     }
                     wx.request({
@@ -450,6 +475,7 @@ Page({
                         success: function(res) {
                             console.log(res)
                             app.globalData.following = res.data
+
                             that.refresh();
                         }
                     })

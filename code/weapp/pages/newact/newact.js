@@ -1,5 +1,9 @@
 // pages/newact/newact.js
 let app = getApp();
+const {
+    $Toast
+} = require('../../dist/base/index');
+import WxValidate from '../../utils/WxValidate.js'
 
 Page({
 
@@ -42,10 +46,51 @@ Page({
         this.setData({
             mode: options.mode
         })
+        this.initValidate()
+    },
+    initValidate() {
+        const rules = {
+            name: {
+                required: true,
+                minlength: 2
+            },
+            phone: {
+                required: true,
+                tel: true
+            }
+        }
+        const messages = {
+            name: {
+                required: '请填写姓名',
+                minlength: '请输入正确的名称'
+            },
+            phone: {
+                required: '请填写手机号',
+                tel: '请填写正确的手机号'
+            }
+        }
+        this.WxValidate = new WxValidate(rules, messages)
+    }, 
+    //调用验证函数 
+    formSubmit: function(e) {
+        console.log('form发生了submit事件，携带的数据为：', e.detail.value)
+        const params = e.detail.value //校验表单    
+        if (!this.WxValidate.checkForm(params)) {
+            const error = this.WxValidate.errorList[0]
+            this.showModal(error)
+            return false
+        }
+        this.showModal({
+            msg: '提交成功'
+        })
     },
 
     // submit click
+    handleClick1: function(event) {
+        setTimeout(this.handleClick1(event), 300);
+    },
     handleClick: function(event) {
+        console.log(event)
         let that = this;
         let date = new Date();
         let mode = that.data.mode;
@@ -55,7 +100,26 @@ Page({
         for (let i = 0; i < that.data.tags.length; i++) {
             tag_str.push(that.data.tags[i].name);
         }
+
+        if (parseInt(that.data.max_member) < 2) {
+            $Toast({
+                content: '至少2人活动才可发布',
+                type: 'error'
+            });
+            return;
+        }
+
         if (mode === 'taxi') {
+            let end = new Date(that.data.end_time + " " + that.data.end_time_t);
+            let depart = new Date(that.data.depart_time + " " + that.data.depart_time_t);
+            let now = new Date();
+            if (end <= now || depart <= now) {
+                $Toast({
+                    content: '截止时间或出发时间不正确',
+                    type: 'error'
+                });
+                return;
+            }
             wx.request({
                 url: 'https://jing855.cn/api/user/act/publish',
                 header: {
@@ -97,6 +161,16 @@ Page({
                 }
             })
         } else if (mode === 'takeout') {
+            let end = new Date(that.data.end_time + " " + that.data.end_time_t);
+            let order = new Date(that.data.order_time + " " + that.data.order_time_t);
+            let now = new Date();
+            if (end <= now || order <= now) {
+                $Toast({
+                    content: '截止时间或下单时间不正确',
+                    type: 'error'
+                });
+                return;
+            }
             wx.request({
                 url: 'https://jing855.cn/api/user/act/publish',
                 header: {
@@ -138,6 +212,15 @@ Page({
                 }
             })
         } else if (mode === 'order') {
+            let end = new Date(that.data.end_time + " " + that.data.end_time_t);
+            let now = new Date();
+            if (end <= now) {
+                $Toast({
+                    content: '截止时间不正确',
+                    type: 'error'
+                });
+                return;
+            }
             wx.request({
                 url: 'https://jing855.cn/api/user/act/publish',
                 header: {
@@ -178,6 +261,16 @@ Page({
                 }
             })
         } else if (mode === 'other') {
+            let end = new Date(that.data.end_time + " " + that.data.end_time_t);
+            let act = new Date(that.data.activity_time + " " + that.data.activity_time_t);
+            let now = new Date();
+            if (end <= now || act <= now) {
+                $Toast({
+                    content: '截止时间或活动时间不正确',
+                    type: 'error'
+                });
+                return;
+            }
             wx.request({
                 url: 'https://jing855.cn/api/user/act/publish',
                 header: {

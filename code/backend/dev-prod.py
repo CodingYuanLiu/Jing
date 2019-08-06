@@ -125,6 +125,14 @@ if mode == '0':
     fw.write(s)
     fw.close()
 
+    fr = open('./dao/redis.go', 'r', encoding='utf-8')
+    s = fr.read()
+    fr.close()
+    s = s.replace('\tconn, err = redis.Dial("tcp", "redis.database:6379")',
+                  '\tconn, err = redis.Dial("tcp", "localhost:6379")')
+    fw = open('./dao/redis.go', 'w', encoding='utf-8')
+    fw.write(s)
+    fw.close()
 else:
     fr = open('./dao/user.go', 'r', encoding='utf-8')
     s = fr.read()
@@ -173,5 +181,14 @@ else:
     s = s.replace('\tx:=gojieba.NewJieba()',
         '\tx:=gojieba.NewJieba("/home/app/dict/jieba.dict.utf8","/home/app/dict/hmm_model.utf8","/home/app/dict/user.dict.utf8","/home/app/dict/idf.utf8","/home/app/dict/stop_words.utf8")')
     fw = open('./activity/handler/tags.go', 'w', encoding='utf-8')
+    fw.write(s)
+    fw.close()
+
+    fr = open('./dao/redis.go', 'r', encoding='utf-8')
+    s = fr.read()
+    fr.close()
+    s = s.replace('\tconn, err = redis.Dial("tcp", "localhost:6379")',
+        '\tconn, err = redis.Dial("tcp", "redis.database:6379")')
+    fw = open('./dao/redis.go', 'w', encoding='utf-8')
     fw.write(s)
     fw.close()

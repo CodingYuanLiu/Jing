@@ -10,7 +10,7 @@ Page({
      * 页面的初始数据
      */
     data: {
-        avatar_src: "../../images/icons/timg.jpg",
+        avatar_src: "http://image.jing855.cn/defaultAvatar.png",
         user: {},
         gendershow: '女',
         genders: [{

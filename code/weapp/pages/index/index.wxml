@@ -101,6 +101,7 @@
             </view>
         </block>
         <view class="feed-item">
+
             <view class="feed-content">
                 <view class="question">
                     <a class="question-link">
@@ -111,6 +112,8 @@
                     请登录
                 </view>
                 <view wx:if="{{log}}" class="answer-body">
+                    <view hidden="{{!no_content}}"> 暂无推荐，多用用我们的app就有啦 </view>
+
                 </view>
             </view>
         </view>
@@ -157,6 +160,7 @@
             </view>
         </block>
         <view class="feed-item">
+
             <view class="feed-content">
                 <view class="question">
                     <a class="question-link">
@@ -167,6 +171,7 @@
                     请登录
                 </view>
                 <view wx:if="{{log}}" class="answer-body">
+                    <view wx:if="{{myacts === undefined || myacts === null || myacts.length ===0}}"> 暂无关注用户或关注用户无内容 </view>
                 </view>
             </view>
         </view>

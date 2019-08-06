@@ -8,7 +8,7 @@ Page({
         motto: 'Hello World',
         userInfo: {},
         user: {},
-        avatar_src: "../../images/icons/timg.jpg",
+        avatar_src: "http://image.jing855.cn/defaultAvatar.png",
         log: false
     },
     //事件处理函数
@@ -63,6 +63,7 @@ Page({
                                 })
                             } else if (res.data.message === "Login success") {
                                 app.globalData.jwt = res.data.jwt;
+                                console.log("jwt: "+res.data.jwt)
                                 console.log(123);
                                 wx.request({
                                     url: 'https://jing855.cn/api/user/status',
@@ -162,7 +163,7 @@ Page({
         app.globalData.userInfo = null;
         this.setData({
             user: null,
-            avatar_src: '../../images/icons/timg.jpg'
+            avatar_src: 'http://image.jing855.cn/defaultAvatar.png'
         });
         this.setData({
             log: false
