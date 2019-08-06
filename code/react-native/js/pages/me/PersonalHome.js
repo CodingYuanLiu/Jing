@@ -143,7 +143,7 @@ class PersonalHome extends React.PureComponent {
                 buttonStyle={styles.userRightButton}
                 TouchableComponent={TouchableWithoutFeedback}
                 onPress={this.state.isSelf ?
-                    () => {NavigationUtil.toPage({user: user}, "Information")} :
+                    () => {NavigationUtil.toPage({user: user}, "ModifyInformation")} :
                     () => {this.follow(user.id)}
                 }
             />

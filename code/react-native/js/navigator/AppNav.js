@@ -12,7 +12,9 @@ import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch
 import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
 import ChatRoom from "../pages/notification/pages/ChatRoom";
-import Information from "../pages/me/ModifyInformation";
+import ModifyInformation from "../pages/me/ModifyInformation/ModifyInformation";
+import DormitoryPage from "../pages/me/ModifyInformation/DormitoryPage";
+import MajorPage from "../pages/me/ModifyInformation/MajorPage";
 import Settings from "../pages/me/Settings";
 import Following from "../pages/me/Following";
 import Follower from "../pages/me/Follower";
@@ -58,8 +60,14 @@ const MainNav = createStackNavigator(
         PublishStack: {
             screen: PublishStack,
         },
-        Information: {
-            screen: Information,
+        ModifyInformation: {
+            screen: ModifyInformation,
+        },
+        DormitoryPage: {
+            screen: DormitoryPage,
+        },
+        MajorPage: {
+            screen: MajorPage,
         },
         PersonalHome: {
             screen: PersonalHome,

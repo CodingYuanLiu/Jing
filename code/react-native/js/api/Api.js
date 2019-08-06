@@ -95,9 +95,8 @@ export default class Api {
     };
     static updateInfo(data, jwt) {
         return new Promise((resolve, reject) => {
-            axios.post("/api/user/info/update", data, {
+            axios.put("/api/user/info/update", data, {
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${jwt}`,
                 }
             })

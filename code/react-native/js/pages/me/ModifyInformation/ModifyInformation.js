@@ -1,16 +1,16 @@
 import React from "react"
 import { View, Text, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
-import HeaderBar from "../../common/components/HeaderBar";
-import {CameraIcon, CaretRightIcon, ChevronIcon, CloseIcon} from "../../common/components/Icons";
-import NavigationUtil from "../../navigator/NavUtil";
+import HeaderBar from "../../../common/components/HeaderBar";
+import {CameraIcon, ChevronIcon, CloseIcon} from "../../../common/components/Icons";
+import NavigationUtil from "../../../navigator/NavUtil";
 import {Avatar, Button, CheckBox, ListItem} from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import Modal from "react-native-modal";
 import {connect} from "react-redux";
-import {updateUserAvatar, updateUserInfo} from "../../actions/currentUser";
-import Api from "../../api/Api";
-import Util from "../../common/util";
+import {updateUserAvatar, updateUserInfo} from "../../../actions/currentUser";
+import Api from "../../../api/Api";
+import Util from "../../../common/util";
 
 
 class ModifyInformation extends React.PureComponent{
@@ -25,10 +25,10 @@ class ModifyInformation extends React.PureComponent{
             nickname: "",
             signature: "",
             gender: 2,
-            genderText: "保密",
             birthday: "",
             dormitory: "",
             major: "",
+            goBackModalVisible: false,
             birthdayPickerVisible: false,
             genderPickerVisible: false,
         }
@@ -41,11 +41,13 @@ class ModifyInformation extends React.PureComponent{
         let header = this.renderHeader();
         let avatar = this.renderAvatar();
         let basicInformation = this.renderBasicInformation();
+        let goBackModal = this.renderGoBackModal();
         return(
             <View style={styles.container}>
                 {header}
                 {avatar}
                 {basicInformation}
+                {goBackModal}
             </View>
         )
     }
@@ -56,7 +58,7 @@ class ModifyInformation extends React.PureComponent{
                     <CloseIcon
                     color={"#fff"}
                     style={styles.headerIcon}
-                    onPress={() => {NavigationUtil.back(this.props)}}
+                    onPress={this.goBack}
                     />
                 }
                 title={"编辑个人资料"}
@@ -66,7 +68,7 @@ class ModifyInformation extends React.PureComponent{
                     title={"保存"}
                     titleStyle={styles.headerButtonTitle}
                     type={"clear"}
-                    onPress={this.handleSavePress}
+                    onPress={this.handleSave}
                     />
                 }
                 rightBtnStyle={styles.headerRightButton}
@@ -111,13 +113,15 @@ class ModifyInformation extends React.PureComponent{
         let signature = this.renderLongInput("个性签名", "简单介绍自己，兴趣，爱好",
             this.state.signature, this.handleSignatureChange);
         let gender = this.renderOnPressInput("性别", "填写您的性别",
-            this.state.genderText, this.showGenderPicker);
+            this.getGenderText(this.state.gender), this.showGenderPicker);
         let birthday = this.renderOnPressInput("生日", "填写您的生日",
-            this.state.birthday, this.showBirthdayPicker);
+            this.getBirthdayText(this.state.birthday), this.showBirthdayPicker);
         let genderPicker = this.renderGenderPicker(this.state.gender);
         let birthdayPicker = this.renderBirthdayPicker(this.state.birthday);
-        let dormitory = null;
-        let major = null;
+        let dormitory = this.renderOnPressInput("宿舍", "填写您的宿舍",
+            this.state.dormitory, this.toDormitoryPage);
+        let major = this.renderOnPressInput("专业", "填写您的专业",
+            this.state.major, this.toMajorPage);
         return (
             <View style={styles.basicInformationContainer}>
                 {title}
@@ -223,7 +227,6 @@ class ModifyInformation extends React.PureComponent{
             </Modal>
         )
     };
-
     renderBirthdayPicker = (birthday) => {
           return (
             <DateTimePicker
@@ -233,12 +236,57 @@ class ModifyInformation extends React.PureComponent{
                 datePickerModeAndroid={"spinner"}
                 date={birthday === "" ? new Date() : new Date(birthday)}
                 minimumDate={new Date("1900-01-01")}
+                maximumDate={new Date()}
             />
           )
     };
+    renderGoBackModal = () => {
+        let content = (
+            <Text style={styles.goBackModalText}>
+                确认返回吗?　当前修改尚未保存，继续返回将取消所有更改
+            </Text>
+        );
+        let savingStatus = (
+              <Button
+                type={"clear"}
+                loading
+                title={"正在保存..."}
+              />
+        );
+        let footer = (
+            <View style={styles.goBackModalFooterContainer}>
+                <Button
+                    type={"clear"}
+                    title={"直接返回"}
+                    containerStyle={styles.goBackModalFooterButton}
+                    onPress={this.directGoBack}
+                />
+                <Button
+                    type={"clear"}
+                    title={"保存并返回"}
+                    containerStyle={styles.goBackModalFooterButton}
+                    onPress={this.saveAndBack}
+                />
+            </View>
+        );
+        return (
+            <Modal
+                isVisible={this.state.goBackModalVisible}
+                onBackdropPress={this.hideGoBackModal}
+                useNativeDriver={true}
+                style={{ height: 200, width: "92%",}}
+                hideModalContentWhileAnimating
+            >
+                <View style={styles.goBackModalContainer}>
+                    {content}
+                    {this.state.isSaving ? savingStatus : null}
+                    {footer}
+                </View>
+            </Modal>
+        )
+    };
     showAvatarPicker = () => {
         ImagePicker.showImagePicker(imagePickerOptions, (response) => {
-            console.log('Response = ', response);
             if (response.didCancel) {
                 // ... do nothing
             } else if (response.error) {
@@ -253,15 +301,32 @@ class ModifyInformation extends React.PureComponent{
                         data: data,
                         type: type,
                     },
-                    avatarModified: true,
                 });
+                this.setAvatarModified(true);
             }
         });
     };
+    getGenderText = (gender) => {
+        return gender === 2 ? "保密" : gender === 1 ? "男" : "女";
+    };
+    getBirthdayText = (birthday) => {
+        try {
+            if (birthday === "") return "";
+            let date = new Date(birthday);
+            let year = date.getUTCFullYear();
+            let month = date.getUTCMonth() + 1;
+            let day = date.getUTCDate();
+            return `${year}年${month}月${day}日`;
+        } catch (e) {
+            return "";
+        }
+    };
     handleNicknameChange = (text) => {
+        this.setInfoModified(true);
         this.setState({nickname: text});
     };
     handleSignatureChange = (text) => {
+        this.setInfoModified(true);
         this.setState({signature: text});
     };
     showGenderPicker = () => {
@@ -271,35 +336,65 @@ class ModifyInformation extends React.PureComponent{
         this.setState({genderPickerVisible: false});
     };
     handleCheckGender = (gender) => {
+        this.setInfoModified(true);
         this.setState({
-            gender: gender,
-            genderText: gender === 2 ? "保密" : gender === 1 ? "男" : "女"
+            gender: gender
         });
         this.hideGenderPicker();
     };
-
     showBirthdayPicker = () => {
         this.setState({birthdayPickerVisible: true});
     };
     handleCheckBirthday = (date) => {
-        let birthday;
-        let year = date.getUTCFullYear();
-        let month = date.getUTCMonth() + 1;
-        let day = date.getUTCDate();
-        birthday = `${year}年${month}月${day}日`;
+        this.setInfoModified(true);
         this.setState({
-            birthday: birthday,
+            birthday: Util.dateTimeToString(date),
         });
         this.hideBirthdayPicker();
     };
     hideBirthdayPicker = () => {
         this.setState({birthdayPickerVisible: false});
     };
+    toDormitoryPage = () => {
+        NavigationUtil.toPage({
+            handleDormitoryChange: this.handleDormitoryChange,
+        }, "DormitoryPage")
+    };
+    toMajorPage = () => {
+        NavigationUtil.toPage({
+            handleMajorChange: this.handleMajorChange
+        }, "MajorPage")
+    };
+    handleDormitoryChange = (text) => {
+        this.setInfoModified();
+        this.setState({dormitory: text});
+    };
+    handleMajorChange = (text) => {
+        this.setInfoModified();
+        this.setState({major: text});
+    };
+    setInfoModified = (flag) => {
+        this.setState({infoModified: flag});
+    };
+    setAvatarModified = (flag) => {
+        this.setState({avatarModified: flag});
+    };
+    setSaved = (flag) => {
+        this.setState({saved: flag});
+    };
+    showGoBackModal = () => {
+        this.setState({goBackModalVisible: true});
+    };
+    hideGoBackModal = () => {
+        this.setState({goBackModalVisible: false});
+    };
 
-
-    handleSavePress = () => {
+    handleSave = () => {
         this.saveAsync()
             .then(res => {
+                this.setSaved(true);
+                this.setAvatarModified(false);
+                this.setInfoModified(false);
                 console.log(res)
             })
             .catch(err => {
@@ -327,13 +422,14 @@ class ModifyInformation extends React.PureComponent{
                 await Api.updateInfo(data, jwt);
                 this.props.updateUserInfo(data);
                 let avatarUri = await Api.updateAvatar(avatarData, jwt);
-                this.props.updateUserAvatar(avatarUri.url);
-                this.setState({isSaving: false, saved: true});
+                this.props.updateUserAvatar(avatarUri);
+                this.setState({isSaving: false});
+                return "modify avatar and info ok";
             } else {
                 // only modified avatar
                 let avatarUri = await Api.updateAvatar(avatarData, jwt);
-                this.props.updateUserAvatar(avatarUri.url);
-                this.setState({isSaving: false, saved: true});
+                this.props.updateUserAvatar(avatarUri);
+                this.setState({isSaving: false});
                 return avatarUri;
             }
         } else {
@@ -341,11 +437,15 @@ class ModifyInformation extends React.PureComponent{
                 // only modified info
                 await Api.updateInfo(data, this.props.currentUser.jwt);
                 this.props.updateUserInfo(data);
+                this.setState({isSaving: false});
+                return "info ok";
             } else {
                 // nothing modified
-                this.setState({isSaving: false, saved: true});
+                this.setState({isSaving: false});
+                return "nothing modified";
             }
         }
+
     };
     loadData = () => {
         let currentUser = this.props.currentUser;
@@ -357,23 +457,37 @@ class ModifyInformation extends React.PureComponent{
             nickname: currentUser.nickname,
             signature: currentUser.signature,
             gender: currentUser.gender,
-            genderText: currentUser.gender === 2 ? "保密" : currentUser.gender === 1 ? "男" : "女",
             birthday: currentUser.birthday,
             dormitory: currentUser.dormitory,
             major: currentUser.major,
             phone: currentUser.phone,
         });
     };
-    quit = () => {
-        if (!this.saved){
-            this.setState({showQuitDialog: true});
+    goBack = () => {
+        let state = this.state;
+        if (state.avatarModified && !state.saved || state.infoModified && !state.saved){
+            this.showGoBackModal();
         } else {
             NavigationUtil.back(this.props);
         }
     };
-    startModify = () => {
-        this.setState({saved: false});
+    saveAndBack = () => {
+        this.saveAsync()
+            .then(() => {
+                this.setSaved(true);
+                this.setAvatarModified(false);
+                this.setInfoModified(false);
+                this.hideGoBackModal();
+                NavigationUtil.back(this.props);
+            })
+            .catch(err => {
+                console.log(err)
+            })
     };
+    directGoBack = () => {
+        this.hideBirthdayPicker();
+        setTimeout(NavigationUtil.back(this.props), 500);
+    }
 }
 
 const imagePickerOptions = {
@@ -479,5 +593,28 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         paddingBottom: 16,
+    },
+    goBackModalContainer: {
+        backgroundColor: "#fff",
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: 16,
+        height: 200,
+         width: "100%",
+    },
+    goBackModalText: {
+        color: "#3a3a3a",
+        fontSize: 16,
+        marginTop: 16,
+        marginBottom: 16,
+    },
+    goBackModalFooterContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-end",
+    },
+    goBackModalFooterButton: {
+        marginRight: 16,
+        marginLeft: 12,
     },
 });

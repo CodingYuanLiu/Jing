@@ -36,11 +36,21 @@ const currentUser = (state = initialState, action) => {
                 jwt: action.jwt,
             };
         case actionTypes.SET_USER_DATA:
-            console.log(action);
             return {
                 ...state,
                 ...action.data,
                 logged: true,
+            };
+        case actionTypes.UPDATE_USER_INFO:
+            return {
+                ...state,
+                ...action.data,
+            };
+        case actionTypes.UPDATE_USER_AVATAR:
+            console.log("current user update avatar, ", action.avatar);
+            return {
+                ...state,
+                avatar: action.avatar
             };
         case actionTypes.ON_GET_USER_FOLLOWERS:
             return {
