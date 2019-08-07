@@ -34,10 +34,9 @@ func GetRecommendationResultFromRedis(userId int32) []int32 {
 
 	//raw, err := redis.String(conn.Do("GET", recommendKey))
 	raw, err := client.Get(recommendKey).Result()
-	//if err == redis.ErrNil {
-	//	return nil
-	//} else 
-	if err != nil {
+	if err == redis.Nil {
+		return nil
+	} else if err != nil {
 		log.Printf("Get result from redis error:%s", err.Error())
 		return nil
 	}
