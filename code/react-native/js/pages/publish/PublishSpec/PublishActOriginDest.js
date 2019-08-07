@@ -8,7 +8,7 @@ import Activity from "../../../actions/activity";
 
 
 
-class PublishTaxiSpec extends React.PureComponent{
+class PublishActOriginDest extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
@@ -16,8 +16,7 @@ class PublishTaxiSpec extends React.PureComponent{
             origin: "",
             dest: "",
             isDateTimePickerVisible: false,
-
-        }
+        };
     }
     componentDidMount() {
         let act = this.props.publishAct.taxiAct;
@@ -116,7 +115,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     saveTaxiAct: (data) => dispatch(Activity.saveTaxiAct(data)),
 });
-export default connect(mapStateToProps, mapDispatchToProps)(PublishTaxiSpec);
+export default connect(mapStateToProps, mapDispatchToProps)(PublishActOriginDest);
 
 
 const styles = StyleSheet.create({

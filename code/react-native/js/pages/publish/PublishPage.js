@@ -268,11 +268,11 @@ class PublishPage extends React.PureComponent{
         let publishAct = this.buildAct(this.props.publishAct, this.type);
         let data =
             Model.transferActivityFromCamelToSnake(publishAct);
-        console.log(data);
+
         Api.publishAct(this.props.currentUser.jwt, data)
-            .then (id => {
-                console.log(id);
-                NavigationUtil.toPage({id: id}, "ActDetail");
+            .then (act => {
+                console.log(act);
+                NavigationUtil.toPage({id: act.id}, "ActDetail");
             })
             .catch(err => {
                 console.log(err);
@@ -312,13 +312,17 @@ class PublishPage extends React.PureComponent{
         })
     };
     handleClickOriginDest = () => {
-        NavigationUtil.toPage(null, "PublishTaxiSpec")
+        let origin = this.props.publishAct.taxiAct.origin;
+        let dest = this.props.publishAct.taxiAct.dest;
+        NavigationUtil.toPage({origin: origin, dest: dest}, "PublishActOriginDest")
     };
     handleClickTakeoutStore = () => {
-        NavigationUtil.toPage(null, "PublishTakeoutSpec");
+        let store = this.props.publishAct.takeoutAct.store;
+        NavigationUtil.toPage({type: "takeout", store: store}, "PublishActStore");
     };
     handleClickOrderStore = () => {
-        NavigationUtil.toPage(null, "PublishOrderSpec");
+        let store = this.props.publishAct.orderAct.store;
+        NavigationUtil.toPage({type: "order", store: store}, "PublishActStore");
     };
     // spec time picker handle
     showSpecTimePicker = () => {

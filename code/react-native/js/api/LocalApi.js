@@ -7,10 +7,7 @@ export default class LocalApi {
         let dataList, res;
         try {
             res = await Dao.get("@draft");
-            console.log("res", res);
             dataList = JSON.parse(res);
-            console.log("data", dataList);
-            console.log(item);
             if (dataList.length > 0) {
                 item.id = dataList[dataList.length - 1].id + 1;
             } else {
@@ -105,5 +102,67 @@ export default class LocalApi {
                     reject(err);
                 })
         });
-    }
+    };
+
+
+    static saveSearchHistory = async (title) => {
+        let history, historyList;
+        try {
+            history = await Dao.get("@searchHistory");
+            historyList = JSON.parse(history);
+            let list = [];
+            let data = {
+                title: title,
+            };
+            let saved = false;
+            if (historyList.length > 0) {
+                data.id = historyList[historyList.length - 1].id + 1;
+            } else {
+                data.id = 1;
+            }
+            let saveData;
+            for (let i of historyList) {
+                if (i.title === title) {
+                    saveData = i;
+                    saved = true;
+                }
+            }
+            if (!saved) {
+                list = [data, ...list]
+            } else {
+                list = [saveData, ...list];
+            }
+            await Dao.saveJson("@searchHistory", list);
+        } catch (err) {
+            historyList = [{id: 1, title: title}];
+            await Dao.saveJson("@searchHistory", historyList)
+                .catch(e => {console.log(e)})
+        }
+    };
+    static getSearchHistory = async () => {
+          let list = await Dao.get("@searchHistory");
+          return list;
+    };
+    static removeSearchHistory = async(id) => {
+        try {
+            let list;
+            list = await Dao.get("@searchHistory");
+            let newList = [];
+            for(let item of list) {
+                if (item.id !== id) {
+                    newList.push(item)
+                }
+            }
+            await Dao.saveJson("@searchHistory", newList);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    static clearSearchHistory = async () => {
+        try {
+            await Dao.remove("@searchHistory")
+        } catch (e) {
+            console.log(e);
+        }
+    };
 }

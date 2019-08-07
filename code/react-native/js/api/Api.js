@@ -393,7 +393,17 @@ export default class Api {
                 })
         })
     }
-
+    static searchAct(text) {
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/public/act/search?key=${text}`)
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    }
 
     /**
      *
@@ -465,23 +475,4 @@ export default class Api {
         })
     }
 
-    /**
-     * getSavedPublishAct
-     */
-    static saveDraftPublish(publishAct) {
-        return new Promise( async () => {
-            let data;
-            Dao.get("@draft")
-                .then(async res => {
-                    let dataList = JSON.parse(res);
-                    dataList.push(publishAct);
-                    await Dao.saveJson(JSON.stringify(dataList));
-                })
-                .catch(async err => {
-                    if (err.status === 404) {
-                        await Dao.saveJson("@draft", [data]);
-                    }
-                });
-        })
-    }
 }

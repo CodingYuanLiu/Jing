@@ -40,4 +40,8 @@ export default class Util {
         let openfirePwd = crypt.substring(5, 15);
         return openfirePwd;
     };
+
+    static actStatusToText = (status) => {
+
+    };
 }

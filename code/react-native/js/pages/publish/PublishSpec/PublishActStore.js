@@ -1,13 +1,13 @@
 import React from "react"
 import {View, Text, StyleSheet, FlatList, RefreshControl, ScrollView} from 'react-native';
-import {ListItem, SearchBar} from "react-native-elements";
+import {Button, ListItem, SearchBar} from "react-native-elements";
 import {ArrowLeftIcon, LeftUpArrowIcon, SearchIcon} from "../../../common/components/Icons";
 import Api from "../../../api/Api";
 import {connect} from "react-redux";
 import NavigationUtil from "../../../navigator/NavUtil";
 import Activity from "../../../actions/activity";
 
-class PublishTakeoutSpec extends React.PureComponent{
+class PublishActStore extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
@@ -15,15 +15,53 @@ class PublishTakeoutSpec extends React.PureComponent{
             isLoading: false,
             err: null,
             search: "",
-
-        }
+        };
+        this.type = this.props.navigation.getParam("type");
+        this.setState({search: this.props.navigation.getParam("store")});
     }
+
+    render() {
+        let header = this.renderHeader();
+        let { prompts, isLoading }= this.state;
+        if (!prompts) {
+            prompts = [];
+        }
+        return(
+            <View style={styles.container}>
+                {header}
+                <FlatList
+                    keyboardShouldPersistTaps={"handled"}
+                    data={prompts}
+                    renderItem={this.renderPrompt}
+                    keyExtractor={(item) => (item.id)}
+                    refreshControl={
+                        <RefreshControl
+                            title={"加载中..."}
+                            titleColor={"#0084ff"}
+                            colors={["#0084ff"]}
+                            refreshing={isLoading}
+                            tintColor={"#0084ff"}
+                        />
+                    }
+                    style={styles.promptListContainer}
+                />
+            </View>
+        )
+    };
     renderHeader = () => {
         let returnIcon = (
             <ArrowLeftIcon
                 color={"#bfbfbf"}
                 size={30}
                 onPress={() => {NavigationUtil.back(this.props)}}
+            />
+        );
+        let rightButton = (
+            <Button
+                type={"clear"}
+                title={"确定"}
+                onPress={this.toPublishPage}
+                buttonStyle={{padding: 0, margin: 0}}
             />
         );
         return (
@@ -41,6 +79,7 @@ class PublishTakeoutSpec extends React.PureComponent{
                     inputContainerStyle={styles.inputContainer}
                     inputStyle={styles.inputStyle}
                 />
+                {this.type === "order" ? rightButton : null}
             </View>
         )
     };
@@ -70,69 +109,60 @@ class PublishTakeoutSpec extends React.PureComponent{
             />
         )
     };
-    render() {
-        let header = this.renderHeader();
-        let { prompts, isLoading }= this.state;
-        if (!prompts) {
-            prompts = [];
-        }
-        return(
-            <View style={styles.container}>
-                    {header}
-                <FlatList
-                    keyboardShouldPersistTaps={"handled"}
-                    data={prompts}
-                    renderItem={this.renderPrompt}
-                    keyExtractor={(item) => (item.id)}
-                    refreshControl={
-                        <RefreshControl
-                            title={"加载中..."}
-                            titleColor={"#0084ff"}
-                            colors={["#0084ff"]}
-                            refreshing={isLoading}
-                            tintColor={"#0084ff"}
-                        />
-                    }
-                    style={styles.promptListContainer}
-                />
-            </View>
-        )
-    };
 
     onSearch = (text) => {
         this.setState({
             search: text,
         });
-        console.log(text);
-        if (text !== "") {
-            this.setState({isLoading: true});
-            Api.searchTakeoutStore(text)
-                .then(data => {
-                    console.log(data);
-                    this.setState({prompts: data})
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-                .finally(() => {
-                    this.setState({isLoading: false});
-                })
+        if (this.type === "takeout") {
+            if (text !== "") {
+                this.setState({isLoading: true});
+                Api.searchTakeoutStore(text)
+                    .then(data => {
+                        console.log(data);
+                        this.setState({prompts: data})
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+                    .finally(() => {
+                        this.setState({isLoading: false});
+                    })
+            } else {
+                this.setState({prompts: []})
+            }
+        } else if (this.type === "order") {
+            // ...
+            // order do not have prompts
+            this.props.saveOrderAct({store: text});
         } else {
-            this.setState({prompts: []})
+            //...
         }
-
     };
     _onPressItem = (item) => {
-        console.log(item.name);
-        this.props.saveTakeoutAct({store: item.name});
+        if (this.type === "takeout") {
+            this.props.saveTakeoutAct({store: item.name});
+        } else if(this.type === "order") {
+            this.props.saveOrderAct({store: item.name});
+        }
+
+        NavigationUtil.back(this.props);
+    };
+    toPublishPage = () => {
+        this.props.saveOrderAct({store: this.state.search});
         NavigationUtil.back(this.props);
     }
 }
 
+
+const mapStateToProps = state => ({
+    publishAct: state.publishAct,
+});
 const mapDispatchToProps = dispatch => ({
     saveTakeoutAct: (data) => dispatch(Activity.saveTakeoutAct(data)),
+    saveOrderAct: (data) => dispatch(Activity.saveOrderAct(data)),
 });
-export default connect(null, mapDispatchToProps)(PublishTakeoutSpec);
+export default connect(mapStateToProps, mapDispatchToProps)(PublishActStore);
 
 const styles = StyleSheet.create({
     container: {
@@ -167,7 +197,7 @@ const styles = StyleSheet.create({
     },
     inputStyle: {
         fontSize: 15,
-        color: "#bfbfbf",
+        color: "#cacaca",
     },
    promptContainer: {
        paddingTop: 0,

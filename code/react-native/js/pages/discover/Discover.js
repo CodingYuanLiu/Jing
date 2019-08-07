@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, StatusBar } from 'react-native';
+import { View, Text, StatusBar, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 
 export default class DiscoverScreen extends React.PureComponent{
@@ -8,16 +8,18 @@ export default class DiscoverScreen extends React.PureComponent{
     }
 
     render() {
-        return(
-            <View>
 
-                <View>
-                    <Text>
-                        这里是主页面
-                    </Text>
-                </View>
+        return(
+            <View style={styles.container}>
+
             </View>
         )
     }
 }
 
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+
+    },
+});

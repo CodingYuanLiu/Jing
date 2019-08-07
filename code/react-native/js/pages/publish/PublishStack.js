@@ -1,10 +1,9 @@
 import {createStackNavigator} from "react-navigation";
-import PublishTaxiSpec from "./PublishSpec/PublishTaxiSpec";
+import PublishActOriginDest from "./PublishSpec/PublishActOriginDest";
 import PublishPage from "./PublishPage";
-import PublishTakeoutSpec from "./PublishSpec/PublishTakeoutSpec";
-import PublishOrderSpec from "./PublishSpec/PublishOrderSpec";
+import PublishActStore from "./PublishSpec/PublishActStore";
 import Publish from "./Publish";
-import PublishDraft from "./PublishDraft";
+
 
 export default createStackNavigator({
     Publish: {
@@ -13,14 +12,11 @@ export default createStackNavigator({
     PublishPage: {
         screen: PublishPage,
     },
-    PublishTaxiSpec: {
-        screen: PublishTaxiSpec,
+    PublishActStore: {
+        screen: PublishActStore,
     },
-    PublishTakeoutSpec: {
-        screen: PublishTakeoutSpec,
-    },
-    PublishOrderSpec: {
-        screen: PublishOrderSpec,
+    PublishActOriginDest: {
+        screen: PublishActOriginDest,
     },
 }, {
     defaultNavigationOptions: {
