@@ -10,7 +10,7 @@ import (
 
 var (
 	conn redis.Conn
-	client redis.Client
+	client *redis.Client
 )
 
 func SetRecommendationResultToRedis(userId int32, acts []int32) {
