@@ -34,9 +34,10 @@ func GetRecommendationResultFromRedis(userId int32) []int32 {
 
 	//raw, err := redis.String(conn.Do("GET", recommendKey))
 	raw, err := client.Get(recommendKey).Result()
-	if err == redis.ErrNil {
-		return nil
-	} else if err != nil {
+	//if err == redis.ErrNil {
+	//	return nil
+	//} else 
+	if err != nil {
 		log.Printf("Get result from redis error:%s", err.Error())
 		return nil
 	}
@@ -56,11 +57,11 @@ func GetRecommendationResultFromRedis(userId int32) []int32 {
 
 func init() {
 	var err error
-	conn, err = redis.Dial("tcp", "redis.database:6379")
-	if err != nil {
-		log.Println("Connect to redis failed")
-		return
-	}
+	//conn, err = redis.Dial("tcp", "redis.database:6379")
+	//if err != nil {
+	//	log.Println("Connect to redis failed")
+	//	return
+	//}
 	client = redis.NewClient(&redis.Options{
 		Addr:     "127.0.0.1:6379",
 		Password: "", // no password set
