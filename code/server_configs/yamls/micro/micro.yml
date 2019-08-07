@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: micro
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: micro
+  namespace: micro
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: micro
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: micro
+  namespace: micro
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: micro
+  name: user
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      serviceAccount: micro
+      containers:
+        - name: user
+          image: jing855/user:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+            name: port
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: micro
+  name: gateway
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      serviceAccount: micro
+      containers:
+        - name: gateway
+          image: jing855/apigateway:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+            name: api-port
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: micro
+  name: login
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: login
+    spec:
+      serviceAccount: micro
+      containers:
+        - name: login
+          image: jing855/login:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+            name: login-port
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: micro
+  name: activity
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: activity
+    spec:
+      serviceAccount: micro
+      containers:
+        - name: activity
+          image: jing855/activity:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+            name: act-port
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: micro
+  name: feedback
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: feedback
+    spec:
+      serviceAccount: micro 
+      containers:
+        - name: activity
+          image: jing855/feedback:latest
+          imagePullPolicy: Always
+          ports: 
+          - containerPort: 8080 
+            name: feedback-port  

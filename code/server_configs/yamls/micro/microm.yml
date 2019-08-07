@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: micro
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: micro
+  namespace: micro
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: micro
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: micro
+  namespace: micro
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: micro
+  name: micro
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        micro: micro
+    spec:
+      serviceAccount: micro
+      containers:
+        - name: micro-web
+          env:
+          - name: MICRO_ENABLE_STATS
+            value: "true"
+          image: microhq/micro:kubernetes
+          imagePullPolicy: Always
+          args: ["api", "--handler=http", "resgistry=kubernetes"]
+          ports:
+          - containerPort: 8080
+            name: web-port
+          - containerPort: 40468
+            name: listening
+          - containerPort: 42830
+            name: broker
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: micro-svc
+  namespace: micro
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: web
+    nodePort: 30255
+  selector:
+    micro: micro
+  type: NodePort
+

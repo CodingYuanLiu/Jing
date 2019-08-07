@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv1
+  namespace: database
+spec:
+  capacity:
+    storage: 200M
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.60
+    path: "/usr/local/k8s/redis/pv1"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv2
+  namespace: database 
+spec:
+  capacity:
+    storage: 200M
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.60
+    path: "/usr/local/k8s/redis/pv2"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv3
+  namespace: database 
+spec:
+  capacity:
+    storage: 200M
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.60
+    path: "/usr/local/k8s/redis/pv3"
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv4
+  namespace: database 
+spec:
+  capacity:
+    storage: 200M
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.0.0.60
+    path: "/usr/local/k8s/redis/pv4"
