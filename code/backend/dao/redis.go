@@ -16,7 +16,7 @@ var (
 func SetRecommendationResultToRedis(userId int32, acts []int32) {
 	recommendKey := fmt.Sprintf("Rec%d", userId)
 	data, _ := json.Marshal(acts)
-	err := client.Set(recommendKey, data, 300).Err()
+	err := client.Set(recommendKey, data, 300000000000).Err()
 	//_, err := conn.Do("SET", recommendKey, data)
 	if err != nil {
 		log.Println(err)
