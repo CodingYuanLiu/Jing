@@ -3,32 +3,37 @@ package dao
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gomodule/redigo/redis"
+	//"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis"
 	"log"
 )
 
 var (
 	conn redis.Conn
+	client redis.Client
 )
 
 func SetRecommendationResultToRedis(userId int32, acts []int32) {
 	recommendKey := fmt.Sprintf("Rec%d", userId)
 	data, _ := json.Marshal(acts)
-	_, err := conn.Do("SET", recommendKey, data)
+	err := client.Set(recommendKey, data, 300).Err()
+	//_, err := conn.Do("SET", recommendKey, data)
 	if err != nil {
 		log.Println(err)
 	}
-	_, err = conn.Do("EXPIRE", recommendKey, 300)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	//_, err = conn.Do("EXPIRE", recommendKey, 300)
+	//if err != nil {
+	//	log.Println(err)
+	//	return
+	//}
 
 }
 
 func GetRecommendationResultFromRedis(userId int32) []int32 {
 	recommendKey := fmt.Sprintf("Rec%d", userId)
-	raw, err := redis.String(conn.Do("GET", recommendKey))
+
+	//raw, err := redis.String(conn.Do("GET", recommendKey))
+	raw, err := client.Get(recommendKey).Result()
 	if err == redis.ErrNil {
 		return nil
 	} else if err != nil {
@@ -56,5 +61,11 @@ func init() {
 		log.Println("Connect to redis failed")
 		return
 	}
-
+	client = redis.NewClient(&redis.Options{
+		Addr:     "127.0.0.1:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+	pong, err := client.Ping().Result()
+	fmt.Println(pong, err)
 }
