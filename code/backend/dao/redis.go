@@ -62,7 +62,7 @@ func init() {
 	//	return
 	//}
 	client = redis.NewClusterClient(&redis.ClusterOptions{
-		Addr:     []string{"redis.database:6379"},
+		Addrs:     []string{"redis.database:6379"},
 		//Password: "", // no password set
 		//DB:       0,  // use default DB
 	})
