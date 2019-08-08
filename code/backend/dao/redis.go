@@ -61,10 +61,10 @@ func init() {
 	//	log.Println("Connect to redis failed")
 	//	return
 	//}
-	client = redis.NewClient(&redis.Options{
-		Addr:     "redis.database:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+	client = redis.NewClusterClient(&redis.ClusterOptions{
+		Addr:     []string{"redis.database:6379"},
+		//Password: "", // no password set
+		//DB:       0,  // use default DB
 	})
 	pong, err := client.Ping().Result()
 	fmt.Println(pong, err)
