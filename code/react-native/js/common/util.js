@@ -42,6 +42,6 @@ export default class Util {
     };
 
     static actStatusToText = (status) => {
-
+        return "等待加入"
     };
 }

@@ -1,11 +1,13 @@
 import React from "react"
-import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, RefreshControl, ScrollView } from 'react-native';
 import {Button, ListItem, SearchBar} from "react-native-elements";
-import {ArrowLeftIcon} from "../../common/components/Icons";
+import {ArrowLeftIcon, SearchIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
 import SearchHistory from "./SearchHistory";
 import Util from "../../common/util";
 import Api from "../../api/Api";
+import SearchItem from "./SearchItem";
+import LocalApi from "../../api/LocalApi";
 
 
 export default class SearchScreen extends React.PureComponent{
@@ -14,7 +16,7 @@ export default class SearchScreen extends React.PureComponent{
         this.state = {
             items: [],
             isLoading: false,
-            search: "",
+            searchText: "",
         }
     }
 
@@ -24,18 +26,20 @@ export default class SearchScreen extends React.PureComponent{
         return(
             <View style={styles.container}>
                 {searchBar}
-                <FlatList
-                    data={this.state.items}
-                    renderItem={this.renderItem}
-                    keyExtractor={item => item.id}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={this.state.isLoading}
-                            onRefresh={this.loadData}
-                        />
+                <ScrollView style={{marginTop: 16}}>
+                    {
+                        this.state.items.map((item ,i) => {
+                            return (
+                                <SearchItem
+                                    onPress={this.onPressSearchItem}
+                                    item={item}
+                                    key={item.id.toString()}
+                                />
+                            )
+                        })
                     }
-                />
-                {searchHistory}
+                    { searchHistory }
+                </ScrollView>
             </View>
         )
     };
@@ -52,9 +56,11 @@ export default class SearchScreen extends React.PureComponent{
                 {leftIcon}
                 <SearchBar
                     placeholder={"搜索即应"}
-                    onChangeText={this.onSearchChange}
-                    value={this.state.search}
+                    onChangeText={this.onSearchTextChange}
+                    onSubmitEditing={this.searchAct}
+                    returnKeyType={"search"}
                     searchIcon={null}
+                    value={this.state.searchText}
                     lightTheme
                     autoFocus
                     containerStyle={styles.searchContainer}
@@ -64,58 +70,45 @@ export default class SearchScreen extends React.PureComponent{
             </View>
         );
     };
-    renderItem = ({item}) => {
-        let title = (
-            <View style={styles.itemTitleContainer}>
-                <Text style={styles.itemTitle}>{item.title}</Text>
-            </View>
-        );
-        let subtitle = (
-            <View style={styles.itemSubtitleContainer}>
-                <Text style={styles.itemSubtitle}>{item.description}</Text>
-            </View>
-        );
-        let rightElement = (
-              <Button
-                type={"clear"}
-                title={Util.actStatusToText(item.status)}
-              />
-        );
-        return (
-            <View style={styles.itemContainer}>
-                {title}
-                <View style={styles.bodyContainer}>
-                    {subtitle}
-                    {null}
-                </View>
-            </View>
-        )
-    };
     renderSearchHistory = () => {
         return (
             <SearchHistory
-                onPress={this.handlePressSearchHistoryItem}
+                onPressItem={this.handlePressSearchHistoryItem}
             />
         );
     };
-    onSearchChange = (text) => {
-        this.setState({search: text});
 
-    };
-    loadData = (title) => {
-        Api.searchAct(title)
-            .then (data => {
-                console.log(data);
+    searchAct = () => {
+        let keywords = this.state.searchText;
+        this.loadData(keywords)
+            .then((data) => {
+                this.setState({items: data})
             })
             .catch(err => {
                 console.log(err);
             })
     };
-
-    handlePressSearchHistoryItem = (title) => {
-        this.onSearchChange(title);
+    onSearchTextChange = (text) => {
+        this.setState({searchText: text});
     };
-
+    loadData = async (title) => {
+        let data = await Api.searchAct(title);
+        await LocalApi.saveSearchHistory(title);
+        return data;
+    };
+    handlePressSearchHistoryItem = (title) => {
+        this.setState({searchText: title});
+        this.loadData(title)
+            .then(data => {
+                this.setState({items: data})
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
+    onPressSearchItem = (item) => {
+        NavigationUtil.toPage({id: item.id}, "ActDetail");
+    };
 };
 
 const styles = StyleSheet.create({
@@ -138,7 +131,6 @@ const styles = StyleSheet.create({
     },
     searchContainer: {
         flex: 1,
-        marginLeft: 8,
         alignItems: "center",
         justifyContent: "center",
         borderTopWidth: 0,

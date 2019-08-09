@@ -116,21 +116,21 @@ export default class LocalApi {
             };
             let saved = false;
             if (historyList.length > 0) {
-                data.id = historyList[historyList.length - 1].id + 1;
+                data.id = historyList[0].id + 1;
             } else {
                 data.id = 1;
             }
-            let saveData;
             for (let i of historyList) {
                 if (i.title === title) {
-                    saveData = i;
                     saved = true;
+                } else {
+                    list.push(i);
                 }
             }
             if (!saved) {
-                list = [data, ...list]
+                list = [data, ...historyList]
             } else {
-                list = [saveData, ...list];
+                list = [data, ...list];
             }
             await Dao.saveJson("@searchHistory", list);
         } catch (err) {
@@ -141,12 +141,13 @@ export default class LocalApi {
     };
     static getSearchHistory = async () => {
           let list = await Dao.get("@searchHistory");
-          return list;
+          return JSON.parse(list);
     };
     static removeSearchHistory = async(id) => {
         try {
-            let list;
-            list = await Dao.get("@searchHistory");
+            let list, res;
+            res = await Dao.get("@searchHistory");
+            list = JSON.parse(res);
             let newList = [];
             for(let item of list) {
                 if (item.id !== id) {
@@ -160,7 +161,7 @@ export default class LocalApi {
     };
     static clearSearchHistory = async () => {
         try {
-            await Dao.remove("@searchHistory")
+            await Dao.remove("@searchHistory");
         } catch (e) {
             console.log(e);
         }

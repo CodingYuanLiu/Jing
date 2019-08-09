@@ -397,7 +397,8 @@ export default class Api {
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/act/search?key=${text}`)
                 .then(res => {
-                    resolve(res.data);
+                    let acts = res.data ? res.data.acts : [];
+                    resolve(Model.transferActivityList(acts));
                 })
                 .catch(err => {
                     Reject(err, reject);

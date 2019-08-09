@@ -12,6 +12,9 @@ export default class SearchHistory extends React.Component{
             history: [],
         }
     }
+    componentDidMount() {
+        this.loadData();
+    }
 
     render() {
         let title = this.renderTitle();
@@ -21,7 +24,8 @@ export default class SearchHistory extends React.Component{
                 <FlatList
                     data={this.state.history}
                     renderItem={this.renderItem}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.id.toString()}
+                    keyboardShouldPersistTaps={"always"}
                 />
             </View>
         )
@@ -36,6 +40,7 @@ export default class SearchHistory extends React.Component{
                     titleStyle={styles.titleButtonText}
                     buttonStyle={{padding: 0, margin: 0, marginRight: 18,}}
                     touchableComponent={TouchableWithoutFeedback}
+                    onPress={this.onClear}
                 />
             </View>
         )
@@ -54,12 +59,13 @@ export default class SearchHistory extends React.Component{
             <CloseIcon
                 color={"#bfbfbf"}
                 size={18}
-                onPress={() => {this.deleteItem(item.id)}}
+                onPress={() => { this.deleteItem(item.id) }}
             />
         );
         return (
             <TouchableWithoutFeedback
-                onPress={() => { this.setSearchText(item) }}
+                onPress={() => { this.onPressItem(item) }}
+                style={{height: 24}}
             >
                 <View style={styles.itemContainer}>
                     {leftIcon}
@@ -73,7 +79,8 @@ export default class SearchHistory extends React.Component{
     loadData = () => {
         LocalApi.getSearchHistory()
             .then(list => {
-                this.setState({history: list})
+                this.setState({history: list});
+                console.log(list);
             }).catch(err => {
                 console.log(err);
         })
@@ -91,42 +98,64 @@ export default class SearchHistory extends React.Component{
             })
             .catch(err => {})
     };
-    setSearchText = (item) => {
-        let {onPress} = this.props;
-        onPress(item.title);
-    };
+    onPressItem = (item) => {
+        LocalApi.saveSearchHistory(item.title)
+            .then(() => {
+                this.props.onPressItem(item.title);
 
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
+    onClear = () => {
+          LocalApi.clearSearchHistory()
+              .then(() => {
+                  this.setState({history: []});
+              })
+              .catch(err => {
+                  console.log(err);
+              })
+    };
 }
 SearchHistory.propTypes = {
-    onPress: PropTypes.func,
+    onPressItem: PropTypes.func,
 };
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        marginTop: 24,
     },
     titleContainer: {
         flexDirection: "row",
         alignItems: "center",
+        marginBottom: 10,
     },
     titleText: {
         fontWeight: "bold",
-        fontSize: 16,
+        fontSize: 15,
         color: "#2a2a2a",
         flex: 1,
-        marginLeft: 20,
+        marginLeft: 16,
     },
     titleButtonText: {
-        fontSize: 10,
+        fontSize: 13,
         color: "#7a7a7a",
     },
     itemContainer: {
         flexDirection: "row",
         alignItems: "center",
+        marginLeft: 20,
+        marginRight: 20,
+        height: 40,
+        borderBottomWidth: 0.5,
+        borderBottomColor: "#eee",
     },
     itemTitle: {
         fontSize: 14,
         color: "#3a3a3a",
         flex: 1,
+        marginLeft: 12,
     },
 
 });
