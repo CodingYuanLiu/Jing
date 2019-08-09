@@ -1,12 +1,13 @@
 <!--logs.wxml-->
 <view hidden="{{loged}}">请登录</view>
-<view hidden="{{!loged}}" class="top-tab flex-wrp flex-tab">
+<!-- <view hidden="{{!loged}}" class="top-tab flex-wrp flex-tab">
     <view class="toptab flex-item {{currentNavtab==idx ? 'active' : ''}}" wx:for="{{navTab}}" wx:for-index="idx" wx:for-item="itemName" data-idx="{{idx}}" bindtap="switchTab">
         {{itemName}}
     </view>
-</view>
-<scroll-view hidden="{{!loged}}" scroll-y="true" class="container notify withtab" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-    <view class="ctnt0" hidden="{{currentNavtab==0 ? '' : true}}">
+</view> -->
+<scroll-view hidden="{{!loged}}" scroll-y="true" class="container notify" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+    <view class="ctnt0">
+    <!-- <view class="ctnt0" hidden="{{currentNavtab==0 ? '' : true}}"> -->
         <view class="unread">
             <text>{{notify_length}} 条未读</text>
             <image src="../../images/allread.png"></image>
