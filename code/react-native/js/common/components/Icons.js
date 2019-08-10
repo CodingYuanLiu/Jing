@@ -550,6 +550,42 @@ class ClockIcon extends React.PureComponent{
             />)
     }
 }
+class CarIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material-community"}
+                name={"car-side"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class LocationIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material"}
+                name={"location-on"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -582,4 +618,6 @@ export {
     CheckIcon,
     DotIcon,
     ClockIcon,
+    CarIcon,
+    LocationIcon,
 }

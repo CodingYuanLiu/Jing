@@ -2,6 +2,7 @@ import React from "react"
 import { View, Text, StatusBar, StyleSheet } from 'react-native';
 import { Button } from 'react-native-elements';
 
+
 export default class DiscoverScreen extends React.PureComponent{
     constructor(props) {
         super(props);
@@ -10,9 +11,9 @@ export default class DiscoverScreen extends React.PureComponent{
     render() {
 
         return(
-            <View style={styles.container}>
+                <View style={styles.container}>
 
-            </View>
+                </View>
         )
     }
 }

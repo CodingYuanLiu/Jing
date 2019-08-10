@@ -172,9 +172,9 @@ class PublishPage extends React.PureComponent{
                         <MenubarItem
                             onPress={this.handleClickOriginDest}
                             iconName={"originDest"}
-                            title={propsAct.origin && propsAct.dest && propsAct.origin !== "" && propsAct.dest !== "" ?
-                                propsAct.origin + "——>" + propsAct.dest : "出发、到达"}
-                            active={Boolean(propsAct.origin && propsAct.dest && propsAct.origin !== "" && propsAct.dest !== "")}
+                            title={propsAct.origin && propsAct.dest && propsAct.origin.title !== "" && propsAct.dest.title !== "" ?
+                                propsAct.origin.title + "——>" + propsAct.dest.title : "出发、到达"}
+                            active={Boolean(propsAct.origin && propsAct.dest && propsAct.origin.title !== "" && propsAct.dest.title !== "")}
                         />
                     </View>
                 )

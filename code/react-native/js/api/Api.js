@@ -1,4 +1,3 @@
-import Dao from "./Dao"
 import axios from "axios"
 import qs from "qs"
 import Model from "./Model";

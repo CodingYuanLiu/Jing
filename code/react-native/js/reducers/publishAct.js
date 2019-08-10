@@ -16,8 +16,12 @@ const initialState = {
         tags: [],
         images: [],
         departTime: "",
-        origin: "",
-        dest: "",
+        origin: {
+            title: "",
+        },
+        dest: {
+            title: "",
+        },
     },
     orderAct: {
         type: "order",
