@@ -40,7 +40,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		Description: req.Description,
 		Tag:         req.Tag,
 		MaxMember:   req.MaxMember,
-		Status :     dao.GetOverdueStatus(req.EndTime,dao.GetMaxMemberStatus(req.ActId,status)),
+		Status :     dao.GetOverdueStatus(req.EndTime,status),
 	}
 
 	for i:=0;i<len(mapBasicInfo["images"].([]interface{}));i++{

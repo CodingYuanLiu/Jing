@@ -1015,7 +1015,14 @@ Already applied for the activity or is the publisher - 400
     "status": 400
 }
 ```
-
+Can not find the activity - 404
+```json
+{
+    "errcode": 301,
+    "message": "Can not find the activity",
+    "status": 404
+}
+```
 ## Quit Activity and Quit Ratio
 ### Quit an Activity
 #### Description

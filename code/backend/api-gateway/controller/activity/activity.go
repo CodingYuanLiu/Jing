@@ -214,7 +214,7 @@ func (activityController *Controller) Status(c *gin.Context) {
 	})
 }
 
-func (activityController *Controller) Comment(c *gin.Context) {
+func (activityController *Controller) 	Comment(c *gin.Context) {
 	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
@@ -228,7 +228,17 @@ func (activityController *Controller) Comment(c *gin.Context) {
 		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
 		return
 	}
-	resp,err := activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, int(jsonForm["receiver_id"].(float64)),
+	receiverId := int(jsonForm["receiver_id"].(float64))
+	if receiverId != -1{
+		_,err = dao.FindUserById(receiverId)
+		if err != nil{
+			jing.SendError(c,jing.NewError(301,404,"Can not find the receiver in database"))
+			return
+		}
+	}
+
+
+	resp,err := activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, receiverId,
 		jsonForm["content"].(string), jsonForm["time"].(string))
 	if err != nil {
 		jing.SendError(c, err)
@@ -385,7 +395,7 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		return
 	}
 
-	if int(jsonForm["max_member"].(float64))<1 {
+	if int(jsonForm["max_member"].(float64))<=1 {
 		jing.SendError(c,jing.NewError(201,400,"Max member of the activity must be greater than 1"))
 	}
 
@@ -408,7 +418,11 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 		return
 	}
 	var act map[string] interface{}
-	_ = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	err = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	if err != nil{
+		jing.SendError(c,jing.NewError(301,404,"Can not find the activity"))
+		return
+	}
 	basicInfo := act["basicinfo"].(map [string]interface{})
 	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),int32(basicInfo["status"].(int)))
 	if status == 1{
@@ -530,14 +544,14 @@ func (activityController *Controller) GetJoinApplication(c *gin.Context){
 
 		applicant,err := dao.FindUserById(applicantId)
 		if err != nil{
-			jing.SendError(c,jing.NewError(300,400,"Query applicant infomation error"))
-			return
+			log.Println("Can not find the applicant of the application")
+			continue
 		}
 
 		resp, err := activityClient.QueryActivity(actId)
 		if err != nil {
-			jing.SendError(c,jing.NewError(300,400,"Find applied activity error"))
-			return
+			log.Println("Can not find the activity of the application")
+			continue
 		}
 		appJSONs = append(appJSONs,myjson.JSON{
 			"applicant_id":applicantId,
@@ -571,6 +585,11 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
 		return
 	}
+
+	if int(jsonForm["max_member"].(float64))<=1 {
+		jing.SendError(c,jing.NewError(201,400,"Max member of the activity must be greater than 1"))
+	}
+
 	acts := dao.GetManagingActivity(userId)
 	flag := false
 	for _, v := range acts {
