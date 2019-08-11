@@ -1,0 +1,283 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">jing/app/feedback/handler/comment.go (85.7%)</option>
+				
+				<option value="file1">jing/app/feedback/handler/delete.go (77.8%)</option>
+				
+				<option value="file2">jing/app/feedback/handler/publish.go (80.0%)</option>
+				
+				<option value="file3">jing/app/feedback/handler/query.go (92.3%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package handler
+
+import (
+        "context"
+        "gopkg.in/mgo.v2/bson"
+        "jing/app/dao"
+        feedback "jing/app/feedback/proto"
+        "jing/app/jing"
+)
+
+func (feedbackSrv *FeedbackSrv) Comment(ctx context.Context,req *feedback.CmtReq,resp *feedback.CmtResp) error  <span class="cov8" title="1">{
+        objectId := bson.ObjectIdHex(req.ObjectId)
+        comment := dao.FeedbackComment{
+                CommentatorId:        req.CommentatorId,
+                CommentDesc:        req.CommentDesc,
+                Time:                        req.Time,
+        }
+        err := dao.FeedbackCollection.Update(
+                bson.M{"_id":objectId},
+                bson.M{"$push":bson.M{"fbcomments":comment}})
+        if err != nil</span><span class="cov0" title="0">{
+                return jing.NewError(300,400,"update comment error")
+        }</span>
+        <span class="cov8" title="1">resp.Description = "Comment succeed"
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "gopkg.in/mgo.v2/bson"
+        "jing/app/dao"
+        feedback "jing/app/feedback/proto"
+        "jing/app/jing"
+        "log"
+        "strconv"
+)
+
+func (feedbackSrv *FeedbackSrv) Delete(ctx context.Context,req *feedback.DltReq,resp *feedback.DltResp) error  <span class="cov8" title="1">{
+        objectId := bson.ObjectIdHex(req.ObjectId)
+        var userFeedback dao.Feedback
+        err := dao.FeedbackCollection.Find(bson.M{"_id":objectId}).One(&amp;userFeedback)
+        if err != nil</span><span class="cov8" title="1">{
+                log.Println(err)
+                return jing.NewError(301,404,"cannot find the feedback when trying to delete it from mongoDB")
+        }</span>
+        <span class="cov8" title="1">if req.UserId != userFeedback.UserId</span><span class="cov8" title="1">{
+                log.Printf("request userid is %d but feedback userid is %d\n",req.UserId,userFeedback.UserId)
+                return jing.NewError(104,403,"do not have the authority to delete the feedback")
+        }</span>
+
+        <span class="cov8" title="1">imagesLen := len(userFeedback.FbImages)
+        var err2 error
+        for i:=0;i&lt;imagesLen;i++</span><span class="cov8" title="1">{
+                name := fmt.Sprintf("feedbackImage/%s/img%s",objectId.Hex(),strconv.Itoa(i))
+                err = dao.DeleteImgWithName(name)
+                if err != nil</span><span class="cov0" title="0">{
+                        log.Printf("Catch delete error from dao,cannot delete pictures for feedback")
+                        err2 = err //Save error result
+                        continue</span>
+                }
+        }
+        <span class="cov8" title="1">if err2 != nil</span><span class="cov0" title="0">{
+                return jing.NewError(300,400,"cannot delete feedback pictures from qiniu")
+        }</span>
+        <span class="cov8" title="1">log.Printf("Deleted pictures for feedback %s\n",objectId.Hex())
+
+        err = dao.FeedbackCollection.Remove(bson.M{"_id":objectId})
+
+        if err != nil</span><span class="cov0" title="0">{
+                log.Println(err)
+                return jing.NewError(300,400,"delete feedback from mongoDB err")
+        }</span>
+        <span class="cov8" title="1">resp.Description = "Delete feedback succeed"
+        return nil</span>
+}
+
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package handler
+
+import (
+        "context"
+        "fmt"
+        "gopkg.in/mgo.v2/bson"
+        "jing/app/dao"
+        feedback "jing/app/feedback/proto"
+        "jing/app/jing"
+        "log"
+        "strconv"
+)
+
+func (feedbackSrv *FeedbackSrv) Publish(ctx context.Context,req *feedback.PubReq,resp *feedback.PubResp) error  <span class="cov8" title="1">{
+        objectId := bson.NewObjectId()
+        userFeedback := dao.Feedback{
+                Id:objectId,
+                UserId:req.UserId,
+                ActId:req.ActId,
+                ReceiverId:req.ReceiverId,
+                Communication:req.Communication,
+                CommunicationDesc:req.CommunicationDesc,
+                Punctuality:req.Punctuality,
+                PunctualityDesc:req.PunctualityDesc,
+                Honesty:req.Honesty,
+                HonestyDesc:req.HonestyDesc,
+                FbComments:[]dao.FeedbackComment{},
+                Time: req.Time,
+        }
+        for i,image := range req.FbImages</span><span class="cov8" title="1">{
+                name := fmt.Sprintf("feedbackImage/%s/img%s",objectId.Hex(),strconv.Itoa(i))
+                imageUrl,err2 := dao.UploadImgWithName(image,name)
+                if err2 != nil</span><span class="cov0" title="0">{
+                        return err2
+                }</span>
+                <span class="cov8" title="1">userFeedback.FbImages = append(userFeedback.FbImages,imageUrl)</span>
+        }
+        <span class="cov8" title="1">err := dao.FeedbackCollection.Insert(userFeedback)
+        if err!=nil</span><span class="cov0" title="0">{
+                log.Println(err)
+                return jing.NewError(300,400,"fail to insert the feedback into mongoDB")
+        }</span>
+        <span class="cov8" title="1">resp.ObjectId = objectId.Hex()
+        resp.Description = "publish feedback succeed."
+        return nil</span>
+}</pre>
+		
+		<pre class="file" id="file3" style="display: none">package handler
+
+import (
+        "context"
+        "gopkg.in/mgo.v2"
+        "gopkg.in/mgo.v2/bson"
+        "jing/app/dao"
+        feedback "jing/app/feedback/proto"
+        "jing/app/jing"
+)
+
+func (feedbackSrv *FeedbackSrv) Query(ctx context.Context,req *feedback.QryReq,resp *feedback.QryResp) error  <span class="cov8" title="1">{
+        receiverId := req.ReceiverId
+        var userFeedbacks []dao.Feedback
+        err := dao.FeedbackCollection.Find(bson.M{"receiverid":receiverId}).All(&amp;userFeedbacks)
+        if err == mgo.ErrNotFound || len(userFeedbacks) == 0</span><span class="cov8" title="1">{
+                return jing.NewError(301,404,"cannot find the feedback in mongoDB")
+        }</span> else<span class="cov8" title="1"> if err!=nil</span><span class="cov0" title="0">{
+                return jing.NewError(300,400,"find feedback in mongoDB error")
+        }</span>
+        <span class="cov8" title="1">for _,userFeedback := range userFeedbacks</span><span class="cov8" title="1">{
+                respFeedback := &amp;feedback.Feedback{
+                        UserId:                                userFeedback.UserId,
+                        Id:                                        userFeedback.Id.Hex(),
+                        ActId:                                userFeedback.ActId,
+                        ReceiverId:                        userFeedback.ReceiverId,
+                        Communication:                userFeedback.Communication,
+                        CommunicationDesc:        userFeedback.CommunicationDesc,
+                        Punctuality:                userFeedback.Punctuality,
+                        PunctualityDesc:        userFeedback.PunctualityDesc,
+                        Honesty:                        userFeedback.Honesty,
+                        HonestyDesc:                userFeedback.HonestyDesc,
+                        FbImages:                        userFeedback.FbImages,
+                        Time:                                userFeedback.Time,
+                }
+                for _,comment := range userFeedback.FbComments</span><span class="cov8" title="1">{
+                        respFeedback.FbComment = append(respFeedback.FbComment,&amp;feedback.FeedbackComment{
+                                CommentatorId:        comment.CommentatorId,
+                                CommentDesc:        comment.CommentDesc,
+                                Time:                        comment.Time,
+                        })
+                }</span>
+                <span class="cov8" title="1">resp.Feedbacks = append(resp.Feedbacks,respFeedback)</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

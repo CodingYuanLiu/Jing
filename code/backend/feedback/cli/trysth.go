@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/go-redis/redis"
 	"jing/app/dao"
+	"log"
 )
 
 /*
@@ -53,67 +56,77 @@ type testRedis struct{
 
 func main(){
 	/*
-	conn,err := redis.Dial("tcp","localhost:6379")
+}
+	client := redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs:     []string{"redis.database:6379"},
+		//Password: "", // no password set
+		//DB:       0,  // use default DB
+	})*/
+	client := redis.NewClient(&redis.Options{
+			Addr:     "localhost:6379",
+			Password: "", // no password set
+			DB:       0,  // use default DB
+		})
+	pong, err := client.Ping().Result()
+	fmt.Println(pong, err)
+	rawData := []int{1,2,3}
+	data,_ := json.Marshal(rawData)
+	err = client.Set("key", data, 3000000).Err()
 	if err != nil{
 		log.Println(err)
-		return
 	}
-
-
-	n, err := conn.Do("SET","key",actIds)
+	raw,err := client.Get("key").Result()
 	if err != nil{
-		log.Fatal(err)
+		log.Println(err)
 	}
+	fmt.Println(raw)
 
-	fmt.Print("set value:")
-	fmt.Println(n)
+	basicInfo := dao.BasicInfo{
+		Title:"test Title",
+		Type:"Taxi",
+		CreateTime:"2019-08-12 10:22:23",
+		EndTime:"2019-08-12 10:24:23",
+		Description:"Test Description",
+		MaxMember: 3,
+		Status: 0,
+		Tag:[]string{},
+	}
+	byteOrigin := []byte("{\"origin\":123}")
+	byteDestination := []byte("{\"destination\":456}")
+	var origins map[string] interface{}
+	var destinations map[string] interface{}
+	_ = json.Unmarshal(byteOrigin, &origins)
+	_ = json.Unmarshal(byteDestination, &destinations)
 
-
-	raw, err := redis.String(conn.Do("GET", "key"))
+	objectAct := dao.TaxiAct{
+		ActId:10086,
+		BasicInfo:basicInfo,
+		TaxiInfo:dao.TaxiInfo{
+			DepartTime:  "2019-08-12 10:26:23",
+			Origin:      origins,
+			Destination: destinations,
+		},
+	}
+	byteAct,err := json.Marshal(objectAct)
 	if err != nil{
-		log.Fatal(err)
+		log.Println(err)
 	}
-	b := []byte(raw)
-	var actIds1 []int32
 
-	_ = json.Unmarshal(b,actIds1)
-	fmt.Println(actIds1)
-	fmt.Println(actIds1[1])
-
-
-	_,err = conn.Do("expire","key",10)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	time.Sleep(5*time.Second)
-	n,err = conn.Do("ttl","key")
+	err = client.Set("key", byteAct, 3000000).Err()
 	if err != nil{
-		log.Fatal(err)
+		log.Println(err)
 	}
-	fmt.Println(n)
 
-	time.Sleep(6 * time.Second)
-	n,err = conn.Do("ttl","key100")
+	stringAct,err := client.Get("key").Result()
 	if err != nil{
-		log.Fatal(err)
+		log.Println(err)
 	}
-	fmt.Println(n)
-	n,err = conn.Do("get","key100")
-	if err == redis.ErrNil{
-		log.Println("NILNILNIL!!!")
-	} else if err != nil{
-		log.Fatal(err)
+	fmt.Println(stringAct)
+	var result map[string]interface{}
+	err = json.Unmarshal([]byte(stringAct),&result)
+	if err != nil{
+		log.Println(err)
 	}
-	if n != nil{
-		fmt.Println("not nil")
-	}else{
-		fmt.Println("nil")
-	}
-	*/
-	var actIds = []int32{21,22,23}
-
-	dao.SetRecommendationResultToRedis(1,actIds)
-	acts := dao.GetRecommendationResultFromRedis(1)
-	fmt.Println(acts[1])
+	fmt.Println(result)
+	fmt.Println(result["BasicInfo"].(map[string]interface{})["Type"])
 }

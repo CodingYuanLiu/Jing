@@ -1,3 +1,4 @@
+
 package dao
 
 import (
@@ -55,12 +56,13 @@ func GetRecommendationResultFromRedis(userId int32) []int32 {
 }
 
 func init() {
-	var err error
+	//var err error
 	//conn, err = redis.Dial("tcp", "redis.database:6379")
 	//if err != nil {
 	//	log.Println("Connect to redis failed")
 	//	return
 	//}
+	/*
 	client = redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs:     []string{"redis.database:6379"},
 		//Password: "", // no password set
@@ -68,4 +70,6 @@ func init() {
 	})
 	pong, err := client.Ping().Result()
 	fmt.Println(pong, err)
+
+	 */
 }

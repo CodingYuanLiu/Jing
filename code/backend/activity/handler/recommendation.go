@@ -23,13 +23,14 @@ func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.Reco
 	*/
 
 	userId := req.UserId
+	/*
 	cachedResult := dao.GetRecommendationResultFromRedis(userId)
 	if cachedResult != nil && len(cachedResult) != 0{
 		log.Println("Get result from redis")
 		resp.ActId = cachedResult
 		return nil
 	}
-
+	*/
 	userBehavior := dao.UserBehavior{}
 	err := dao.BehaviorCollection.Find(bson.M{"userid":userId}).One(&userBehavior)
 	if err == mgo.ErrNotFound{
@@ -87,7 +88,7 @@ func (actSrv *ActivitySrv) Recommendation(ctx context.Context,req *activity.Reco
 	}
 
 	resp.ActId = acts
-	dao.SetRecommendationResultToRedis(userId,acts)
+	//dao.SetRecommendationResultToRedis(userId,acts)
 	return nil
 }
 

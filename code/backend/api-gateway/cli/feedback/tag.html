@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">jing/app/api-gateway/cli/feedback/feedback.go (8.9%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package feedback
+
+import (
+        "context"
+        "github.com/micro/go-micro/client"
+        //"github.com/micro/go-micro/client/grpc"
+        //"github.com/micro/go-plugins/registry/kubernetes"
+        "gopkg.in/mgo.v2/bson"
+        "jing/app/dao"
+        feedbackProto "jing/app/feedback/proto"
+        "jing/app/jing"
+        "jing/app/json"
+        //"os"
+)
+
+var (
+        Client feedbackProto.FeedbackSrvService
+)
+
+func init() <span class="cov8" title="1">{
+        /*os.Setenv("MICRO_REGISTRY", "kubernetes")
+        client.DefaultClient = grpc.NewClient(
+                client.Registry(kubernetes.NewRegistry()),
+        )*/
+        Client = feedbackProto.NewFeedbackSrvService("feedback", client.DefaultClient)
+}</span>
+
+func PublishFeedback(userId int32,jsonForm json.JSON) (*feedbackProto.PubResp,error) <span class="cov0" title="0">{
+        var images []string
+        for _,image := range jsonForm["fb_images"].([]interface {})</span><span class="cov0" title="0">{
+                images = append(images,image.(string))
+        }</span>
+        <span class="cov0" title="0">pubReq := &amp;feedbackProto.PubReq{
+                UserId:                                userId,
+                ReceiverId:                 int32(jsonForm["receiver_id"].(float64)),
+                ActId:                                 int32(jsonForm["act_id"].(float64)),
+                Communication:                 int32(jsonForm["communication"].(float64)),
+                CommunicationDesc:  jsonForm["communication_desc"].(string),
+                Punctuality:                int32(jsonForm["punctuality"].(float64)),
+                PunctualityDesc:        jsonForm["punctuality_desc"].(string),
+                Honesty:                        int32(jsonForm["honesty"].(float64)),
+                HonestyDesc:                jsonForm["honesty_desc"].(string),
+                FbImages:                        images,
+                Time:                                jsonForm["time"].(string),
+        }
+        resp,err := Client.Publish(context.TODO(),pubReq)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil,err // The resp now is nil
+        }</span>
+        <span class="cov0" title="0">return resp,nil</span>
+}
+
+func QueryFeedback(receiverId int32) (*feedbackProto.QryResp,error)<span class="cov8" title="1">{
+        resp,err := Client.Query(context.TODO(),&amp;feedbackProto.QryReq{
+                ReceiverId:receiverId,
+        })
+        if err != nil</span><span class="cov8" title="1">{
+                return nil,err
+        }</span>
+        <span class="cov0" title="0">return resp,nil</span>
+}
+
+func DeleteFeedback(userId int32, objectId string) (*feedbackProto.DltResp,error)<span class="cov0" title="0">{
+        resp,err := Client.Delete(context.TODO(),&amp;feedbackProto.DltReq{
+                UserId:userId,
+                ObjectId: objectId,
+        })
+        if err != nil</span><span class="cov0" title="0">{
+                return nil,err
+        }</span>else<span class="cov0" title="0">{
+                return resp,nil
+        }</span>
+}
+
+func CommentFeedback(commentatorId int32, objectId string, commentDesc string, time string) (*feedbackProto.CmtResp,error)<span class="cov0" title="0">{
+        resp,err := Client.Comment(context.TODO(),&amp;feedbackProto.CmtReq{
+                CommentatorId: commentatorId,
+                ObjectId: objectId,
+                CommentDesc: commentDesc,
+                Time: time,
+        })
+        if err != nil</span><span class="cov0" title="0">{
+                return nil,err
+        }</span> else<span class="cov0" title="0">{
+                return resp,nil
+        }</span>
+}
+
+func CheckValidFeedbackToAct(userId int,receiverId int,actId int) error<span class="cov0" title="0">{
+        if !dao.HasUser(receiverId)</span><span class="cov0" title="0">{
+                return jing.NewError(201,400,"The receiver does not exist")
+        }</span>
+
+        <span class="cov0" title="0">if receiverId == userId</span><span class="cov0" title="0">{
+                return jing.NewError(201,400,"Can not feedback to yourself")
+        }</span>
+
+        <span class="cov0" title="0">memberIds,err := dao.GetActivityMembers(actId)
+        if err != nil</span><span class="cov0" title="0">{
+                return jing.NewError(201,400,"Activity does not exist in mysql")
+        }</span>
+        <span class="cov0" title="0">if !isInMembers(userId,memberIds)</span><span class="cov0" title="0">{
+                return jing.NewError(105,403,"The user has no authority to make that feedback")
+        }</span>
+        <span class="cov0" title="0">if !isInMembers(receiverId,memberIds)</span><span class="cov0" title="0">{
+                return jing.NewError(201,400,"The receiver is not the member of the activity")
+        }</span>
+
+        <span class="cov0" title="0">query := []bson.M{
+                {"receiverid": int32(receiverId)},
+                {"userid": int32(userId)},
+                {"actid": int32(actId)},
+        }
+        count,err := dao.FeedbackCollection.Find(bson.M{"$and":query}).Count()
+        if err != nil</span><span class="cov0" title="0">{
+                return jing.NewError(300,400,"Can not find and check repetitive feedback in mongo")
+        }</span>
+        <span class="cov0" title="0">if count &gt; 0 </span><span class="cov0" title="0">{
+                return jing.NewError(1,403,"You have already given the feedback")
+        }</span>
+
+        <span class="cov0" title="0">return nil</span>
+}
+
+
+func isInMembers(user int,members []int) bool<span class="cov0" title="0">{
+        isIn := false
+        for _,member := range members</span><span class="cov0" title="0">{
+                if user == member</span><span class="cov0" title="0">{
+                        isIn = true
+                        return isIn
+                }</span>
+        }
+        <span class="cov0" title="0">return false</span>
+}</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
