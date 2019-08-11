@@ -339,6 +339,18 @@ export default class Api {
                 })
         })
     }
+    static getActParticipants(id) {
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/public/act/getactivitymember?act_id=${id}`)
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    }
+
     static getUserActStatus = (actId, jwt) => {
         return new Promise((resolve, reject) => {
             axios.get(`/api/user/act/status?act_id=${actId}`, {
@@ -405,6 +417,54 @@ export default class Api {
         })
     }
 
+    /**
+     * api for feedback
+     */
+    static publishFeedback = (data, jwt) => {
+        return new Promise((resolve, reject) => {
+            axios.post("api/user/feedback/publish", data, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                }
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject)
+                })
+        })
+    };
+
+    static getFeedback = (id) => {
+        return new Promise((resolve, reject) => {
+            axios.get(`api/public/feedback/query?receiver_id=${id}`)
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        });
+    };
+
+    static deleteFeedback = (id, jwt) => {
+        return new Promise((resolve, reject) => {
+             axios.post('api/user/feedback/delete', {
+                 object_id: id,
+             }, {
+                 headers: {
+                     'Authorization': `Bearer ${jwt}`
+                 }
+             })
+                 .then(res => {
+                     resolve(res.data);
+                 })
+                 .catch(err => {
+                     Reject(err, reject);
+                 })
+        });
+    };
     /**
      *
      * @param from

@@ -17,3 +17,14 @@ export default {
         "安泰经济与管理学院", "电子信息与电气工程学院", "机械动力工程学院", "船舶建设与海洋工程学院"
     ],
 }
+const ACT_FULL = 1;
+const ACT_RUNNING = 0;
+const ACT_FORBIDDEN = -1;
+const ACT_EXPIRED = 2;
+
+export {
+    ACT_FULL,
+    ACT_EXPIRED,
+    ACT_FORBIDDEN,
+    ACT_RUNNING,
+}

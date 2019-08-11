@@ -78,7 +78,59 @@ export default class Model {
             signature: data.signature,
         }
     }
-
+    static transferFeedbackItem = (data) => {
+        return {
+            act: {
+                id: data.act_id,
+                title: data.act_title,
+            },
+            feedback: {
+                id: data.feedback_id,
+                communication: {
+                    data: data.communication,
+                    desc: data.communication_desc,
+                },
+                honesty: {
+                    data: data.honesty,
+                    desc: data.honesty_desc,
+                },
+                punctuality: {
+                    data: data.punctuality,
+                    desc: data.punctuality_desc,
+                },
+                images: data.fb_images ? data.fb_images : [],
+                comments: data.fb_comments ? data.fb_comments : [],
+                createTime: data.time,
+            },
+            user: {
+                id: data.user_id,
+                avatar: data.user_avatar,
+                nickname: data.user_nickname,
+            }
+        }
+    };
+    static transferFeedbackList = (list) => {
+        if (!list) return [];
+        let res = new Array();
+        for (let item of list) {
+            res.push(this.transferFeedbackItem(item))
+        }
+        return res;
+    };
+    static buildFeedbackItem = (data) => {
+        return {
+            act_id: data.actId,
+            receiver_id: data.receiverId,
+            communication: data.communication.data,
+            communication_desc: data.communication.desc,
+            punctuality: data.punctuality.data,
+            punctuality_desc: data.punctuality.desc,
+            honesty: data.honesty.data,
+            honesty_desc: data.honesty.desc,
+            time: Util.dateTimeToString(new Date()),
+            fb_images: data.images
+        }
+    };
     // transfer from camel to snake,
     static transferActivityFromCamelToSnake(publishAct) {
         let images = new Array();

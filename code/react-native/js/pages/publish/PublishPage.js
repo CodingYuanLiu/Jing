@@ -380,7 +380,6 @@ class PublishPage extends React.PureComponent{
                 console.log(newImages);
             }
         })
-
     };
     saveByType = (data, type) => {
         switch(type) {

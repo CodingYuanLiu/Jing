@@ -9,6 +9,10 @@ class MyJoin extends React.Component{
         super(props);
     }
 
+    componentDidMount() {
+        this.loadData();
+    }
+
     render() {
         let joinAct = this.props.myAct.joinAct;
         if (!joinAct) {
@@ -41,12 +45,7 @@ class MyJoin extends React.Component{
     renderItem = ({item}) => {
         return (
             <MyJoinItem
-                sponsor={item.sponsor}
-                title={item.title}
-                description={item.description}
-                createTime={item.createTime}
-                status={item.status}
-                endTime={item.endTime}
+                act={item}
                 applicants={[]}
             />
         )

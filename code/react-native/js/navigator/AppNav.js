@@ -21,6 +21,7 @@ import Follower from "../pages/me/Follower";
 import RecentScan from "../pages/me/RecentScan";
 import MyAct from "../pages/me/MyAct";
 import PublishDraft from "../pages/publish/PublishDraft";
+import Feedback from "../pages/me/Feedback/Feedback";
 
 const StartNav = createStackNavigator(
     {
@@ -92,6 +93,9 @@ const MainNav = createStackNavigator(
         },
         MyAct: {
             screen: MyAct,
+        },
+        Feedback: {
+            screen: Feedback,
         },
     },
     {

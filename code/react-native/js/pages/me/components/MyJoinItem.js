@@ -6,6 +6,8 @@ import Theme from "../../../common/constant/Theme";
 import {PropTypes} from "prop-types";
 import UserAvatar from "../../../common/components/UserAvatar";
 import UserNickname from "../../../common/components/UserNickname";
+import {ACT_EXPIRED, ACT_FORBIDDEN, ACT_FULL, ACT_RUNNING} from "../../../common/constant/Constant";
+import NavigationUtil from "../../../navigator/NavUtil";
 
 export default class JoinItem extends React.Component{
     constructor(props) {
@@ -14,7 +16,8 @@ export default class JoinItem extends React.Component{
 
 
     render() {
-        let {title, sponsor, description, applicants, createTime, endTime, status} = this.props;
+        let {title, sponsor, description, createTime, endTime, status} = this.props.act;
+        let applicants = this.props.applicants;
         let titleComponent = this.renderTitle(title);
         let sponsorComponent = this.renderSponsor(sponsor, createTime);
         let descriptionComponent = this.renderDesc(description);
@@ -31,25 +34,26 @@ export default class JoinItem extends React.Component{
         );
     };
     renderTitle = (title) => {
+        let toolTip = this.renderTooltip();
         return (
             <View style={styles.titleContainer}>
-                <Text
-                    style={styles.boldText}
-                >
+                <Text style={[styles.boldText, {flex: 1,}]}>
                     {title}
                 </Text>
+                {toolTip}
             </View>
         )
     };
-    renderSponsor = (sponsor, createTime) => {
+    renderTooltip = () => {
         let rightIconPopover = this.renderRightIconPopover();
-        let rightIcon = (
+        return (
             <Tooltip
                 popover={rightIconPopover}
-                width={150}
-                height={100}
+                width={120}
+                height={30}
                 backgroundColor={"#eee"}
                 withOverlay={false}
+                withPointer={false}
                 containerStyle={styles.popoverContainer}
             >
                 <EllipsisIcon
@@ -58,6 +62,38 @@ export default class JoinItem extends React.Component{
                 />
             </Tooltip>
         );
+    };
+    renderRightIconPopover = () => {
+        let {act} = this.props;
+        let {status} = act;
+        return (
+            <View style={{width: "100%",}}>
+                {
+                    status === ACT_RUNNING ?
+                        <Button
+                            type={"clear"}
+                            title={"退出"}
+                            titleStyle={styles.popoverButtonTitle}
+                            buttonStyle={styles.popoverButton}
+                            containerStyle={{padding: 0, margin: 0,}}
+                            onPress={() => {alert(`id: ${act.title}`)}}
+                        /> : null
+                }
+                {
+                    status === ACT_EXPIRED ?
+                    <Button
+                        type={"clear"}
+                        title={"评价"}
+                        titleStyle={styles.popoverButtonTitle}
+                        buttonStyle={styles.popoverButton}
+                        containerStyle={{padding: 0, margin: 0,}}
+                        onPress={() => {this.toFeedback(act)}}
+                    /> : null
+                }
+            </View>
+        )
+    };
+    renderSponsor = (sponsor, createTime) => {
         let avatar = (
             <UserAvatar
                 id={sponsor.id}
@@ -77,21 +113,8 @@ export default class JoinItem extends React.Component{
             <ListItem
                 leftAvatar={avatar}
                 title={titleComponent}
-                rightElement={rightIcon}
                 containerStyle={{padding:0, margin:0}}
             />
-        )
-    };
-    renderRightIconPopover = () => {
-        return (
-            <View style={{flex: 1,}}>
-                <Button
-                    title={"退出"}
-                    titleStyle={styles.popoverButtonTitle}
-                    buttonStyle={styles.popoverButton}
-                    onPress={() => {alert("你按到了popover")}}
-                />
-            </View>
         )
     };
     renderDesc = (description) => {
@@ -131,19 +154,19 @@ export default class JoinItem extends React.Component{
     renderApplicantLeftText = (status) => {
         let leftText, leftTextColor;
         switch(status) {
-            case 0:
+            case ACT_RUNNING:
                 leftText = "正在报名";
                 leftTextColor = Theme.SUCCESS;
                 break;
-            case 1:
+            case ACT_FULL:
                 leftText = "人数已满";
                 leftTextColor = Theme.PRIMARY_BLUE;
                 break;
-            case 2:
+            case ACT_EXPIRED:
                 leftText = "活动结束";
                 leftTextColor = Theme.WARNING;
                 break;
-            case -1:
+            case ACT_FORBIDDEN:
                 leftText = "违规封禁";
                 leftTextColor = Theme.ERROR;
                 break;
@@ -165,16 +188,18 @@ export default class JoinItem extends React.Component{
             </View>
         );
     };
+
+    onQuit = () => {
+        //...
+    };
+    toFeedback = (act) => {
+        NavigationUtil.toPage({act: act}, "Feedback")
+    }
 }
 
 JoinItem.propTypes = {
-    title: PropTypes.string,
-    sponsor: PropTypes.object,
-    description: PropTypes.string,
+    act: PropTypes.object,
     applicants: PropTypes.array,
-    createTime: PropTypes.string,
-    endTime: PropTypes.string,
-    status: PropTypes.number,
 };
 
 const styles = StyleSheet.create({
@@ -189,7 +214,23 @@ const styles = StyleSheet.create({
     titleContainer: {
         marginTop: 10,
         marginBottom: 4,
-        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "row",
+    },
+    popoverContainer: {
+        elevation: 4,
+        backgroundColor: "#f7f7f7",
+        borderRadius: 2,
+        position: "absolute",
+    },
+    popoverButtonTitle: {
+        fontSize: 20,
+        color: "#8a8a8a",
+    },
+    popoverButton: {
+        padding: 0,
+        margin: 0,
+        backgroundColor: "red",
     },
     boldText: {
         fontWeight: "bold",
@@ -204,19 +245,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "800",
         color: "#8a8a8a",
-    },
-    popoverContainer: {
-        elevation: 4,
-        backgroundColor: "#f7f7f7",
-        borderRadius: 2,
-    },
-    popoverButtonTitle: {
-        fontSize: 20,
-        color: "#8a8a8a",
-    },
-    popoverButton: {
-        backgroundColor: "transparent",
-        width: "100%",
     },
     applicantContainer: {
         flexDirection: "row",

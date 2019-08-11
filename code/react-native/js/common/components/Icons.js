@@ -586,6 +586,43 @@ class LocationIcon extends React.PureComponent{
             />)
     }
 }
+
+class ChevronDownIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"entypo"}
+                name={"chevron-down"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class ImageIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material-community"}
+                name={"image-plus"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -620,4 +657,6 @@ export {
     ClockIcon,
     CarIcon,
     LocationIcon,
+    ChevronDownIcon,
+    ImageIcon,
 }
