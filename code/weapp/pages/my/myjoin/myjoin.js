@@ -1,5 +1,6 @@
 // pages/my/myjoin/myjoin.js
 let app = getApp();
+const { $Toast } = require('../../../dist/base/index');
 Page({
 
     /**
@@ -13,20 +14,26 @@ Page({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad: function (options) {
+    onLoad: function(options) {
+        // console.log(1)
         let that = this;
+        // console.log(1)
         wx.request({
             url: 'https://jing855.cn/api/user/act/myact',
             method: 'GET',
             header: {
                 "Authorization": "Bearer " + app.globalData.jwt,
             },
-            success: function (res) {
+            success: function(res) {
                 if (res.data.acts === null) {
-                    that.setData({no_content: true});
+                    that.setData({
+                        no_content: true
+                    });
                 }
                 console.log(res);
-                that.setData({ acts: res.data.acts })
+                that.setData({
+                    acts: res.data.acts
+                })
             },
             fail: function(res) {
                 console.log(res)
@@ -34,55 +41,7 @@ Page({
         })
     },
 
-    /**
-     * 生命周期函数--监听页面初次渲染完成
-     */
-    onReady: function () {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面显示
-     */
-    onShow: function () {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面隐藏
-     */
-    onHide: function () {
-
-    },
-
-    /**
-     * 生命周期函数--监听页面卸载
-     */
-    onUnload: function () {
-
-    },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh: function () {
-
-    },
-
-    /**
-     * 页面上拉触底事件的处理函数
-     */
-    onReachBottom: function () {
-
-    },
-
-    /**
-     * 用户点击右上角分享
-     */
-    onShareAppMessage: function () {
-
-    },
-    bindQueTap: function (event) {
+    bindQueTap: function(event) {
         let actid = event.currentTarget.dataset.id
         console.log(actid);
         console.log(23);
@@ -93,7 +52,53 @@ Page({
     handleFeedback: function(e) {
         let id = e.currentTarget.dataset.id
         wx.navigateTo({
-            url: '/pages/feedback/feedbackact/feedbackact?id='+id,
+            url: '/pages/feedback/feedbackact/feedbackact?id=' + id,
         })
-    }
+    },
+    handleQuit: function(e) {
+        this.setData({
+            visible: true,
+            quit_id: e.currentTarget.dataset.id
+        });
+    },
+    handleConfirmQuit: function(e) {
+        let id = this.data.quit_id
+        let that = this;
+        wx.request({
+            url: 'https://jing855.cn/api/user/act/quit?act_id=' + id,
+            method: 'POST',
+            header: {
+                "Authorization": "Bearer " + app.globalData.jwt,
+            },
+            success: function(res) {
+                console.log(res);
+                $Toast({
+                    content: '成功',
+                    type: 'success'
+                });
+                that.onLoad()
+            },
+            fail: function(res) {
+                console.log(res)
+                $Toast({
+                    content: '失败',
+                    type: 'warning'
+                });
+            }
+        })
+        that.setData({
+            visible: false
+        })
+    },
+    handleCancelQuit: function() {
+        this.setData({
+            visible: false
+        })
+    },
+    handleSuccess() {
+        $Toast({
+            content: '成功的提示',
+            type: 'success'
+        });
+    },
 })

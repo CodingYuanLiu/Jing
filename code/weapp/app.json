@@ -22,7 +22,8 @@
         "pages/feedback/feedbackact/feedbackact",
         "pages/follow/follow",
         "pages/my/history/history",
-        "pages/feedback/feedbackuser/feedbackuser"
+        "pages/feedback/feedbackuser/feedbackuser",
+        "pages/answer/participants/participants"
     ],
     "permission": {
         "scope.userLocation": {

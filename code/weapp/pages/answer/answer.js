@@ -483,5 +483,10 @@ Page({
                 }
             })
         }
+    },
+    handleToParticipants: function() {
+        wx.navigateTo({
+            url: '/pages/answer/participants/participants?act_id='+this.data.act_id,
+        })
     }
 })
