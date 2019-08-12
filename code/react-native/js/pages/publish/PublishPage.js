@@ -58,7 +58,7 @@ class PublishPage extends React.PureComponent{
                             images.map((img, i) => {
                                 return (
                                     <Image
-                                        key={i}
+                                        key={i.toString()}
                                         containerStyle={styles.imageContainer}
                                         style={styles.image}
                                         source={{uri: `data:${img.type};base64,${img.data}`}}

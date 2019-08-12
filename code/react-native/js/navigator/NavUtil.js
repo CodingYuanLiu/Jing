@@ -3,8 +3,8 @@ export default class NavigationUtil {
     static Navigation;
 
     static back(params) {
-        const { navigation } = params;
-        navigation.goBack()
+        let { navigation } = params;
+        navigation.goBack();
     }
 
     static toPage(params, page) {

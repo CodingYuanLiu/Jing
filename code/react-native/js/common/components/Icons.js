@@ -605,6 +605,24 @@ class ChevronDownIcon extends React.PureComponent{
             />)
     }
 }
+class ChevronUpIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"entypo"}
+                name={"chevron-up"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 class ImageIcon extends React.PureComponent{
     constructor(props) {
         super(props)
@@ -658,5 +676,6 @@ export {
     CarIcon,
     LocationIcon,
     ChevronDownIcon,
+    ChevronUpIcon,
     ImageIcon,
 }

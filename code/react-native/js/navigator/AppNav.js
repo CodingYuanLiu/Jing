@@ -22,6 +22,7 @@ import RecentScan from "../pages/me/RecentScan";
 import MyAct from "../pages/me/MyAct";
 import PublishDraft from "../pages/publish/PublishDraft";
 import Feedback from "../pages/me/Feedback/Feedback";
+import FeedbackPage from "../pages/me/Feedback/FeedbackPage";
 
 const StartNav = createStackNavigator(
     {
@@ -96,6 +97,9 @@ const MainNav = createStackNavigator(
         },
         Feedback: {
             screen: Feedback,
+        },
+        FeedbackPage: {
+            screen: FeedbackPage,
         },
     },
     {

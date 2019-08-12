@@ -48,7 +48,7 @@ export default class SearchScreen extends React.PureComponent{
             <ArrowLeftIcon
                 color={"#bfbfbf"}
                 size={30}
-                onPress={() => {NavigationUtil.back(this.props)}}
+                onPress={() => {console.log("start"); NavigationUtil.back(this.props)}}
             />
         );
         return (

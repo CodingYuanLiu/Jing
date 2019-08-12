@@ -45,22 +45,13 @@ export default class JoinItem extends React.Component{
         )
     };
     renderTooltip = () => {
-        let rightIconPopover = this.renderRightIconPopover();
+        let {act} = this.props;
         return (
-            <Tooltip
-                popover={rightIconPopover}
-                width={120}
-                height={30}
-                backgroundColor={"#eee"}
-                withOverlay={false}
-                withPointer={false}
-                containerStyle={styles.popoverContainer}
-            >
-                <EllipsisIcon
-                    color={"#aaa"}
-                    size={20}
-                />
-            </Tooltip>
+            <EllipsisIcon
+                color={"#aaa"}
+                size={20}
+                onPress={() => {this.toFeedback(act)}}
+            />
         );
     };
     renderRightIconPopover = () => {

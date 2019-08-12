@@ -1,6 +1,6 @@
 import React from "react";
 import {View, Text, TextInput, StyleSheet, ViewPropTypes} from "react-native";
-import {Rating} from "react-native-elements";
+import {Rating, AirbnbRating} from "react-native-elements";
 import {PropTypes} from "prop-types";
 
 export default class FeedbackItem extends React.Component{
@@ -10,6 +10,7 @@ export default class FeedbackItem extends React.Component{
 
     render() {
         let {label, onRating, onChangeText, text} = this.props;
+        console.log(text);
         let labelComponent = this.renderLabel(label);
         let ratingComponent = this.renderRating(onRating);
         let descriptionComponent = this.renderDescription(text, onChangeText);
@@ -33,9 +34,13 @@ export default class FeedbackItem extends React.Component{
     };
     renderRating = ( onRating ) => {
         return (
-            <Rating
-                style={{backgroundColor: "red"}}
+            <AirbnbRating
+                style={styles.rating}
                 onFinishRating={onRating}
+                showRating={false}
+                defaultRating={5}
+                size={20}
+                count={5}
             />
         )
     };
@@ -46,7 +51,7 @@ export default class FeedbackItem extends React.Component{
                     placeholder={"添加详细描述"}
                     style={styles.description}
                     value={text}
-                    onChangeText={onChangeText}
+                    onChangeText={(value) => {onChangeText(value)}}
                 />
             </View>
         )
@@ -72,12 +77,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     labelTitle: {
-        fontSize: 12,
+        fontSize: 16,
         color: "#3a3a3a",
+        flex: 1,
+    },
+    rating: {
+        flex: 1,
     },
     descriptionContainer: {
-        paddingLeft: 15,
-        paddingRight: 15,
         marginTop: 10,
     },
     description: {

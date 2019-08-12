@@ -2,11 +2,11 @@ import React from "react";
 import {View, StyleSheet, FlatList, Text} from "react-native";
 import {Divider, Image, ListItem, Button} from "react-native-elements";
 import UserAvatar from "../../../common/components/UserAvatar";
-import {ArrowLeftIcon, ChevronDownIcon} from "../../../common/components/Icons";
+import {ArrowLeftIcon, ChevronDownIcon, ChevronUpIcon} from "../../../common/components/Icons";
 import HeaderBar from "../../../common/components/HeaderBar";
 import Api from "../../../api/Api";
 import NavigationUtil from "../../../navigator/NavUtil";
-import FeedbackModal from "./FeedbackModal";
+import Util from "../../../common/util";
 
 export default class Feedback extends React.Component{
     constructor(props) {
@@ -15,14 +15,12 @@ export default class Feedback extends React.Component{
             participants: [],
             headerTitle: "",
             ellipsis: false,
-            isFeedbackModalVisible: false,
             user: {},
         }
     };
 
     componentDidMount() {
         let act = this.props.navigation.getParam("act");
-        console.log(act);
         this.setState({act: act});
         if (act.description.length > 15 || act.images.length > 0) this.setState({ellipsis: true});
         this.loadParticipants();
@@ -33,13 +31,11 @@ export default class Feedback extends React.Component{
         let header = this.renderHeader();
         let actInfo = this.renderActInfo(act);
         let participants = this.renderParticipants();
-        let feedbackModal = this.renderFeedbackModal();
         return (
             <View style={styles.container}>
                 {header}
                 {actInfo}
                 {participants}
-                {feedbackModal}
             </View>
         )
     };
@@ -64,6 +60,19 @@ export default class Feedback extends React.Component{
     };
     renderActInfo = () => {
         let act = this.props.navigation.getParam("act");
+        let title = (
+            <Text style={[styles.actTitle]}>{act.title}</Text>
+        );
+        let body = this.state.ellipsis ? this.renderEllipsisDescription(act) : this.renderFullDescription(act);
+        return (
+            <View style={styles.actContainer}>
+                {title}
+                {body}
+            </View>
+        )
+
+    };
+    renderEllipsisDescription = (act) => {
         let showMoreButton = (
             <Button
                 type={"clear"}
@@ -71,58 +80,58 @@ export default class Feedback extends React.Component{
                 titleStyle={styles.showMoreActInfoButtonTitle}
                 icon = {<ChevronDownIcon color={"#7a7a7a"} size={16} style={{margin: 0, padding: 0}}/>}
                 iconRight={true}
+                onPress={this.showMore}
             />
         );
-        let title = (
-            <Text style={[styles.actTitle]}>{act.title}</Text>
+        return (
+            <View style={styles.actEllipsisDescriptionContainer}>
+                <Text
+                    ellipsizeMode={"tail"}
+                    style={[styles.actDescription, {flex: 1,}]}
+                    numberOfLines={1}
+                >
+                    {act.description}
+                </Text>
+                {showMoreButton}
+            </View>
         );
-
-        let description =
-            this.state.ellipsis ?
-            (
-            <Text
-                ellipsizeMode={"tail"}
-                style={styles.actDescription}
-                numberOfLines={1}
-            >
-                {act.description}
-            </Text>
-        ) :
-                (
-                    <Text
-                        style={styles.actDescription}
-                    >
-                        {act.description}
-                    </Text>
-                );
-        if (!this.state.ellipsis) {
-            return (
-                <View style={styles.actContainer}>
-                    {title}
-                    {description}
-                    {
-                        act.images.map((item, i) => {
-                            return (
-                                <Image
-                                    source={{uri: item}}
-                                    key={i.toString()}
-                                />
-                            )
-                        })
-                    }
+    };
+    renderFullDescription = (act) => {
+        let showLessButton = (
+            <Button
+                type={"clear"}
+                title={"收起"}
+                titleStyle={styles.showMoreActInfoButtonTitle}
+                icon = {<ChevronUpIcon color={"#7a7a7a"} size={16} style={{margin: 0, padding: 0}}/>}
+                iconRight={true}
+                onPress={this.showLess}
+                buttonStyle={styles.showLessButton}
+                containerStyle={styles.showLessButtonContainer}
+            />
+        );
+        return (
+            <View style={styles.actFullDescriptionContainer}>
+                <Text
+                    style={styles.actDescription}
+                >
+                    {act.description}
+                </Text>
+                <View style={styles.fullDescriptionImageListContainer}>
+                    {act.images.map((item, i) => {
+                        return (
+                            <Image
+                                source={{uri: item}}
+                                key={i.toString()}
+                                style={styles.fullDescriptionImage}
+                                containerStyle={styles.fullDescriptionImageContainer}
+                                resizeMode={"cover"}
+                            />
+                        )
+                    })}
                 </View>
-            )
-        } else {
-            return (
-                <View style={styles.actContainer}>
-                    {title}
-                    <View style={styles.actDescriptionContainer}>
-                        {description}
-                        {showMoreButton}
-                    </View>
-                </View>
-            )
-        }
+                {showLessButton}
+            </View>
+        )
     };
     renderParticipants = () => {
         let data = this.state.participants;
@@ -142,7 +151,7 @@ export default class Feedback extends React.Component{
             </View>
         )
     };
-    renderItem({item}) {
+    renderItem = ({item}) => {
         let leftAvatar = (
             <UserAvatar
                 source={{uri: item.user_avatar}}
@@ -155,7 +164,7 @@ export default class Feedback extends React.Component{
                 title={"评价"}
                 buttonStyle={styles.itemRightButton}
                 containerStyle={styles.itemRightButtonContainer}
-                onPress={() => {this.showFeedbackModal(item)}}
+                onPress={() => {this.toFeedbackPage(item)}}
             />
         );
         return (
@@ -169,26 +178,18 @@ export default class Feedback extends React.Component{
             />
         )
     };
-    renderFeedbackModal = () => {
-        let user = this.state.user;
-        let act = this.state.act;
-        return (
-            <FeedbackModal
-                isVisible={this.state.isFeedbackModalVisible}
-                user={user}
-                act={act}
-                onClose={this.hideFeedbackModal}
-            />
-        )
+    showMore = () => {
+        this.setState({ellipsis: false});
     };
-    showFeedbackModal = (item) => {
-        this.setState({
-            isFeedbackModalVisible: true,
-            user: item
-        });
+    showLess = () => {
+        this.setState({ellipsis: true});
     };
-    hideFeedbackModal = () => {
-        this.setState({isFeedbackModalVisible: false});
+    toFeedbackPage = (user) => {
+        let act = null;
+        NavigationUtil.toPage({props: {
+                user: user,
+                act: act,
+            }}, "FeedbackPage");
     };
     loadParticipants = () => {
         let { id } = this.props.navigation.getParam("act");
@@ -201,11 +202,14 @@ export default class Feedback extends React.Component{
                 console.log(err);
             })
     };
-
     goBack = () => {
         NavigationUtil.back(this.props);
     }
 }
+
+const imageContainerLen = Util.getVerticalWindowDimension().width * 0.293;
+const imageLen = Util.getVerticalWindowDimension().width * 0.270;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -246,15 +250,42 @@ const styles = StyleSheet.create({
         color: "#3a3a3a",
         marginTop: 8,
     },
-    actDescriptionContainer: {
+    actEllipsisDescriptionContainer: {
         flexDirection: "row",
         alignItems: "center",
         marginTop: 8,
     },
+    actFullDescriptionContainer: {
+        marginTop: 8,
+    },
+    fullDescriptionImageListContainer: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        backgroundColor: "yellow",
+    },
+    fullDescriptionImageContainer: {
+        width: imageContainerLen,
+        height: imageContainerLen,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    fullDescriptionImage: {
+        width: imageLen,
+        height: imageLen,
+        borderRadius: 3,
+    },
+    showLessButtonContainer: {
+        alignItems: "flex-end",
+        backgroundColor: "green",
+    },
+    showLessButton: {
+        backgroundColor: "red",
+        padding: 0,
+        margin: 0,
+    },
     actDescription: {
         fontSize: 16,
         color: "#5a5a5a",
-        flex: 1,
     },
 
     // style for list item
