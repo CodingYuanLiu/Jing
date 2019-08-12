@@ -1,7 +1,7 @@
 {
   "name": "wechat-cgi",
   "version": "1.0.0",
-  "description": "Jing - Weapp",
+  "description": "微信中的知乎--微信小程序 demo // Zhihu in Wechat",
   "main": "app.js",
   "dependencies": {},
   "devDependencies": {
@@ -18,5 +18,7 @@
   },
   "scripts": {
     "test": "jest"
-  }
+  },
+  "author": "",
+  "license": "ISC"
 }

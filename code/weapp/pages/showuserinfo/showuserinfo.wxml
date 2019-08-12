@@ -37,31 +37,36 @@
     <!-- </i-panel> -->
     <view wx:if="{{current === 'tab2'}}">
         <block wx:for="{{feedback}}" wx:key="id" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
-            <i-panel title="{{item.act_title}}">
-                <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                    <label style="display:inline-block">沟通</label>
-                    <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.communication}}" data-id="{{item.id}}">
-                    </i-rate>
-                </view>
-                 <i-input value="{{item.communication_desc}}" disabled type="text" maxlength="100" title="" />
-                <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                    <label style="display:inline-block">守时</label>
-                    <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.punctuality}}" data-id="{{item.id}}">
-                    </i-rate>
-                </view>
-                 <i-input value="{{item.punctuality_desc}}" disabled type="text" maxlength="100" title="" />
+            <i-card full title="{{item.act_title}}" extra="2019-09-09">
+                <view slot="content">
 
-                <!-- <text style="margin-left:300rpx">{{item.punctuality_desc}}</text> -->
-                <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                    <label style="display:inline-block">诚信</label>
-                    <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.honesty}}" data-id="{{item.id}}">
-                    </i-rate>
+                    <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+                        <label style="display:inline-block">沟通</label>
+                        <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.communication}}" data-id="{{item.id}}">
+                        </i-rate>
+                    </view>
+                    <i-input value="{{item.communication_desc}}" disabled type="text" maxlength="100" title="" />
+                    <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+                        <label style="display:inline-block">守时</label>
+                        <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.punctuality}}" data-id="{{item.id}}">
+                        </i-rate>
+                    </view>
+                    <i-input value="{{item.punctuality_desc}}" disabled type="text" maxlength="100" title="" />
+
+                    <!-- <text style="margin-left:300rpx">{{item.punctuality_desc}}</text> -->
+                    <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
+                        <label style="display:inline-block">诚信</label>
+                        <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.honesty}}" data-id="{{item.id}}">
+                        </i-rate>
+                    </view>
+                    <i-input value="{{item.honesty_desc}}" disabled type="text" maxlength="100" title="" />
+
+                    <!-- <text style="margin-left:300rpx">{{item.honesty_desc}}</text> -->
                 </view>
-                 <i-input value="{{item.honesty_desc}}" disabled type="text" maxlength="100" title="" />
-
-                <!-- <text style="margin-left:300rpx">{{item.honesty_desc}}</text> -->
-
-            </i-panel>
+                <view slot="footer"> 
+                    <label bindtap="handleToComments" data-id="{{idx}}" style="float: right; margin-bottom: 5px;">评价 {{item.fb_comments.length}}</label>
+                </view>
+            </i-card>
         </block>
     </view>
 </view>

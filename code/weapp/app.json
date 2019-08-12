@@ -23,7 +23,8 @@
         "pages/follow/follow",
         "pages/my/history/history",
         "pages/feedback/feedbackuser/feedbackuser",
-        "pages/answer/participants/participants"
+        "pages/answer/participants/participants",
+        "pages/showuserinfo/fb_comments/fb_comments"
     ],
     "permission": {
         "scope.userLocation": {
