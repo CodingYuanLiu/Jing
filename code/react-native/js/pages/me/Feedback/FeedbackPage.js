@@ -9,8 +9,12 @@ import HeaderBar from "../../../common/components/HeaderBar";
 import NavigationUtil from "../../../navigator/NavUtil";
 import Util from "../../../common/util";
 import {Image} from "react-native-elements";
+import Api from "../../../api/Api";
+import {connect} from "react-redux";
+import Model from "../../../api/Model";
 
-export default class FeedbackPage extends React.Component{
+
+class FeedbackPage extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
@@ -21,14 +25,9 @@ export default class FeedbackPage extends React.Component{
             honestyData: 5,
             punctualityData: 5,
             feedbackImages: [],
+            isLoading: false,
         };
-
     };
-
-    componentDidMount() {
-        let {user, act} = this.props.navigation.getParam("props");
-        this.loadData(user, act);
-    }
 
     render() {
         let header = this.renderHeader();
@@ -64,6 +63,7 @@ export default class FeedbackPage extends React.Component{
                 buttonStyle={styles.headerRightButton}
                 containerStyle={styles.headerRightButtonContainer}
                 onPress={this.publishFeedback}
+                loading={this.state.isLoading}
             />
         );
         return (
@@ -188,7 +188,7 @@ export default class FeedbackPage extends React.Component{
         this.setState({punctualityData: rating})
     };
     onChangeCommunicationDesc = (text) => {
-        this.setState({CommunicationDesc: text})
+        this.setState({communicationDesc: text})
     };
     onChangeHonestyDesc = (text) => {
         this.setState({honestyDesc: text});
@@ -199,13 +199,40 @@ export default class FeedbackPage extends React.Component{
     goBack = () => {
         NavigationUtil.back(this.props);
     };
-    loadData = (actId, userId) => {
-
-    };
     publishFeedback = () => {
-        console.log(this.state);
+        this.setState({isLoading: true});
+        let data = this.buildFeedback();
+        let {currentUser} = this.props;
+        Api.publishFeedback(Model.buildFeedbackItem(data), currentUser.jwt)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+            .finally(() => {
+                this.setState({isLoading: false});
+            })
     };
+    buildFeedback = () => {
+        let state = this.state;
+        let {user, act} = this.props.navigation.getParam("props");
+        return {
+            actId: act.id,
+            receiverId: user.user_id,
+            ...state,
+        }
+    }
 }
+
+const mapStateToProps = state => ({
+    currentUser: state.currentUser,
+});
+
+export default connect(mapStateToProps, null)(FeedbackPage);
+
+
+
 const imageOptions = {
     title: "选择",
     cancelButtonTitle: "取消",

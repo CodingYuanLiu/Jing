@@ -121,14 +121,14 @@ export default class Model {
         return {
             act_id: data.actId,
             receiver_id: data.receiverId,
-            communication: data.communication.data,
-            communication_desc: data.communication.desc,
-            punctuality: data.punctuality.data,
-            punctuality_desc: data.punctuality.desc,
-            honesty: data.honesty.data,
-            honesty_desc: data.honesty.desc,
+            communication: data.communicationData,
+            communication_desc: data.communicationDesc,
+            punctuality: data.punctualityData,
+            punctuality_desc: data.punctualityDesc,
+            honesty: data.honestyData,
+            honesty_desc: data.honestyDesc,
             time: Util.dateTimeToString(new Date()),
-            fb_images: data.images
+            fb_images: data.feedbackImages,
         }
     };
     // transfer from camel to snake,

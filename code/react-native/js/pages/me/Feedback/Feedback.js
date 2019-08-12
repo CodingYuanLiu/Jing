@@ -7,6 +7,7 @@ import HeaderBar from "../../../common/components/HeaderBar";
 import Api from "../../../api/Api";
 import NavigationUtil from "../../../navigator/NavUtil";
 import Util from "../../../common/util";
+import {HAVE_FEEDBACK, NO_FEEDBACK} from "../../../common/constant/Constant";
 
 export default class Feedback extends React.Component{
     constructor(props) {
@@ -159,14 +160,7 @@ export default class Feedback extends React.Component{
                 containerStyle={styles.itemLeftAvatarContainer}
             />
         );
-        let rightElement = (
-            <Button
-                title={"评价"}
-                buttonStyle={styles.itemRightButton}
-                containerStyle={styles.itemRightButtonContainer}
-                onPress={() => {this.toFeedbackPage(item)}}
-            />
-        );
+        let rightElement = this.renderItemRightButton(item);
         return (
             <ListItem
                 leftAvatar={leftAvatar}
@@ -175,8 +169,33 @@ export default class Feedback extends React.Component{
                 subtitle={item.user_signature}
                 subtitleStyle={styles.itemSubtitle}
                 rightElement={rightElement}
+                containerStyle={styles.itemContainer}
             />
         )
+    };
+    renderItemRightButton = (item) => {
+        let status = item.status;
+        let title, onPress;
+        if (item.status === HAVE_FEEDBACK) {
+            title = "查看评价";
+            onPress = this.toUserFeedback;
+        } else if (item.status === NO_FEEDBACK) {
+            title = "评价";
+            onPress = this.toFeedbackPage;
+        } else {
+            title = "评价";
+            onPress = this.toFeedbackPage;
+        }
+        return (
+            <Button
+                type={"clear"}
+                title={title}
+                titleStyle={styles.itemRightButtonTitle}
+                buttonStyle={styles.itemRightButton}
+                containerStyle={styles.itemRightButtonContainer}
+                onPress={() => {onPress(item)}}
+            />
+        );
     };
     showMore = () => {
         this.setState({ellipsis: false});
@@ -185,7 +204,7 @@ export default class Feedback extends React.Component{
         this.setState({ellipsis: true});
     };
     toFeedbackPage = (user) => {
-        let act = null;
+        let act = this.props.navigation.getParam("act");
         NavigationUtil.toPage({props: {
                 user: user,
                 act: act,
@@ -261,7 +280,6 @@ const styles = StyleSheet.create({
     fullDescriptionImageListContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
-        backgroundColor: "yellow",
     },
     fullDescriptionImageContainer: {
         width: imageContainerLen,
@@ -276,10 +294,8 @@ const styles = StyleSheet.create({
     },
     showLessButtonContainer: {
         alignItems: "flex-end",
-        backgroundColor: "green",
     },
     showLessButton: {
-        backgroundColor: "red",
         padding: 0,
         margin: 0,
     },
@@ -300,26 +316,34 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: "#3a3a3a",
     },
+    itemContainer: {
+        borderBottomWidth: 0.5,
+        borderColor: "#eee",
+    },
     itemLeftAvatarContainer: {
-        backgroundColor: "blue",
         margin: 0,
         padding: 0,
     },
-    itemRightButtonContainer: {
-        backgroundColor: "red",
+    itemRightButtonContainer:{
+        borderColor: "#ffe635",
+        borderRadius: 4,
+        borderWidth: 1,
     },
     itemRightButton: {
-        backgroundColor: "#ffe635",
         padding: 0,
-        margin: 0,
+        marginTop: 6,
+        marginBottom: 6,
+        marginLeft: 12,
+        marginRight: 12,
+    },
+    itemRightButtonTitle: {
+        color: "#ffe635"
     },
     itemTitle: {
         fontWeight: "bold",
         color: "#3a3a3a",
-        backgroundColor: "green",
     },
     itemSubtitle: {
         color: "#7a7a7a",
-        backgroundColor: "yellow",
     },
 });

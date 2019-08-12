@@ -21,10 +21,30 @@ const ACT_FULL = 1;
 const ACT_RUNNING = 0;
 const ACT_FORBIDDEN = -1;
 const ACT_EXPIRED = 2;
+const HAVE_FEEDBACK = 1;
+const NO_FEEDBACK = 0;
+const ACT_TYPE_TAXI = "taxi";
+const ACT_TYPE_TAKEOUT = "takeout";
+const ACT_TYPE_ORDER = "order";
+const ACT_TYPE_OTHER = "other";
 
 export {
+    /**
+     * activity constants
+     */
+    // activity status
     ACT_FULL,
     ACT_EXPIRED,
     ACT_FORBIDDEN,
     ACT_RUNNING,
+
+    // activity type
+    ACT_TYPE_TAXI,
+    ACT_TYPE_TAKEOUT,
+    ACT_TYPE_ORDER,
+    ACT_TYPE_OTHER,
+
+    // feedback status
+    HAVE_FEEDBACK,
+    NO_FEEDBACK,
 }
