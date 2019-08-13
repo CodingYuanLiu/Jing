@@ -20,7 +20,10 @@ const Reject = (err, reject) => {
 
 export default class Api {
     /**
-     * user api
+     *
+     * @param username
+     * @param password
+     * @returns {Promise<R>}
      */
     static login(username, password) {
         return new Promise(
@@ -35,7 +38,10 @@ export default class Api {
                         }
                     })
                     .then(res => {
-                        // native login response
+
+                        /**
+                         * jwt: data.jwt_token
+                         */
                         resolve(Model.transferToken(res.data))
                     })
                     .catch( err => {
@@ -44,6 +50,12 @@ export default class Api {
             }
         )
     }
+
+    /**
+     *
+     * @param jwt
+     * @returns {Promise<R>}
+     */
     static getSelfDetail(jwt) {
         return new Promise((resolve, reject) => {
             axios.get("/api/user/status", {
@@ -51,6 +63,22 @@ export default class Api {
                     "Authorization" : "Bearer " + jwt
                 }
             }).then(res => {
+
+                /**
+                 * avatar: data.avatar_url,
+                 * birthday: data.birthday,
+                 * dormitory: data.dormitory,
+                 * gender: data.gender,
+                 * id: data.id,
+                 * jaccount: data.jaccount,
+                 * jwt: data.jwt_token,
+                 * major: data.major,
+                 * nickname: data.nickname,
+                 * password: data.password,
+                 * phone: data.phone,
+                 * signature: data.signature,
+                 * username: data.username,
+                 */
                 resolve(Model.transferUserInfo(res.data))
             }).catch(err => {
                 Reject(err, reject)
@@ -58,6 +86,12 @@ export default class Api {
         })
     }
 
+    /**
+     *
+     * @param code - oauth2, code
+     * @param redirectUri - oauth2, redirect_url
+     * @returns {Promise<R>}
+     */
     static loginWithJaccount(code, redirectUri) {
         return new Promise((resolve, reject) => {
             axios.post("/api/public/login/jaccount", {
@@ -65,10 +99,15 @@ export default class Api {
                 redirect_uri: redirectUri
             })
                 .then(res => {
-                    // jaccount login response
+                    let data = res.data;
+
+                    /**
+                     * status: data.status,
+                     * jwt: data.jwt_token
+                     */
                     resolve({
-                        status: res.data.status,
-                        jwt: res.data.jwt_token,
+                        status: data.status,
+                        jwt: data.jwt_token,
                     })
                 })
                 .catch(err => {
@@ -77,6 +116,18 @@ export default class Api {
         })
     }
 
+    /**
+     *
+     * @param data - object,
+     *  {
+     *      username,
+     *      password,
+     *      nickname,
+     *      phone,
+     *  }
+     * @param jwt
+     * @returns {Promise<R>}
+     */
     static register = (data, jwt) => {
         return new Promise((resolve, reject) => {
             axios.post("/api/public/register", data, {
@@ -85,6 +136,9 @@ export default class Api {
                 }
             })
                 .then(res => {
+                    /**
+                     * message
+                     */
                     resolve(res.data)
                 })
                 .catch(err => {
@@ -92,6 +146,23 @@ export default class Api {
                 })
         })
     };
+
+    /**
+     *
+     * @param data - object,
+     *  {
+     *      id,
+     *      phone - optional,
+     *      signature - optional,
+     *      nickname - optional,
+     *      major - optional,
+     *      dormitory - optional,
+     *      birthday - optional,
+     *      gender - optional,
+     *  }
+     * @param jwt
+     * @returns {Promise<R>}
+     */
     static updateInfo(data, jwt) {
         return new Promise((resolve, reject) => {
             axios.put("/api/user/info/update", data, {
@@ -100,7 +171,10 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    // this data contains no useful message
+
+                    /**
+                     * message,
+                     */
                     resolve(res.data);
                 })
                 .catch(err => {
@@ -108,6 +182,13 @@ export default class Api {
                 })
         })
     }
+
+    /**
+     *
+     * @param avatar - base64
+     * @param jwt
+     * @returns {Promise<R>}
+     */
     static updateAvatar(avatar, jwt) {
         return new Promise((resolve, reject) => {
             axios.post("/api/user/avatar/upload", avatar, {
@@ -117,6 +198,10 @@ export default class Api {
                 }
             })
                 .then(res => {
+
+                    /**
+                     * avatar
+                     */
                     resolve(Model.transferUserAvatar(res.data));
                 })
                 .catch(err => {
@@ -124,10 +209,29 @@ export default class Api {
                 })
         })
     }
+
+    /**
+     *
+     * @param id
+     * @returns {Promise<R>}
+     */
     static getUserInfo(id) {
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/detail?id=${id}`)
                 .then(res => {
+
+                    /**
+                     * avatar: data.avatar_url,
+                     * id: data.id,
+                     * birthday: data.birthday,
+                     * dormitory: data.dormitory,
+                     * gender: data.gender,
+                     * major: data.major,
+                     * nickname: data.nickname,
+                     * phone: data.phone,
+                     * signature: data.signature,
+                     * privacy: data.privacy
+                     */
                     resolve(Model.transferUserInfo(res.data));
                 })
                 .catch(err => {
@@ -137,10 +241,10 @@ export default class Api {
     }
 
     /**
-     * activity api
+     * @param page - optional
+     * @returns {Promise<R>}
      */
-
-    static getAllAct() {
+    static getAllAct(page = null) {
         return new Promise((resolve, reject) => {
             axios.get("/api/public/act/findall")
                 .then(res => {
@@ -174,8 +278,15 @@ export default class Api {
             })
         }
     }
-    // why front end post to back end?
-    static recordBehavior(jwt, type, behavior) {
+
+    /**
+     *
+     * @param jwt
+     * @param type
+     * @param behavior
+     * @returns {Promise<R>}
+     */
+    static recordBehavior(type, behavior, jwt) {
         if (!jwt) return ;
         return new Promise((resolve, reject) => {
             axios.post("/api/user/act/addbehavior", {
@@ -195,6 +306,12 @@ export default class Api {
                 })
         })
     }
+
+    /**
+     *
+     * @param jwt - recommend need to login
+     * @returns {Promise<R>}
+     */
     static getRecommendAct(jwt) {
         let token = jwt;
         return new Promise((resolve, reject) => {
@@ -224,7 +341,10 @@ export default class Api {
                         LocalApi.saveRecentScan(data)
                             .catch(err => {
                             });
-                        this.recordBehavior(jwt, data.type, "scanning");
+                        this.recordBehavior(data.type, "scanning", jwt)
+                            .catch(err => {
+                                console.log(err);
+                            })
                     })
                 .catch(err => {
                     Reject(err, reject)
@@ -264,7 +384,13 @@ export default class Api {
         })
     }
 
-    static publishAct(jwt, data) {
+    /**
+     *
+     * @param jwt
+     * @param data
+     * @returns {Promise<R>}
+     */
+    static publishAct(data, jwt) {
         return new Promise((resolve, reject) => {
             axios.post("/api/user/act/publish", data, {
                 headers: {
@@ -273,7 +399,10 @@ export default class Api {
             })
                 .then(res => {
                     resolve({id: res.data.act_id});
-                    this.recordBehavior(jwt, data.type, "publish");
+                    this.recordBehavior(data.type, "publish", jwt)
+                        .catch(err => {
+                            console.log(err);
+                        })
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -316,7 +445,8 @@ export default class Api {
             })
                 .then(res => {
                     resolve(res.data);
-                    this.recordBehavior(jwt, act.type, "join");
+                    this.recordBehavior(act.type, "join", jwt)
+                        .catch(err => {console.log(err)})
                 })
                 .catch(err => {
                     Reject(err, reject);
@@ -332,7 +462,22 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(res.data);
+
+                    /**
+                     * act: {
+                     *     id: data.act_id,
+                     *     title: data.act_title,
+                     *     type: data.type,
+                     * },
+                     * applicant: {
+                     *     id: data.applicant_id,
+                     *     nickname: data.applicant_nickname,
+                     *     avatar: data.applicant_avatar,
+                     * }
+                     *
+                     */
+                    let data = res.data;
+                    resolve(Model.tra);
                 })
                 .catch(err => {
                     Reject(err, reject);
@@ -410,6 +555,7 @@ export default class Api {
                 .then(res => {
                     let acts = res.data ? res.data.acts : [];
                     resolve(Model.transferActivityList(acts));
+                    //this.recordBehavior().catch(err => {console.log(err)});
                 })
                 .catch(err => {
                     Reject(err, reject);
@@ -418,7 +564,13 @@ export default class Api {
     }
 
     /**
-     * api for feedback
+     *
+     * @param data - object
+     *  {
+     *
+     *  }
+     * @param jwt
+     * @returns {Promise<R>}
      */
     static publishFeedback = (data, jwt) => {
         return new Promise((resolve, reject) => {
@@ -428,7 +580,12 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(res.data);
+
+                    /**
+                     * feedbackId: data.feedback_id
+                     */
+                    let data = res.data;
+                    resolve({feedbackId: data.feedback_id});
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -436,11 +593,46 @@ export default class Api {
         })
     };
 
+    /**
+     *
+     * @param id - user id
+     * @returns {Promise<R>}
+     */
     static getFeedback = (id) => {
         return new Promise((resolve, reject) => {
             axios.get(`api/public/feedback/query?receiver_id=${id}`)
                 .then(res => {
-                    resolve(res.data);
+
+                    /**
+                     *  act: {
+                     *      id: data.act_id,
+                     *      title: data.act_title,
+                     *  },
+                     *  feedbackId: data.feedback_id,
+                     *  communication: {
+                     *      data: data.communication,
+                     *      desc: data.communication_desc,
+                     *  },
+                     *  honesty: {
+                     *      data: data.honesty,
+                     *      desc: data.honesty_desc,
+                     *  },
+                     *  punctuality: {
+                     *      data: data.punctuality,
+                     *      desc: data.punctuality_desc,
+                     *  },
+                     *  images: data.fb_images,
+                     *  comments: data.fb_comments ? data.fb_comments : [],
+                     *  createTime: data.time,
+                     *  user: {
+                     *      id: data.user_id,
+                     *      avatar: data.user_avatar,
+                     *      nickname: data.user_nickname,
+                     *  }
+                     *
+                     */
+                    let data = res.data;
+                    resolve(Model.transferFeedbackList(data));
                 })
                 .catch(err => {
                     Reject(err, reject);
@@ -448,6 +640,12 @@ export default class Api {
         });
     };
 
+    /**
+     *
+     * @param id - feedback id
+     * @param jwt
+     * @returns {Promise<R>}
+     */
     static deleteFeedback = (id, jwt) => {
         return new Promise((resolve, reject) => {
              axios.post('api/user/feedback/delete', {
