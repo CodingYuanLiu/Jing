@@ -26,7 +26,6 @@ const currentUser = (state = initialState, action) => {
                 ...action.data,
             };
         case actionTypes.UPDATE_USER_AVATAR:
-            console.log("current user update avatar, ", action.avatar);
             return {
                 ...state,
                 avatar: action.avatar

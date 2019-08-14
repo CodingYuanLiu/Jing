@@ -4,7 +4,10 @@ import {
     ON_GET_USER_FOLLOWERS,
 } from "../common/constant/ActionTypes";
 
-const initialState = {};
+const initialState = {
+    isLoading: false,
+    items: [],
+};
 
 const currentUserFollower = (state = initialState, action) => {
     switch(action.type) {
@@ -24,7 +27,9 @@ const currentUserFollower = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 error: action.err,
-            }
+            };
+        default:
+            return state;
     }
 };
 

@@ -24,7 +24,9 @@ const currentUserJoin = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 error: action.err,
-            }
+            };
+        default:
+            return state;
     }
 };
 

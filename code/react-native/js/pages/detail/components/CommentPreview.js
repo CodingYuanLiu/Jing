@@ -1,6 +1,5 @@
 import React from "react";
 import {View, Text, StyleSheet, TouchableWithoutFeedback} from "react-native";
-import {Avatar} from "react-native-elements";
 import {PropTypes} from "prop-types";
 import UserNickname from "../../../common/components/UserNickname";
 import UserAvatar from "../../../common/components/UserAvatar";

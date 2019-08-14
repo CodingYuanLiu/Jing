@@ -1,12 +1,15 @@
 import {
     FOLLOW_FAIL, FOLLOW_OK,
     GET_USER_FOLLOWINGS_FAIL,
-    GET_USER_FOLLOWINGS_OK, ON_FOLLOW,
-    ON_GET_USER_FOLLOWINGS, ON_UNFOLLOW, 
+    GET_USER_FOLLOWINGS_OK,
+    ON_GET_USER_FOLLOWINGS,
     UNFOLLOW_FAIL, UNFOLLOW_OK
 } from "../common/constant/ActionTypes";
 
-const initialState = {};
+const initialState = {
+    isLoading: false,
+    items: [],
+};
 
 const unFollow = (followings, unFollowId) => {
     let newArray = [];
@@ -37,42 +40,30 @@ const currentUserFollowing = (state = initialState, action) => {
                 isLoading: false,
                 error: action.err,
             };
-        case ON_FOLLOW:
-            return {
-                ...state,
-                isFollowing: true,
-            };
         case FOLLOW_FAIL:
             return {
                 ...state,
-                isFollowing: false,
                 error: action.err,
             };
         case FOLLOW_OK:
             return {
                 ...state,
                 items: [...state.items, action.user],
-                isFollowing: false,
                 error: null,
-            };
-        case ON_UNFOLLOW:
-            return {
-                ...state,
-                isUnFollowing: true,
             };
         case UNFOLLOW_FAIL:
             return {
                 ...state,
-                isUnFollowing: false,
                 error: action.err,
             };
         case UNFOLLOW_OK:
             return {
                 ...state,
                 items: unFollow(state.items, action.user.id),
-                isUnFollowing: false,
                 error: null,
             };
+        default:
+            return state;
     }
 };
 

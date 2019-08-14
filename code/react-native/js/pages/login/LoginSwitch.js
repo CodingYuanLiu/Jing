@@ -10,7 +10,7 @@ const JaccountLoginSwitch = createSwitchNavigator({
     JaccountLoading: JaccountLoading,
 }, {
     initialRouteName: "JaccountWeb"
-})
+});
 
 const NativeLoginSwitch = createSwitchNavigator({
     NativeLogin: NativeLoginScreen,

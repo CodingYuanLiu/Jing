@@ -1,5 +1,4 @@
 import Util from "../common/util";
-import activity from "../actions/activity";
 
 export default class Model {
     static transferUserInfo(data) {
@@ -55,7 +54,7 @@ export default class Model {
             tags: data.tag ? data.tag : [],
             type: data.type,
             images: data.images ? data.images : [],
-            comments: data.comments,
+            comments: this.transferCommentList(data.comments),
             createTime: data.create_time,
             status: data.status,
         };
@@ -121,7 +120,47 @@ export default class Model {
             data.activity_time = publishAct.activityTime;
         }
         return data;
-    }
+    };
+
+    /**
+     * comment item & list
+     * @param data
+     * @returns {{receiverId: *, receiverName: *, time: *, user: {nickname: *, id: *, avatar: *}, content: *}}
+     */
+    static transferCommentItem = (data) => {
+        return {
+            content: data.content,
+            receiverId: data.receiver_id,
+            receiverName: data.receiver_nickname,
+            time: data.time,
+            user: {
+                nickname: data.user_nickname,
+                id: data.user_id,
+                avatar: data.user_avatar,
+            }
+        }
+    };
+    static transferCommentList = (list) => {
+        if (!list) return [];
+        let res = [];
+        for (let item of list) {
+            res.push(this.transferCommentItem(item));
+        }
+        return res;
+    };
+    static buildComment = (data) => {
+        return {
+            receiver_id: data.receiverId,
+            receiver_name: data.receiverName,
+            content: data.content,
+            act_id: data.actId,
+            time: data.time,
+            user_id: data.user.id,
+            user_avatar: data.user.avatar,
+            user_nickname: data.user.nickname,
+        };
+    };
+
     /**
      * following, follower item & list
      * @param data
@@ -216,6 +255,13 @@ export default class Model {
             time: Util.dateTimeToString(new Date()),
             fb_images: data.feedbackImages,
         }
+    };
+    static buildFeedbackComment = (data) => {
+        return {
+            object_id: data.feedbackId,
+            time: Util.dateTimeToString(new Date()),
+            commentator_desc: data.content,
+        };
     };
 
     /**

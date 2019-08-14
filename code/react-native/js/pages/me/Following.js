@@ -1,16 +1,13 @@
 import React from "react"
 import {View, Text, StyleSheet, FlatList, RefreshControl} from 'react-native';
-import {Avatar, Button, ListItem} from "react-native-elements";
 import {connect} from "react-redux";
 import HeaderBar from "../../common/components/HeaderBar";
 import {ArrowLeftIcon, PlusIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
-import {onFollow, onGetFollowers, onGetFollowings, onUnFollow} from "../../actions/currentUser";
-import UserAvatar from "../../common/components/UserAvatar";
+import {onFollow, onUnFollow, onGetCurrentUserFollowing} from "../../actions/currentUserFollowing";
 import Api from "../../api/Api";
-import * as actionTypes from "../../common/constant/ActionTypes";
-import UserNickname from "../../common/components/UserNickname";
 import FollowItem from "./components/FollowItem";
+import {GET_USER_FOLLOWINGS_OK} from "../../common/constant/ActionTypes";
 
 
 class Following extends React.PureComponent{
@@ -54,10 +51,7 @@ class Following extends React.PureComponent{
         return (
             <FollowItem
                 item={item}
-                onFollow={() => {this.follow(item)}}
-                onUnFollow={() => {this.unFollow(item)}}
-                isFollowing={this.props.currentUser.isFollowing}
-                isUnFollowing={this.props.currentUser.isUnFollowing}
+                setFollowed={this.setItemFollowed}
             />
         )
     };
@@ -84,11 +78,11 @@ class Following extends React.PureComponent{
         this.setState({isLoading: true});
         let currentUser = this.props.currentUser;
         Api.getFollowings(currentUser.jwt)
-            .then(data => {/*
+            .then(data => {
                 this.props.dispatch({
-                    type: actionTypes.GET_USER_FOLLOWINGS_OK,
-                    data: data ? data : [],
-                });*/
+                    type: GET_USER_FOLLOWINGS_OK,
+                    items: data ? data : [],
+                });
                 for (let item of data) {
                     item.followed = true;
                 }
@@ -103,29 +97,9 @@ class Following extends React.PureComponent{
                 this.setState({isLoading: false});
             })
     };
-
-    follow = (item) => {
-        let from = {
-            id: this.props.currentUser.id,
-        };
-        let jwt = this.props.currentUser.jwt;
-        let to = {
-            id: item.id,
-        };
-        this.props.follow(from, to, jwt);
-        item.followed = true;
-    };
-    unFollow = (item) => {
-        let from = {
-            id: this.props.currentUser.id,
-        };
-        let jwt = this.props.currentUser.jwt;
-        let to = {
-            id: item.id,
-        };
-        this.props.unFollow(from, to, jwt);
-        item.followed = false;
-    };
+    setItemFollowed = (item, flag) => {
+        item.followed = flag;
+    }
 }
 
 const mapStateToProps = state => ({
@@ -134,7 +108,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     follow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
     unFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
-    onGetFollowings: (jwt) => dispatch(onGetFollowings(jwt)),
+    onGetCurrentUserFollowing: (jwt) => dispatch(onGetCurrentUserFollowing(jwt)),
     dispatch: dispatch
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Following);

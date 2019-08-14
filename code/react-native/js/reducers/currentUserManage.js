@@ -24,7 +24,9 @@ const currentUserManage = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 error: action.err,
-            }
+            };
+        default:
+            return state;
     }
 };
 

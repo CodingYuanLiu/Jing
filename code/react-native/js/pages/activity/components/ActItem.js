@@ -72,7 +72,7 @@ export default class ActItem extends React.PureComponent{
     renderTag = (tag, i) => (
         <Tag
             title={tag}
-            key={i}
+            key={i.toString()}
         />
     );
     renderActSpec = (type) => {

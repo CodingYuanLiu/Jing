@@ -26,7 +26,7 @@ const typeAct = (state=initialState, action) => {
                 [action.typeName]: {
                     ...state[action.typeName],
                     isLoading: false,
-                    err: action.err,
+                    error: action.err,
                 }
             };
         case LOADING_TYPE_OK:

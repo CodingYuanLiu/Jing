@@ -1,12 +1,14 @@
 import {
+    FOLLOW_FAIL,
+    FOLLOW_OK,
     GET_USER_FOLLOWINGS_FAIL,
     GET_USER_FOLLOWINGS_OK,
-    ON_GET_USER_FOLLOWINGS
+    ON_GET_USER_FOLLOWINGS, SET_DETAIL_IS_FRIENDS, SET_DETAIL_IS_NOT_FRIENDS, UNFOLLOW_FAIL, UNFOLLOW_OK
 } from "../common/constant/ActionTypes";
 import Api from "../api/Api";
 
 
-export const loadCurrentUserFollowing = (jwt) => {
+export const onGetCurrentUserFollowing = (jwt) => {
     return dispatch => {
         dispatch({
             type: ON_GET_USER_FOLLOWINGS,
@@ -29,12 +31,10 @@ export const loadCurrentUserFollowing = (jwt) => {
 };
 
 // follow action & unFollow action, and get followers and followings
-export const onFollow = (from, to, jwt) => {
+export const onFollow = (from, to, jwt, that) => {
     return dispatch => {
-        dispatch({
-            type: actionTypes.ON_FOLLOW,
-        });
-
+        console.log(that);
+        that.setState({isFollowing: true});
         Api.follow(from.id, to.id, jwt)
             .then (data => {
                 dispatch({
@@ -51,13 +51,15 @@ export const onFollow = (from, to, jwt) => {
                     type: FOLLOW_FAIL,
                 })
             })
+            .finally(() => {
+                that.setState({isFollowing: false});
+            })
     }
 };
-export const onUnFollow = (from, to, jwt) => {
+export const onUnFollow = (from, to, jwt, that) => {
     return dispatch => {
-        dispatch({
-            type: actionTypes.ON_UNFOLLOW,
-        });
+        console.log(that);
+        that.setState({isUnFollowing: true});
         Api.unFollow(from.id, to.id, jwt)
             .then (data => {
                 dispatch({
@@ -73,6 +75,9 @@ export const onUnFollow = (from, to, jwt) => {
                 dispatch({
                     type: UNFOLLOW_FAIL,
                 })
+            })
+            .finally(() => {
+                that.setState({isUnFollowing: false})
             })
     }
 };

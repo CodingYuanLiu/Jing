@@ -9,6 +9,9 @@ import {connect} from "react-redux";
 class RecommendAct extends React.Component{
     constructor(props) {
         super(props);
+        this.state = {
+            logged: true,
+        }
     }
     componentDidMount() {
         this.loadData();
@@ -21,7 +24,7 @@ class RecommendAct extends React.Component{
         }
         return(
             <View style={styles.container}>
-                <FlatList
+                {this.state.logged ? <FlatList
                     data={activities}
                     renderItem={this.renderItem}
                     keyExtractor={item => (item.id.toString())}
@@ -35,7 +38,7 @@ class RecommendAct extends React.Component{
                             tintColor={"#0084ff"}
                         />
                     }
-                />
+                /> : null}
             </View>
         )
     };
@@ -75,20 +78,23 @@ class RecommendAct extends React.Component{
                 metadata={
                     {
                         comments: item.comments.length,
-                        participants: 0, // we don't have participants data here
+                        participants: 0,
                     }
                 }
                 onPress={() => {this._onPressItem(item.id)}}
             />)
     };
     loadData = () => {
-        console.log(this.props);
+
         let {onLoadRecommendAct} = this.props;
         let {jwt} = this.props.currentUser;
         if (jwt) {
             onLoadRecommendAct(jwt);
         } else {
-            //...
+            this.setState(state => {
+                state.logged = true;
+                return state;
+            })
         }
     };
     _onPressItem = (id: number) => {

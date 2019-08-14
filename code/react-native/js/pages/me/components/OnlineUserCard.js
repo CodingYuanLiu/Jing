@@ -1,7 +1,7 @@
 import React from "react"
-import { View, Text, StyleSheet, ViewPropTypes } from 'react-native';
+import {  StyleSheet } from 'react-native';
 import { PropTypes } from "prop-types";
-import { Avatar, Divider, ListItem } from 'react-native-elements';
+import { Avatar, ListItem } from 'react-native-elements';
 
 
 export default class OnlineUserCard extends React.PureComponent{
@@ -12,7 +12,6 @@ export default class OnlineUserCard extends React.PureComponent{
     render() {
 
         let {avatar, nickname, signature, onPress} = this.props;
-        signature = "这里一无所有，直到你";
         let avatarComponent = this.renderAvatar(avatar);
         return(
             <ListItem

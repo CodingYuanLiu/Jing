@@ -1,5 +1,6 @@
 import * as actionTypes from "../common/constant/ActionTypes"
 import Api from "../api/Api";
+import Model from "../api/Model";
 
 /**
  * asynchronous action
@@ -13,7 +14,7 @@ const onLoadRecommendAct = (jwt) => {
             .then(data => {
                 dispatch({
                     type: actionTypes.LOADING_RECOMMEND_OK,
-                    items: data // what if data is null or undefined ?
+                    items: data
                 });
             })
             .catch(err => {
@@ -37,10 +38,8 @@ const onLoadMyManageAct = (jwt) => {
                     type: actionTypes.LOADING_MY_MANAGE_OK,
                     items: data,
                 });
-                console.log(data);
             })
             .catch(err => {
-                console.log(err);
                 dispatch({
                     type: actionTypes.LOADING_MY_MANAGE_FAIL,
                     err,
@@ -59,10 +58,8 @@ const onLoadMyJoinAct = (jwt) => {
                     type: actionTypes.LOADING_MY_JOIN_OK,
                     items: data,
                 });
-                console.log(data);
             })
             .catch(err => {
-                console.log(err);
                 dispatch({
                     type: actionTypes.LOADING_MY_JOIN_FAIL,
                     err,
@@ -84,10 +81,8 @@ const onLoadTypeAct = (type) => {
                     items: data,
                     typeName: type,
                 });
-                console.log(data);
             })
             .catch(err => {
-                console.log(err);
                 dispatch({
                     type: actionTypes.LOADING_TYPE_FAIL,
                     err,
@@ -117,10 +112,8 @@ const onLoadActDetail = (id, jwt, currentUserId, followingList) => {
                     type: actionTypes.LOAD_ACT_DETAIL_OK,
                     data: data,
                 });
-                console.log(data);
             })
             .catch(err => {
-                console.log(err);
                 dispatch({
                     type: actionTypes.LOAD_ACT_DETAIL_FAIL,
                     err,
@@ -133,16 +126,14 @@ const resetActDetail = () => ({
 });
 const addComment = (comment, jwt) => {
     return dispatch => {
-        Api.addComment(comment, jwt)
+        Api.addComment(Model.buildComment(comment), jwt)
             .then(data => {
-                console.log(data);
                 dispatch({
                     type: actionTypes.ADD_COMMENT_OK,
                     comment: comment,
                 });
             })
             .catch(err => {
-                console.log(err);
                 dispatch({
                     type: actionTypes.ADD_COMMENT_FAIL,
                     err,
@@ -162,7 +153,6 @@ const onLoadPublishDraft = () => {
                 })
             })
             .catch(err => {
-                console.log(err);
                 dispatch({
                     type: actionTypes.LOAD_PUBLISH_FAIL,
                     err,

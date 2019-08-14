@@ -1,6 +1,6 @@
 import React from "react";
 import {View, StyleSheet, FlatList, Text} from "react-native";
-import {Divider, Image, ListItem, Button} from "react-native-elements";
+import { Image, ListItem, Button} from "react-native-elements";
 import UserAvatar from "../../../common/components/UserAvatar";
 import {ArrowLeftIcon, ChevronDownIcon, ChevronUpIcon} from "../../../common/components/Icons";
 import HeaderBar from "../../../common/components/HeaderBar";
@@ -146,7 +146,7 @@ export default class Feedback extends React.Component{
                 {title}
                 <FlatList
                     data={data}
-                    keyExtractor={item => item.user_id.toString()}
+                    keyExtractor={item => item.id.toString()}
                     renderItem={this.renderItem}
                 />
             </View>
@@ -155,8 +155,8 @@ export default class Feedback extends React.Component{
     renderItem = ({item}) => {
         let leftAvatar = (
             <UserAvatar
-                source={{uri: item.user_avatar}}
-                id={item.user_id}
+                source={{uri: item.avatar}}
+                id={item.id}
                 containerStyle={styles.itemLeftAvatarContainer}
             />
         );
@@ -164,9 +164,9 @@ export default class Feedback extends React.Component{
         return (
             <ListItem
                 leftAvatar={leftAvatar}
-                title={item.user_nickname}
+                title={item.nickname}
                 titleStyle={styles.itemTitle}
-                subtitle={item.user_signature}
+                subtitle={item.signature}
                 subtitleStyle={styles.itemSubtitle}
                 rightElement={rightElement}
                 containerStyle={styles.itemContainer}
@@ -214,7 +214,6 @@ export default class Feedback extends React.Component{
         let { id } = this.props.navigation.getParam("act");
         Api.getActParticipants(id)
             .then(data => {
-                console.log(data);
                 this.setState({participants: data});
             })
             .catch(err => {
@@ -223,7 +222,8 @@ export default class Feedback extends React.Component{
     };
     goBack = () => {
         NavigationUtil.back(this.props);
-    }
+    };
+    toUserFeedback: () => {};
 }
 
 const imageContainerLen = Util.getVerticalWindowDimension().width * 0.293;

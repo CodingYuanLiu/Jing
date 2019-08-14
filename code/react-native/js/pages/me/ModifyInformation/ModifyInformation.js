@@ -1,14 +1,14 @@
 import React from "react"
 import { View, Text, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
 import HeaderBar from "../../../common/components/HeaderBar";
-import {CameraIcon, ChevronIcon, CloseIcon} from "../../../common/components/Icons";
+import { CameraIcon, ChevronIcon, CloseIcon } from "../../../common/components/Icons";
 import NavigationUtil from "../../../navigator/NavUtil";
-import {Avatar, Button, CheckBox, ListItem} from "react-native-elements";
+import { Avatar, Button, CheckBox } from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import Modal from "react-native-modal";
-import {connect} from "react-redux";
-import {updateUserAvatar, updateUserInfo} from "../../../actions/currentUser";
+import { connect } from "react-redux";
+import { updateUserAvatar, updateUserInfo } from "../../../actions/currentUser";
 import Api from "../../../api/Api";
 import Util from "../../../common/util";
 

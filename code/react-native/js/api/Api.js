@@ -477,7 +477,7 @@ export default class Api {
                      *
                      */
                     let data = res.data;
-                    resolve(Model.tra);
+                    resolve(Model.transferApplicantList(data));
                 })
                 .catch(err => {
                     Reject(err, reject);
@@ -488,7 +488,15 @@ export default class Api {
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/act/getactivitymember?act_id=${id}`)
                 .then(res => {
-                    resolve(res.data);
+
+                    /**
+                     * id: data.user_id,
+                     * nickname: data.user_nickname,
+                     * signature: data.user_signature,
+                     * avatar: data.user_avatar,
+                     */
+                    let data = res.data;
+                    resolve(Model.transferParticipantList(data));
                 })
                 .catch(err => {
                     Reject(err, reject);
@@ -542,6 +550,11 @@ export default class Api {
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/takeout/searchshop?key=${keyword}`)
                 .then(res => {
+
+                    /**
+                     * id,
+                     * name
+                     */
                     resolve(res.data);
                 })
                 .catch(err => {
@@ -553,9 +566,9 @@ export default class Api {
         return new Promise((resolve, reject) => {
             axios.get(`/api/public/act/search?key=${text}`)
                 .then(res => {
+
                     let acts = res.data ? res.data.acts : [];
                     resolve(Model.transferActivityList(acts));
-                    //this.recordBehavior().catch(err => {console.log(err)});
                 })
                 .catch(err => {
                     Reject(err, reject);
@@ -710,7 +723,15 @@ export default class Api {
                 },
             })
                 .then(res => {
-                    resolve(res.data);
+
+                    /**
+                     * id: data.id,
+                     * nickname: data.nickname,
+                     * avatar: data.avatar_url,
+                     * signature: data.signature,
+                     */
+                    let data = res.data;
+                    resolve(Model.transferFollowingList(data));
                 })
                 .catch(err => {
                     Reject(err, reject);
@@ -725,7 +746,15 @@ export default class Api {
                 },
             })
                 .then(res => {
-                    resolve(res.data);
+
+                    /**
+                     * id: data.id,
+                     * nickname: data.nickname,
+                     * avatar: data.avatar_url,
+                     * signature: data.signature,
+                     */
+                    let data = res.data;
+                    resolve(Model.transferFollowerList(data));
                 })
                 .catch(err => {
                     Reject(err, reject);

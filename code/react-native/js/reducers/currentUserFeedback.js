@@ -1,6 +1,9 @@
 import {GET_USER_FEEDBACK_FAIL, GET_USER_FEEDBACK_OK, ON_GET_USER_FEEDBACK} from "../common/constant/ActionTypes";
 
-const initialState = {};
+const initialState = {
+    isLoading: false,
+    items: [],
+};
 
 const currentUserFeedback = (state = initialState, action) => {
     switch(action.type) {
@@ -20,7 +23,9 @@ const currentUserFeedback = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 error: action.err,
-            }
+            };
+        default:
+            return state;
     }
 };
 

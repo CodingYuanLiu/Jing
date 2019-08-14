@@ -5,16 +5,21 @@ import UserAvatar from "../../../common/components/UserAvatar";
 import UserNickname from "../../../common/components/UserNickname";
 import {Button, ListItem} from "react-native-elements";
 import {PlusIcon} from "../../../common/components/Icons";
+import {onFollow, onUnFollow} from "../../../actions/currentUserFollowing";
+import {connect} from "react-redux";
 
-export default class FollowItem extends React.PureComponent{
+class FollowItem extends React.PureComponent{
     constructor(props) {
         super(props);
+        this.state = {
+            isFollowing: false,
+            isUnFollowing: false,
+        }
     }
 
     render() {
-        let {isFollowing, isUnFollowing, item, onFollow, onUnFollow} = this.props;
-        let followItem = this.renderItem(item, onFollow, onUnFollow, isFollowing, isUnFollowing);
-        return followItem;
+        let {item} = this.props;
+        return  this.renderItem(item);
     }
     renderAvatar = (avatar, id) => {
         return (
@@ -33,16 +38,16 @@ export default class FollowItem extends React.PureComponent{
             />
         )
     };
-    renderFollowButton = (followed, onFollow, onUnFollow, isFollowing, isUnFollowing) => {
-        let rightElement = (
-            followed ?
+    renderFollowButton = (item) => {
+        return (
+            item.followed ?
                 <Button
                     title={"已关注"}
                     titleStyle={styles.followedText}
                     buttonStyle={styles.followedButton}
                     containerStyle={styles.listItemButtonContainer}
-                    onPress={onUnFollow}
-                    loading={isFollowing}
+                    onPress={() => {this.unFollow(item)}}
+                    loading={this.state.isFollowing}
                 /> :
                 <Button
                     title={"关注"}
@@ -54,18 +59,15 @@ export default class FollowItem extends React.PureComponent{
                     titleStyle={styles.unFollowedText}
                     buttonStyle={styles.unFollowedButton}
                     containerStyle={styles.listItemButtonContainer}
-                    onPress={onFollow}
-                    loading={isUnFollowing}
+                    onPress={() => {this.follow(item)}}
+                    loading={this.state.isUnFollowing}
                 />
-                );
-        return rightElement;
+        );
     };
-    renderItem = (item, onFollow, onUnFollow, isFollowing, isUnFollowing) => {
-        let avatar = this.renderAvatar(item.avatar_url, item.id);
+    renderItem = (item) => {
+        let avatar = this.renderAvatar(item.avatar, item.id);
         let nickname = this.renderNickname(item.nickname, item.id);
-        let rightElement = this.renderFollowButton(
-            item.followed, onFollow, onUnFollow, isFollowing, isUnFollowing
-            );
+        let rightElement = this.renderFollowButton(item);
         return (
             <ListItem
                 leftAvatar={avatar}
@@ -78,23 +80,54 @@ export default class FollowItem extends React.PureComponent{
             />
         )
     };
+
+    follow = (item) => {
+        this.setState({isFollowing: true});
+        let from = {
+            id: this.props.currentUser.id,
+        };
+        let jwt = this.props.currentUser.jwt;
+        let to = {
+            id: item.id,
+        };
+        this.props.follow(from, to, jwt, this);
+        this.props.setFollowed(item, true);
+    };
+    unFollow = (item) => {
+        this.setState({isUnFollowing: true});
+        let from = {
+            id: this.props.currentUser.id,
+        };
+        let jwt = this.props.currentUser.jwt;
+        let to = {
+            id: item.id,
+        };
+        this.props.unFollow(from, to, jwt, this);
+        this.props.setFollowed(item, false);
+    };
 }
+
+const mapStateToProps = state => ({
+    currentUser: state.currentUser,
+});
+const mapDispatchToProps = dispatch => ({
+    onFollow: (from, to, jwt, that) => dispatch(onFollow(from, to, jwt, that)),
+    onUnFollow: (from, to, jwt, that) => dispatch(onUnFollow(from, to, jwt, that)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(FollowItem);
+
 const ItemShape = {
     followed: PropTypes.boolean,
-    avatar_url: PropTypes.string,
+    avatar: PropTypes.string,
     id: PropTypes.number,
     nickname: PropTypes.string,
     signature: PropTypes.string,
 };
 FollowItem.propTypes = {
-    onFollow: PropTypes.func,
-    onUnFollow: PropTypes.func,
     item: PropTypes.shape(ItemShape),
+    setFollowed: PropTypes.func,
 };
-FollowItem.defaultProps = {
-    isFollowing: false,
-    isUnFollowing: false,
-};
+
 const styles = StyleSheet.create({
     listItemContainer: {
         width: "100%",

@@ -6,10 +6,8 @@ export const UPDATE_USER_INFO = 'UPDATE_USER_INFO';
 export const UPDATE_USER_AVATAR = 'UPDATE_USER_AVATAR';
 
 // follow action for current users
-export const ON_FOLLOW = 'ON_FOLLOW';
 export const FOLLOW_OK = 'FOLLOW_OK';
 export const FOLLOW_FAIL = 'FOLLOW_FAIL';
-export const ON_UNFOLLOW = 'ON_UNFOLLOW';
 export const UNFOLLOW_OK = 'UNFOLLOW_OK';
 export const UNFOLLOW_FAIL = 'UNFOLLOW_FAIL';
 export const ON_GET_USER_FOLLOWINGS = 'ON_GET_USER_FOLLOWING';

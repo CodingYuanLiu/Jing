@@ -14,7 +14,7 @@ class NewAct extends React.PureComponent{
         }
     }
     componentDidMount() {
-        this.loadData();
+        this.loadData('all');
     }
     render() {
         let {typeAct} = this.props;
@@ -62,7 +62,7 @@ class NewAct extends React.PureComponent{
                     refreshControl={
                         <RefreshControl
                             refreshing={actStore.isLoading}
-                            onRefresh={this.loadData}
+                            onRefresh={() => {this.loadData(this.state.type)}}
                             title={"加载中..."}
                             titleColor={"#0084ff"}
                             colors={["#0084ff"]}
@@ -115,17 +115,19 @@ class NewAct extends React.PureComponent{
                 onPress={() => {this._onPressItem(item.id)}}
             />)
     };
-    loadData = () => {
+    loadData = (type) => {
         let {onLoadTypeAct} = this.props;
-        let {type} = this.state;
         onLoadTypeAct(type);
     };
     _onPressItem = (id: number) => {
         NavigationUtil.toPage({id:id}, "ActDetail")
     };
     changeType = (type) => {
-        this.setState({type: type});
-        this.loadData();
+        this.setState(state => {
+            state.type = type;
+            this.loadData(type);
+            return state;
+        });
     };
 }
 

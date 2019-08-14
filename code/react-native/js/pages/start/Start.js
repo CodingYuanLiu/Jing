@@ -8,8 +8,9 @@ import Util from "../../common/util";
 import XmppApi from "../../api/XmppApi";
 import {addChatRoom, onSendMessage} from "../../actions/xmpp";
 import {CHAT_ROOM_LOADED} from "../../common/constant/ActionTypes";
-import {setUserData, onGetFollowers, onGetFollowings } from "../../actions/currentUser";
-
+import { setUserData } from "../../actions/currentUser";
+import { onGetCurrentUserFollowing } from "../../actions/currentUserFollowing";
+import { onGetCurrentUserFollower } from "../../actions/currentUserFollower";
 
 // fix xmpp.js cannot find base64 module error
 var base64 = require('base-64');
@@ -43,8 +44,8 @@ class StartPage extends React.Component {
                         } else {
                             // login success
                             let password = Util.cryptoOnpenFire(data.username, data.password);
-                            this.props.onGetFollowers(jwt);
-                            this.props.onGetFollowings(jwt);
+                            this.props.onGetCurrentUserFollower(jwt);
+                            this.props.onGetCurrentUserFollowing(jwt);
                             console.log(this.props);
                             XmppApi.login(data.username, password)
                                 .then(async () => {
@@ -149,8 +150,8 @@ const mapDispatchToProps = dispatch => ({
     addChatRoom: (room, roomName) => dispatch(addChatRoom(room, roomName)),
     chatRoomLoaded: () => dispatch({type: CHAT_ROOM_LOADED}),
     setUserData: (user) => dispatch(setUserData(user)),
-    onGetFollowers: (jwt) => dispatch(onGetFollowers(jwt)),
-    onGetFollowings: (jwt) => dispatch(onGetFollowings(jwt)),
+    onGetCurrentUserFollower: (jwt) => dispatch(onGetCurrentUserFollower(jwt)),
+    onGetCurrentUserFollowing: (jwt) => dispatch(onGetCurrentUserFollowing(jwt)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(StartPage);
 

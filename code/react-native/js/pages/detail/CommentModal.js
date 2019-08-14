@@ -2,13 +2,13 @@ import React from "react"
 import { View, Text, ScrollView, StyleSheet, TextInput, FlatList, RefreshControl} from 'react-native';
 import NoXXX from "../../common/components/NoXXX";
 import {Button, Icon } from "react-native-elements";
-import {CloseIcon, EmojiIcon} from "../../common/components/Icons";
+import {CloseIcon, EmojiIcon, MultiCommentIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
 import Modal from "react-native-modal";
 import {connect} from "react-redux";
 import Activity from "../../actions/activity";
-import Util from "../../common/util";
 import Comment from "./components/Comment";
+import Util from "../../common/util";
 
 class CommentModal extends React.PureComponent{
     constructor(props) {
@@ -71,15 +71,15 @@ class CommentModal extends React.PureComponent{
     renderCommentItem = ({item}) => {
         return (
             <Comment
-                avatar={item.user_avatar}
+                avatar={item.user.avatar}
                 content={item.content}
                 time={item.time}
-                receiverName={item.receiver_nickname ? item.receiver_nickname : ""}
-                receiverId={item.receiver_id}
-                nickname={item.user_nickname}
-                id={item.user_id}
+                receiverName={item.receiverName ? item.receiverName : ""}
+                receiverId={item.receiverId}
+                nickname={item.user.nickname}
+                id={item.user.id}
                 onPress={() => {
-                    this.openCommentModal(item.user_id, item.user_nickname)
+                    this.openCommentModal(item.user.id, item.user.nickname)
                 }}
             />
             );
@@ -90,7 +90,7 @@ class CommentModal extends React.PureComponent{
                 <FlatList
                     data={comments}
                     renderItem={this.renderCommentItem}
-                    keyExtractor={item => (item.create_time)}
+                    keyExtractor={item => (item.time)}
                     refreshControl={
                         <RefreshControl
                             refreshing={false}
@@ -101,9 +101,7 @@ class CommentModal extends React.PureComponent{
 
         } else {
             let noCommentIcon =
-                <Icon
-                    type={"octicon"}
-                    name={"comment-discussion"}
+                <MultiCommentIcon
                     size={80}
                     color={"#e0e0e0"}
                 />;
@@ -185,14 +183,16 @@ class CommentModal extends React.PureComponent{
 
     publishComment = () => {
         let comment = {
-            receiver_id: this.state.receiverId,
-            receiver_nickname: this.state.receiverName,
+            receiverId: this.state.receiverId,
+            receiverName: this.state.receiverName,
             content: this.state.commentContent,
-            act_id: this.props.currentAct.id,
+            actId: this.props.currentAct.id,
+            user: {
+                id: this.props.currentUser.id,
+                avatar: this.props.currentUser.avatar,
+                nickname: this.props.currentUser.nickname,
+            },
             time: Util.dateTimeToString(new Date()),
-            user_id: this.props.currentUser.id,
-            user_avatar: this.props.currentUser.avatar,
-            user_nickname: this.props.currentUser.nickname,
         };
         this.props.addComment(comment, this.props.currentUser.jwt);
         this.setState({commentContent: ""});

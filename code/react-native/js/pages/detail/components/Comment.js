@@ -1,7 +1,6 @@
 import React from "react";
 import {View, Text, StyleSheet, TouchableWithoutFeedback} from "react-native";
 import {CaretRightIcon} from "../../../common/components/Icons";
-import {Avatar} from "react-native-elements";
 import {PropTypes} from "prop-types";
 import {ReplyIcon} from "../../../common/components/Icons";
 import UserAvatar from "../../../common/components/UserAvatar";

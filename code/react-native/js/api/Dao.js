@@ -21,23 +21,17 @@ export default class Dao {
 
 
     static get = async (key) => {
-        try {
-            const value = await AsyncStorage.getItem(key);
-            if (value !== null) {
-                return value
-            } else {
-                let err = new Error("AsyncStorage did not found value, " + key);
-                throw err;
-            }
-        } catch (err) {
-            throw new Error(err)
+        let res = await AsyncStorage.getItem(key);
+        if (!res) {
+            throw new Error("Null value of, " + key);
+        } else {
+            return res;
         }
     };
 
     static remove = async (key) => {
         try {
             await AsyncStorage.removeItem(key);
-            return;
         } catch (err) {
             err.message = "delete fail";
             throw new Error(err)

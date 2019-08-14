@@ -1,16 +1,16 @@
 import React from "react";
-import {StyleSheet, View, ScrollView} from "react-native";
-import {ListItem, Button} from "react-native-elements";
+import { StyleSheet, View, ScrollView } from "react-native";
+import { ListItem, Button } from "react-native-elements";
 import UserAvatar from "../../../common/components/UserAvatar";
 import FeedbackItem from "./FeedbackItem";
 import ImagePicker from "react-native-image-picker";
-import {ArrowLeftIcon, ImageIcon} from "../../../common/components/Icons";
+import { ArrowLeftIcon, ImageIcon } from "../../../common/components/Icons";
 import HeaderBar from "../../../common/components/HeaderBar";
 import NavigationUtil from "../../../navigator/NavUtil";
 import Util from "../../../common/util";
-import {Image} from "react-native-elements";
+import { Image } from "react-native-elements";
 import Api from "../../../api/Api";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import Model from "../../../api/Model";
 
 
@@ -81,16 +81,16 @@ class FeedbackPage extends React.Component{
         let {user} = this.props.navigation.getParam("props");
         let avatar = (
             <UserAvatar
-                id={user.user_id}
-                source={{uri: user.user_avatar}}
+                id={user.id}
+                source={{uri: user.avatar}}
             />
         );
         return (
             <ListItem
                 leftAvatar={avatar}
-                title={user.user_nickname}
+                title={user.nickname}
                 titleStyle={styles.userTitle}
-                subtitle={user.user_signature}
+                subtitle={user.signature}
                 subtitleStyle={styles.userSubtitle}
                 containerStyle={styles.userContainer}
             />
@@ -219,7 +219,7 @@ class FeedbackPage extends React.Component{
         let {user, act} = this.props.navigation.getParam("props");
         return {
             actId: act.id,
-            receiverId: user.user_id,
+            receiverId: user.id,
             ...state,
         }
     }

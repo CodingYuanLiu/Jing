@@ -2,7 +2,7 @@ import {GET_USER_FOLLOWERS_FAIL, GET_USER_FOLLOWERS_OK, ON_GET_USER_FOLLOWERS} f
 import Api from "../api/Api";
 
 
-export const loadCurrentUserFollower = (jwt) => {
+export const onGetCurrentUserFollower = (jwt) => {
     return dispatch => {
         dispatch({
             type: ON_GET_USER_FOLLOWERS,

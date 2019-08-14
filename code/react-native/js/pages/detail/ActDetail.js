@@ -16,7 +16,7 @@ import {connect} from "react-redux";
 import Util from "../../common/util";
 import Api from "../../api/Api";
 import CommentPreview from "./components/CommentPreview";
-import {onFollow, onUnFollow} from "../../actions/currentUser";
+import {onFollow, onUnFollow} from "../../actions/currentUserFollowing";
 import UserAvatar from "../../common/components/UserAvatar";
 import UserNickname from "../../common/components/UserNickname";
 import HeaderBar from "../../common/components/HeaderBar";
@@ -37,14 +37,14 @@ class DetailScreen extends React.Component {
 
     componentDidMount(){
         this.loadData(this.actId, this.props.currentUser.jwt,
-            this.props.currentUser.id, this.props.currentUser.followingList);
+            this.props.currentUser.id, this.props.currentUserFollowing.items);
     }
 
     render() {
         let activity = this.props.currentAct;
         let {title, comments, tags, images,
             createTime, description, sponsor} = activity;
-        let specInfo = {};
+        let specInfo = {}; // waiting for modifying
         let header = this.renderHeader();
         let ActTitle = this.renderTitle(title, tags);
         let body = this.renderBody(sponsor, specInfo, description, images, createTime, comments);
@@ -150,7 +150,7 @@ class DetailScreen extends React.Component {
                 titleStyle={{color: "#9a9a9a"}}
                 buttonStyle={styles.followBtn}
                 onPress={this.unFollow}
-                loading={this.props.currentUser.isUnFollowing}
+                loading={this.state.isUnFollowing}
                 containerStyle={{width: 100,}}
             />:
                 <Button
@@ -158,7 +158,7 @@ class DetailScreen extends React.Component {
                     titleStyle={{color: "#0084ff"}}
                     buttonStyle={styles.followBtn}
                     onPress={this.follow}
-                    loading={this.props.currentUser.isFollowing}
+                    loading={this.state.isFollowing}
                     icon={
                         <PlusIcon
                             size={24}
@@ -208,11 +208,11 @@ class DetailScreen extends React.Component {
                     previewComments.map((comment, i) => {
                     return (
                         <CommentPreview
-                            avatar={comment.user_avatar}
-                            id={comment.user_id}
+                            avatar={comment.user.avatar}
+                            id={comment.user.id}
                             content={comment.content}
-                            nickname={comment.user_nickname}
-                            key={i}
+                            nickname={comment.user.nickname}
+                            key={i.toString()}
                         />
                         );
                     })
@@ -393,7 +393,6 @@ class DetailScreen extends React.Component {
             comments: comments,
             sponsor: sponsor.nickname
         }, "ActComment");
-
     };
     toPublishPage = () => {
         let currentAct = this.props.currentAct;
@@ -453,14 +452,15 @@ class DetailScreen extends React.Component {
 
     // generate preview comments from given comments
     getPreviewComments = (comments) => {
-        let previewComments = new Array();
+        let previewComments = [];
         let count = 0;
         for (let i = comments.length - 1; i >= 0 && count < 2; i--) {
-            if( comments[i].receiver_id === -1 ) {
+            if( comments[i].receiverId === -1 ) {
                 previewComments.push(comments[i]);
                 count++;
             }
         }
+        console.log(previewComments);
         return previewComments
     };
 
@@ -479,8 +479,7 @@ class DetailScreen extends React.Component {
                 avatar_url: currentAct.sponsor.avatar,
                 signature: currentAct.sponsor.signature,
             };
-            console.log(currentAct);
-            this.props.onFollow(from, to, currentUser.jwt);
+            this.props.onFollow(from, to, currentUser.jwt, this);
         }
     };
 
@@ -495,8 +494,7 @@ class DetailScreen extends React.Component {
             let to = {
                 id: this.props.currentAct.sponsor.id,
             };
-            console.log(from, to,);
-            this.props.onUnFollow(from, to, currentUser.jwt);
+            this.props.onUnFollow(from, to, currentUser.jwt, this);
         }
     }
 }
@@ -504,13 +502,14 @@ class DetailScreen extends React.Component {
 const mapStateToProps = state => ({
     currentAct: state.currentAct,
     currentUser: state.currentUser,
+    currentUserFollowing: state.currentUserFollowing,
 });
 const mapDispatchToProps = dispatch => ({
     onLoadActDetail: (actId, jwt, currentUserId, followingList) =>
         dispatch(Activity.onLoadActDetail(actId, jwt, currentUserId, followingList)),
     resetActDetail: () => dispatch(Activity.resetActDetail()),
-    onFollow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
-    onUnFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
+    onFollow: (from, to, jwt, that) => dispatch(onFollow(from, to, jwt, that)),
+    onUnFollow: (from, to, jwt, that) => dispatch(onUnFollow(from, to, jwt, that)),
     saveTaxiAct: data => dispatch(Activity.saveTaxiAct(data)),
     saveTakeoutAct: data => dispatch(Activity.saveTakeoutAct(data)),
     saveOrderAct: data => dispatch(Activity.saveOrderAct(data)),

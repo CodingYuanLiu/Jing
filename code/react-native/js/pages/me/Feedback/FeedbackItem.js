@@ -1,7 +1,7 @@
 import React from "react";
-import {View, Text, TextInput, StyleSheet, ViewPropTypes} from "react-native";
-import {Rating, AirbnbRating} from "react-native-elements";
-import {PropTypes} from "prop-types";
+import { View, Text, TextInput, StyleSheet, ViewPropTypes } from "react-native";
+import { AirbnbRating } from "react-native-elements";
+import { PropTypes } from "prop-types";
 
 export default class FeedbackItem extends React.Component{
     constructor(props) {
@@ -10,7 +10,6 @@ export default class FeedbackItem extends React.Component{
 
     render() {
         let {label, onRating, onChangeText, text} = this.props;
-        console.log(text);
         let labelComponent = this.renderLabel(label);
         let ratingComponent = this.renderRating(onRating);
         let descriptionComponent = this.renderDescription(text, onChangeText);

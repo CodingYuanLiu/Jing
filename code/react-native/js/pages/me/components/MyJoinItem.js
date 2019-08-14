@@ -1,6 +1,6 @@
 import React from "react";
 import {View, StyleSheet, Text, ScrollView} from "react-native";
-import {Avatar, Button, ListItem, Tooltip} from "react-native-elements";
+import { Button, ListItem } from "react-native-elements";
 import {EllipsisIcon} from "../../../common/components/Icons";
 import Theme from "../../../common/constant/Theme";
 import {PropTypes} from "prop-types";
