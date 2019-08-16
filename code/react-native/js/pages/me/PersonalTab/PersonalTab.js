@@ -1,18 +1,26 @@
 import {createAppContainer, createMaterialTopTabNavigator} from "react-navigation";
-import PersonalPublish from "./PersonalPublish";
-import PersonalFeedback from "./Feedback";
-import PersonalJoin from "./PersonalJoin";
+import PersonalManage from "./PersonalManage";
+import PersonalFeedback from "./PersonalFeedback";
 import React from "react";
 import {View} from "react-native";
+import Util from "../../../common/util";
 
+
+const window = Util.getVerticalWindowDimension();
 export default class PersonalTab extends React.Component{
     constructor(props){
         super(props);
     }
 
+    componentDidMount() {
+        console.log(window);
+    };
+
     render() {
+        console.log(window.height);
         return (
-            <View style={{flex: 1}}>
+            // why 24 ?
+            <View style={{flex: 1, height: window.height - 24 - 50,}}>
                 <Tab/>
             </View>
         )
@@ -22,16 +30,10 @@ export default class PersonalTab extends React.Component{
 const Tab = createAppContainer(
     createMaterialTopTabNavigator(
         {
-            PersonalPublish: {
-                screen: PersonalPublish,
+            PersonalManage: {
+                screen: PersonalManage,
                 navigationOptions: {
                     title: "发布",
-                },
-            },
-            PersonalJoin: {
-                screen: PersonalJoin,
-                navigationOptions: {
-                    title: "参与",
                 },
             },
             PersonalFeedback: {
@@ -44,22 +46,22 @@ const Tab = createAppContainer(
             tabBarOptions: {
                 style: {
                     backgroundColor: "#fff",
-                    height: 60,
                     borderTopWidth: 0.5,
                     borderColor: "#eee",
-                    elevation: 2,
+                    elevation: 0,
                     justifyContent: "flex-end",
                 },
                 tabStyle: {
-                    height: 40,
                 },
                 labelStyle: {
                     color: "#7a7a7a",
                 },
                 indicatorStyle: {
                     backgroundColor: "#0084ff",
+                    width: 60,
+                    marginLeft: (window.width / 2 - 60) /2,
                 },
             }
         }
     )
-)
+);

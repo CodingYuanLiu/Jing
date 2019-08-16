@@ -383,6 +383,22 @@ export default class Api {
                 })
         })
     }
+    static getActByUser(id, jwt) {
+        return new Promise((resolve, reject) => {
+            axios.get(`/api/public/act/findbyuser?id=${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${jwt}`,
+                }
+            })
+                .then(res => {
+                    let data = res.data;
+                    resolve(Model.transferActivityList(data.acts? data.acts : data));
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        })
+    }
 
     /**
      *

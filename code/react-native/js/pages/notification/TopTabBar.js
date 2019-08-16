@@ -2,8 +2,9 @@ import React from "react";
 import SystemNotice from './pages/SystemNotice';
 import PrivateMsg from './pages/PrivateMsg';
 import GroupChat from './pages/GroupChat';
+import Util from "../../common/util";
 
-
+const window = Util.getVerticalWindowDimension();
 const NoticeTopTab = {
     SystemNotice: {
         screen: SystemNotice,
@@ -23,7 +24,7 @@ const NoticeTopTab = {
             title: "聊天"
         }
     },
-}
+};
 const NoticeTabConfig = {
     tabBarOptions: {
         style: {
@@ -35,7 +36,9 @@ const NoticeTabConfig = {
             height: 50,
         },
         indicatorStyle: {
-            color: "white"
+            backgroundColor: "#fff",
+            width: 60,
+            marginLeft: ( window.width / 3 - 60 ) / 2,
         },
         labelStyle: {
           fontSize: 16

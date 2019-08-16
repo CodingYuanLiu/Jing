@@ -1,7 +1,7 @@
 import {GET_USER_FEEDBACK_FAIL, GET_USER_FEEDBACK_OK, ON_GET_USER_FEEDBACK} from "../common/constant/ActionTypes";
 
 
-export const loadCurrentUserFeedback = (id) => {
+export const onGetCurrentUserFeedback = (id) => {
     return dispatch => {
         dispatch({
             type: ON_GET_USER_FEEDBACK,

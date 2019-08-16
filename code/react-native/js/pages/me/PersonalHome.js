@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, ScrollView, StyleSheet, TouchableWithoutFeedback, TouchableOpacity} from "react-native";
+import {View, Text, ScrollView, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Animated} from "react-native";
 import ParallaxScrollView from "react-native-parallax-scroll-view";
 import {ArrowLeftIcon, ChevronIcon, MessageOneToOneIcon, PlusIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
@@ -9,7 +9,12 @@ import {connect} from "react-redux";
 import ImagePicker from "react-native-image-picker";
 import Api from "../../api/Api";
 import PersonalTab from "./PersonalTab/PersonalTab";
-
+import {
+    getPersonalFeedback,
+    getPersonalInformation,
+    getPersonalManageAct,
+    toggleNestScroll
+} from "../../actions/personalHome";
 
 const window = Util.getVerticalWindowDimension();
 const STICKY_HEADER_HEIGHT = 50;
@@ -45,6 +50,8 @@ class PersonalHome extends React.PureComponent {
                 isSelf: false,
             })
         }
+        this.props.getPersonalManageAct(id, this.props.currentUser.jwt);
+        this.props.getPersonalFeedback(id);
     };
 
     render() {
@@ -61,6 +68,8 @@ class PersonalHome extends React.PureComponent {
                 contentBackgroundColor={"transparent"}
                 contentContainerStyle={styles.contentContainer}
                 backgroundColor={"transparent"}
+                renderScrollComponent={this.renderScrollElement}
+                scrollEventListener={this.toggleNestScroll}
             >
 
                 <View style={styles.container}>
@@ -110,6 +119,16 @@ class PersonalHome extends React.PureComponent {
             <View style={styles.fixedHeaderContainer}>
                 {arrowLeftIcon}
             </View>
+        )
+    };
+    renderScrollElement = () => {
+        let {personalHome} = this.props;
+        console.log(this._scroll);
+        return (
+            <Animated.ScrollView
+                scrollEnabled={!personalHome.nestScrollEnabled}
+                ref={"_scroll"}
+            />
         )
     };
     renderUser = () => {
@@ -216,7 +235,7 @@ class PersonalHome extends React.PureComponent {
                 <Button
                 icon={
                     <ChevronIcon
-                    color={"#bfbfbf"}
+                        color={"#bfbfbf"}
                     />
                 }
                 iconRight
@@ -237,15 +256,6 @@ class PersonalHome extends React.PureComponent {
     };
     renderTabNav = () => {
         return <PersonalTab/>;
-    };
-    loadData = async (id) => {
-        try {
-            let data = await Api.getUserInfo(id);
-            this.setState({user: data});
-        } catch (err) {
-            console.log(err)
-        }
-
     };
     showAvatarPicker = () => {
         ImagePicker.showImagePicker(imagePickerOptions, (response) => {
@@ -287,6 +297,26 @@ class PersonalHome extends React.PureComponent {
             }
         });
     };
+    loadData = async (id) => {
+        try {
+            let data = await Api.getUserInfo(id);
+
+            this.setState({user: data});
+        } catch (err) {
+            console.log(err)
+        }
+
+    };
+    toggleNestScroll = ({nativeEvent}) => {
+        let {contentOffset, layoutMeasurement, contentSize} = nativeEvent;
+        let {toggleNestScroll} = this.props;
+
+        if (contentSize.height - contentOffset.y <= layoutMeasurement.height) {
+            toggleNestScroll(true);
+        } else {
+            toggleNestScroll(false);
+        }
+    };
 }
 const imagePickerOptions = {
     title: "选择",
@@ -300,14 +330,20 @@ const imagePickerOptions = {
     quality: 0.4,
 };
 const mapStateToProps = state => ({
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    personalHome: state.personalHome,
 });
-export default connect(mapStateToProps, null)(PersonalHome);
+const mapDispatchToProps = dispatch => ({
+    getPersonalFeedback: (id) => dispatch(getPersonalFeedback(id)),
+    getPersonalManageAct: (id, jwt) => dispatch(getPersonalManageAct(id, jwt)),
+    getPersonalInformation: (id) => dispatch(getPersonalInformation(id)),
+    toggleNestScroll: (flag) => dispatch(toggleNestScroll(flag)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(PersonalHome);
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        minHeight: 500,
     },
     topContainer: {
         borderTopLeftRadius: 10,
@@ -330,7 +366,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         height: STICKY_HEADER_HEIGHT,
-        backgroundColor: "#1f9fff",
+        backgroundColor: "#0084ff",
     },
     stickyHeaderText: {
         marginLeft: 60,
@@ -342,8 +378,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         backgroundColor: "#fff",
-        position: "relative",
-        top: -10,
     },
 
     // top user information container

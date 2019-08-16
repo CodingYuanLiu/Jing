@@ -11,6 +11,7 @@ import currentUserFollower from "./currentUserFollower";
 import currentUserFeedback from "./currentUserFeedback";
 import currentUserJoin from "./currentUserJoin";
 import currentUserManage from "./currentUserManage";
+import personalHome from "./personalHome";
 
 export default combineReducers({
     currentAct,
@@ -21,6 +22,7 @@ export default combineReducers({
     currentUserJoin,
     currentUserManage,
     myAct,
+    personalHome,
     publishAct,
     recommendAct,
     typeAct,

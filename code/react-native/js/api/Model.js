@@ -236,7 +236,7 @@ export default class Model {
     };
     static transferFeedbackList = (list) => {
         if (!list) return [];
-        let res = new Array();
+        let res = [];
         for (let item of list) {
             res.push(this.transferFeedbackItem(item))
         }
