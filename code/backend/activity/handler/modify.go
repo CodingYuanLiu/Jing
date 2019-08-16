@@ -34,6 +34,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 
 	//When a status change occurs, discard all application.
 	if (status == 1 || status == 2) && int32(mapBasicInfo["status"].(int))== 0 {
+		log.Println("Discard applications")
 		dao.DiscardActivityApplication(int(req.ActId))
 	}
 
