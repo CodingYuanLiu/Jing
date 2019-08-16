@@ -30,6 +30,7 @@ func (actSrv *ActivitySrv) Query(ctx context.Context,req *activity.QryReq,resp *
 		err = dao.Collection.Update(bson.M{"actid":req.ActId},
 		bson.M{"$set":bson.M{"basicinfo.status":int32(2)}})
 		log.Println("Update overdue status")
+		dao.DiscardActivityApplication(int(req.ActId))
 		if err != nil{
 			log.Println("Update overdue status error")
 			log.Println(err)
