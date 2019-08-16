@@ -308,7 +308,7 @@ func GetUnacceptedApplication(userId int) ([]int,error){
 	return actId,nil
 }
 
-func CancelApplicationOfBlockedActivity(actId int){
+func DiscardActivityApplication(actId int){
 	db.Model(Join{}).Where("act_id = ? and is_admin = ?", actId, -1).UpdateColumn(actId, -3)
 }
 

@@ -514,8 +514,7 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 	acceptId, _ := strconv.Atoi(c.Query("user_id"))
 	err = dao.AcceptJoinActivity(acceptId, actId)
 	if err != nil {
-		jing.SendError(c, err)
-		c.Abort()
+		jing.SendError(c,err)
 		return
 	}
 	_ = dao.Collection.Update(bson.M{"actid":actId},
@@ -882,7 +881,7 @@ func (activityController *Controller) BlockActivity(c *gin.Context){
 		return
 	}
 
-	dao.CancelApplicationOfBlockedActivity(actId)
+	dao.DiscardActivityApplication(actId)
 
 	c.JSON(http.StatusOK,map[string] string{
 		"message":"block activity successfully",
@@ -935,11 +934,15 @@ func (activityController *Controller) GetActivityMembers(c *gin.Context){
 			jing.SendError(c,jing.NewError(301,404,"can not find a member in mysql"))
 			return
 		}
+		var feedback []dao.Feedback
+		err = dao.FeedbackCollection.Find(bson.M{"$and":
+			[]bson.M{bson.M{"receiverid":user.ID},bson.M{"actid":actId}}}).All(&feedback)
 		returnJSON = append(returnJSON,myjson.JSON{
 			"user_id":user.ID,
 			"user_avatar":"http://image.jing855.cn/" + user.AvatarKey,
 			"user_nickname":user.Nickname,
 			"user_signature":user.Signature,
+			"user_feedback":feedback,
 		})
 	}
 	c.JSON(http.StatusOK,returnJSON)

@@ -779,6 +779,13 @@ Status OK - 200
         "user_nickname":"孙笑川",
         "user_signature":"...",
         "user_avatar":"http://image.jing855.cn/...",
+        "user_feedback":[
+            {
+                "Id": "5d3eaeae1a4eb65070f18dba",
+                ...
+            },
+            ...
+        ]
     },
     ...
 ]
