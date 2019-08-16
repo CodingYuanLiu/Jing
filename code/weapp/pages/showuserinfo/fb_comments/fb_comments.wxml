@@ -1,0 +1,26 @@
+<!--pages/showuserinfo/fb_comments/fb_comments.wxml-->
+<view class="container">
+    <block wx:for="{{comments}}" wx:key="id" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+        <i-card style="width: 100%" i-class="card-demo" full title="{{item.commentator_nickname}}" thumb="{{item.commentator_avatar}}" extra="{{item.time}}">
+            <view slot="content">
+                {{item.comment_desc}}
+            </view>
+            <!-- <view slot="footer">
+            <label bindtap="handleToComments" data-id="{{idx}}" style="float: right; margin-bottom: 5px;">评价 {{item.fb_comments.length}}</label>
+        </view> -->
+        </i-card>
+    </block>
+    <view style="height: 10vh"></view>
+    <view class="answer-footer flex-wrp">
+        <view class="operation">
+            <view class="search flex-wrp">
+                <view class="search-left flex-item">
+                    <input style="width: 78vw; " placeholder="添加评论" value="{{your_comment}}" bind:change="handleCommentInput" placeholder-class="search-placeholder" />
+                </view>
+                <view class="search-right flex-item"  bindtap="handleAddComment">
+                    <image src="../../../images/icons/icon_community_line.png"></image>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

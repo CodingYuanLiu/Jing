@@ -102,7 +102,24 @@ Page({
         console.log(actid);
         console.log(23);
         wx.navigateTo({
-            url: '/pages/my/editact/editact?id=' + actid +'&mode=' + mode
+            url: '/pages/answer/answer?id=' + actid
         })
     },
+    handleModify: function(event) {
+        let actid = event.currentTarget.dataset.id
+        let mode = event.currentTarget.dataset.mode
+        console.log(actid);
+        console.log(23);
+        wx.navigateTo({
+            url: '/pages/my/editact/editact?id=' + actid + '&mode=' + mode
+        })
+    },
+    handleParticipants: function (event) {
+        let actid = event.currentTarget.dataset.id
+        console.log(actid);
+        console.log(23);
+        wx.navigateTo({
+            url: '/pages/answer/participants/participants?act_id=' + actid
+        })
+    }
 })

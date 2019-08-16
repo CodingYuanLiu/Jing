@@ -14,20 +14,20 @@
                         <text>{{item.create_time}}</text>
                     </a>
                 </view>
-                <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}" data-mode="{{item.type}}">
-                    <view class="question">
+                <view class="feed-content">
+                    <view class="question"  bindtap="bindQueTap" data-id="{{item.act_id}}">
                         <a class="question-link">
                             <text>【{{item.type}}】 {{item.title}}</text>
                         </a>
                     </view>
                     <view class="answer-body">
-                        <view data-id="{{act_id}}">
+                        <view data-id="{{act_id}}"  bindtap="bindQueTap" data-id="{{item.act_id}}">
                             <text class="answer-txt" aid="{{act_id}}">{{item.description}}</text>
                         </view>
                         <!-- <view>
                             <image src="{{item.feed_img}}"></image>
                         </view> -->
-                        <view class="answer-actions">
+                        <view class="answer-actions" >
                             <view class="like dot">
                                 <a>👍 {{item.good_num}} </a>
                             </view>
@@ -37,6 +37,9 @@
                             <!-- <view class="follow-it">
                                 <a>{{item.comment_num}} 关注</a>
                             </view> -->
+                            <label style="width: 19vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleParticipants" data-id="{{item.act_id}}">查看参与者</label>
+                            <label wx:if="{{item.status!==2}}" style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleModify" data-mode="{{item.type}}" data-id="{{item.act_id}}">修改</label>
+
                         </view>
                     </view>
                 </view>

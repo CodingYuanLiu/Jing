@@ -1036,7 +1036,7 @@ Can not find the activity - 404
 A user can quit an activity via the API, but cannot rejoin the activity again.
 #### Request
 ```json
-POST /api/user/act/join?act_id=1 HTTP/1.1
+POST /api/user/act/quit?act_id=1 HTTP/1.1
 Authorization: Bearer jwt
 ```
 #### Response

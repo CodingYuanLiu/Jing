@@ -90,6 +90,7 @@
         <block wx:for="{{content.images}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <image mode="widthFix" src="{{item}}"></image>
         </block>
+        <button bindtap="handleToParticipants">查看已参与者</button>
     </view>
     <view class="ctnt0">
         <view class="unread">

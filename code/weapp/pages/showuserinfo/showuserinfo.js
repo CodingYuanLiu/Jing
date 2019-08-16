@@ -66,7 +66,38 @@ Page({
         })
 
     },
-
+    onShow: function() {
+        let that = this;
+        wx.request({
+            url: 'https://jing855.cn/api/public/detail?id=' + that.data.id,
+            method: 'GET',
+            success: function(res) {
+                console.log(res);
+                that.setData({
+                    user: res.data
+                });
+                if (res.data.avatar_url !== 'http://image.jing855.cn/') {
+                    that.setData({
+                        avatar_src: res.data.avatar_url
+                    })
+                }
+            }
+        })
+        wx.request({
+            url: 'https://jing855.cn/api/public/feedback/query?receiver_id=' + that.data.id,
+            method: 'GET',
+            success: function(res) {
+                console.log(res)
+                if (res.statusCode === 200)
+                    that.setData({
+                        feedback: res.data
+                    })
+                else that.setData({
+                    feedback: []
+                })
+            }
+        })
+    },
     handleChange({
         detail
     }) {
@@ -74,4 +105,25 @@ Page({
             current: detail.key
         });
     },
+
+    handleToComments: function(e) {
+        let id = e.currentTarget.dataset.id
+        console.log(id)
+        console.log(this.data.feedback[id])
+        let comments = JSON.stringify(this.data.feedback[id].fb_comments)
+        // let fake_comment = [
+        //     {
+        //         "comment_desc": "乱说",
+        //         "commentator_avatar": "http://image.jing855.cn/FmcpkwJsYI4nGTbB_FdlEjmMS6xW",
+        //         "commentator_id": 3,
+        //         "commentator_nickname": "孙笑川",
+        //         "time": "2019-7-29 17:17:36"
+        //     },
+        // ]
+        // let comments = JSON.stringify(fake_comment)
+        let fb_id = this.data.feedback[id].feedback_id
+        wx.navigateTo({
+            url: './fb_comments/fb_comments?id=' + fb_id + '&comments=' + comments,
+        })
+    }
 })
