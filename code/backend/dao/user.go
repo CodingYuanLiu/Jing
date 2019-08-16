@@ -262,6 +262,19 @@ func AcceptJoinActivity(userId int, actId int) error{
 	return nil
 }
 
+func RefuseJoinActivity(userId int, actId int) error {
+	join := Join{}
+	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
+	if join.ID == 0{
+		return jing.NewError(301,404,"application not found")
+	}
+	if join.IsAdmin != -1{
+		return jing.NewError(201,400,"application status error: not unaccepted")
+	}
+	db.Model(&join).Update("is_admin",-3)
+	return nil
+}
+
 func GetJoinApplication(userId int) ([]map[string]int,error){
 	myActs := GetManagingActivity(userId)
 	var applications []map[string] int
@@ -296,7 +309,7 @@ func GetUnacceptedApplication(userId int) ([]int,error){
 }
 
 func CancelApplicationOfBlockedActivity(actId int){
-	db.Delete(Join{},"act_id=? and is_admin=?",actId,-1)
+	db.Model(Join{}).Where("act_id = ? and is_admin = ?", actId, -1).UpdateColumn(actId, -3)
 }
 
 func FindUserById(id int) (User, error) {

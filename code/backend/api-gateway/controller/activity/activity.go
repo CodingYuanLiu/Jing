@@ -214,7 +214,7 @@ func (activityController *Controller) Status(c *gin.Context) {
 	})
 }
 
-func (activityController *Controller) 	Comment(c *gin.Context) {
+func (activityController *Controller) Comment(c *gin.Context) {
 	userId := c.GetInt("userId")
 	jsonStr, err := ioutil.ReadAll(c.Request.Body)
 	jsonForm := myjson.JSON{}
@@ -419,16 +419,16 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 	}
 	var act map[string] interface{}
 	err = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
-	if err != nil{
+	if err != nil {
 		jing.SendError(c,jing.NewError(301,404,"Can not find the activity"))
 		return
 	}
 	basicInfo := act["basicinfo"].(map [string]interface{})
 	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),int32(basicInfo["status"].(int)))
-	if status == 1{
+	if status == 1 {
 		jing.SendError(c,jing.NewError(201,400,"The activity is already full"))
 		return
-	} else if status == 2{
+	} else if status == 2 {
 		jing.SendError(c,jing.NewError(201,400,"The activity has already expired"))
 
 		return
@@ -514,9 +514,7 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 	acceptId, _ := strconv.Atoi(c.Query("user_id"))
 	err = dao.AcceptJoinActivity(acceptId, actId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message": "Accept join activity application error",
-		})
+		jing.SendError(c, err)
 		c.Abort()
 		return
 	}
@@ -525,6 +523,65 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 
 	c.JSON(http.StatusOK,map[string]string{
 		"message":"Accept successfully",
+	})
+}
+
+func (activityController *Controller) RefuseJoinActivity(c *gin.Context) {
+	userId := c.GetInt("userId")
+	acts := dao.GetManagingActivity(userId)
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
+		})
+		c.Abort()
+		return
+	}
+	flag := false
+	for _, v := range acts {
+		if actId == v {
+			flag = true
+		}
+	}
+	if !flag {
+		c.JSON(http.StatusForbidden, map[string]string {
+			"message": "403 Forbidden",
+		})
+		c.Abort()
+		return
+	}
+
+	var act map[string] interface{}
+	_ = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	basicInfo := act["basicinfo"].(map [string]interface{})
+	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),int32(basicInfo["status"].(int)))
+	if status == 1{
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message": "The member of the activity is full already",
+		})
+		c.Abort()
+		return
+	} else if status == 2{
+		c.JSON(http.StatusBadRequest,map[string] string{
+			"message": "The activity has expired",
+		})
+		c.Abort()
+		return
+	} else if status == -1 {
+		jing.SendError(c,jing.NewError(1,400,"The activity is blocked"))
+		return
+	}
+
+	acceptId, _ := strconv.Atoi(c.Query("user_id"))
+	err = dao.RefuseJoinActivity(acceptId, actId)
+	if err != nil {
+		jing.SendError(c, err)
+		c.Abort()
+		return
+	}
+
+	c.JSON(http.StatusOK,map[string]string{
+		"message":"Refuse successfully",
 	})
 }
 
