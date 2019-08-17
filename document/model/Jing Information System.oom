@@ -39708,7 +39708,7 @@ Shadow=0</a:DisplayPreferences>
 <o:DependencySymbol Id="o629">
 <a:CreationDate>1566088138</a:CreationDate>
 <a:ModificationDate>1566088592</a:ModificationDate>
-<a:Rect>((8900,26719), (31350,36281))</a:Rect>
+<a:Rect>((8900,26719), (31350,36279))</a:Rect>
 <a:ListOfPoints>((9300,35879),(29040,35879),(29040,27119))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>8</a:ArrowStyle>
@@ -39790,7 +39790,7 @@ Shadow=0</a:DisplayPreferences>
 <o:DependencySymbol Id="o638">
 <a:CreationDate>1566088173</a:CreationDate>
 <a:ModificationDate>1565657147</a:ModificationDate>
-<a:Rect>((-5486,13646), (13923,16049))</a:Rect>
+<a:Rect>((-5486,13626), (13923,16049))</a:Rect>
 <a:ListOfPoints>((13523,14639),(7080,15000),(2940,15240),(-5086,15371))</a:ListOfPoints>
 <a:ArrowStyle>8</a:ArrowStyle>
 <a:LineColor>16744576</a:LineColor>
@@ -39890,9 +39890,9 @@ Shadow=0</a:DisplayPreferences>
 </o:DependencySymbol>
 <o:DependencySymbol Id="o651">
 <a:CreationDate>1565656734</a:CreationDate>
-<a:ModificationDate>1565657010</a:ModificationDate>
-<a:Rect>((-29621,-48432), (-8271,-44960))</a:Rect>
-<a:ListOfPoints>((-29221,-47460),(-10581,-47460),(-10581,-45360))</a:ListOfPoints>
+<a:ModificationDate>1566003627</a:ModificationDate>
+<a:Rect>((-6330,-47621), (-1710,-41495))</a:Rect>
+<a:ListOfPoints>((-4020,-47221),(-4020,-41895))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>8</a:ArrowStyle>
 <a:LineColor>16744576</a:LineColor>
@@ -39971,7 +39971,7 @@ Shadow=0</a:DisplayPreferences>
 <o:DependencySymbol Id="o662">
 <a:CreationDate>1565657198</a:CreationDate>
 <a:ModificationDate>1565657198</a:ModificationDate>
-<a:Rect>((20481,22295), (44572,25000))</a:Rect>
+<a:Rect>((20481,22283), (44572,25000))</a:Rect>
 <a:ListOfPoints>((44172,24360),(44172,23609),(21181,23609),(21181,24600))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>8</a:ArrowStyle>
@@ -40051,7 +40051,7 @@ Shadow=0</a:DisplayPreferences>
 <o:DependencySymbol Id="o672">
 <a:CreationDate>1565657410</a:CreationDate>
 <a:ModificationDate>1565743878</a:ModificationDate>
-<a:Rect>((-10890,27079), (9700,36528))</a:Rect>
+<a:Rect>((-10890,27079), (9700,36512))</a:Rect>
 <a:ListOfPoints>((9300,35640),(-8580,35640),(-8580,27479))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>8</a:ArrowStyle>
@@ -40091,7 +40091,7 @@ Shadow=0</a:DisplayPreferences>
 <o:DependencySymbol Id="o678">
 <a:CreationDate>1565657412</a:CreationDate>
 <a:ModificationDate>1565743878</a:ModificationDate>
-<a:Rect>((-12090,27079), (20405,41267))</a:Rect>
+<a:Rect>((-12090,27079), (20405,41251))</a:Rect>
 <a:ListOfPoints>((20005,40379),(-9780,40379),(-9780,27479))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>8</a:ArrowStyle>
@@ -40111,7 +40111,7 @@ Shadow=0</a:DisplayPreferences>
 <o:DependencySymbol Id="o680">
 <a:CreationDate>1565657414</a:CreationDate>
 <a:ModificationDate>1565743876</a:ModificationDate>
-<a:Rect>((-11350,21051), (28807,37840))</a:Rect>
+<a:Rect>((-11350,21033), (28807,37840))</a:Rect>
 <a:ListOfPoints>((26497,37440),(26497,21838),(-10950,21838))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>8</a:ArrowStyle>
@@ -40233,7 +40233,7 @@ Shadow=0</a:DisplayPreferences>
 <o:DependencySymbol Id="o692">
 <a:CreationDate>1565744118</a:CreationDate>
 <a:ModificationDate>1565744166</a:ModificationDate>
-<a:Rect>((16730,12559), (26680,14060))</a:Rect>
+<a:Rect>((16730,12559), (26680,14042))</a:Rect>
 <a:ListOfPoints>((26280,13259),(17130,13259))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>8</a:ArrowStyle>
@@ -40312,9 +40312,9 @@ Shadow=0</a:DisplayPreferences>
 </o:UseCaseAssociationSymbol>
 <o:UseCaseAssociationSymbol Id="o702">
 <a:CreationDate>1565917123</a:CreationDate>
-<a:ModificationDate>1565917123</a:ModificationDate>
-<a:Rect>((-34269,-2742), (-27859,28000))</a:Rect>
-<a:ListOfPoints>((-33869,-1891),(-33869,-2342),(-28259,-2342),(-28259,27600))</a:ListOfPoints>
+<a:ModificationDate>1566003617</a:ModificationDate>
+<a:Rect>((-32319,1458), (-31519,32019))</a:Rect>
+<a:ListOfPoints>((-31919,1858),(-31919,31619))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>0</a:ArrowStyle>
 <a:LineColor>16744448</a:LineColor>
@@ -40372,9 +40372,9 @@ Shadow=0</a:DisplayPreferences>
 </o:UseCaseAssociationSymbol>
 <o:DependencySymbol Id="o711">
 <a:CreationDate>1565917138</a:CreationDate>
-<a:ModificationDate>1565917138</a:ModificationDate>
-<a:Rect>((-27759,11780), (17530,28000))</a:Rect>
-<a:ListOfPoints>((17130,12180),(-27059,12180),(-27059,27600))</a:ListOfPoints>
+<a:ModificationDate>1566003617</a:ModificationDate>
+<a:Rect>((-29909,11195), (17530,29320))</a:Rect>
+<a:ListOfPoints>((17130,12180),(-27599,12180),(-27599,28920))</a:ListOfPoints>
 <a:CornerStyle>1</a:CornerStyle>
 <a:ArrowStyle>8</a:ArrowStyle>
 <a:LineColor>16744576</a:LineColor>
@@ -41008,8 +41008,8 @@ LABL 0 新宋体,8,N</a:FontList>
 </o:UseCaseSymbol>
 <o:UseCaseSymbol Id="o652">
 <a:CreationDate>1566087620</a:CreationDate>
-<a:ModificationDate>1565657010</a:ModificationDate>
-<a:Rect>((-32820,-48960), (-25621,-45961))</a:Rect>
+<a:ModificationDate>1566003627</a:ModificationDate>
+<a:Rect>((-4260,-48720), (2939,-45721))</a:Rect>
 <a:AutoAdjustToText>0</a:AutoAdjustToText>
 <a:LineColor>16744448</a:LineColor>
 <a:LineWidth>1</a:LineWidth>
@@ -41028,8 +41028,8 @@ LABL 0 新宋体,8,N</a:FontList>
 </o:UseCaseSymbol>
 <o:UseCaseSymbol Id="o703">
 <a:CreationDate>1566087628</a:CreationDate>
-<a:ModificationDate>1565744246</a:ModificationDate>
-<a:Rect>((-31861,27600), (-22257,32999))</a:Rect>
+<a:ModificationDate>1566003617</a:ModificationDate>
+<a:Rect>((-32401,28920), (-22797,34319))</a:Rect>
 <a:LineColor>16744448</a:LineColor>
 <a:LineWidth>1</a:LineWidth>
 <a:FillColor>16777152</a:FillColor>
@@ -41720,8 +41720,9 @@ LABL 0 新宋体,8,N</a:FontList>
 <a:Code>Dependency_47</a:Code>
 <a:CreationDate>1565917138</a:CreationDate>
 <a:Creator>Sebastian</a:Creator>
-<a:ModificationDate>1565917138</a:ModificationDate>
+<a:ModificationDate>1566003616</a:ModificationDate>
 <a:Modifier>Sebastian</a:Modifier>
+<a:Stereotype>extend</a:Stereotype>
 <c:Object1>
 <o:UseCase Ref="o737"/>
 </c:Object1>
@@ -41735,8 +41736,9 @@ LABL 0 新宋体,8,N</a:FontList>
 <a:Code>Dependency_48</a:Code>
 <a:CreationDate>1565917140</a:CreationDate>
 <a:Creator>Sebastian</a:Creator>
-<a:ModificationDate>1565917140</a:ModificationDate>
+<a:ModificationDate>1566003610</a:ModificationDate>
 <a:Modifier>Sebastian</a:Modifier>
+<a:Stereotype>extend</a:Stereotype>
 <c:Object1>
 <o:UseCase Ref="o725"/>
 </c:Object1>
@@ -41750,8 +41752,9 @@ LABL 0 新宋体,8,N</a:FontList>
 <a:Code>Dependency_49</a:Code>
 <a:CreationDate>1565917141</a:CreationDate>
 <a:Creator>Sebastian</a:Creator>
-<a:ModificationDate>1565917141</a:ModificationDate>
+<a:ModificationDate>1566003602</a:ModificationDate>
 <a:Modifier>Sebastian</a:Modifier>
+<a:Stereotype>extend</a:Stereotype>
 <c:Object1>
 <o:UseCase Ref="o724"/>
 </c:Object1>
@@ -41931,7 +41934,7 @@ LABL 0 新宋体,8,N</a:FontList>
 <a:Code>浏览推荐活动</a:Code>
 <a:CreationDate>1566087423</a:CreationDate>
 <a:Creator>Sebastian</a:Creator>
-<a:ModificationDate>1566087436</a:ModificationDate>
+<a:ModificationDate>1566003602</a:ModificationDate>
 <a:Modifier>Sebastian</a:Modifier>
 </o:UseCase>
 <o:UseCase Id="o725">
@@ -41940,7 +41943,7 @@ LABL 0 新宋体,8,N</a:FontList>
 <a:Code>浏览关注的人的活动</a:Code>
 <a:CreationDate>1566087423</a:CreationDate>
 <a:Creator>Sebastian</a:Creator>
-<a:ModificationDate>1566087448</a:ModificationDate>
+<a:ModificationDate>1566003610</a:ModificationDate>
 <a:Modifier>Sebastian</a:Modifier>
 </o:UseCase>
 <o:UseCase Id="o726">
@@ -42048,7 +42051,7 @@ LABL 0 新宋体,8,N</a:FontList>
 <a:Code>查看浏览历史记录</a:Code>
 <a:CreationDate>1566087628</a:CreationDate>
 <a:Creator>Sebastian</a:Creator>
-<a:ModificationDate>1566087640</a:ModificationDate>
+<a:ModificationDate>1566003616</a:ModificationDate>
 <a:Modifier>Sebastian</a:Modifier>
 </o:UseCase>
 <o:UseCase Id="o738">
@@ -42057,7 +42060,7 @@ LABL 0 新宋体,8,N</a:FontList>
 <a:Code>查看某个活动信息</a:Code>
 <a:CreationDate>1566088005</a:CreationDate>
 <a:Creator>Sebastian</a:Creator>
-<a:ModificationDate>1565744122</a:ModificationDate>
+<a:ModificationDate>1566003616</a:ModificationDate>
 <a:Modifier>Sebastian</a:Modifier>
 </o:UseCase>
 <o:UseCase Id="o739">
