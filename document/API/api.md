@@ -779,6 +779,13 @@ Status OK - 200
         "user_nickname":"孙笑川",
         "user_signature":"...",
         "user_avatar":"http://image.jing855.cn/...",
+        "user_feedback":[
+            {
+                "Id": "5d3eaeae1a4eb65070f18dba",
+                ...
+            },
+            ...
+        ]
     },
     ...
 ]
@@ -849,8 +856,8 @@ Authorization: Bearer jwt
 {
     "act_id": 6,
     "type": "taxi",
-    "create_time": "2019-7-15 15:17",
-    "end_time": "2019-7-17 15:17",
+    "create_time": "2019-07-15 15:17",
+    "end_time": "2019-07-17 15:17",
     "description": "desc",
     "tag": ["g", "a", "t"],
     "images": [],

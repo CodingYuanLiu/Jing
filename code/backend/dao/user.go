@@ -295,7 +295,7 @@ func GetUnacceptedApplication(userId int) ([]int,error){
 	return actId,nil
 }
 
-func CancelApplicationOfBlockedActivity(actId int){
+func DiscardActivityApplication(actId int){
 	db.Delete(Join{},"act_id=? and is_admin=?",actId,-1)
 }
 

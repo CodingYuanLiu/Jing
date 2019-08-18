@@ -29,7 +29,13 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 	fetchType:= mapBasicInfo["type"].(string)
 	status := int32(mapBasicInfo["status"].(int))
 	if status != -1{
-		status = dao.GetMaxMemberStatus(req.ActId,req.MaxMember)
+		status = dao.GetOverdueStatus(req.EndTime,dao.GetMaxMemberStatus(req.ActId,req.MaxMember))
+	}
+
+	//When a status change occurs, discard all application.
+	if (status == 1 || status == 2) && int32(mapBasicInfo["status"].(int))== 0 {
+		log.Println("Discard applications")
+		dao.DiscardActivityApplication(int(req.ActId))
 	}
 
 	basicInfo:=dao.BasicInfo{
@@ -40,7 +46,7 @@ func (actSrv *ActivitySrv) Modify(ctx context.Context,req *activity.MdfReq,resp 
 		Description: req.Description,
 		Tag:         req.Tag,
 		MaxMember:   req.MaxMember,
-		Status :     dao.GetOverdueStatus(req.EndTime,status),
+		Status :     status,
 	}
 
 	for i:=0;i<len(mapBasicInfo["images"].([]interface{}));i++{
