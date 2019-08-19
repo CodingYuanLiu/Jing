@@ -68,7 +68,7 @@ func setupRouter() *gin.Engine {
 	publicRouter := router.Group("/api/public")
 	{
 		// TODO: Confirm register's security
-		publicActRouter := router.Group("/act")
+		publicActRouter := router.Group("api/public/act")
 		{
 			publicActRouter.GET("/findbyuser", ac.FindActByUser)
 			publicActRouter.GET("/getactivitymember",ac.GetActivityMembers)
@@ -91,7 +91,7 @@ func setupRouter() *gin.Engine {
 
 	userRouter := router.Group("/api/user")
 	{
-		userActRouter := router.Group("/act")
+		userActRouter := router.Group("/api/user/act")
 		{
 			userActRouter.GET("/myact", ac.MyAct)
 			userActRouter.GET("/manageact", ac.ManageAct)
@@ -123,7 +123,7 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/unfollow", uc.UnFollow)
 
 		// Feedback manipulation
-		feedbackRouter := router.Group("/feedback")
+		feedbackRouter := router.Group("/api/user/feedback")
 		{
 			feedbackRouter.POST("/publish", fbc.PublishFeedback)
 			feedbackRouter.POST("/delete",fbc.DeleteFeedback)
@@ -133,7 +133,7 @@ func setupRouter() *gin.Engine {
 
 	adminRouter := router.Group("/api/admin")
 	{
-		adminActRouter := router.Group("/act")
+		adminActRouter := router.Group("/api/admin/act")
 		{
 			adminActRouter.GET("/findavailable", ac.FindAvailableActivity)
 			adminActRouter.POST("/delete", ac.AdminDeleteActivity)
