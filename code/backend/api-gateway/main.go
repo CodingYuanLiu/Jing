@@ -68,45 +68,54 @@ func setupRouter() *gin.Engine {
 	publicRouter := router.Group("/api/public")
 	{
 		// TODO: Confirm register's security
+		publicActRouter := router.Group("/act")
+		{
+			publicActRouter.GET("/findbyuser", ac.FindActByUser)
+			publicActRouter.GET("/getactivitymember",ac.GetActivityMembers)
+			publicActRouter.GET("/search", ac.SearchAct)
+			publicActRouter.GET("/quitratio",ac.GetUserQuitRatio)
+			publicActRouter.GET("/query", ac.QueryActivity)
+			publicActRouter.GET("/findall", ac.FindAllActivity)
+			publicActRouter.GET("/findbytype",ac.FindActivityByType)
+		}
 		publicRouter.POST("/register", uc.Register)
 		publicRouter.POST("/login/jaccount", lc.JaccountLogin)
 		publicRouter.POST("/login/native", lc.NativeLogin)
 		publicRouter.GET("/detail", uc.QueryUser)
 		publicRouter.POST("/login/wx", lc.GetWXCode)
 		publicRouter.GET("/wx/redirect", lc.BindJaccountAndWX)
-		publicRouter.GET("/act/query", ac.QueryActivity)
-		publicRouter.GET("/act/findall", ac.FindAllActivity)
-		publicRouter.GET("/act/findbytype",ac.FindActivityByType)
 		publicRouter.GET("/takeout/searchshop", fc.TakeoutSearchShop)
 		publicRouter.GET("/chat/members", ac.GetGroupChatInfo)
 		publicRouter.GET("/feedback/query",fbc.QueryFeedback)
-		publicRouter.GET("/act/findbyuser", ac.FindActByUser)
-		publicRouter.GET("/act/getactivitymember",ac.GetActivityMembers)
-		publicRouter.GET("/act/search", ac.SearchAct)
-		publicRouter.GET("/act/quitratio",ac.GetUserQuitRatio)
 	}
 
 	userRouter := router.Group("/api/user")
 	{
+		userActRouter := router.Group("/act")
+		{
+			userActRouter.GET("/myact", ac.MyAct)
+			userActRouter.GET("/manageact", ac.ManageAct)
+			userActRouter.POST("/publish", ac.PublishActivity)
+			userActRouter.POST("/modify", ac.ModifyActivity)
+			userActRouter.POST("/join", ac.JoinActivity)
+			userActRouter.POST("/quit",ac.QuitActivity)
+			userActRouter.GET("/getjoinapp",ac.GetJoinApplication)
+			userActRouter.POST("/acceptjoin",ac.AcceptJoinActivity)
+			userActRouter.GET("/getunacceptedapp",ac.GetUnacceptedApplication)
+			userActRouter.POST("/delete", ac.DeleteActivity)
+			userActRouter.POST("/comment", ac.Comment)
+			userActRouter.GET("/status", ac.Status)
+			userActRouter.GET("/refused", ac.GetRefusedActivity)
+			userActRouter.GET("/refuse", ac.RefuseJoinActivity)
+			userActRouter.GET("/refuse/confirm", ac.ConfirmRefusedActivity)
+			userActRouter.POST("/gettag",ac.GetTags)
+			userActRouter.POST("/addtag",ac.AddTags)
+			userActRouter.POST("/addbehavior",ac.AddBehavior)
+			userActRouter.GET("/recommendact",ac.RecommendActivity)
+		}
 		userRouter.GET("/status", lc.GetUserStatus)
-		userRouter.GET("/act/myact", ac.MyAct)
-		userRouter.GET("/act/manageact", ac.ManageAct)
-		userRouter.POST("/act/publish", ac.PublishActivity)
-		userRouter.POST("/act/modify", ac.ModifyActivity)
-		userRouter.POST("/act/join", ac.JoinActivity)
-		userRouter.POST("/act/quit",ac.QuitActivity)
-		userRouter.GET("/act/getjoinapp",ac.GetJoinApplication)
-		userRouter.POST("/act/acceptjoin",ac.AcceptJoinActivity)
-		userRouter.GET("/act/getunacceptedapp",ac.GetUnacceptedApplication)
-		userRouter.POST("/act/delete", ac.DeleteActivity)
-		userRouter.POST("/act/comment", ac.Comment)
-		userRouter.GET("/act/status", ac.Status)
 		userRouter.PUT("/info/update", uc.UpdateUser)
 		userRouter.POST("/avatar/upload", uc.UploadAvatar)
-		userRouter.POST("/act/gettag",ac.GetTags)
-		userRouter.POST("/act/addtag",ac.AddTags)
-		userRouter.POST("/act/addbehavior",ac.AddBehavior)
-		userRouter.GET("/act/recommendact",ac.RecommendActivity)
 		userRouter.GET("/followings", uc.GetFollowings)
 		userRouter.GET("/followers", uc.GetFollowers)
 		userRouter.GET("/friends", uc.GetFriends)
@@ -114,22 +123,29 @@ func setupRouter() *gin.Engine {
 		userRouter.GET("/unfollow", uc.UnFollow)
 
 		// Feedback manipulation
-		userRouter.POST("/feedback/publish", fbc.PublishFeedback)
-		userRouter.POST("/feedback/delete",fbc.DeleteFeedback)
-		userRouter.POST("feedback/comment",fbc.CommentFeedback)
+		feedbackRouter := router.Group("/feedback")
+		{
+			feedbackRouter.POST("/publish", fbc.PublishFeedback)
+			feedbackRouter.POST("/delete",fbc.DeleteFeedback)
+			feedbackRouter.POST("/comment",fbc.CommentFeedback)
+		}
 	}
 
 	adminRouter := router.Group("/api/admin")
 	{
+		adminActRouter := router.Group("/act")
+		{
+			adminActRouter.GET("/findavailable", ac.FindAvailableActivity)
+			adminActRouter.POST("/delete", ac.AdminDeleteActivity)
+			adminActRouter.GET("/blockact",ac.BlockActivity)
+			adminActRouter.GET("/unblockact",ac.UnblockActivity)
+		}
 		adminRouter.GET("/stat", fc.GetStatistics)
-		adminRouter.GET("/act/findavailable", ac.FindAvailableActivity)
 		adminRouter.GET("/banuser", uc.BanUser)
-		adminRouter.POST("/act/delete", ac.AdminDeleteActivity)
 		adminRouter.GET("/findallusers", uc.FindAllUsers)
 		adminRouter.GET("/queryuser", uc.AdminQueryUser)
 		adminRouter.GET("/findonlineusers", uc.GetOnlineUsers)
-		adminRouter.GET("/act/blockact",ac.BlockActivity)
-		adminRouter.GET("/act/unblockact",ac.UnblockActivity)
+
 	}
 	return router
 }
