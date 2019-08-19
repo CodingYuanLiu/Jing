@@ -253,7 +253,7 @@ func AcceptJoinActivity(userId int, actId int) error{
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
 	if join.ID == 0{
-		return jing.NewError(301,404,"application not found")
+		return jing.NewError(301,404,"user or application not found")
 	}
 	if join.IsAdmin != -1{
 		return jing.NewError(201,400,"application status error: not unaccepted")
@@ -275,7 +275,7 @@ func ConfirmRefusedActivity(userId int, actId int) error {
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?", userId, actId).First(&join)
 	if join.ID == 0 {
-		return jing.NewError(301, 400, "application not found")
+		return jing.NewError(301, 400, "user or application not found")
 	}
 	if join.IsAdmin != -3 {
 		return jing.NewError(201, 400, "application status error: not refused")
@@ -288,7 +288,7 @@ func RefuseJoinActivity(userId int, actId int) error {
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
 	if join.ID == 0{
-		return jing.NewError(301,404,"application not found")
+		return jing.NewError(301,404,"user or application not found")
 	}
 	if join.IsAdmin != -1{
 		return jing.NewError(201,400,"application status error: not unaccepted")
