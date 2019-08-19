@@ -525,6 +525,43 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 	})
 }
 
+func (activityController *Controller) GetRefusedActivity(c *gin.Context) {
+	userId := c.GetInt("userId")
+	acts := dao.GetRefusedActivity(userId)
+	var appJSONs []myjson.JSON
+	for _, actId := range acts {
+		resp, err := activityClient.QueryActivity(actId)
+		if err != nil {
+			log.Println("Can not find the activity of the application")
+			continue
+		}
+		appJSONs = append(appJSONs, myjson.JSON{
+			"act_id":             actId,
+			"act_title":          resp.BasicInfo.Title,
+			"type":               resp.BasicInfo.Type,
+		})
+	}
+}
+
+func (activityController *Controller) ConfirmRefusedActivity(c *gin.Context) {
+	userId := c.GetInt("userId")
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		c.JSON(http.StatusBadRequest, map[string]string {
+			"message": "param 'act_id' not exists",
+		})
+		c.Abort()
+		return
+	}
+	err = dao.ConfirmRefusedActivity(userId, actId)
+	if err != nil {
+		jing.SendError(c, err)
+	}
+	c.JSON(http.StatusOK, map[string]string {
+		"message": "Confirm successfully",
+	})
+}
+
 func (activityController *Controller) RefuseJoinActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
 	acts := dao.GetManagingActivity(userId)

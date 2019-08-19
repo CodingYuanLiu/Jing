@@ -262,6 +262,25 @@ func AcceptJoinActivity(userId int, actId int) error{
 	return nil
 }
 
+func GetRefusedActivity(userId int) (acts []int) {
+	var joins []Join
+	db.Where("user_id = ? and is_admin = -3", userId).Find(&joins)
+	for _, join := range joins {
+		acts = append(acts, join.ActID)
+	}
+	return
+}
+
+func ConfirmRefusedActivity(userId int, actId int) error {
+	join := Join{}
+	db.Where("user_id = ?, act_id = ?", userId, actId).First(&join)
+	if join.ID == 0 {
+		return jing.NewError(1, 400, "application status error: not refused")
+	}
+	db.Delete(&join)
+	return nil
+}
+
 func RefuseJoinActivity(userId int, actId int) error {
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
