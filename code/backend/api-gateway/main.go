@@ -106,7 +106,7 @@ func setupRouter() *gin.Engine {
 			userActRouter.POST("/comment", ac.Comment)
 			userActRouter.GET("/status", ac.Status)
 			userActRouter.GET("/refused", ac.GetRefusedActivity)
-			userActRouter.GET("/refuse", ac.RefuseJoinActivity)
+			userActRouter.POST("/refuse", ac.RefuseJoinActivity)
 			userActRouter.GET("/refuse/confirm", ac.ConfirmRefusedActivity)
 			userActRouter.POST("/gettag",ac.GetTags)
 			userActRouter.POST("/addtag",ac.AddTags)
