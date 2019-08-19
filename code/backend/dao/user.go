@@ -535,6 +535,7 @@ func DeleteFollow(From int, To int) error {
 		return jing.NewError(301, 400, "You have not follow this user")
 	}
 	db.Delete(&follow)
+	return nil
 }
 
 func GetFollowing(userId int) (ret []int) {
