@@ -93,7 +93,11 @@ func (uc *Controller) UnFollow (c *gin.Context) {
 		jing.SendError(c, jing.NewError(201, 400, "Param 'id' is not provided or bad"))
 		return
 	}
-	dao.DeleteFollow(userId, id)
+	err = dao.DeleteFollow(userId, id)
+	if err != nil {
+		jing.SendError(c, err)
+		return
+	}
 	c.JSON(http.StatusOK, map[string]string {
 		"message": "Unfollow successfully",
 	})
@@ -114,7 +118,11 @@ func (uc *Controller) Follow (c *gin.Context) {
 		jing.SendError(c, jing.NewError(3, 400, "You've followed this person"))
 		return
 	}
-	dao.CreateFollow(userId, id)
+	err = dao.CreateFollow(userId, id)
+	if err != nil {
+		jing.SendError(c, err)
+		return
+	}
 	c.JSON(http.StatusOK, map[string]string {
 		"message": "Follow successfully",
 	})

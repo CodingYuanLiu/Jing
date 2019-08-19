@@ -511,18 +511,31 @@ func ChangePrivacyLevel(userId int, level int) error {
 	return nil
 }
 
-func CreateFollow(From int, To int) {
+func CreateFollow(From int, To int) error {
+	_, err := FindUserById(To)
+	if err != nil {
+		return err
+	}
 	follow := Follow{
 		From: From,
-		To: To,
+		To:   To,
 	}
 	db.Create(&follow)
+	return nil
 }
 
-func DeleteFollow(From int, To int) {
+func DeleteFollow(From int, To int) error {
 	follow := Follow{}
 	db.Where("`from` = ? and `to` = ?", From, To).First(&follow)
+	_, err := FindUserById(To)
+	if err != nil {
+		return err
+	}
+	if follow.ID == 0 {
+		return jing.NewError(301, 400, "You have not follow this user")
+	}
 	db.Delete(&follow)
+	return nil
 }
 
 func GetFollowing(userId int) (ret []int) {
