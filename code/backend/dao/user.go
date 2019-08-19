@@ -273,9 +273,12 @@ func GetRefusedActivity(userId int) (acts []int) {
 
 func ConfirmRefusedActivity(userId int, actId int) error {
 	join := Join{}
-	db.Where("user_id = ?, act_id = ?", userId, actId).First(&join)
+	db.Where("user_id = ? and act_id = ?", userId, actId).First(&join)
 	if join.ID == 0 {
-		return jing.NewError(1, 400, "application status error: not refused")
+		return jing.NewError(301, 400, "application not found")
+	}
+	if join.IsAdmin != -3 {
+		return jing.NewError(201, 400, "application status error: not refused")
 	}
 	db.Delete(&join)
 	return nil

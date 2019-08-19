@@ -2,7 +2,7 @@
 
 ## Global Error Codes
 
-Code | Description | Status
+Error Code | Description | Status
 ---- | ----- | ----
 101  | Need login | Status Unauthorized (401)
 102  | Bad Jwt token | Status Unauthorized (401)
@@ -12,8 +12,11 @@ Code | Description | Status
 201  | Parameter not provided or bad | Status Bad Request (400)
 202  | Missing some field | Status Bad Request (400)
 203  | Can't get pages | Status Bad Request (400)
+204  | Json parse error | Status Bad Request (400)
 300  | Database CRUD error | Status Bad Request (400)
-301  | No available data in database | Status Bad  (404)
+301  | No available data in database | Status Not Found (404)
+
+**Do not use global error code (greater than 100) on any non-global error.**
 
 ## Get User Status
 
