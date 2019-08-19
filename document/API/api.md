@@ -856,8 +856,8 @@ Authorization: Bearer jwt
 {
     "act_id": 6,
     "type": "taxi",
-    "create_time": "2019-7-15 15:17",
-    "end_time": "2019-7-17 15:17",
+    "create_time": "2019-07-15 15:17",
+    "end_time": "2019-07-17 15:17",
     "description": "desc",
     "tag": ["g", "a", "t"],
     "images": [],
