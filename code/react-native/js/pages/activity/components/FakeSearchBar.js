@@ -1,17 +1,17 @@
 import { PropTypes } from "prop-types";
 import React from "react";
 import { ViewPropTypes, View, Text, TouchableNativeFeedback, StyleSheet, Platform } from "react-native";
-import Theme from "../constant/Theme";
-import Default from "../constant/Constant";
+import Theme from "../../../common/constant/Theme";
+import Default from "../../../common/constant/Constant";
 
-export default class NavigationBar extends React.Component{
+export default class FakeSearchBar extends React.Component{
     constructor(props) {
         super(props)
     }
 
     _onPress = () => {
-        if (this.props.press) {
-            this.props.press()
+        if (this.props.onPress) {
+            this.props.onPress()
         }
     };
 
@@ -39,7 +39,7 @@ export default class NavigationBar extends React.Component{
 
 
 // properties for component
-NavigationBar.propTypes = {
+FakeSearchBar.propTypes = {
     style: ViewPropTypes.style,
     title: PropTypes.string,
     titleView: PropTypes.element,
@@ -47,7 +47,7 @@ NavigationBar.propTypes = {
     leftIcon: PropTypes.element,
     iconContainerStyle: ViewPropTypes.style,
     titleContainerStyle: ViewPropTypes.style,
-    press: PropTypes.func,
+    onPress: PropTypes.func,
 };
 
 const styles = StyleSheet.create({

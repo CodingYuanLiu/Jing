@@ -1,10 +1,9 @@
 import React from "react"
-import { View, Text, StyleSheet, FlatList, RefreshControl, ScrollView } from 'react-native';
-import {Button, ListItem, SearchBar} from "react-native-elements";
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import {SearchBar} from "react-native-elements";
 import {ArrowLeftIcon, SearchIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
 import SearchHistory from "./SearchHistory";
-import Util from "../../common/util";
 import Api from "../../api/Api";
 import SearchItem from "./SearchItem";
 import LocalApi from "../../api/LocalApi";

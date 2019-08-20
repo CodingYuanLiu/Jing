@@ -68,17 +68,20 @@ class MeScreen extends React.PureComponent{
         )
     };
     renderUserCard = () => {
-        let { currentUserFollowing, currentUserFollower, currentUser } = this.props;
+        let {
+            currentUserFollowing, currentUserFollower, currentUser,
+            currentUserManage, currentUserJoin,
+        } = this.props;
         let topCard, userData;
         let recentScanData = this.state.recentData;
         let dataList = [
-            {data: 0, label: "我的活动",
+            {data: currentUserManage.items.length + currentUserJoin.items.length, label: "我的活动",
                 onPress: () => {NavigationUtil.toPage(null, "MyAct")}},
             {data: currentUserFollowing.items.length, label: "关注",
-                onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Following")}
+                onPress: () => {NavigationUtil.toPage(null, "Following")}
             },
             {data: currentUserFollower.items.length, label: "粉丝",
-                onPress: () => {NavigationUtil.toPage({userId: this.props.currentUser.id}, "Follower")}
+                onPress: () => {NavigationUtil.toPage(null, "Follower")}
             },
             {data: recentScanData, label: "最近浏览",
                 onPress: () => {NavigationUtil.toPage(null, "RecentScan")}
@@ -186,6 +189,8 @@ const mapStateToProps = state => ({
     currentUser: state.currentUser,
     currentUserFollowing: state.currentUserFollowing,
     currentUserFollower: state.currentUserFollower,
+    currentUserManage: state.currentUserManage,
+    currentUserJoin: state.currentUserJoin,
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -9,7 +9,11 @@ import {Button, ListItem} from "react-native-elements";
 export default class Settings extends React.PureComponent {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            waterMarkActive: true,
+            saveDataActive: false,
+            findByPhoneActive: false,
+        };
     }
 
     render() {
@@ -37,7 +41,6 @@ export default class Settings extends React.PureComponent {
             <ArrowLeftIcon
                 onPress={this.back}
                 color={"#fff"}
-                style={styles.headerIconContainer}
             />
         );
         return(
@@ -62,7 +65,7 @@ export default class Settings extends React.PureComponent {
                     titleStyle={styles.settingTitle}
                     subtitle={"在上传的图片中欧你添加水印"}
                     subtitleStyle={styles.settingSubtitle}
-                    switch={{value: true, onValueChange: null, thumbColor: "#0084ff"}}
+                    switch={{value: this.state.waterMarkActive, onValueChange: this.handleWaterMarkSettingChange, thumbColor: "#0084ff"}}
                     containerStyle={styles.settingItemContainer}
                 />
                 <ListItem
@@ -70,15 +73,15 @@ export default class Settings extends React.PureComponent {
                     titleStyle={styles.settingTitle}
                     subtitle={"仅在Wi-Fi环境下才会自动加载图片"}
                     subtitleStyle={styles.settingSubtitle}
-                    switch={{value: false, onValueChange: null, thumbColor: "#0084ff"}}
+                    switch={{value: this.state.WIFISetting, onValueChange: this.handleWIFISettingChange, thumbColor: "#0084ff"}}
                     containerStyle={styles.settingItemContainer}
                 />
                 <ListItem
                     title={"可通过手机号找到我"}
                     titleStyle={styles.settingTitle}
-                    subtitle={"仅仅是没有用的占位置的设置"}
+                    subtitle={"可以通过手机好找到我"}
                     subtitleStyle={styles.settingSubtitle}
-                    switch={{value: false, onValueChange: null, thumbColor: "#0084ff"}}
+                    switch={{value: this.state.canFindByPhone, onValueChange: this.handleCanFindByPhoneSetting, thumbColor: "#0084ff"}}
                     containerStyle={styles.settingItemContainer}
                 />
                 <ListItem
@@ -86,7 +89,6 @@ export default class Settings extends React.PureComponent {
                     titleStyle={styles.settingTitle}
                     subtitle={"包括图片、音频缓存(共xxxMB)"}
                     subtitleStyle={styles.settingSubtitle}
-                    switch={{value: true, onValueChange: null, thumbColor: "#0084ff"}}
                     containerStyle={styles.settingItemContainer}
                 />
             </View>
@@ -141,7 +143,7 @@ export default class Settings extends React.PureComponent {
         return (
             <View style={styles.footerContainer}>
                 <Text style={styles.footerText}>
-                    c 2019 - . jing.com
+                    © 2019 https://jing855.cn
                 </Text>
                 <Text style={styles.footerText}>
                     All rights reserved.
@@ -153,14 +155,39 @@ export default class Settings extends React.PureComponent {
         NavigationUtil.back(this.props);
     };
     logout = () => {
-        this.props.onLogout();
         Dao.remove("@user")
             .catch(err => {});
         Dao.remove("@jwt")
             .catch(err => {})
     };
+    handleWaterMarkSettingChange = () => {
+        this.setState(state => {
+            state.waterMarkActive = !state.waterMarkActive;
+            this.props.toggleWaterMarkSetting();
+            return state;
+        });
+    };
+    handleWIFISettingChange = () => {
+        this.setState(state => {
+            state.saveDataAvtive = !state.saveDataActive;
+            this.props.toggleSaveDataSetting();
+            return state;
+        })
+    };
+    handleCanFindByPhoneSetting = () => {
+        this.setState(state => {
+            state.findByPhoneAvtive = !state.findByPhoneActive;
+            this.props.toggleFindByPhoneSetting();
+            return state;
+        })
+    };
 }
+const mapStateToProps = state => ({
 
+});
+const mapDispatchToProps = dispatch => ({
+    toggleWaterMarkSetting: () => dispatch(toggleWater)
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -173,10 +200,6 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "flex-start",
         marginLeft: 20,
-    },
-    headerIconContainer: {
-        paddingLeft: 20,
-        width: 40,
     },
     settingItemContainer: {
         borderBottomWidth: 0.5,

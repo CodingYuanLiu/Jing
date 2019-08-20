@@ -5,14 +5,18 @@ import {ArrowLeftIcon} from "../../common/components/Icons";
 import {Button} from "react-native-elements";
 import HeaderBar from "../../common/components/HeaderBar";
 import NavigationUtil from "../../navigator/NavUtil";
-
+import LocalApi from "../../api/LocalApi";
 
 export default class MyAct extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            recentData: 0,
+            draftLength: 0,
         }
+    }
+
+    componentDidMount() {
+        this.loadData();
     }
 
     render() {
@@ -28,11 +32,10 @@ export default class MyAct extends React.Component {
         let leftButton = (
             <ArrowLeftIcon
                 color={"#8a8a8a"}
-                style={styles.headerLeftIcon}
                 onPress={this.goBack}
             />
         );
-        let title=`草稿箱(0)`;
+        let title=`草稿箱(${this.state.draftLength})`;
         let rightButton = (
             <Button
                 title={title}
@@ -58,7 +61,16 @@ export default class MyAct extends React.Component {
     };
     goBack = () => {
         NavigationUtil.back(this.props);
-    }
+    };
+    loadData = () => {
+        LocalApi.getPublishDraft()
+            .then(data => {
+                this.setState({draftLength: data.length});
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
 
 }
 
@@ -68,10 +80,6 @@ const styles = StyleSheet.create({
     },
     headerTitleContainer: {
         alignItems: "flex-start",
-        marginLeft: 16,
-    },
-    headerLeftIcon: {
-        marginLeft: 20,
     },
     headerRightButton: {
         marginRight: 10,

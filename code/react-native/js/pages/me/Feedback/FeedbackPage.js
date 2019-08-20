@@ -53,7 +53,6 @@ class FeedbackPage extends React.Component{
                 color={"#7a7a7a"}
                 size={24}
                 onPress={this.goBack}
-                style={styles.headerLeftIcon}
             />
         );
         let rightButton = (
@@ -254,14 +253,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#eee",
     },
-
     headerContainer: {
         backgroundColor: "#fff",
         elevation: 3,
-    },
-    headerLeftIcon: {
-        marginRight: 15,
-        marginLeft: 15,
     },
     headerTitleContainer: {
         justifyContent: "flex-start",

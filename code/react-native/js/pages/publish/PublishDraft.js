@@ -61,7 +61,6 @@ class PublishDraft extends React.PureComponent{
             <ArrowLeftIcon
                 color={"#6a6a6a"}
                 onPress={this.goBack}
-                style={styles.headerLeftIcon}
             />
         );
         return (
@@ -263,9 +262,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         elevation: 2,
         marginBottom: 8,
-    },
-    headerLeftIcon: {
-        marginLeft: 20,
     },
     headerTitle: {
         color: "#6a6a6a",

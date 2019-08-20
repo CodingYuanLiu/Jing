@@ -2,9 +2,8 @@ import React from "react";
 import RecommendAct from "./pages/RecommendAct";
 import FollowAct from './pages/FollowAct';
 import NewAct from "./pages/NewAct";
-import Util from "../../common/util";
+import {WINDOW} from "../../common/constant/Constant";
 
-const window = Util.getVerticalWindowDimension();
 const ActTopTab = {
     NewAct: {
         screen: NewAct,
@@ -39,7 +38,7 @@ const ActTabConfig = {
         indicatorStyle: {
             backgroundColor: "#fff",
             width: 60,
-            marginLeft: (window.width / 3 - 60 ) / 2,
+            marginLeft: (WINDOW.width / 3 - 60 ) / 2,
         }
     }
 };

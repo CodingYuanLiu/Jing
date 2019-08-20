@@ -11,6 +11,8 @@ import {CHAT_ROOM_LOADED} from "../../common/constant/ActionTypes";
 import { setUserData } from "../../actions/currentUser";
 import { onGetCurrentUserFollowing } from "../../actions/currentUserFollowing";
 import { onGetCurrentUserFollower } from "../../actions/currentUserFollower";
+import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
+import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
 
 // fix xmpp.js cannot find base64 module error
 var base64 = require('base-64');
@@ -46,7 +48,9 @@ class StartPage extends React.Component {
                             let password = Util.cryptoOnpenFire(data.username, data.password);
                             this.props.onGetCurrentUserFollower(jwt);
                             this.props.onGetCurrentUserFollowing(jwt);
-                            console.log(this.props);
+                            this.props.onGetCurrentUserManageAct(jwt);
+                            this.props.onGetCurrentUserJoinAct(jwt);
+
                             XmppApi.login(data.username, password)
                                 .then(async () => {
                                     this.props.setUserData(data);
@@ -66,16 +70,11 @@ class StartPage extends React.Component {
                     })
                     .catch(err => {
                         console.log(err);
-                        err.message="expired";
-                        //this.props.onLoginFail(err);
                         this.props.navigation.navigate("Home", null);
                     })
             })
             .catch(err => {
                 console.log(err);
-                console.log(this.props);
-                err.message="no jwt";
-                //this.props.onLoginFail(err);
                 this.props.navigation.navigate("Home", null);
             })
     };
@@ -152,6 +151,8 @@ const mapDispatchToProps = dispatch => ({
     setUserData: (user) => dispatch(setUserData(user)),
     onGetCurrentUserFollower: (jwt) => dispatch(onGetCurrentUserFollower(jwt)),
     onGetCurrentUserFollowing: (jwt) => dispatch(onGetCurrentUserFollowing(jwt)),
+    onGetCurrentUserManageAct: (jwt) => dispatch(onGetCurrentUserManageAct(jwt)),
+    onGetCurrentUserJoinAct: (jwt) => dispatch(onGetCurrentUserJoinAct(jwt)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(StartPage);
 

@@ -6,7 +6,7 @@ import {
 import Api from "../api/Api";
 
 
-export const loadCurrentUserManageAct = (jwt) => {
+export const onGetCurrentUserManageAct = (jwt) => {
     return dispatch => {
         dispatch({
             type: ON_GET_USER_MANAGE_ACT,

@@ -139,7 +139,12 @@ class PersonalFeedback extends React.PureComponent{
         NavigationUtil.toPage({feedback: item}, "FeedbackDetail");
     };
     _onScroll = ({nativeEvent}) => {
-        console.log(nativeEvent);
+        let {contentOffset} = nativeEvent;
+        if(contentOffset.y <= 0) {
+            this.props.toggleNestScroll(false);
+        } else {
+            this.props.toggleNestScroll(true);
+        }
     };
 }
 

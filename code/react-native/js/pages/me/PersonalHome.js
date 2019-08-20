@@ -4,7 +4,7 @@ import ParallaxScrollView from "react-native-parallax-scroll-view";
 import {ArrowLeftIcon, ChevronIcon, MessageOneToOneIcon, PlusIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
 import Util from "../../common/util";
-import {Avatar, Button, Divider, Image} from "react-native-elements";
+import {Avatar, Button, Divider, Image, Rating} from "react-native-elements";
 import {connect} from "react-redux";
 import ImagePicker from "react-native-image-picker";
 import Api from "../../api/Api";
@@ -15,6 +15,8 @@ import {
     getPersonalManageAct,
     toggleNestScroll
 } from "../../actions/personalHome";
+import {onFollow, onUnFollow} from "../../actions/currentUserFollowing";
+import {GENDER_FEMALE, GENDER_SECRET} from "../../common/constant/Constant";
 
 const window = Util.getVerticalWindowDimension();
 const STICKY_HEADER_HEIGHT = 50;
@@ -27,17 +29,27 @@ class PersonalHome extends React.PureComponent {
         this.state = {
             user: {},
             isSelf: false,
+            isFriends: false,
             followed: false,
             privacy: 0,
             avatarVisible: false,
             backgroundVisible: false,
             avatar: {},
             background: {},
+            isFollowing: false,
+            isUnFollowing: false,
         };
     }
 
     componentDidMount(){
         let id = this.props.navigation.getParam("id");
+        let isFriends = false;
+        for (let item of this.props.currentUserFollowing.items) {
+            if (item.id === id) {
+                isFriends = true;
+                break;
+            }
+        }
         if (id === this.props.currentUser.id) {
             this.setState({
                 user: this.props.currentUser,
@@ -48,6 +60,7 @@ class PersonalHome extends React.PureComponent {
                 .catch(err => {console.log(err)});
             this.setState({
                 isSelf: false,
+                isFriends: isFriends,
             })
         }
         this.props.getPersonalManageAct(id, this.props.currentUser.jwt);
@@ -123,11 +136,9 @@ class PersonalHome extends React.PureComponent {
     };
     renderScrollElement = () => {
         let {personalHome} = this.props;
-        console.log(this._scroll);
         return (
             <Animated.ScrollView
                 scrollEnabled={!personalHome.nestScrollEnabled}
-                ref={"_scroll"}
             />
         )
     };
@@ -147,26 +158,7 @@ class PersonalHome extends React.PureComponent {
                 onPress={this.showAvatarPicker}
             />
         );
-        let rightButton = (
-            <Button
-                title={this.state.isSelf ? "编辑资料" : "关注" }
-                icon={
-                    this.state.isSelf ?
-                        null :
-                        <PlusIcon
-                            color={"#fff"}
-                            size={18}
-                        />
-                }
-                //containerStyle={styles.userRightButtonContainer}
-                buttonStyle={styles.userRightButton}
-                TouchableComponent={TouchableWithoutFeedback}
-                onPress={this.state.isSelf ?
-                    () => {NavigationUtil.toPage({user: user}, "ModifyInformation")} :
-                    () => {this.follow(user.id)}
-                }
-            />
-        );
+        let rightButton = this.renderUserRightButton();
         let rightIcon = this.state.isSelf? null : (
             <MessageOneToOneIcon
                 reverse
@@ -185,18 +177,14 @@ class PersonalHome extends React.PureComponent {
             </View>
         );
         let nickname = (
-            <View>
-                <Text style={styles.nicknameTitle}>
-                    {user.nickname}
-                </Text>
-            </View>
+            <Text style={styles.nicknameTitle}>
+                {user.nickname}
+            </Text>
         );
         let signature = (
-            <View>
-                <Text style={styles.signatureTitle}>
-                    {user.signature === "" ? "这里一无所有，直到你" : user.signature}
-                </Text>
-            </View>
+            <Text style={styles.signatureTitle}>
+                {user.signature}
+            </Text>
         );
         return (
             <View>
@@ -205,6 +193,46 @@ class PersonalHome extends React.PureComponent {
                 {signature}
             </View>
         )
+    };
+    renderUserRightButton = () => {
+        let title, onPress;
+        if (this.state.isSelf) {
+            title="编辑资料";
+            onPress = this.toModifyInformation;
+        } else {
+            if (this.state.isFriends) {
+                return (
+                    <Button
+                        title={"已关注"}
+                        titleStyle={{color: "#0084ff"}}
+                        buttonStyle={[styles.userRightButton, {backgroundColor: "#eee"}]}
+                        TouchableComponent={TouchableWithoutFeedback}
+                        loading={this.state.isUnFollowing}
+                        onPress={this.unFollow}
+                    />
+                )
+            } else {
+                title = "关注";
+                onPress = this.follow;
+            }
+        }
+        return  (
+            <Button
+                title={title}
+                icon={
+                    this.state.isSelf ?
+                        null :
+                        <PlusIcon
+                            color={"#fff"}
+                            size={18}
+                        />
+                }
+                buttonStyle={styles.userRightButton}
+                loading={this.state.isFollowing}
+                TouchableComponent={TouchableWithoutFeedback}
+                onPress={onPress}
+            />
+        );
     };
     renderInfo = () => {
         let fans = 200;
@@ -224,38 +252,101 @@ class PersonalHome extends React.PureComponent {
         let status = (
             <View style={styles.statusContainer}>
                 <Text style={styles.statusText}>
-                    该用户由于违反协议规定，现在暂时处于禁言状态
+                    该用户由于违反<Text　style={{color: "#0084ff"}}>协议规定</Text>，现在暂时处于禁言状态
                 </Text>
             </View>
         );
-        let information = (
-            <View style={styles.informationRowContainer}>
-                <Text style={[styles.informationItem, {borderRightWidth: 0.5, borderColor: "#dfdfdf"}]}>软件工程专业</Text>
-                <Text style={styles.informationItem}>大二</Text>
-                <Button
-                icon={
-                    <ChevronIcon
-                        color={"#bfbfbf"}
-                    />
-                }
-                iconRight
-                type={"clear"}
-                title={"详细资料"}
-                titleStyle={{color: "#bfbfbf"}}
-                TouchableComponent={TouchableWithoutFeedback}
-                />
-            </View>
-        );
+        let information = this.renderInfoPreview();
+        let feedbackCount = this.renderFeedbackCount();
         return (
             <View>
                 {data}
-                {status}
+                {this.state.user.status ? status : null}
                 {information}
+                {feedbackCount}
             </View>
         );
     };
+    renderInfoPreview = () => {
+        let user = this.state.user;
+        let {firstText, secondText} = this.generateInfoPreviewText(user);
+        if (!firstText) return null;
+        return (
+            <View style={styles.informationRowContainer}>
+                <Text style={[styles.informationItem, secondText ? {borderRightWidth: 0.5, borderColor: "#dfdfdf"} : null]}>
+                    {firstText}
+                </Text>
+                <Text style={styles.informationItem}>
+                    {secondText}
+                </Text>
+                <Button
+                    icon={
+                        <ChevronIcon
+                            color={"#bfbfbf"}
+                        />
+                    }
+                    iconRight
+                    type={"clear"}
+                    title={"详细资料"}
+                    titleStyle={{color: "#bfbfbf"}}
+                    TouchableComponent={TouchableWithoutFeedback}
+                    onPress={this.toPersonalInformationPage}
+                />
+            </View>
+        );
+    };
+    renderFeedbackCount = () => {
+        let ratingCount;
+        let { personalHome } = this.props;
+        let sum = 0, num = 0;
+        for (let item of personalHome.feedbackList) {
+            sum += item.communication.data + item.honesty.data + item.punctuality.data;
+            num++;
+        }
+        ratingCount = sum / num / 3;
+        let user = this.state.user;
+        return (
+            <View style={styles.ratingContainer}>
+                <Rating
+                    ratingCount={5}
+                    startingValue={ratingCount}
+                    readonly={true}
+                    imageSize={30}
+                />
+                <Text style={{fontSize: 18, color: "#f1c40f"}}>  ({personalHome.feedbackList.length}个人评价{user.gender === 0 ? "她": "他"})</Text>
+            </View>
+        )
+    };
     renderTabNav = () => {
         return <PersonalTab/>;
+    };
+    generateInfoPreviewText = (user) => {
+        let firstText = null, secondText = null;
+        if (user.dormitory && user.dormitory !== "") {
+            if (!firstText) {
+                firstText = user.dormitory;
+            } else {
+                secondText = user.dormitory;
+            }
+        }
+        if (user.major && user.major !== "") {
+            if (!firstText) {
+                firstText = user.major;
+            } else {
+                secondText = user.major;
+            }
+        }
+        if (user.gender && user.gender !== GENDER_SECRET) {
+            if (!firstText) {
+                firstText = user.gender === GENDER_FEMALE ? "小仙女" : "男孩子";
+            } else {
+                secondText = user.gender === GENDER_FEMALE ? "小仙女" : "男孩子";
+            }
+        }
+        return {
+            firstText,
+            secondText,
+        }
     };
     showAvatarPicker = () => {
         ImagePicker.showImagePicker(imagePickerOptions, (response) => {
@@ -317,6 +408,40 @@ class PersonalHome extends React.PureComponent {
             toggleNestScroll(false);
         }
     };
+    toModifyInformation = () => {
+        NavigationUtil.toPage(null, "ModifyInformation");
+    };
+    toPersonalInformationPage = () => {
+        NavigationUtil.toPage({user: this.state.user}, "PersonalInformation");
+    };
+    follow = () => {
+        let currentUser = this.props.currentUser;
+        if (!currentUser.logged) {
+            //...
+        } else {
+            let from = {
+                id: currentUser.id,
+            };
+            let to = {
+                id: this.props.navigation.getParam("id"),
+            };
+            this.props.onFollow(from, to, currentUser.jwt, this);
+        }
+    };
+    unFollow = () => {
+        let currentUser = this.props.currentUser;
+        if (!currentUser.logged) {
+            //...
+        } else {
+            let from = {
+                id: currentUser.id,
+            };
+            let to = {
+                id: this.props.navigation.getParam("id"),
+            };
+            this.props.onUnFollow(from, to, currentUser.jwt, this);
+        }
+    };
 }
 const imagePickerOptions = {
     title: "选择",
@@ -332,12 +457,15 @@ const imagePickerOptions = {
 const mapStateToProps = state => ({
     currentUser: state.currentUser,
     personalHome: state.personalHome,
+    currentUserFollowing: state.currentUserFollowing,
 });
 const mapDispatchToProps = dispatch => ({
     getPersonalFeedback: (id) => dispatch(getPersonalFeedback(id)),
     getPersonalManageAct: (id, jwt) => dispatch(getPersonalManageAct(id, jwt)),
     getPersonalInformation: (id) => dispatch(getPersonalInformation(id)),
     toggleNestScroll: (flag) => dispatch(toggleNestScroll(flag)),
+    onFollow: (from, to, jwt, that) => dispatch(onFollow(from, to, jwt, that)),
+    onUnFollow: (from, to, jwt, that) => dispatch(onUnFollow(from, to, jwt, that)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(PersonalHome);
 
@@ -389,6 +517,13 @@ const styles = StyleSheet.create({
         height: 50,
         position: "relative",
         paddingRight: 10,
+    },
+    ratingContainer: {
+        marginTop: 15,
+        marginBottom: 15,
+        alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "flex-start",
     },
     avatarContainer: {
         padding: 2,

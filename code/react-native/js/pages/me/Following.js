@@ -47,7 +47,6 @@ class Following extends React.PureComponent{
         )
     };
     renderItem = ({item}) => {
-
         return (
             <FollowItem
                 item={item}
@@ -58,17 +57,16 @@ class Following extends React.PureComponent{
     renderHeader = () => {
         let header = (
             <HeaderBar
-            leftButton={
-                <ArrowLeftIcon
-                onPress={() => {NavigationUtil.toPage(null, "Home")}}
-                color={"#fff"}
-                style={styles.headerIcon}
-                />
-            }
-            title={"我关注的"}
-            titleStyle={styles.headerTitle}
-            titleLayoutStyle={styles.headerTitleContainer}
-            style={styles.headerContainer}
+                leftButton={
+                    <ArrowLeftIcon
+                        onPress={() => {NavigationUtil.toPage(null, "Home")}}
+                        color={"#fff"}
+                    />
+                }
+                title={"我关注的"}
+                titleStyle={styles.headerTitle}
+                titleLayoutStyle={styles.headerTitleContainer}
+                style={styles.headerContainer}
             />
         );
         return header;
@@ -106,8 +104,8 @@ const mapStateToProps = state => ({
     currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
-    follow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
-    unFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
+    onFollow: (from, to, jwt) => dispatch(onFollow(from, to, jwt)),
+    onUnFollow: (from, to, jwt) => dispatch(onUnFollow(from, to, jwt)),
     onGetCurrentUserFollowing: (jwt) => dispatch(onGetCurrentUserFollowing(jwt)),
     dispatch: dispatch
 });
@@ -116,10 +114,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(Following);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    headerIcon: {
-        marginLeft: 20,
-        marginRight: 10,
     },
     headerTitleContainer: {
         justifyContent: "flex-start",

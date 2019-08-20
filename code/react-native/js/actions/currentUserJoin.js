@@ -2,7 +2,7 @@ import {GET_USER_JOIN_ACT_FAIL, GET_USER_JOIN_ACT_OK, ON_GET_USER_JOIN_ACT} from
 import Api from "../api/Api";
 
 
-export const loadCurrentUserJoinAct = (jwt) => {
+export const onGetCurrentUserJoinAct = (jwt) => {
     return dispatch => {
         dispatch({
             type: ON_GET_USER_JOIN_ACT,

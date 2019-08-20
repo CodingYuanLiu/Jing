@@ -57,7 +57,6 @@ class ModifyInformation extends React.PureComponent{
                 leftButton={
                     <CloseIcon
                     color={"#fff"}
-                    style={styles.headerIcon}
                     onPress={this.goBack}
                     />
                 }
@@ -366,11 +365,11 @@ class ModifyInformation extends React.PureComponent{
         }, "MajorPage")
     };
     handleDormitoryChange = (text) => {
-        this.setInfoModified();
+        this.setInfoModified(true);
         this.setState({dormitory: text});
     };
     handleMajorChange = (text) => {
-        this.setInfoModified();
+        this.setInfoModified(true);
         this.setState({major: text});
     };
     setInfoModified = (flag) => {
@@ -415,7 +414,7 @@ class ModifyInformation extends React.PureComponent{
         };
         let jwt = this.props.currentUser.jwt;
         let avatarData = this.state.avatar.data;
-        console.log(data, avatarData);
+
         if (this.state.avatarModified) {
             if (this.state.infoModified) {
                 // modified both avatar and user info
@@ -526,9 +525,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         alignItems: "flex-start",
         justifyContent: "flex-start",
-    },
-    headerIcon: {
-        marginLeft: 20,
     },
     avatarIconContainer: {
         marginTop: 20,

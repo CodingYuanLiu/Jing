@@ -4,7 +4,10 @@ import {
     ON_GET_USER_JOIN_ACT
 } from "../common/constant/ActionTypes";
 
-const initialState = {};
+const initialState = {
+    items: [],
+    isLoading: false,
+};
 
 const currentUserJoin = (state = initialState, action) => {
     switch(action.type) {

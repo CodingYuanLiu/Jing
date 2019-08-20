@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         paddingLeft: 15,
         paddingRight: 15,
+        elevation: 1,
     },
     itemTitle: {
         fontWeight: "bold",

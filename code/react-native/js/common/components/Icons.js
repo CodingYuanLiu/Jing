@@ -191,7 +191,7 @@ class UserIcon extends React.PureComponent{
         let {size, color, style, onPress} = this.props;
         return (
             <Icon
-                type={"fontawesome"}
+                type={"font-awesome"}
                 name={"user"}
                 color={color}
                 size={size}
@@ -659,6 +659,114 @@ class MultiCommentIcon extends React.PureComponent{
             />)
     }
 }
+class PencilIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material-community"}
+                name={"pencil"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class GenderMaleIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material-community"}
+                name={"gender-male"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class GenderFemaleIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material-community"}
+                name={"gender-female"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class GenderSecretIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"fontisto"}
+                name={"genderless"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class MajorIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"material-community"}
+                name={"school"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class BirthdayCakeIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"font-awesome"}
+                name={"birthday-cake"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -674,6 +782,7 @@ export {
     MessageIcon,
     LockIcon,
     GreaterIcon,
+    PencilIcon,
     CloseIcon,
     CommentIcon,
     EmojiIcon,
@@ -697,4 +806,9 @@ export {
     ChevronUpIcon,
     ImageIcon,
     MultiCommentIcon,
+    GenderFemaleIcon,
+    GenderMaleIcon,
+    GenderSecretIcon,
+    MajorIcon,
+    BirthdayCakeIcon,
 }

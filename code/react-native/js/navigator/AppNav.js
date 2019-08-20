@@ -23,6 +23,8 @@ import MyAct from "../pages/me/MyAct";
 import PublishDraft from "../pages/publish/PublishDraft";
 import Feedback from "../pages/me/Feedback/Feedback";
 import FeedbackPage from "../pages/me/Feedback/FeedbackPage";
+import PersonalInformation from "../pages/me/PersonalInformation";
+
 
 const StartNav = createStackNavigator(
     {
@@ -101,6 +103,9 @@ const MainNav = createStackNavigator(
         FeedbackPage: {
             screen: FeedbackPage,
         },
+        PersonalInformation: {
+            screen: PersonalInformation,
+        }
     },
     {
         defaultNavigationOptions: {

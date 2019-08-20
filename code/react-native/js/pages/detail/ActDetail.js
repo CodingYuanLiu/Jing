@@ -460,7 +460,6 @@ class DetailScreen extends React.Component {
                 count++;
             }
         }
-        console.log(previewComments);
         return previewComments
     };
 

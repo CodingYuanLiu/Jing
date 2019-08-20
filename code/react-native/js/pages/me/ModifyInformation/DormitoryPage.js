@@ -4,6 +4,7 @@ import HeaderBar from "../../../common/components/HeaderBar";
 import {ArrowLeftIcon} from "../../../common/components/Icons";
 import {Button} from "react-native-elements";
 import NavigationUtil from "../../../navigator/NavUtil";
+import Constant from "../../../common/constant/Constant";
 
 
 const PLACEHOLDER = "输入楼栋　房间号,　例如 东19　104";
@@ -116,6 +117,15 @@ export default class DormitoryPage extends React.Component{
     };
     setDormitoryText = (text) => {
         this.setState({dormitory: text});
+        this.loadData(text);
+    };
+    loadData = (text) => {
+        let data = Constant.DORMITORIES.filter(item => {
+            return item.indexOf(text) !== -1;
+        });
+        this.setState({
+            promptData: data,
+        })
     }
 }
 

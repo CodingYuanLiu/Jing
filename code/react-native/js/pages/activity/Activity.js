@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import {ActTabConfig, ActTopTab} from "./TopTabBar"
 import {createAppContainer, createMaterialTopTabNavigator} from "react-navigation"
 import NavigationBar from "../../common/components/NavigationBar"
-import FakeSearchBar from "../../common/components/FakeSearchBar"
+import FakeSearchBar from "./components/FakeSearchBar"
 import NavigationUtil from '../../navigator/NavUtil';
 import Octicons from "react-native-vector-icons/Octicons";
 import Feather from "react-native-vector-icons/Feather";
@@ -25,7 +25,7 @@ export default class HomeScreen extends React.Component{
             <FakeSearchBar
                 leftIcon={leftIcon}
                 title={"搜索，即刻响应"}
-                press={() => {this.toSearch()}}
+                onPress={this.toSearch}
             />;
         const RightIcon =
             <Feather

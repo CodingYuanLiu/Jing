@@ -51,7 +51,6 @@ class Follower extends React.PureComponent{
                     <ArrowLeftIcon
                         onPress={() => {NavigationUtil.toPage(null, "Home")}}
                         color={"#ffffff"}
-                        style={styles.headerIcon}
                     />
                 }
                 title={"我的粉丝"}
@@ -72,16 +71,16 @@ class Follower extends React.PureComponent{
     };
     loadData = () => {
         this.setState({isLoading: true});
-        let { currentUserFollower, currentUser } = this.props;
+        let { currentUserFollowing, currentUser } = this.props;
         Api.getFollowers(currentUser.jwt)
             .then(data => {
                 this.props.dispatch({
                     type: actionTypes.GET_USER_FOLLOWERS_OK,
-                    items: data ? data : [],
+                    items: data,
                 });
                 for (let item of data) {
                     item.followed = false;
-                    for (let followingItem of currentUserFollower.items) {
+                    for (let followingItem of currentUserFollowing.items) {
                         if (item.id === followingItem.id) {
                             item.followed = true;
                             break;
@@ -93,8 +92,11 @@ class Follower extends React.PureComponent{
             .catch(err => {
                 console.log(err);
             })
-            .finally(this.setState({isLoading: false}));
+            .finally(() => {
+                this.setState({isLoading: false})
+            });
     };
+
     setItemFollowed = (item, flag) => {
         item.followed = flag;
     }
@@ -103,11 +105,12 @@ class Follower extends React.PureComponent{
 const mapStateToProps = state => ({
     currentUser: state.currentUser,
     currentUserFollower: state.currentUserFollower,
+    currentUserFollowing: state.currentUserFollowing,
 });
 
 const mapDispatchToProps = dispatch => ({
-    follow: (from, to, jwt, that) => dispatch(onFollow(from, to, jwt, that)),
-    unFollow: (from, to, jwt, that) => dispatch(onUnFollow(from, to, jwt, that)),
+    onFollow: (from, to, jwt, that) => dispatch(onFollow(from, to, jwt, that)),
+    onUnFollow: (from, to, jwt, that) => dispatch(onUnFollow(from, to, jwt, that)),
     dispatch: dispatch,
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Follower)
@@ -115,10 +118,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(Follower)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    headerIcon: {
-        marginLeft: 20,
-        marginRight: 10,
     },
     headerTitleContainer: {
         justifyContent: "flex-start",

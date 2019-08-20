@@ -61,8 +61,9 @@ const styles = StyleSheet.create({
     },
     navBarBtn: {
         alignItems: "center",
-        marginLeft: 15,
+        marginLeft: 20,
         marginRight: 15,
+        backgroundColor: "red",
     },
     navBar: {
         flexDirection: "row",

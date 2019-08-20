@@ -12,12 +12,7 @@ export default class PersonalTab extends React.Component{
         super(props);
     }
 
-    componentDidMount() {
-        console.log(window);
-    };
-
     render() {
-        console.log(window.height);
         return (
             // why 24 ?
             <View style={{flex: 1, height: window.height - 24 - 50,}}>

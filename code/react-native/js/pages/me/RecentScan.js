@@ -53,7 +53,6 @@ export default class RecentScan extends React.PureComponent{
         let leftButton = (
             <ArrowLeftIcon
                 color={"#6a6a6a"}
-                style={styles.headerLeftIcon}
                 onPress={this.goBack}
             />
         );
@@ -195,9 +194,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         color: "#6a6a6a",
         fontSize: 20,
-    },
-    headerLeftIcon: {
-        marginLeft: 20,
     },
     headerRightIcon: {
         marginRight: 10,

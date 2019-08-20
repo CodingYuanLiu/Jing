@@ -1,3 +1,5 @@
+import Util from "../util";
+
 export default {
     DEFAULT_SIGNATURE: "这里一无所有，直到遇见你",
     DEFAULT_AVATAR: "http://image.jing855.cn/defaultAvatar.png",
@@ -28,6 +30,20 @@ const ACT_TYPE_TAKEOUT = "takeout";
 const ACT_TYPE_ORDER = "order";
 const ACT_TYPE_OTHER = "other";
 
+const WINDOW = Util.getVerticalWindowDimension();
+const DORMITORIES = [
+    "东1","东2","东3","东4","东5","东6","东7","东8","东9","东10",
+    "东11","东12","东13","东14","东15","东16","东17","东18","东19","东20",
+    "东21","东22","东23","东24","东25","东26","东27","东28","东29","东30",
+];
+
+const MAJORS = [
+    "安泰经济与管理学院", "电子信息与电气工程学院", "机械动力工程学院", "船舶建设与海洋工程学院"
+];
+
+const GENDER_MALE = 1;
+const GENDER_FEMALE = 0;
+const GENDER_SECRET = 2;
 export {
     /**
      * activity constants
@@ -47,4 +63,12 @@ export {
     // feedback status
     HAVE_FEEDBACK,
     NO_FEEDBACK,
+
+    WINDOW,
+    DORMITORIES,
+    MAJORS,
+
+    GENDER_FEMALE,
+    GENDER_MALE,
+    GENDER_SECRET,
 }

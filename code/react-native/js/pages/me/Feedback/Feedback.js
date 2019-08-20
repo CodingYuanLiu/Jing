@@ -45,7 +45,6 @@ export default class Feedback extends React.Component{
             <ArrowLeftIcon
                 color={"#7a7a7a"}
                 size={24}
-                style={styles.headerLeftIcon}
                 onPress={this.goBack}
             />
         );
@@ -237,10 +236,6 @@ const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: "#fff",
         elevation: 3,
-    },
-    headerLeftIcon: {
-        marginLeft: 15,
-        marginRight: 15,
     },
     headerTitle: {
         fontWeight: "800",

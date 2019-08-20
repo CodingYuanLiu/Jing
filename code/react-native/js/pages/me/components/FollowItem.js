@@ -90,7 +90,7 @@ class FollowItem extends React.PureComponent{
         let to = {
             id: item.id,
         };
-        this.props.follow(from, to, jwt, this);
+        this.props.onFollow(from, to, jwt, this);
         this.props.setFollowed(item, true);
     };
     unFollow = (item) => {
@@ -102,7 +102,7 @@ class FollowItem extends React.PureComponent{
         let to = {
             id: item.id,
         };
-        this.props.unFollow(from, to, jwt, this);
+        this.props.onUnFollow(from, to, jwt, this);
         this.props.setFollowed(item, false);
     };
 }

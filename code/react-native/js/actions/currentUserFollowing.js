@@ -33,7 +33,6 @@ export const onGetCurrentUserFollowing = (jwt) => {
 // follow action & unFollow action, and get followers and followings
 export const onFollow = (from, to, jwt, that) => {
     return dispatch => {
-        console.log(that);
         that.setState({isFollowing: true});
         Api.follow(from.id, to.id, jwt)
             .then (data => {
@@ -44,6 +43,7 @@ export const onFollow = (from, to, jwt, that) => {
                 dispatch({
                     type: SET_DETAIL_IS_FRIENDS,
                 });
+                that.setState({isFriends: true});
             })
             .catch(err => {
                 console.log(err);
@@ -58,7 +58,6 @@ export const onFollow = (from, to, jwt, that) => {
 };
 export const onUnFollow = (from, to, jwt, that) => {
     return dispatch => {
-        console.log(that);
         that.setState({isUnFollowing: true});
         Api.unFollow(from.id, to.id, jwt)
             .then (data => {
@@ -69,6 +68,7 @@ export const onUnFollow = (from, to, jwt, that) => {
                 dispatch({
                     type: SET_DETAIL_IS_NOT_FRIENDS,
                 });
+                that.setState({isFriends: false});
             })
             .catch(err => {
                 console.log(err);
