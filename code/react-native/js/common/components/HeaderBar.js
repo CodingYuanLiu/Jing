@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     },
     navBarBtn: {
         alignItems: "center",
+        justifyContent: "center",
         marginLeft: 20,
         marginRight: 15,
         backgroundColor: "red",

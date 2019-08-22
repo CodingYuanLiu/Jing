@@ -61,15 +61,18 @@ Tag.defaultProps = {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: "#efefef",
-        marginLeft: 2,
+        marginLeft: 6,
         borderRadius: 4,
         maxWidth: 100,
-        minWidth: 5,
+        minWidth: 20,
     },
     text: {
-        padding: 2,
         color: "#a4a4a4",
         fontSize: 12,
         maxWidth: "100%",
+        paddingTop: 3,
+        paddingBottom: 3,
+        paddingLeft: 8,
+        paddingRight: 8,
     },
 });

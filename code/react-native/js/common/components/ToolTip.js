@@ -1,14 +1,11 @@
 import React from "react";
 import {
     View, StyleSheet, ViewPropTypes, Text,
-    TouchableWithoutFeedback, UIManager,
-    NativeModules,
 } from "react-native";
 import {PropTypes} from "prop-types";
 import {EllipsisIcon} from "./Icons";
 import Modal from "react-native-modal";
 import {WINDOW} from "../constant/Constant";
-import {Button} from "react-native-elements";
 
 export default class ToolTip extends React.Component{
     constructor(props) {
@@ -29,7 +26,7 @@ export default class ToolTip extends React.Component{
         let toolTip = this._renderToolTip();
         return (
             <View
-                style={[styles.container, style, { backgroundColor: "red", marginTop: 20}]}
+                style={[styles.container, style]}
             >
                 <EllipsisIcon
                     color={"#bfbfbf"}
@@ -61,9 +58,9 @@ export default class ToolTip extends React.Component{
                 backdropColor={"#fff"}
                 backdropOpacity={0}
             >
-                <View style={[styles.contentContainer, {width: width, height: height}, contentContainerStyle]}>
+                <View style={[styles.contentContainer, {width: width, height: height * this._getChildrenHeight(children)}, contentContainerStyle]}>
                     {children}
-                </View>
+                </View>git 
             </Modal>
         )
     };
@@ -80,6 +77,13 @@ export default class ToolTip extends React.Component{
     _onBackdropPress = () => {
         this.setState({toolTipVisible: false});
     };
+    _getChildrenHeight = (children) => {
+        let res = 0;
+        for (let item of children) {
+            res += item !== null ? 1 : 0;
+        }
+        return res;
+    }
 }
 ToolTip.propTypes = {
     style: ViewPropTypes.style,
@@ -93,7 +97,7 @@ ToolTip.propTypes = {
 };
 ToolTip.defaultProps = {
     children: <View><Text>请添加children节点</Text></View>,
-    height: 120,
+    height: 40,
     width: WINDOW.width / 2 - 30,
 };
 

@@ -98,7 +98,9 @@ class DetailScreen extends React.Component {
             )
         }
         return (
-            <ToolTip>
+            <ToolTip
+                style={{backgroundColor: "green"}}
+            >
                 <Button
                     title={"夜晚模式"}
                     type={"clear"}
