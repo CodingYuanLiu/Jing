@@ -4,7 +4,11 @@ import {
     TOGGLE_WATERMARK_SETTING
 } from "../common/constant/ActionTypes";
 
-const initialState = {};
+const initialState = {
+    waterMarkActive: true,
+    saveDataActive: false,
+    findByPhoneActive: false,
+};
 const setting = (state = initialState, action) => {
     switch (action.type) {
         case TOGGLE_WATERMARK_SETTING:
