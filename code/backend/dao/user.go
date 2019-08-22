@@ -239,7 +239,7 @@ func QuitActivity(userId int, actId int) error{
 
 func GetActivityMembers(actId int) (ret []int, err error) {
 	var joins []Join
-	db.Where("act_id = ? and is_admin <> ? and is_admin <> ?", actId, -1,-2).Find(&joins)
+	db.Where("act_id = ? and is_admin <> ? and is_admin <> ? and is_admin <> ?", actId, -1,-2,-3).Find(&joins)
 	if len(joins) == 0 {
 		return nil, jing.NewError(301, 404, "Activity not found")
 	}
