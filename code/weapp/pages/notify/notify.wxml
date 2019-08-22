@@ -1,37 +1,28 @@
 <!--logs.wxml-->
 <view hidden="{{loged}}">请登录</view>
-<view hidden="{{!loged}}" class="top-tab flex-wrp flex-tab">
+<!-- <view hidden="{{!loged}}" class="top-tab flex-wrp flex-tab">
     <view class="toptab flex-item {{currentNavtab==idx ? 'active' : ''}}" wx:for="{{navTab}}" wx:for-index="idx" wx:for-item="itemName" data-idx="{{idx}}" bindtap="switchTab">
         {{itemName}}
     </view>
-</view>
-<scroll-view hidden="{{!loged}}" scroll-y="true" class="container notify withtab" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-    <view class="ctnt0" hidden="{{currentNavtab==0 ? '' : true}}">
+</view> -->
+<scroll-view hidden="{{!loged}}" scroll-y="true" class="container notify" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+    <view class="ctnt0">
+    <!-- <view class="ctnt0" hidden="{{currentNavtab==0 ? '' : true}}"> -->
         <view class="unread">
             <text>{{notify_length}} 条未读</text>
-            <image src="../../images/allread.png"></image>
+            <image src="/images/allread.png"></image>
         </view>
         <block wx:for="{{applicant}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
-            <view class="notify-item flex-wrp" bindtap="handleToAccept" data-aid="{{item.act_id}}" data-uid="{{item.applicant_id}}" data-nick="{{item.app_nick}}">
+            <view class="notify-item flex-wrp" bindtap="handleToAccept" data-aid="{{item.act_id}}" data-uid="{{item.applicant_id}}" data-nick="{{item.applicant_nickname}}">
                 <view class="avatar flex-item">
-                    <!-- <image src="{{item.avatar}}"></image> -->
-                    <image src="../../images/icons/timg.jpg"></image>
+                    <image wx:if="{{item.applicant_avatar}}" src="{{item.applicant_avatar!==null?item.applicant_avatar:'/images/icons/timg.jpg'}}"></image>
                 </view>
                 <view class="notify-content flex-item">
-                    <text class="notify-source">{{item.app_nick}} 申请加入 </text>
+                    <text class="notify-source">{{item.applicant_nickname}} 申请加入 </text>
                     <text class="notify-title">{{item.act_title}}</text>
                 </view>
             </view>
         </block>
-        <!-- <view class="notify-item flex-wrp">
-            <view class="avatar flex-item">
-                <image src="../../images/icon1.jpeg"></image>
-            </view>
-            <view class="notify-content flex-item">
-                <text class="notify-source">Rebecca 发送了加入活动请求</text>
-                <text class="notify-title">保证不鸽！ 求通过！</text>
-            </view>
-        </view> -->
     </view>
 
 </scroll-view>

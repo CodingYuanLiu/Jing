@@ -2,7 +2,7 @@
 
 ## Global Error Codes
 
-Code | Description | Status
+Error Code | Description | Status
 ---- | ----- | ----
 101  | Need login | Status Unauthorized (401)
 102  | Bad Jwt token | Status Unauthorized (401)
@@ -12,8 +12,11 @@ Code | Description | Status
 201  | Parameter not provided or bad | Status Bad Request (400)
 202  | Missing some field | Status Bad Request (400)
 203  | Can't get pages | Status Bad Request (400)
+204  | Json parse error | Status Bad Request (400)
 300  | Database CRUD error | Status Bad Request (400)
-301  | No available data in database | Status Bad  (404)
+301  | No available data in database | Status Not Found (404)
+
+**Do not use global error code (greater than 100) on any non-global error.**
 
 ## Get User Status
 
@@ -779,6 +782,13 @@ Status OK - 200
         "user_nickname":"孙笑川",
         "user_signature":"...",
         "user_avatar":"http://image.jing855.cn/...",
+        "user_feedback":[
+            {
+                "Id": "5d3eaeae1a4eb65070f18dba",
+                ...
+            },
+            ...
+        ]
     },
     ...
 ]
@@ -849,8 +859,8 @@ Authorization: Bearer jwt
 {
     "act_id": 6,
     "type": "taxi",
-    "create_time": "2019-7-15 15:17",
-    "end_time": "2019-7-17 15:17",
+    "create_time": "2019-07-15 15:17",
+    "end_time": "2019-07-17 15:17",
     "description": "desc",
     "tag": ["g", "a", "t"],
     "images": [],
@@ -972,6 +982,191 @@ Status OK - 200
 ```json
 {
     "message": "Join activity successfully"
+}
+```
+
+Full activity - 400
+```json
+{
+    "errcode": 201,
+    "message": "The activity is already full",
+    "status": 400
+}
+```
+Expired activity - 400
+```json
+{
+    "errcode": 201,
+    "message": "he activity has already expired",
+    "status": 400
+}
+```
+Blocked activity - 400
+```json
+{
+    "errcode": 1,
+    "message": "The activity is blocked",
+    "status": 400
+}
+```
+Already quit the activity - 400
+```json
+{
+    "errcode": 2,
+    "message": "The user has quited the activity yet",
+    "status": 400
+}
+```
+Already applied for the activity or is the publisher - 400
+```json
+{
+    "errcode": 201,
+    "message": "The user is the publisher of the activity or has applied for the activity yet",
+    "status": 400
+}
+```
+Can not find the activity - 404
+```json
+{
+    "errcode": 301,
+    "message": "Can not find the activity",
+    "status": 404
+}
+```
+## Quit Activity and Quit Ratio
+### Quit an Activity
+#### Description
+A user can quit an activity via the API, but cannot rejoin the activity again.
+#### Request
+```json
+POST /api/user/act/quit?act_id=1 HTTP/1.1
+Authorization: Bearer jwt
+```
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Quit activity successfully"
+}
+```
+Can not find the join information - 404
+```json
+{
+    "errcode": 301,
+    "message": "Information not found",
+    "status": 404
+}
+```
+Activity publisher can not quit the activity - 400
+```json
+{
+    "errcode": 201,
+    "message": "Activity publisher cannot quit the activity",
+    "status": 400
+}
+```
+Not a participant - 400
+```json
+{
+    "errcode": 201,
+    "message": "The user is not a participant of the activity",
+    "status": 400
+}
+```
+
+### Get Quit Ratio
+#### Description
+Get the quit ratio of a user.
+#### Request
+```json
+GET /api/public/act/quitratio?user_id=1
+```
+#### Response
+Status OK - 200
+```json
+{
+    "ratio":0.5
+}
+```
+The user does not exist or hasn't join any activity yet - 404
+```json
+{
+    "errcode": 301,
+    "message": "The user doesn't exist or has not join any activity yet",
+    "status": 404
+}
+```
+
+## Refuse
+
+### Refuse 
+
+#### Description
+
+Refuse an unacception application.
+
+#### Request
+```json
+POST /api/user/act/refuse?act_id=1&user_id=1
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Refuse successfully"
+}
+```
+
+User haven't applicated or act not found - 400
+```json
+{
+    "errcode": 301,
+    "message": "user or application not found",
+    "status": 404
+}
+```
+
+### Get Refused Activity
+
+#### Description
+
+Get an activity list by which the user are refused.
+
+#### Request
+```json
+GET /api/user/act/refused
+```
+
+#### Response
+Status OK - 200
+```json
+[
+    {
+        "act_id": 30,
+        "act_title": "维利亚的秘密拼单",
+        "type": "order"
+    }
+]
+```
+or `null`.
+
+### Confirm Refuse
+
+#### Description
+
+Confirm and delete a refused application.
+
+#### Request
+```json
+GET /api/user/act/refuse/confirm?act_id=30
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Confirm successfully"
 }
 ```
 

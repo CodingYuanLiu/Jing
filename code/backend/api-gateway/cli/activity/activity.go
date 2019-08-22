@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/micro/go-micro/client"
 	"gopkg.in/mgo.v2/bson"
+	"jing/app/jing"
 
 	"github.com/micro/go-micro/client/grpc"
 	"github.com/micro/go-plugins/registry/kubernetes"
@@ -197,4 +198,14 @@ func GetRecommendation(userId int32) (*activityProto.RecommendResp,error){
 	}
 
 	return resp,nil
+}
+
+func GetUserQuitRatio(userId int) (float64,error){
+	joinNum := dao.GetJoinedActivityNumber(userId)
+	quitNum := dao.GetQuitActivityNumber(userId)
+	if joinNum + quitNum == 0{
+		return 0,jing.NewError(301,404,"The user doesn't exist or has not joint any activity yet")
+	}else{
+		return float64(quitNum) /float64(joinNum + quitNum),nil
+	}
 }

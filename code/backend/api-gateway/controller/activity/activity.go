@@ -221,14 +221,24 @@ func (activityController *Controller) Comment(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		jing.SendError(c,jing.NewError(203,400,"json parse error"))
+		jing.SendError(c,jing.NewError(204,400,"json parse error"))
 		return
 	}
 	if jsonForm["receiver_id"] == nil || jsonForm["content"] == nil || jsonForm["act_id"] == nil || jsonForm["time"] == nil {
-		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
+		jing.SendError(c,jing.NewError(202,400,"Miss some field"))
 		return
 	}
-	resp,err := activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, int(jsonForm["receiver_id"].(float64)),
+	receiverId := int(jsonForm["receiver_id"].(float64))
+	if receiverId != -1{
+		_,err = dao.FindUserById(receiverId)
+		if err != nil{
+			jing.SendError(c,jing.NewError(301,404,"Can not find the receiver in database"))
+			return
+		}
+	}
+
+
+	resp,err := activityClient.AddComment(int(jsonForm["act_id"].(float64)), userId, receiverId,
 		jsonForm["content"].(string), jsonForm["time"].(string))
 	if err != nil {
 		jing.SendError(c, err)
@@ -385,7 +395,7 @@ func (activityController *Controller) PublishActivity(c *gin.Context) {
 		return
 	}
 
-	if int(jsonForm["max_member"].(float64))<1 {
+	if int(jsonForm["max_member"].(float64))<=1 {
 		jing.SendError(c,jing.NewError(201,400,"Max member of the activity must be greater than 1"))
 	}
 
@@ -404,17 +414,21 @@ func (activityController *Controller) JoinActivity(c *gin.Context) {
 	userId := c.GetInt("userId")
 	actId, err := strconv.Atoi(c.Query("act_id"))
 	if err != nil || actId == 0 {
-		jing.SendError(c,jing.NewError(201,400,"param 'act_id' not exists"))
+		jing.SendError(c,jing.NewError(201,400,"param 'act_id' not provided or bad"))
 		return
 	}
 	var act map[string] interface{}
-	_ = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	err = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	if err != nil {
+		jing.SendError(c,jing.NewError(301,404,"Can not find the activity"))
+		return
+	}
 	basicInfo := act["basicinfo"].(map [string]interface{})
 	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),int32(basicInfo["status"].(int)))
-	if status == 1{
+	if status == 1 {
 		jing.SendError(c,jing.NewError(201,400,"The activity is already full"))
 		return
-	} else if status == 2{
+	} else if status == 2 {
 		jing.SendError(c,jing.NewError(201,400,"The activity has already expired"))
 
 		return
@@ -456,10 +470,7 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 	acts := dao.GetManagingActivity(userId)
 	actId, err := strconv.Atoi(c.Query("act_id"))
 	if err != nil || actId == 0 {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message": "param 'act_id' not exists",
-		})
-		c.Abort()
+		jing.SendError(c, jing.NewError(201, 400, "param 'act_id' not provided or bad"))
 		return
 	}
 	flag := false
@@ -469,10 +480,100 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 		}
 	}
 	if !flag {
-		c.JSON(http.StatusForbidden, map[string]string {
-			"message": "403 Forbidden",
+		jing.SendError(c, jing.NewError(105,403,"need admin privileges"))
+		return
+	}
+
+	var act map[string] interface{}
+	_ = dao.Collection.Find(bson.M{"actid":actId}).One(&act)
+	basicInfo := act["basicinfo"].(map [string]interface{})
+	status := dao.GetOverdueStatus(basicInfo["endtime"].(string),int32(basicInfo["status"].(int)))
+	if status == 1 {
+		c.JSON(http.StatusBadRequest,map[string]string{
+			"message": "The member of the activity is full already",
 		})
 		c.Abort()
+		return
+	} else if status == 2 {
+		c.JSON(http.StatusBadRequest,map[string] string{
+			"message": "The activity has expired",
+		})
+		c.Abort()
+		return
+	} else if status == -1 {
+		jing.SendError(c,jing.NewError(1,400,"The activity is blocked"))
+		return
+	}
+
+	acceptId, _ := strconv.Atoi(c.Query("user_id"))
+	if acceptId == 0 {
+		jing.SendError(c, jing.NewError(201, 400, "param 'user_id' not provided or bad"))
+		return
+	}
+	err = dao.AcceptJoinActivity(acceptId, actId)
+	if err != nil {
+		jing.SendError(c,err)
+		return
+	}
+	_ = dao.Collection.Update(bson.M{"actid":actId},
+	bson.M{"$set":bson.M{"basicinfo.status":dao.GetMaxMemberStatus(int32(actId),int32(basicInfo["maxmember"].(int)))}})
+
+	c.JSON(http.StatusOK,map[string]string{
+		"message":"Accept successfully",
+	})
+}
+
+func (activityController *Controller) GetRefusedActivity(c *gin.Context) {
+	userId := c.GetInt("userId")
+	acts := dao.GetRefusedActivity(userId)
+	var appJSONs []myjson.JSON
+	for _, actId := range acts {
+		resp, err := activityClient.QueryActivity(actId)
+		if err != nil {
+			log.Println("Can not find the activity of the application")
+			continue
+		}
+		appJSONs = append(appJSONs, myjson.JSON{
+			"act_id":             actId,
+			"act_title":          resp.BasicInfo.Title,
+			"type":               resp.BasicInfo.Type,
+		})
+	}
+	c.JSON(http.StatusOK, appJSONs)
+}
+
+func (activityController *Controller) ConfirmRefusedActivity(c *gin.Context) {
+	userId := c.GetInt("userId")
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		jing.SendError(c, jing.NewError(201, 400, "param 'act_id' not provided or bad"))
+		return
+	}
+	err = dao.ConfirmRefusedActivity(userId, actId)
+	if err != nil {
+		jing.SendError(c, err)
+	}
+	c.JSON(http.StatusOK, map[string]string {
+		"message": "Confirm successfully",
+	})
+}
+
+func (activityController *Controller) RefuseJoinActivity(c *gin.Context) {
+	userId := c.GetInt("userId")
+	acts := dao.GetManagingActivity(userId)
+	actId, err := strconv.Atoi(c.Query("act_id"))
+	if err != nil || actId == 0 {
+		jing.SendError(c, jing.NewError(201, 400, "param 'act_id' not provided or bad"))
+		return
+	}
+	flag := false
+	for _, v := range acts {
+		if actId == v {
+			flag = true
+		}
+	}
+	if !flag {
+		jing.SendError(c,jing.NewError(105,403,"need admin privileges"))
 		return
 	}
 
@@ -498,19 +599,18 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 	}
 
 	acceptId, _ := strconv.Atoi(c.Query("user_id"))
-	err = dao.AcceptJoinActivity(acceptId, actId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message": "Accept join activity application error",
-		})
-		c.Abort()
+	if acceptId == 0 {
+		jing.SendError(c, jing.NewError(201, 400, "param 'user_id' not provided or bad"))
 		return
 	}
-	_ = dao.Collection.Update(bson.M{"actid":actId},
-	bson.M{"$set":bson.M{"basicinfo.status":dao.GetMaxMemberStatus(int32(actId),int32(basicInfo["maxmember"].(int)))}})
+	err = dao.RefuseJoinActivity(acceptId, actId)
+	if err != nil {
+		jing.SendError(c, err)
+		return
+	}
 
 	c.JSON(http.StatusOK,map[string]string{
-		"message":"Accept successfully",
+		"message":"Refuse successfully",
 	})
 }
 
@@ -530,14 +630,14 @@ func (activityController *Controller) GetJoinApplication(c *gin.Context){
 
 		applicant,err := dao.FindUserById(applicantId)
 		if err != nil{
-			jing.SendError(c,jing.NewError(300,400,"Query applicant infomation error"))
-			return
+			log.Println("Can not find the applicant of the application")
+			continue
 		}
 
 		resp, err := activityClient.QueryActivity(actId)
 		if err != nil {
-			jing.SendError(c,jing.NewError(300,400,"Find applied activity error"))
-			return
+			log.Println("Can not find the activity of the application")
+			continue
 		}
 		appJSONs = append(appJSONs,myjson.JSON{
 			"applicant_id":applicantId,
@@ -558,7 +658,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		jing.SendError(c,jing.NewError(203,400,"Json parse error"))
+		jing.SendError(c,jing.NewError(204,400,"Json parse error"))
 		return
 	}
 	check := (jsonForm["type"] == nil || jsonForm["create_time"] == nil || jsonForm["end_time"] == nil || jsonForm["max_member"] == nil ||
@@ -568,9 +668,14 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		jsonForm["type"].(string) == "order" && (jsonForm["store"] == nil) ||
 		jsonForm["type"].(string) == "other" && (jsonForm["activity_time"] == nil)
 	if check {
-		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
+		jing.SendError(c,jing.NewError(202,400,"Miss some field"))
 		return
 	}
+
+	if int(jsonForm["max_member"].(float64))<=1 {
+		jing.SendError(c,jing.NewError(201,400,"Max member of the activity must be greater than 1"))
+	}
+
 	acts := dao.GetManagingActivity(userId)
 	flag := false
 	for _, v := range acts {
@@ -580,7 +685,7 @@ func (activityController *Controller) ModifyActivity(c *gin.Context) {
 		}
 	}
 	if !flag {
-		jing.SendError(c,jing.NewError(105,403,"not the admin of the activity"))
+		jing.SendError(c,jing.NewError(105,403,"need admin privileges"))
 		return
 	}
 	resp,err := activityClient.ModifyActivity(userId, jsonForm)
@@ -598,10 +703,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 	acts := dao.GetManagingActivity(userId)
 	actId, err := strconv.Atoi(c.Query("act_id"))
 	if err != nil || actId == 0 {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message": "param 'act_id' not exists",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(201,400,"param 'act_id' is not provided or bad"))
 		return
 	}
 	flag := false
@@ -612,7 +714,7 @@ func (activityController Controller) DeleteActivity(c *gin.Context) {
 		}
 	}
 	if !flag {
-		jing.SendError(c,jing.NewError(105,403,"not the admin of the activity"))
+		jing.SendError(c,jing.NewError(105,403,"need admin privileges"))
 		return
 	}
 	resp,err := activityClient.DeleteActivity(actId)
@@ -641,10 +743,7 @@ func getActivityJson(actId int) (returnJson myjson.JSON, err error) {
 func (activityController *Controller) QueryActivity(c *gin.Context) {
 	actId, err := strconv.Atoi(c.Query("act_id"))
 	if err != nil || actId == 0 {
-		c.JSON(http.StatusBadRequest, map[string]string {
-			"message": "param 'act_id' not exists",
-		})
-		c.Abort()
+		jing.SendError(c,jing.NewError(201,400,"param 'act_id' is not provided or bad"))
 		return
 	}
 	returnJson, err := getActivityJson(actId)
@@ -661,12 +760,12 @@ func (activityController *Controller) GetTags(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		jing.SendError(c,jing.NewError(203,400,"Json parse error"))
+		jing.SendError(c,jing.NewError(204,400,"Json parse error"))
 		return
 	}
 	check := jsonForm["title"] == nil || jsonForm["description"] == nil
 	if check{
-		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
+		jing.SendError(c,jing.NewError(202,400,"Miss some field"))
 		return
 	}
 	resp,err := activityClient.GenerateTags(jsonForm["title"].(string),jsonForm["description"].(string))
@@ -686,11 +785,11 @@ func (activityController *Controller) AddTags(c *gin.Context) {
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		jing.SendError(c,jing.NewError(203,400,"json parse error"))
+		jing.SendError(c,jing.NewError(204,400,"json parse error"))
 		return
 	}
 	if jsonForm["tags"] == nil{
-		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
+		jing.SendError(c,jing.NewError(202,400,"Miss some field"))
 		return
 	}
 	/* transform []interface{} to []string*/
@@ -751,11 +850,11 @@ func (activityController *Controller) AddBehavior(c *gin.Context){
 	_ = json.Unmarshal(jsonStr, &jsonForm)
 	if err != nil {
 		log.Println(err)
-		jing.SendError(c,jing.NewError(203,400,"json parse error"))
+		jing.SendError(c,jing.NewError(204,400,"json parse error"))
 		return
 	}
 	if jsonForm["behavior"] == nil || jsonForm["type"] == nil{
-		jing.SendError(c,jing.NewError(203,400,"Miss some field"))
+		jing.SendError(c,jing.NewError(202,400,"Miss some field"))
 		return
 	}
 	behavior := jsonForm["behavior"].(string)
@@ -806,7 +905,7 @@ func (activityController *Controller) BlockActivity(c *gin.Context){
 		return
 	}
 
-	dao.CancelApplicationOfBlockedActivity(actId)
+	dao.DiscardActivityApplication(actId)
 
 	c.JSON(http.StatusOK,map[string] string{
 		"message":"block activity successfully",
@@ -859,11 +958,15 @@ func (activityController *Controller) GetActivityMembers(c *gin.Context){
 			jing.SendError(c,jing.NewError(301,404,"can not find a member in mysql"))
 			return
 		}
+		var feedback []dao.Feedback
+		err = dao.FeedbackCollection.Find(bson.M{"$and":
+			[]bson.M{bson.M{"receiverid":user.ID},bson.M{"actid":actId}}}).All(&feedback)
 		returnJSON = append(returnJSON,myjson.JSON{
 			"user_id":user.ID,
 			"user_avatar":"http://image.jing855.cn/" + user.AvatarKey,
 			"user_nickname":user.Nickname,
 			"user_signature":user.Signature,
+			"user_feedback":feedback,
 		})
 	}
 	c.JSON(http.StatusOK,returnJSON)
@@ -892,4 +995,21 @@ func (activityController *Controller) GetUnacceptedApplication(c *gin.Context){
 		})
 	}
 	c.JSON(http.StatusOK,returnJSONs)
+}
+
+func (activityController *Controller) GetUserQuitRatio(c *gin.Context){
+	userId, err := strconv.Atoi(c.Query("user_id"))
+	if err != nil {
+		jing.SendError(c, jing.NewError(201, 400, "param 'user_id' is not provided or bad"))
+		return
+	}
+	ratio,err := activityClient.GetUserQuitRatio(userId)
+	if err != nil{
+		jing.SendError(c,err)
+		return
+	}else{
+		c.JSON(http.StatusOK,map[string]interface{}{
+			"ratio":ratio,
+		})
+	}
 }

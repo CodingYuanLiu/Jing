@@ -163,6 +163,18 @@ func GetJoinedActivity(userId int) (acts []int) {
 	return
 }
 
+func GetJoinedActivityNumber(userId int) int{
+	var count int
+	db.Model(&Join{}).Where("user_id = ? and is_admin = ?",userId,0).Count(&count)
+	return count
+}
+
+func GetQuitActivityNumber(userId int) int{
+	var count int
+	db.Model(&Join{}).Where("user_id = ? and is_admin = ?",userId,-2).Count(&count)
+	return count
+}
+
 func GetActivityAdmin(actId int) int {
 	join := Join{}
 	db.Where("act_id = ? and is_admin = ?", actId, 1).First(&join)
@@ -194,7 +206,7 @@ func JoinActivity(userId int, actId int) error {
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&findJoin)
 	if findJoin.ID != 0{
 		if findJoin.IsAdmin == -2{
-			return jing.NewError(1,400,"The user has quited the activity yet")
+			return jing.NewError(2,400,"The user has quited the activity yet")
 		} else{
 			return jing.NewError(201,400,"The user is the publisher of the activity or " +
 				"has applied for the activity yet")
@@ -219,7 +231,7 @@ func QuitActivity(userId int, actId int) error{
 	if join.IsAdmin == 1 {
 		return jing.NewError(201, 400, "Activity publisher cannot quit the activity")
 	}else if join.IsAdmin != 0 {
-		return jing.NewError(201,400,"The user is only an applicant of the activity")
+		return jing.NewError(201,400,"The user is not a participant of the activity")
 	}
 	db.Model(&join).Update("is_admin",-2)
 	return nil
@@ -241,12 +253,47 @@ func AcceptJoinActivity(userId int, actId int) error{
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
 	if join.ID == 0{
-		return jing.NewError(301,404,"application not found")
+		return jing.NewError(301,404,"user or application not found")
 	}
 	if join.IsAdmin != -1{
 		return jing.NewError(201,400,"application status error: not unaccepted")
 	}
 	db.Model(&join).Update("is_admin",0)
+	return nil
+}
+
+func GetRefusedActivity(userId int) (acts []int) {
+	var joins []Join
+	db.Where("user_id = ? and is_admin = -3", userId).Find(&joins)
+	for _, join := range joins {
+		acts = append(acts, join.ActID)
+	}
+	return
+}
+
+func ConfirmRefusedActivity(userId int, actId int) error {
+	join := Join{}
+	db.Where("user_id = ? and act_id = ?", userId, actId).First(&join)
+	if join.ID == 0 {
+		return jing.NewError(301, 400, "user or application not found")
+	}
+	if join.IsAdmin != -3 {
+		return jing.NewError(201, 400, "application status error: not refused")
+	}
+	db.Delete(&join)
+	return nil
+}
+
+func RefuseJoinActivity(userId int, actId int) error {
+	join := Join{}
+	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
+	if join.ID == 0{
+		return jing.NewError(301,404,"user or application not found")
+	}
+	if join.IsAdmin != -1{
+		return jing.NewError(201,400,"application status error: not unaccepted")
+	}
+	db.Model(&join).Update("is_admin",-3)
 	return nil
 }
 
@@ -283,8 +330,8 @@ func GetUnacceptedApplication(userId int) ([]int,error){
 	return actId,nil
 }
 
-func CancelApplicationOfBlockedActivity(actId int){
-	db.Delete(Join{},"act_id=? and is_admin=?",actId,-1)
+func DiscardActivityApplication(actId int){
+	db.Model(Join{}).Where("act_id = ? and is_admin = ?", actId, -1).UpdateColumn(actId, -3)
 }
 
 func FindUserById(id int) (User, error) {
@@ -464,18 +511,31 @@ func ChangePrivacyLevel(userId int, level int) error {
 	return nil
 }
 
-func CreateFollow(From int, To int) {
+func CreateFollow(From int, To int) error {
+	_, err := FindUserById(To)
+	if err != nil {
+		return err
+	}
 	follow := Follow{
 		From: From,
-		To: To,
+		To:   To,
 	}
 	db.Create(&follow)
+	return nil
 }
 
-func DeleteFollow(From int, To int) {
+func DeleteFollow(From int, To int) error {
 	follow := Follow{}
 	db.Where("`from` = ? and `to` = ?", From, To).First(&follow)
+	_, err := FindUserById(To)
+	if err != nil {
+		return err
+	}
+	if follow.ID == 0 {
+		return jing.NewError(301, 400, "You have not follow this user")
+	}
 	db.Delete(&follow)
+	return nil
 }
 
 func GetFollowing(userId int) (ret []int) {

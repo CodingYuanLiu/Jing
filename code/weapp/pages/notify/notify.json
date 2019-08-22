@@ -1,5 +1,5 @@
 {
-    "navigationBarTitleText": "消息",
+    "navigationBarTitleText": "通知",
     "usingComponents": {
         "i-modal": "../../dist/modal/index"
     }

@@ -11,3 +11,7 @@ Coverage: 100.0%
 ### [Activity](./coverage_activity.html)
 
 Coverage: 89.9%, can not test the handling of unknown errors. 
+
+### [feedback](./coverage_feedback.html)
+
+Coverage: 82.3%, can not test the handling of unknown errors.

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: extern-dns
+data:
+  go.micro.api.api: go-micro-api-api
+  go.micro.srv.auth-server: go-micro-srv-auth-server
+  go.micro.user: go-micro-user
+  go.micro.api: go.micro.api
