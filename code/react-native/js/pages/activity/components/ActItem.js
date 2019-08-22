@@ -1,19 +1,17 @@
 import React from "react"
 import { View, Text, ViewPropTypes, StyleSheet, TouchableNativeFeedback } from 'react-native';
-import { ListItem, Icon, Image } from "react-native-elements";
+import {ListItem, Icon, Image, Button} from "react-native-elements";
 import { PropTypes } from "prop-types";
 import {TaxiSpec, TakeoutSpec, OrderSpec, NormalActSpec} from "./SpecInfo";
 import Tag from "../../../common/components/Tag";
 import NavigationUtil from "../../../navigator/NavUtil";
 import UserAvatar from "../../../common/components/UserAvatar";
 import UserNickname from "../../../common/components/UserNickname";
+import ToolTip from "../../../common/components/ToolTip";
 
 export default class ActItem extends React.PureComponent{
     constructor(props) {
         super(props);
-        this.state = {
-            miniActionVisible: false,
-        }
     }
     render() {
         let sponsor = this.props.sponsor;
@@ -26,11 +24,14 @@ export default class ActItem extends React.PureComponent{
         let actSpec = this.renderActSpec(type);
         let sponsorInfo = this.renderSponsorInfo(sponsor);
         let miniActionBar = this.renderMiniActionBar();
-        let participantMeta = this.props.metadata.participants.toString();
+        let maxMemberMeta = this.props.metadata.maxMember.toString();
         let commentMeta = this.props.metadata.comments.toString();
+        let participantsMeta = this.props.metadata.participants.toString();
 
         return(
-            <View styles={styles.wrapper}>
+            <View
+                styles={styles.wrapper}
+            >
                 <TouchableNativeFeedback
                     onPress={() => {this.toDetail()}}
                 >
@@ -59,7 +60,8 @@ export default class ActItem extends React.PureComponent{
                             <View>
                             </View>
                             <View style={styles.metadataContainer}>
-                                <Text style={styles.metadata}>{`${participantMeta} 参与`}</Text>
+                                <Text style={styles.metadata}>{`${maxMemberMeta} 最大人数`}</Text>
+                                <Text style={styles.metadata}>{`${participantsMeta} 参与`}</Text>
                                 <Text style={styles.metadata}>{`${commentMeta} 评论`}</Text>
                             </View>
                         </View>
@@ -144,18 +146,23 @@ export default class ActItem extends React.PureComponent{
         )
     };
     renderMiniActionBar = () => {
-        let rightIcon=
-            <Icon
-                type={"antdesign"}
-                name={"ellipsis1"}
-                containerStyle={styles.miniActionIcon}
-                color={"#bfbfbf"}
-                onPress={this.showMiniAction}
-            />;
         return(
-            <View style={styles.miniActionContainer}>
-                {rightIcon}
-            </View>
+            <ToolTip
+                style={[styles.miniActionContainer, {backgroundColor: "red"}]}
+            >
+                <Button
+                    title={"举报"}
+                    type={"clear"}
+                />
+                <Button
+                    title={"删除"}
+                    type={"clear"}
+                />
+                <Button
+                    title={"屏蔽此人"}
+                    type={"clear"}
+                />
+            </ToolTip>
         );
     };
     renderImage = uri => {
@@ -165,9 +172,6 @@ export default class ActItem extends React.PureComponent{
                 style={styles.bodyImage}
                 containerStyle={styles.bodyImageContainer}
             /> : null
-    };
-    showMiniAction = () => {
-        this.setState({miniActionVisible: true})
     };
     toDetail = () => {
         this.props.onPress(this.props.id)
@@ -223,7 +227,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        height: 240,
+        minHeight: 200,
         marginBottom: 10,
         paddingLeft: 10,
         paddingRight: 10,
@@ -252,8 +256,6 @@ const styles = StyleSheet.create({
         right: 20,
         top: 15,
         justifyContent: "center",
-    },
-    miniActionIcon: {
     },
     titleContainer: {
         width: "100%",

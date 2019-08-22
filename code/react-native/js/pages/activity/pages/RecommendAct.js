@@ -5,6 +5,7 @@ import ActItem from "../components/ActItem";
 import NavigationUtil from "../../../navigator/NavUtil";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
+import Api from "../../../api/Api";
 
 class RecommendAct extends React.Component{
     constructor(props) {
@@ -78,7 +79,8 @@ class RecommendAct extends React.Component{
                 metadata={
                     {
                         comments: item.comments.length,
-                        participants: 0,
+                        participants: item.participants,
+                        maxMember: item.maxMember,
                     }
                 }
                 onPress={() => {this._onPressItem(item.id)}}

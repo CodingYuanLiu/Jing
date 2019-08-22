@@ -145,8 +145,7 @@ export {
 
 const styles = StyleSheet.create({
     container: {
-        height: 80,
-        flex: 1,
+        marginBottom: 15,
     },
     specContainer: {
         flexDirection: "row",

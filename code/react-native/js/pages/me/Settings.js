@@ -5,7 +5,7 @@ import {ArrowLeftIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
 import Dao from "../../api/Dao";
 import {Button, ListItem} from "react-native-elements";
-import {toggleFindByPhoneSetting, toggleSaveDataSetting, toggleWaterMarkSetting} from "../../actions/settings";
+import {toggleFindByPhoneSetting, toggleSaveDataSetting, toggleWaterMarkSetting} from "../../actions/setting";
 import {connect} from "react-redux";
 import LocalApi from "../../api/LocalApi";
 
@@ -81,7 +81,7 @@ class Settings extends React.PureComponent {
                     titleStyle={styles.settingTitle}
                     subtitle={"仅在Wi-Fi环境下才会自动加载图片"}
                     subtitleStyle={styles.settingSubtitle}
-                    switch={{value: this.state.saveDataActive, onValueChange: this.handleWIFISettingChange, thumbColor: "#0084ff"}}
+                    switch={{value: this.state.saveDataActive, onValueChange: this.handleSaveDataSettingChange, thumbColor: "#0084ff"}}
                     containerStyle={styles.settingItemContainer}
                 />
                 <ListItem
@@ -89,7 +89,7 @@ class Settings extends React.PureComponent {
                     titleStyle={styles.settingTitle}
                     subtitle={"可以通过手机好找到我"}
                     subtitleStyle={styles.settingSubtitle}
-                    switch={{value: this.state.findByPhoneActive, onValueChange: this.handleCanFindByPhoneSetting, thumbColor: "#0084ff"}}
+                    switch={{value: this.state.findByPhoneActive, onValueChange: this.handleFindByPhoneSettingChange, thumbColor: "#0084ff"}}
                     containerStyle={styles.settingItemContainer}
                 />
                 <ListItem
@@ -162,6 +162,7 @@ class Settings extends React.PureComponent {
 
     loadData = () => {
         let setting = this.props.setting;
+        console.log(setting);
         this.setState({
             waterMarkActive: setting.waterMarkActive,
             saveDataActive: setting.saveDataActive,
@@ -179,23 +180,29 @@ class Settings extends React.PureComponent {
     };
     handleWaterMarkSettingChange = () => {
         this.setState(state => {
-            state.waterMarkActive = !state.waterMarkActive;
-            this.props.toggleWaterMarkSetting(state.waterMarkActive);
-            return state;
+            this.props.toggleWaterMarkSetting(!state.waterMarkActive);
+            return {
+                ...state,
+                waterMarkActive: !state.waterMarkActive,
+            };
         });
     };
-    handleWIFISettingChange = () => {
+    handleSaveDataSettingChange = () => {
         this.setState(state => {
-            state.saveDataAvtive = !state.saveDataActive;
-            this.props.toggleSaveDataSetting(state.saveDataAvtive);
-            return state;
+            this.props.toggleSaveDataSetting(!state.saveDataActive);
+            return {
+                ...state,
+                saveDataActive: !state.saveDataActive,
+            }
         })
     };
-    handleCanFindByPhoneSetting = () => {
+    handleFindByPhoneSettingChange = () => {
         this.setState(state => {
-            state.findByPhoneAvtive = !state.findByPhoneActive;
-            this.props.toggleFindByPhoneSetting(state.findByPhoneAvtive);
-            return state;
+            this.props.toggleFindByPhoneSetting(!state.findByPhoneActive);
+            return {
+                ...state,
+                findByPhoneActive: !state.findByPhoneActive
+            }
         })
     };
 }
@@ -207,7 +214,6 @@ const mapDispatchToProps = dispatch => ({
     toggleWaterMarkSetting: (flag) => dispatch(toggleWaterMarkSetting(flag)),
     toggleSaveDataSetting: (flag) => dispatch(toggleSaveDataSetting(flag)),
     toggleFindByPhoneSetting: (flag) => dispatch(toggleFindByPhoneSetting(flag)),
-    onLoadSettings: () => dispatch(onLoadSettings()),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Settings);
 

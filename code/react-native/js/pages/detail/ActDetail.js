@@ -20,6 +20,7 @@ import {onFollow, onUnFollow} from "../../actions/currentUserFollowing";
 import UserAvatar from "../../common/components/UserAvatar";
 import UserNickname from "../../common/components/UserNickname";
 import HeaderBar from "../../common/components/HeaderBar";
+import ToolTip from "../../common/components/ToolTip";
 
 
 class DetailScreen extends React.Component {
@@ -52,7 +53,10 @@ class DetailScreen extends React.Component {
         return(
             <View style={{flex: 1,}}>
                 {header}
-                <ScrollView style={styles.container}>
+                <ScrollView
+                    style={styles.container}
+                    onScroll={this._onScroll}
+                >
                     {ActTitle}
                     {body}
                 </ScrollView>
@@ -68,13 +72,7 @@ class DetailScreen extends React.Component {
                 size={24}
             />
         );
-        let rightIcon = (
-            <EllipsisIcon
-                color={"#5a5a5a"}
-                onPress={this.showActionModal}
-                size={24}
-            />
-        );
+        let rightIcon = this.renderToolTip();
         return(
             <HeaderBar
                 leftButton={leftIcon}
@@ -87,8 +85,28 @@ class DetailScreen extends React.Component {
             />
         );
     };
-    renderActionModal = () => {
-        return null;
+    renderToolTip = () => {
+        let { currentAct } = this.props;
+        let deleteButton = null;
+        if (currentAct.isSelf) {
+            deleteButton = (
+                <Button
+                    title={"删除"}
+                    type={"clear"}
+                    onPress={this.deleteAct}
+                />
+            )
+        }
+        return (
+            <ToolTip>
+                <Button
+                    title={"夜晚模式"}
+                    type={"clear"}
+                    onPress={this.toggleEveningMode}
+                />
+                {deleteButton}
+            </ToolTip>
+        );
     };
     renderTitle = (title, tags) => {
         return (
@@ -116,7 +134,7 @@ class DetailScreen extends React.Component {
             <View style={styles.bodyContainer}>
                 <View style={styles.bodyContent}>
                     {sponsorComponent}
-                    <View style={styles.bodyTextContainer}>
+                    <View>
                         <Text style={styles.bodyText}>{description}</Text>
                     </View>
                     <View>
@@ -374,11 +392,6 @@ class DetailScreen extends React.Component {
         return footerLeftButton;
     };
 
-    // function control view components
-    showActionModal = () => {
-
-    };
-
     // function for jump between b\pages
     toUserPersonalPage = (id) => {
         NavigationUtil.toPage({id:id}, "PersonalHome")
@@ -495,7 +508,16 @@ class DetailScreen extends React.Component {
             };
             this.props.onUnFollow(from, to, currentUser.jwt, this);
         }
-    }
+    };
+    deleteAct = () => {
+        alert("删除还没开发")
+    };
+    toggleEveningMode = ()　=> {
+        alert("没有事情发生")
+    };
+    _onScroll = () => {
+
+    };
 }
 
 const mapStateToProps = state => ({
@@ -575,8 +597,6 @@ const styles = StyleSheet.create({
     bodyContent: {
         minHeight: 400,
         marginBottom: 40
-    },
-    bodyTextContainer: {
     },
     bodyText: {
         fontSize: 20,

@@ -13,6 +13,7 @@ import { onGetCurrentUserFollowing } from "../../actions/currentUserFollowing";
 import { onGetCurrentUserFollower } from "../../actions/currentUserFollower";
 import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
 import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
+import {onLoadSettings} from "../../actions/setting";
 
 // fix xmpp.js cannot find base64 module error
 var base64 = require('base-64');
@@ -76,7 +77,8 @@ class StartPage extends React.Component {
             .catch(err => {
                 console.log(err);
                 this.props.navigation.navigate("Home", null);
-            })
+            });
+        this.props.onLoadSettings();
     };
     onStanza = async standaz => {
         console.log(standaz);
@@ -153,6 +155,7 @@ const mapDispatchToProps = dispatch => ({
     onGetCurrentUserFollowing: (jwt) => dispatch(onGetCurrentUserFollowing(jwt)),
     onGetCurrentUserManageAct: (jwt) => dispatch(onGetCurrentUserManageAct(jwt)),
     onGetCurrentUserJoinAct: (jwt) => dispatch(onGetCurrentUserJoinAct(jwt)),
+    onLoadSettings: () => dispatch(onLoadSettings()),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(StartPage);
 

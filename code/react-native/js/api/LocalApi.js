@@ -170,33 +170,33 @@ export default class LocalApi {
     // setting api
     static getWaterMarkSetting = async () => {
         let waterMarkSetting = await Dao.get("@settingWaterMark");
-        return JSON.parse(waterMarkSetting);
+        return waterMarkSetting !== 0;
     };
     static saveWaterMarkSetting = async (flag) => {
         try {
-            await Dao.saveJson("@settingWaterMark", {waterMarkSetting: flag});
+            await Dao.saveString("@settingWaterMark", flag ? '1' : '0');
         } catch (e) {
             console.log(e);
         }
     };
     static getFindByPhoneSetting = async () => {
         let findByPhoneSetting = await Dao.get("@settingFindByPhone");
-        return JSON.parse(findByPhoneSetting);
+        return findByPhoneSetting !== 0;
     };
     static saveFindByPhoneSetting = async (flag) => {
         try {
-            await Dao.saveJson("@settingFindByPhone", {findByPhoneSetting: flag});
+            await Dao.saveJson("@settingFindByPhone", flag ? '1' : '0');
         } catch (e) {
             console.log(e);
         }
     };
-    static getSaveData = async () => {
+    static getSaveDataSetting = async () => {
         let saveDataSetting = await Dao.get("@settingSaveData");
-        return JSON.parse(saveDataSetting);
+        return saveDataSetting !== 0;
     };
     static saveSaveDataSetting = async (flag) => {
         try {
-            await Dao.saveJson("@settingSaveData", {SaveDataSetting: flag});
+            await Dao.saveJson("@settingSaveData",flag ? '1' : '0');
         } catch (e) {
             console.log(e);
         }

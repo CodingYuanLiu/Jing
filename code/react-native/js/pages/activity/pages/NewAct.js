@@ -5,6 +5,7 @@ import NavigationUtil from "../../../navigator/NavUtil";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
 import Tag from "../../../common/components/Tag";
+import Api from "../../../api/Api";
 
 class NewAct extends React.PureComponent{
     constructor(props) {
@@ -109,7 +110,8 @@ class NewAct extends React.PureComponent{
                 metadata={
                     {
                         comments: item.comments.length,
-                        participants: 1, // we don't have participants data here
+                        participants: item.participants,
+                        maxMember: item.maxMember,
                     }
                 }
                 onPress={() => {this._onPressItem(item.id)}}

@@ -11,7 +11,7 @@ import currentUserFollower from "./currentUserFollower";
 import currentUserFeedback from "./currentUserFeedback";
 import currentUserJoin from "./currentUserJoin";
 import currentUserManage from "./currentUserManage";
-import setting from "./settings";
+import setting from "./setting";
 import personalHome from "./personalHome";
 
 export default combineReducers({

@@ -57,6 +57,7 @@ export default class Model {
             comments: this.transferCommentList(data.comments),
             createTime: data.create_time,
             status: data.status,
+            maxMember: data.max_member,
         };
         if(act.type === "taxi") {
             act.departTime = data.depart_time;

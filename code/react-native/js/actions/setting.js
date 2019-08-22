@@ -55,7 +55,7 @@ const onLoadSettings = () => {
               .then(res => {
                   dispatch({
                       type: TOGGLE_SAVE_DATA_SETTING,
-                      flag: res.saveDataAvtive,
+                      flag: res.saveDataActive,
                   });
                   dispatch({
                       type: TOGGLE_WATERMARK_SETTING,
@@ -82,9 +82,10 @@ const saveDefaultSetting = async () => {
 };
 const loadSettingsAsync = async () => {
     let res = {};
-    res.waterMarkActive = LocalApi.getWaterMarkSetting();
-    res.saveDataActive = LocalApi.getSaveData();
-    res.findByPhoneAvtive = LocalApi.getFindByPhoneSetting();
+    res.waterMarkActive = await LocalApi.getWaterMarkSetting();
+    res.saveDataActive = await LocalApi.getSaveDataSetting();
+    res.findByPhoneAvtive = await LocalApi.getFindByPhoneSetting();
+    console.log(res);
     return res;
 };
 export {

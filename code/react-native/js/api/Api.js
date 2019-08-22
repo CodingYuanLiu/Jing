@@ -244,40 +244,41 @@ export default class Api {
      * @param page - optional
      * @returns {Promise<R>}
      */
-    static getAllAct(page = null) {
-        return new Promise((resolve, reject) => {
-            axios.get("/api/public/act/findall")
-                .then(res => {
-                    let acts = res.data ? res.data.acts : [];
-                    resolve(Model.transferActivityList(acts));
-                    console.log(res.data);
-                })
-                .catch(err => {
-                    err.message = "unknown error";
-                    Reject(err, reject)
-                })
-        })
-    }
-    static getActByType(type, jwt = null) {
+    static getAllAct = async (page = null) => {
+        try {
+            let res = await axios.get("/api/public/act/findall");
+            let acts = res.data ? res.data.acts : [];
+            acts = Model.transferActivityList(acts);
+            let participants;
+            for (let act of acts ) {
+                participants = await this.getActParticipants(act.id);
+                act.participants = participants.length;
+            }
+            return acts;
+        }catch (e) {
+            console.log(e);
+        }
+
+    };
+    static getActByType = async(type, jwt = null) => {
         if (type === "all") {
             return this.getAllAct();
         } else {
-            return new Promise((resolve, reject) => {
-                axios.get(`/api/public/act/findbytype?type=${type}`, jwt ? {
-                    headers: {
-                        'Authorization': `Bearer $res.data){jwt}`,
-                    }
-                } : null)
-                    .then(res => {
-                        let acts = res.data ? res.data.acts : [];
-                        resolve(Model.transferActivityList(acts));
-                    })
-                    .catch(err => {
-                        Reject(err, reject);
-                    })
-            })
+            let res = await axios.get(`/api/public/act/findbytype?type=${type}`, jwt ? {
+                headers: {
+                    'Authorization': `Bearer $res.data){jwt}`,
+                }
+            } : null);
+            let acts = res.data ? res.data.acts : [];
+            acts = Model.transferActivityList(acts);
+            let participants;
+            for (let act of acts ) {
+                participants = await this.getActParticipants(act.id);
+                act.participants = participants.length;
+            }
+            return acts;
         }
-    }
+    };
 
     /**
      *
@@ -312,45 +313,44 @@ export default class Api {
      * @param jwt - recommend need to login
      * @returns {Promise<R>}
      */
-    static getRecommendAct(jwt) {
-        let token = jwt;
-        return new Promise((resolve, reject) => {
-            axios.get("/api/user/act/recommendact", {
+    static getRecommendAct = async (jwt) => {
+        try {
+            let token = jwt;
+
+            let res = await axios.get("/api/user/act/recommendact", {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 }
-            })
-                .then(res => {
-                    console.log(res.data);
-                    let acts = res.data ? res.data : [];
-                    resolve(Model.transferActivityList(acts));
-                })
-                .catch(err => {
-                    Reject(err, reject)
-                })
-        })
-    }
+            });
+            let acts = res.data ? res.data : [];
+            acts = Model.transferActivityList(acts);
+            let participants;
+            for (let act of acts ) {
+                participants = await this.getActParticipants(act.id);
+                act.participants = participants.length;
+            }
+            return acts;
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
-    static getActDetail(actId, jwt=null) {
-        let id = actId;
-        return new Promise((resolve, reject) => {
-            axios.get(`/api/public/act/query?act_id=${id}`)
-                .then(res => {
-                        let data = Model.transferActivityFromSnakeToCamel(res.data);
-                        resolve(data);
-                        LocalApi.saveRecentScan(data)
-                            .catch(err => {
-                            });
-                        this.recordBehavior(data.type, "scanning", jwt)
-                            .catch(err => {
-                                console.log(err);
-                            })
-                    })
-                .catch(err => {
-                    Reject(err, reject)
-                })
-        })
-    }
+    static getActDetail = async (actId, jwt=null) => {
+        let res = await axios.get(`/api/public/act/query?act_id=${actId}`);
+        let data = Model.transferActivityFromSnakeToCamel(res.data);
+        data.participants = await this.getActParticipants(data.id);
+
+        LocalApi.saveRecentScan(data)
+            .catch(err => {
+            });
+        this.recordBehavior(data.type, "scanning", jwt)
+            .catch(err => {
+                console.log(err);
+            })
+
+        return data;
+
+    };
     static getMyJoinAct(jwt) {
         return new Promise((resolve, reject) => {
             axios.get("/api/user/act/myact", {
