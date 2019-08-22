@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, StatusBar}
 import {Button, Icon, Image, ListItem, Avatar} from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
 import {
-    ArrowLeftIcon, CheckIcon,
+    ArrowLeftIcon, CheckIcon, ChevronIcon, CloseIcon,
     CommentIcon,
     EditIcon,
     EllipsisIcon,
@@ -21,16 +21,25 @@ import UserAvatar from "../../common/components/UserAvatar";
 import UserNickname from "../../common/components/UserNickname";
 import HeaderBar from "../../common/components/HeaderBar";
 import ToolTip from "../../common/components/ToolTip";
+import {
+    ACT_TYPE_ORDER, ACT_TYPE_OTHER,
+    ACT_TYPE_TAKEOUT,
+    ACT_TYPE_TAXI,
+    IS_SPONSOR,
+    JOINED,
+    JOINING,
+    NOT_JOIN,
+    REJECTED
+} from "../../common/constant/Constant";
 
 
 class DetailScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state= {
-            activity: {},
             isLoading: false,
             isFriends: false,
-            actionModalVisible: false,
+            isJoining: false,
             joinStatus: 0,
         };
         this.actId = this.props.navigation.getParam("id");
@@ -98,9 +107,7 @@ class DetailScreen extends React.Component {
             )
         }
         return (
-            <ToolTip
-                style={{backgroundColor: "green"}}
-            >
+            <ToolTip>
                 <Button
                     title={"夜晚模式"}
                     type={"clear"}
@@ -132,32 +139,32 @@ class DetailScreen extends React.Component {
     renderBody = (sponsor, specInfo, description, images, createTime, comments) => {
         let comment = this.renderComment(comments);
         let sponsorComponent = this.renderSponsor(sponsor);
+        let participantList = this.renderParticipantList();
         return (
             <View style={styles.bodyContainer}>
-                <View style={styles.bodyContent}>
-                    {sponsorComponent}
-                    <View>
-                        <Text style={styles.bodyText}>{description}</Text>
-                    </View>
+                {sponsorComponent}
+                <View>
+                    <Text style={styles.bodyText}>{description}</Text>
+                </View>
+                {images && images.length > 0 ?
                     <View>
                         {
-                            images && images.length > 0 ? images.map((item, i) => {
+                            images.map((item, i) => {
                                 return (
                                     <Image
                                         source={{uri: item}}
                                         key={i}
                                         style={styles.bodyImage}
                                     />)
-                            }): null
+                            })
                         }
-                    </View>
-                    <View style={styles.bodyBottomContainer}>
-                        <Text style={styles.metadata}>发布于{createTime}</Text>
-                    </View>
+                    </View> : null
+                }
+                <View style={styles.bodyBottomContainer}>
+                    <Text style={styles.metadata}>发布于{createTime}</Text>
                 </View>
-                <View>
-                    {comment}
-                </View>
+                {participantList}
+                {comment}
             </View>
 
         )
@@ -219,6 +226,49 @@ class DetailScreen extends React.Component {
                 contentContainerStyle={{position: "relative", left: -5}}
             />
         )
+    };
+    renderParticipantList = () => {
+        let { participants } = this.props.currentAct;
+        if (!participants) participants = [];
+        console.log(participants);
+        let title = (
+            <View style={styles.participantComponentTitleContainer}>
+                <Text style={styles.participantComponentTitle}>
+                    活动成员
+                </Text>
+                <Text style={styles.participantComponentRightTitle}>
+                    {`共${participants.length}人`}
+                </Text>
+            </View>
+        );
+        return (
+            <View style={styles.participantComponentContainer}>
+                {title}
+                <View style={styles.participantListContainer}>
+                    {
+                        participants.map((item, i) => {
+                            return (
+                                <View
+                                    key={i.toString()}
+                                    style={styles.participantItemContainer}
+                                >
+                                    <UserAvatar
+                                        source={{uri: item.avatar}}
+                                        size={30}
+                                        id={item.id}
+                                    />
+                                    <Text
+                                        style={styles.participantTitle}
+                                        numberOfLines={1}
+                                        ellipsizeMode={"tail"}
+                                    >{item.nickname}</Text>
+                                </View>
+                            );
+                        })
+                    }
+                </View>
+            </View>
+        );
     };
     renderCommentPreview = (comments) => {
         let previewComments = this.getPreviewComments(comments);
@@ -343,6 +393,10 @@ class DetailScreen extends React.Component {
             <CheckIcon
                 color={"#afafaf"}
             />;
+        let rejectIcon =
+            <CloseIcon
+                color={"#afafaf"}
+            />;
         let joinButton = (
             <Button
                 icon={joinIcon}
@@ -374,19 +428,32 @@ class DetailScreen extends React.Component {
                 disabled
             />
         );
+        let rejectedButton = (
+            <Button
+                icon={rejectIcon}
+                title={"已被拒绝"}
+                titleStyle={styles.bottomButtonText}
+                contaienrStyle={styles.bottomButtonContainer}
+                buttonStyle={styles.bottomButton}
+                disabled
+            />
+        );
         let footerLeftButton;
         switch (this.state.joinStatus) {
-            case -1:
+            case JOINING:
                 footerLeftButton = joiningButton;
                 break;
-            case -2:
+            case NOT_JOIN:
                 footerLeftButton = joinButton;
                 break;
-            case 0:
+            case JOINED:
                 footerLeftButton = joinedButton;
                 break;
-            case 1:
+            case IS_SPONSOR:
                 footerLeftButton = joinedButton;
+                break;
+            case REJECTED:
+                footerLeftButton = rejectedButton;
                 break;
             default:
                 footerLeftButton = joinButton;
@@ -412,16 +479,16 @@ class DetailScreen extends React.Component {
     toPublishPage = () => {
         let currentAct = this.props.currentAct;
         switch (currentAct.type) {
-            case "taxi":
+            case ACT_TYPE_TAXI:
                 NavigationUtil.toPage({type: "taxi"}, "PublishPage");
                 break;
-            case "takeout":
+            case ACT_TYPE_TAKEOUT:
                 NavigationUtil.toPage({type: "takeout"}, "PublishPage");
                 break;
-            case "order":
+            case ACT_TYPE_ORDER:
                 NavigationUtil.toPage({type: "order"}, "PublishPage");
                 break;
-            case "other":
+            case ACT_TYPE_OTHER:
                 NavigationUtil.toPage({type: "other"}, "PublishPage");
                 break;
             default:
@@ -448,12 +515,19 @@ class DetailScreen extends React.Component {
             })
     };
     joinAct = () => {
-        let jwt = this.props.currentUser.jwt;
-        let act = this.props.currentAct;
+        let {currentUser, currentAct: act} = this.props;
+        let jwt = currentUser.jwt;
         this.setState({isJoining: true});
+        let user = {
+            id: currentUser.id,
+            avatar: currentUser.avatar,
+            nickname: currentUser.nickname,
+            signature: currentUser.signature,
+        };
         Api.joinAct(act, jwt)
             .then(() => {
-                this.setState({joinStatus: -1})
+                this.setState({joinStatus: JOINED});
+                this.props.joinAct(user);
             })
             .catch(err => {
                 console.log(err)
@@ -596,10 +670,6 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5
     },
-    bodyContent: {
-        minHeight: 400,
-        marginBottom: 40
-    },
     bodyText: {
         fontSize: 20,
         lineHeight: 26,
@@ -615,15 +685,46 @@ const styles = StyleSheet.create({
     bodyBottomContainer: {
         flexDirection: "row",
         marginTop: 10,
-        marginBottom: 20,
         alignItems: "center",
+        marginBottom: 180,
     },
     metadata: {
         color: "#d3d3d3",
         fontSize: 14,
         padding: 8,
     },
-
+    participantComponentContainer: {
+        marginBottom: 50,
+    },
+    participantComponentTitleContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    participantComponentTitle: {
+        fontWeight: "800",
+        fontSize: 18,
+        color: "#1a1a1a",
+        marginBottom: 20,
+        marginTop: 20,
+    },
+    participantComponentRightTitle: {
+        fontSize: 16,
+        color: "#bfbfbf",
+    },
+    participantTitle: {
+        fontSize: 12,
+        color: "#9f9f9f",
+        maxWidth: 40,
+    },
+    participantListContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    participantItemContainer: {
+        marginRight: 20,
+        alignItems: "center",
+    },
     // comment style, including comment title, comment button, comment preview
     commentContainer: {
         width: "100%",
@@ -700,7 +801,7 @@ const styles = StyleSheet.create({
     bottomButtonText: {
         color: "#0084ff",
         fontSize: 13,
-        fontWeight: "700",
+        fontWeight: "800",
     },
     bottomIconText: {
         fontSize: 12,

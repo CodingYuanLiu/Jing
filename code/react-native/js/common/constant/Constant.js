@@ -44,6 +44,12 @@ const MAJORS = [
 const GENDER_MALE = 1;
 const GENDER_FEMALE = 0;
 const GENDER_SECRET = 2;
+
+const JOINING = -1;
+const JOINED = 0;
+const NOT_JOIN = -2;
+const IS_SPONSOR = 1;
+const REJECTED = -3;
 export {
     /**
      * activity constants
@@ -71,4 +77,10 @@ export {
     GENDER_FEMALE,
     GENDER_MALE,
     GENDER_SECRET,
+
+    JOINING,
+    JOINED,
+    NOT_JOIN,
+    IS_SPONSOR,
+    REJECTED
 }

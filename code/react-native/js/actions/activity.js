@@ -1,6 +1,7 @@
 import * as actionTypes from "../common/constant/ActionTypes"
 import Api from "../api/Api";
 import Model from "../api/Model";
+import {ADD_PARTICIPANT} from "../common/constant/ActionTypes";
 
 /**
  * asynchronous action
@@ -141,7 +142,10 @@ const addComment = (comment, jwt) => {
             })
     }
 };
-
+const addParticipant = (user) => ({
+    type: ADD_PARTICIPANT,
+    user: user,
+});
 const onLoadPublishDraft = () => {
     return dispatch => {
         Dao.get("@draft")
@@ -185,6 +189,7 @@ export default {
     onLoadActDetail,
     resetActDetail,
     addComment,
+    addParticipant,
     onLoadPublishDraft,
     saveTaxiAct,
     saveTakeoutAct,

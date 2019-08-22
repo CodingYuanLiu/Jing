@@ -148,7 +148,7 @@ export default class ActItem extends React.PureComponent{
     renderMiniActionBar = () => {
         return(
             <ToolTip
-                style={[styles.miniActionContainer, {backgroundColor: "red"}]}
+                style={[styles.miniActionContainer]}
             >
                 <Button
                     title={"举报"}

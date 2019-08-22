@@ -3,7 +3,7 @@ import {
     LOAD_ACT_DETAIL_FAIL,
     ADD_COMMENT_OK,
     ADD_COMMENT_FAIL,
-    ON_LOADING_ACT_DETAIL, RESET_ACT_DETAIL, SET_DETAIL_IS_FRIENDS, SET_DETAIL_IS_NOT_FRIENDS,
+    ON_LOADING_ACT_DETAIL, RESET_ACT_DETAIL, SET_DETAIL_IS_FRIENDS, SET_DETAIL_IS_NOT_FRIENDS, ADD_PARTICIPANT,
 } from "../common/constant/ActionTypes"
 
 const initialState = {
@@ -73,6 +73,11 @@ const currentAct = (state=initialState, action) => {
             return {
                 ...state,
                 err: action.err,
+            };
+        case ADD_PARTICIPANT:
+            return {
+                ...state,
+                participants: [...state.participants, action.user],
             };
         default:
             return state

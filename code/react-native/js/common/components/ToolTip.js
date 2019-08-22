@@ -60,7 +60,7 @@ export default class ToolTip extends React.Component{
             >
                 <View style={[styles.contentContainer, {width: width, height: height * this._getChildrenHeight(children)}, contentContainerStyle]}>
                     {children}
-                </View>git 
+                </View>
             </Modal>
         )
     };
