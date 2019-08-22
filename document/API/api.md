@@ -2,7 +2,7 @@
 
 ## Global Error Codes
 
-Code | Description | Status
+Error Code | Description | Status
 ---- | ----- | ----
 101  | Need login | Status Unauthorized (401)
 102  | Bad Jwt token | Status Unauthorized (401)
@@ -12,8 +12,11 @@ Code | Description | Status
 201  | Parameter not provided or bad | Status Bad Request (400)
 202  | Missing some field | Status Bad Request (400)
 203  | Can't get pages | Status Bad Request (400)
+204  | Json parse error | Status Bad Request (400)
 300  | Database CRUD error | Status Bad Request (400)
-301  | No available data in database | Status Bad  (404)
+301  | No available data in database | Status Not Found (404)
+
+**Do not use global error code (greater than 100) on any non-global error.**
 
 ## Get User Status
 
@@ -1089,11 +1092,83 @@ The user does not exist or hasn't join any activity yet - 404
 ```json
 {
     "errcode": 301,
-    "message": "The user doesn't exist or has not joint any activity yet",
+    "message": "The user doesn't exist or has not join any activity yet",
     "status": 404
 }
 ```
 
+## Refuse
+
+### Refuse 
+
+#### Description
+
+Refuse an unacception application.
+
+#### Request
+```json
+POST /api/user/act/refuse?act_id=1&user_id=1
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Refuse successfully"
+}
+```
+
+User haven't applicated or act not found - 400
+```json
+{
+    "errcode": 301,
+    "message": "user or application not found",
+    "status": 404
+}
+```
+
+### Get Refused Activity
+
+#### Description
+
+Get an activity list by which the user are refused.
+
+#### Request
+```json
+GET /api/user/act/refused
+```
+
+#### Response
+Status OK - 200
+```json
+[
+    {
+        "act_id": 30,
+        "act_title": "维利亚的秘密拼单",
+        "type": "order"
+    }
+]
+```
+or `null`.
+
+### Confirm Refuse
+
+#### Description
+
+Confirm and delete a refused application.
+
+#### Request
+```json
+GET /api/user/act/refuse/confirm?act_id=30
+```
+
+#### Response
+Status OK - 200
+```json
+{
+    "message": "Confirm successfully"
+}
+```
 
 ## Get Activity Applicants
 
