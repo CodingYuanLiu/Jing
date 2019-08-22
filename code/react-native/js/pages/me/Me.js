@@ -46,18 +46,19 @@ class MeScreen extends React.PureComponent{
                 titleStyle={styles.headerTitle}
                 icon={
                     <SearchIcon
-                    color={"#7ecaff"}
+                        color={"#7ecaff"}
                     />
                 }
                 buttonStyle={styles.headerSearch}
                 containerStyle={styles.headerSearchContainer}
                 TouchableComponent={TouchableWithoutFeedback}
+                onPress={this.toSearchPage}
             />
         );
         let settingIcon = (
             <SettingIcon
-            color={"#fff"}
-            onPress={() => {NavigationUtil.toPage(null, "Setting")}}
+                color={"#fff"}
+                onPress={() => {NavigationUtil.toPage(null, "Setting")}}
             />
         );
         return (
@@ -183,6 +184,9 @@ class MeScreen extends React.PureComponent{
             .catch(err => {
                 console.log(err);
             })
+    };
+    toSearchPage = () => {
+        NavigationUtil.toPage(null, "Search");
     }
 }
 const mapStateToProps = state => ({

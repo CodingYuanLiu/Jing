@@ -228,10 +228,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         minHeight: 200,
-        marginBottom: 10,
+        marginTop: 6,
+        marginBottom: 6,
         paddingLeft: 10,
         paddingRight: 10,
         backgroundColor: "#fff",
+        elevation: 1,
     },
     innerContainer: {
         flex: 1,

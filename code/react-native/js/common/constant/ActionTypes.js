@@ -28,6 +28,9 @@ export const ON_GET_USER_FEEDBACK = 'ON_GET_USER_FEEDBACK';
 export const GET_USER_FEEDBACK_OK = 'GET_USER_FEEDBACK_OK';
 export const GET_USER_FEEDBACK_FAIL = 'GET_USER_FEEDBACK_FAIL';
 
+// home modal
+export const HIDE_PUBLISH_MODAL = 'HIDE_PUBLISH_MODAL';
+export const SHOW_PUBLISH_MODAL = 'SHOW_PUBLISH_MODAL';
 
 // actions for other user,
 export const LOADING_OTHER_USER_DATA = 'LOADING_OTHER_USER_DATA';

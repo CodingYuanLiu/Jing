@@ -79,6 +79,9 @@ export default class ToolTip extends React.Component{
     };
     _getChildrenHeight = (children) => {
         let res = 0;
+
+        if (!Array.isArray(children))
+            return 1;
         for (let item of children) {
             res += item !== null ? 1 : 0;
         }

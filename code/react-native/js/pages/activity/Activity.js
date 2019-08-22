@@ -7,6 +7,7 @@ import FakeSearchBar from "./components/FakeSearchBar"
 import NavigationUtil from '../../navigator/NavUtil';
 import Octicons from "react-native-vector-icons/Octicons";
 import Feather from "react-native-vector-icons/Feather";
+import {PlusIcon} from "../../common/components/Icons";
 
 
 export default class HomeScreen extends React.Component{
@@ -28,19 +29,20 @@ export default class HomeScreen extends React.Component{
                 onPress={this.toSearch}
             />;
         const RightIcon =
-            <Feather
-                name={"plus"}
-                size={28}
+            <PlusIcon
                 color={"#fff"}
+                size={28}
+                style={styles.rightBtnStyle}
+                onPress={this.toPublishPage}
             />;
         return(
             <View style={{flex:1,}}>
                 <NavigationBar
-                titleView={ActSearch}
-                statusBar={{backgroundColor: "#0084ff", barStyle: "light-content"}}
-                style={{backgroundColor:"#0084ff"}}
-                rightButton={RightIcon}
-                rightBtnStyle={styles.rightBtnStyle}
+                    titleView={ActSearch}
+                    statusBar={{backgroundColor: "#0084ff", barStyle: "light-content"}}
+                    style={{backgroundColor:"#0084ff"}}
+                    rightButton={RightIcon}
+                    rightBtnStyle={styles.rightBtnStyle}
                 />
                 <TabNavigator/>
             </View>
@@ -49,14 +51,15 @@ export default class HomeScreen extends React.Component{
     toSearch = () => {
         NavigationUtil.toPage(this.props, "Search")
     };
+    toPublishPage = () => {
+        NavigationUtil.toPage({from: "home"}, "Publish");
+    };
 
 }
 
-const styles= StyleSheet.create(
-    {
-        rightBtnStyle: {
-            marginLeft: 6,
-            marginRight: 6,
-        }
+const styles= StyleSheet.create({
+    rightBtnStyle: {
+        marginLeft: 6,
+        marginRight: 6,
     }
-)
+});

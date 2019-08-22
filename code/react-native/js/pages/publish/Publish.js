@@ -21,22 +21,6 @@ class PublishScreen extends React.PureComponent{
         this._navListener.remove();
     }
 
-    fadeOut = () => {
-        StatusBar.setBarStyle("light-content", true);
-        StatusBar.setBackgroundColor("#0084ff", true);
-        NavigationUtil.back(this.props)
-    };
-    toPublishPage = type => {
-        NavigationUtil.toPage({type: type}, "PublishPage");
-        /*
-        if (this.props.logged) {
-            NavigationUtil.toPage({actType: type}, "PublishCommon");
-        } else {
-            alert("Need login")
-        }
-
-         */
-    };
     render() {
         const taxi =
             <TaxiIcon
@@ -70,9 +54,9 @@ class PublishScreen extends React.PureComponent{
             <View style={styles.container}>
                 <View style={styles.header}>
                     <ArrowDownIcon
-                    size={32}
-                    color={"#d3d3d3"}
-                    onPress={this.fadeOut}
+                        size={32}
+                        color={"#d3d3d3"}
+                        onPress={this.goBack}
                     />
                 </View>
                 <View style={styles.main}>
@@ -103,7 +87,28 @@ class PublishScreen extends React.PureComponent{
                 </View>
             </View>
         )
-    }
+    };
+    goBack = () => {
+        StatusBar.setBarStyle("light-content", true);
+        StatusBar.setBackgroundColor("#0084ff", true);
+        let from = this.props.navigation.getParam("from");
+        if(from === "home"){
+            NavigationUtil.toPage(null, "Home");
+        } else {
+            NavigationUtil.back(this.props)
+        }
+    };
+    toPublishPage = type => {
+        NavigationUtil.toPage({type: type}, "PublishPage");
+        /*
+        if (this.props.logged) {
+            NavigationUtil.toPage({actType: type}, "PublishCommon");
+        } else {
+            alert("Need login")
+        }
+
+         */
+    };
 }
 
 const mapStateToProps = state => ({
