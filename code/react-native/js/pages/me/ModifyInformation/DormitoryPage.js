@@ -18,7 +18,6 @@ export default class DormitoryPage extends React.Component{
     }
 
     componentDidMount() {
-        this.handleDormitoryChange = this.props.navigation.getParam("handleDormitoryChange");
         this.setState({dormitory: this.props.navigation.getParam("dormitory")});
     }
 
@@ -86,11 +85,16 @@ export default class DormitoryPage extends React.Component{
             <ScrollView>
                 {promptData.map((item, i) => {
                     return (
-                        <View style={styles.promptItemContainer}>
-                            <Text style={styles.promptItemText}>
-                                {item}
-                            </Text>
-                        </View>
+                        <TouchableWithoutFeedback
+                            onPress={() => {this.saveAndGoBack(item)}}
+                            key={item}
+                        >
+                            <View style={styles.promptItemContainer}>
+                                <Text style={styles.promptItemText}>
+                                    {item}
+                                </Text>
+                            </View>
+                        </TouchableWithoutFeedback>
                     )
                 })}
             </ScrollView>
@@ -107,9 +111,13 @@ export default class DormitoryPage extends React.Component{
             </View>
         )
     };
-    saveAndGoBack = () => {
+    saveAndGoBack = (item = null) => {
         let handleDormitoryChange = this.props.navigation.getParam("handleDormitoryChange")
-        handleDormitoryChange(this.state.dormitory);
+        if (item) {
+            handleDormitoryChange(item);
+        } else {
+            handleDormitoryChange(this.state.dormitory);
+        }
         NavigationUtil.back(this.props);
     };
     goBack = () => {

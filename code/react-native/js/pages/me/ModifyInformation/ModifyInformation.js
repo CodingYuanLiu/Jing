@@ -1,5 +1,5 @@
 import React from "react"
-import { View, Text, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, TextInput, ToastAndroid } from 'react-native';
 import HeaderBar from "../../../common/components/HeaderBar";
 import { CameraIcon, ChevronIcon, CloseIcon } from "../../../common/components/Icons";
 import NavigationUtil from "../../../navigator/NavUtil";
@@ -67,11 +67,12 @@ class ModifyInformation extends React.PureComponent{
                     title={"保存"}
                     titleStyle={styles.headerButtonTitle}
                     type={"clear"}
+                    loading={this.state.isSaving}
                     onPress={this.handleSave}
                     />
                 }
                 rightBtnStyle={styles.headerRightButton}
-                style={{elevation: 10,}}
+                style={{elevation: 5,}}
             />
         )
     };
@@ -256,14 +257,16 @@ class ModifyInformation extends React.PureComponent{
             <View style={styles.goBackModalFooterContainer}>
                 <Button
                     type={"clear"}
-                    title={"直接返回"}
-                    containerStyle={styles.goBackModalFooterButton}
+                    title={"确认"}
+                    containerStyle={styles.goBackModalFooterButtonContainer}
+                    buttongStyle={styles.goBackModalFooterButton}
                     onPress={this.directGoBack}
                 />
                 <Button
                     type={"clear"}
                     title={"保存并返回"}
-                    containerStyle={styles.goBackModalFooterButton}
+                    containerStyle={styles.goBackModalFooterButtonContainer}
+                    buttongStyle={styles.goBackModalFooterButton}
                     onPress={this.saveAndBack}
                 />
             </View>
@@ -273,8 +276,9 @@ class ModifyInformation extends React.PureComponent{
                 isVisible={this.state.goBackModalVisible}
                 onBackdropPress={this.hideGoBackModal}
                 useNativeDriver={true}
-                style={{ height: 200, width: "92%",}}
+                style={{ width: "90%", height: 160}}
                 hideModalContentWhileAnimating
+                coverScreen={false}
             >
                 <View style={styles.goBackModalContainer}>
                     {content}
@@ -398,6 +402,7 @@ class ModifyInformation extends React.PureComponent{
             })
             .catch(err => {
                 console.log(err)
+                ToastAndroid.show("保存失败", 2000);
             })
     };
     saveAsync = async () => {
@@ -480,11 +485,14 @@ class ModifyInformation extends React.PureComponent{
                 NavigationUtil.back(this.props);
             })
             .catch(err => {
-                console.log(err)
+                console.log(err);
+                ToastAndroid.show("保存失败", 2000);
             })
     };
     directGoBack = () => {
         this.hideBirthdayPicker();
+        this.hideGenderPicker();
+        this.hideGoBackModal();
         setTimeout(NavigationUtil.back(this.props), 500);
     }
 }
@@ -609,8 +617,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-end",
     },
-    goBackModalFooterButton: {
+    goBackModalFooterButtonContainer:{
         marginRight: 16,
         marginLeft: 12,
+        padding: 0,
+    },
+    goBackModalFooterButton: {
+        padding: 0,
+        margin: 0,
     },
 });
