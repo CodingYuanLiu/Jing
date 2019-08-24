@@ -239,7 +239,7 @@ func QuitActivity(userId int, actId int) error{
 
 func GetActivityMembers(actId int) (ret []int, err error) {
 	var joins []Join
-	db.Where("act_id = ? and is_admin <> ? and is_admin <> ?", actId, -1,-2).Find(&joins)
+	db.Where("act_id = ? and is_admin <> ? and is_admin <> ? and is_admin <> ?", actId, -1,-2,-3).Find(&joins)
 	if len(joins) == 0 {
 		return nil, jing.NewError(301, 404, "Activity not found")
 	}
@@ -253,7 +253,7 @@ func AcceptJoinActivity(userId int, actId int) error{
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
 	if join.ID == 0{
-		return jing.NewError(301,404,"application not found")
+		return jing.NewError(301,404,"user or application not found")
 	}
 	if join.IsAdmin != -1{
 		return jing.NewError(201,400,"application status error: not unaccepted")
@@ -273,9 +273,12 @@ func GetRefusedActivity(userId int) (acts []int) {
 
 func ConfirmRefusedActivity(userId int, actId int) error {
 	join := Join{}
-	db.Where("user_id = ?, act_id = ?", userId, actId).First(&join)
+	db.Where("user_id = ? and act_id = ?", userId, actId).First(&join)
 	if join.ID == 0 {
-		return jing.NewError(1, 400, "application status error: not refused")
+		return jing.NewError(301, 400, "user or application not found")
+	}
+	if join.IsAdmin != -3 {
+		return jing.NewError(201, 400, "application status error: not refused")
 	}
 	db.Delete(&join)
 	return nil
@@ -285,7 +288,7 @@ func RefuseJoinActivity(userId int, actId int) error {
 	join := Join{}
 	db.Where("user_id = ? and act_id = ?",userId,actId).First(&join)
 	if join.ID == 0{
-		return jing.NewError(301,404,"application not found")
+		return jing.NewError(301,404,"user or application not found")
 	}
 	if join.IsAdmin != -1{
 		return jing.NewError(201,400,"application status error: not unaccepted")
@@ -508,18 +511,31 @@ func ChangePrivacyLevel(userId int, level int) error {
 	return nil
 }
 
-func CreateFollow(From int, To int) {
+func CreateFollow(From int, To int) error {
+	_, err := FindUserById(To)
+	if err != nil {
+		return err
+	}
 	follow := Follow{
 		From: From,
-		To: To,
+		To:   To,
 	}
 	db.Create(&follow)
+	return nil
 }
 
-func DeleteFollow(From int, To int) {
+func DeleteFollow(From int, To int) error {
 	follow := Follow{}
 	db.Where("`from` = ? and `to` = ?", From, To).First(&follow)
+	_, err := FindUserById(To)
+	if err != nil {
+		return err
+	}
+	if follow.ID == 0 {
+		return jing.NewError(301, 400, "You have not follow this user")
+	}
 	db.Delete(&follow)
+	return nil
 }
 
 func GetFollowing(userId int) (ret []int) {
