@@ -15,8 +15,8 @@ class ConfirmModal extends React.PureComponent {
 
         return (
             <Modal
-            isVisible={visible}
-            {...this.props}
+                isVisible={visible}
+                {...this.props}
             >
                 <View style={styles.confirmContainer}>
                     <View style={styles.innerContainer}>

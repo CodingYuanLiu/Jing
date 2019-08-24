@@ -425,7 +425,14 @@ export default class Api {
                 })
         })
     }
-
+    static deleteAct = async (id, jwt) => {
+        let res = await axios.post(`/api/user/act/delete?act_id=${id}`, null, {
+            headers: {
+                'Authorization': `Bearer ${jwt}`,
+            }
+        });
+        return res.data;
+    };
     static addComment(comment, jwt) {
         let data = {
             receiver_id: comment.receiver_id,

@@ -1,17 +1,20 @@
 import React from "react";
 import {View, StyleSheet, Text, ScrollView} from "react-native";
 import { Button, ListItem } from "react-native-elements";
-import {EllipsisIcon} from "../../../common/components/Icons";
 import Theme from "../../../common/constant/Theme";
 import {PropTypes} from "prop-types";
 import UserAvatar from "../../../common/components/UserAvatar";
 import UserNickname from "../../../common/components/UserNickname";
 import {ACT_EXPIRED, ACT_FORBIDDEN, ACT_FULL, ACT_RUNNING} from "../../../common/constant/Constant";
 import NavigationUtil from "../../../navigator/NavUtil";
+import ToolTip from "../../../common/components/ToolTip";
 
 export default class JoinItem extends React.Component{
     constructor(props) {
         super(props);
+        this.state = {
+            isTooltipVisible: false,
+        }
     }
 
 
@@ -46,12 +49,31 @@ export default class JoinItem extends React.Component{
     };
     renderTooltip = () => {
         let {act} = this.props;
+        let feedbackButton = act.status === ACT_EXPIRED ?
+            (
+                <Button
+                    title={"评价"}
+                    type={"clear"}
+                    onPress={() => {this.toFeedback(act)}}
+                />
+            ) : null;
+        let quitButton = act.status === ACT_RUNNING ?
+            (
+                <Button
+                    title={"退出"}
+                    type={"clear"}
+                    onPress={() => {this.quitAct(act)}}
+                />
+            ) : null;
         return (
-            <EllipsisIcon
-                color={"#aaa"}
-                size={20}
-                onPress={() => {this.toFeedback(act)}}
-            />
+            <ToolTip
+                isVisible={this.state.isTooltipVisible}
+                onPress={() => {this.setState({isTooltipVisible: true})}}
+                onBackdropPress={this.setState({isTooltipVisible: false})}
+            >
+                {feedbackButton}
+                {quitButton}
+            </ToolTip>
         );
     };
     renderRightIconPopover = () => {
@@ -180,11 +202,12 @@ export default class JoinItem extends React.Component{
         );
     };
 
-    onQuit = () => {
-        //...
+    quitAct = (act) => {
+        //Api.quitAct();
     };
     toFeedback = (act) => {
-        NavigationUtil.toPage({act: act}, "Feedback")
+        this.setState({isTooltipVisible: false});
+        NavigationUtil.toPage({act: act}, "Feedback");
     }
 }
 

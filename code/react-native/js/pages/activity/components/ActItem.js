@@ -12,6 +12,9 @@ import ToolTip from "../../../common/components/ToolTip";
 export default class ActItem extends React.PureComponent{
     constructor(props) {
         super(props);
+        this.state = {
+            isTooltipVisible: false,
+        }
     }
     render() {
         let sponsor = this.props.sponsor;
@@ -149,18 +152,24 @@ export default class ActItem extends React.PureComponent{
         return(
             <ToolTip
                 style={[styles.miniActionContainer]}
+                isVisible={this.state.isTooltipVisible}
+                onPress={() => {this.setState({isTooltipVisible: true})}}
+                onBackdropPress={() => {this.setState({isTooltipVisible: false})}}
             >
                 <Button
                     title={"举报"}
                     type={"clear"}
+                    onPress={this.reportThis}
                 />
                 <Button
                     title={"删除"}
                     type={"clear"}
+                    onPress={this.deleteAct}
                 />
                 <Button
                     title={"屏蔽此人"}
                     type={"clear"}
+                    onPress={this.shieldThisPerson}
                 />
             </ToolTip>
         );
@@ -178,6 +187,18 @@ export default class ActItem extends React.PureComponent{
     };
     toPersonalHome = (id) => {
         NavigationUtil.toPage({id: id}, "PersonalHome");
+    };
+    reportThis = () => {
+        this.setState({isTooltipVisible: false,});
+    };
+    deleteAct = () => {
+        let id = this.props;
+        this.props.onDelete(id);
+        this.setState({isTooltipVisible: false,})
+    };
+    shieldThisPerson = () => {
+        alert("暂时没有屏蔽功能");
+        //this.setState({isTooltipVisible: false,});
     };
 }
 
@@ -207,7 +228,7 @@ const otherSpecShape = {
 };
 ActItem.propTypes = {
     id: PropTypes.number.isRequired,
-    user: PropTypes.shape(sponsorShape),
+    sponsor: PropTypes.shape(sponsorShape),
     title: PropTypes.string.isRequired,
     taxiSpecInfo: PropTypes.shape(TaxiSpecShape),
     orderSpecInfo: PropTypes.shape(OrderSpecShape),
@@ -218,6 +239,7 @@ ActItem.propTypes = {
     type: PropTypes.string.isRequired,
     onPress: PropTypes.func.isRequired,
     metadata: PropTypes.object.isRequired,
+    onDelete: PropTypes.func,
 };
 
 const styles = StyleSheet.create({
@@ -258,6 +280,7 @@ const styles = StyleSheet.create({
         right: 20,
         top: 15,
         justifyContent: "center",
+        backgroundColor: "red",
     },
     titleContainer: {
         width: "100%",

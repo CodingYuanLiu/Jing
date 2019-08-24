@@ -2,7 +2,8 @@ import React from "react";
 import {StyleSheet, View, Text, FlatList, RefreshControl} from "react-native";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
-import ManageItem from "../components/MyManageItem";
+import ManageItem from "./MyManageItem";
+import {onDeleteCurrentUserManageAct} from "../../../actions/currentUserManage";
 
 class MyManage extends React.Component{
     constructor(props) {
@@ -43,12 +44,8 @@ class MyManage extends React.Component{
     renderItem = ({item}) => {
         return (
             <ManageItem
-                title={item.title}
-                description={item.description}
-                createTime={item.createTime}
-                status={item.status}
-                type={item.type}
-                id={item.id}
+                {...item}
+                onDelete={this.deleteAct}
             />
         )
     };
@@ -56,7 +53,11 @@ class MyManage extends React.Component{
         let currentUser = this.props.currentUser;
         this.props.onLoadMyManageAct(currentUser.jwt);
         console.log(this.props)
-    }
+    };
+    deleteAct = (act) => {
+        let {currentUser} = this.props;
+        this.props.onDeleteCurrentUserManageAct(act.id, currentUser.jwt);
+    };
 }
 const mapStateToProps = state => ({
     myAct: state.myAct,
@@ -64,6 +65,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => ({
     onLoadMyManageAct: (jwt) => dispatch(Activity.onLoadMyManageAct(jwt)),
+    onDeleteCurrentUserManageAct: (id, jwt) => dispatch(onDeleteCurrentUserManageAct(id, jwt)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyManage)

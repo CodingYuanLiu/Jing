@@ -2,6 +2,7 @@ import * as actionTypes from "../common/constant/ActionTypes"
 import Api from "../api/Api";
 import Model from "../api/Model";
 import {ADD_PARTICIPANT} from "../common/constant/ActionTypes";
+import {DELETE_TYPE_ACT_OK} from "../common/constant/ActionTypes";
 
 /**
  * asynchronous action
@@ -69,7 +70,7 @@ const onLoadMyJoinAct = (jwt) => {
     }
 };
 
-const onLoadTypeAct = (type) => {
+export const onLoadTypeAct = (type) => {
     return dispatch => {
         dispatch({
             type: actionTypes.ON_LOADING_TYPE,
@@ -91,6 +92,22 @@ const onLoadTypeAct = (type) => {
                 })
             })
     }
+};
+
+export const onDeleteTypeAct = (id, type, jwt) => {
+    return dispatch => {
+        Api.deleteAct(id, jwt)
+            .then(res => {
+                dispatch({
+                    type: DELETE_TYPE_ACT_OK,
+                    id: id,
+                    typeName: type,
+                })
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
 };
 
 const onLoadActDetail = (id, jwt, currentUserId, followingList) => {
@@ -186,6 +203,7 @@ export default {
     onLoadMyJoinAct,
     onLoadMyManageAct,
     onLoadTypeAct,
+    onDeleteTypeAct,
     onLoadActDetail,
     resetActDetail,
     addComment,

@@ -5,7 +5,7 @@ import NavigationUtil from "../../../navigator/NavUtil";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
 import Tag from "../../../common/components/Tag";
-import Api from "../../../api/Api";
+import {onDeleteTypeAct} from "../../../actions/activity";
 
 class NewAct extends React.PureComponent{
     constructor(props) {
@@ -77,13 +77,7 @@ class NewAct extends React.PureComponent{
     renderItem = ({item}) => {
         return (
             <ActItem
-                id={item.id}
-                endTime={item.endTime}
-                sponsor={item.sponsor}
-                description={item.description}
-                title={item.title}
-                tags={item.tags}
-                type={item.type}
+                {...item}
                 image={item.images.length > 0 ? item.images[0] : null}
                 taxiSpecInfo={
                     item.type==="taxi" ? {
@@ -115,6 +109,7 @@ class NewAct extends React.PureComponent{
                     }
                 }
                 onPress={() => {this._onPressItem(item.id)}}
+                onDelete={this.deleteAct}
             />)
     };
     loadData = (type) => {
@@ -131,6 +126,14 @@ class NewAct extends React.PureComponent{
             return state;
         });
     };
+    deleteAct = (id) => {
+        let {currentUser} = this.props;
+        if (!currentUser.logged) {
+            //...
+        } else {
+            this.props.onDeleteTypeAct(id, currentUser.jwt);
+        }
+    }
 }
 
 const mapStateToProps = state => ({
@@ -138,7 +141,8 @@ const mapStateToProps = state => ({
     currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
-    onLoadTypeAct: (type) => dispatch(Activity.onLoadTypeAct(type))
+    onLoadTypeAct: (type) => dispatch(Activity.onLoadTypeAct(type)),
+    onDeleteTypeAct: (id, jwt) => dispatch(onDeleteTypeAct(id, jwt)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewAct)

@@ -1,19 +1,17 @@
 import React from "react";
 import {View, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, StatusBar} from "react-native"
-import {Button, Icon, Image, ListItem, Avatar} from "react-native-elements";
+import {Button, Image, ListItem } from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
 import {
-    ArrowLeftIcon, CheckIcon, ChevronIcon, CloseIcon,
+    ArrowLeftIcon, CheckIcon, CloseIcon,
     CommentIcon,
     EditIcon,
-    EllipsisIcon,
     PaperPlaneIcon,
     PlusIcon
 } from "../../common/components/Icons";
 import Tag from "../../common/components/Tag";
 import Activity from "../../actions/activity";
 import {connect} from "react-redux";
-import Util from "../../common/util";
 import Api from "../../api/Api";
 import CommentPreview from "./components/CommentPreview";
 import {onFollow, onUnFollow} from "../../actions/currentUserFollowing";
@@ -31,7 +29,7 @@ import {
     NOT_JOIN,
     REJECTED
 } from "../../common/constant/Constant";
-
+import {WINDOW} from "../../common/constant/Constant";
 
 class DetailScreen extends React.Component {
     constructor(props) {
@@ -41,6 +39,7 @@ class DetailScreen extends React.Component {
             isFriends: false,
             isJoining: false,
             joinStatus: 0,
+            isTooltipVisible: false,
         };
         this.actId = this.props.navigation.getParam("id");
     }
@@ -107,7 +106,11 @@ class DetailScreen extends React.Component {
             )
         }
         return (
-            <ToolTip>
+            <ToolTip
+                isVisible={this.state.isTooltipVisible}
+                onPress={() => {this.setState({isTooltipVisible: true})}}
+                onBackdropPress={() => {this.setState({isTooltipVisible: false})}}
+            >
                 <Button
                     title={"夜晚模式"}
                     type={"clear"}
@@ -586,7 +589,7 @@ class DetailScreen extends React.Component {
         }
     };
     deleteAct = () => {
-        alert("删除还没开发")
+        alert("删除还没开发");
     };
     toggleEveningMode = ()　=> {
         alert("没有事情发生")
@@ -613,7 +616,8 @@ const mapDispatchToProps = dispatch => ({
     saveOtherAct: data => dispatch(Activity.saveOtherAct(data)),
 });
 export default connect(mapStateToProps ,mapDispatchToProps)(DetailScreen);
-const imageWidth = Util.getVerticalWindowDimension().width * 0.4;
+const imageWidth = WINDOW.width * 0.4;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

@@ -1,8 +1,9 @@
 import React from "react"
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableNativeFeedback } from 'react-native';
 import {connect} from "react-redux";
 import {toggleNestScroll} from "../../../actions/personalHome";
 import Util from "../../../common/util";
+import NavigationUtil from "../../../navigator/NavUtil";
 
 class PersonalManage extends React.PureComponent{
     constructor(props) {
@@ -33,11 +34,15 @@ class PersonalManage extends React.PureComponent{
         let description = this.renderDescription(item);
         let footer = this.renderFooter(item);
         return (
-            <View style={styles.itemContainer}>
-                {title}
-                {description}
-                {footer}
-            </View>
+            <TouchableNativeFeedback
+                onPress={() => {this.toActDetail(item)}}
+            >
+                <View style={styles.itemContainer}>
+                    {title}
+                    {description}
+                    {footer}
+                </View>
+            </TouchableNativeFeedback>
         )
     };
     renderTitle = (item) => {
@@ -76,6 +81,9 @@ class PersonalManage extends React.PureComponent{
         } else {
             this.props.toggleNestScroll(true);
         }
+    };
+    toActDetail = (item) => {
+        NavigationUtil.toPage({id: item.id}, "ActDetail");
     }
 }
 const mapStateToProps = state => ({

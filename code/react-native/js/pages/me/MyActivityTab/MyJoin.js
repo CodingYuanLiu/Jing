@@ -2,7 +2,7 @@ import React from "react";
 import {View, StyleSheet, Text, FlatList, RefreshControl} from "react-native";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
-import MyJoinItem from "../components/MyJoinItem";
+import MyJoinItem from "./MyJoinItem";
 
 class MyJoin extends React.Component{
     constructor(props) {

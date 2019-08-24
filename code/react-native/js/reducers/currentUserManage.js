@@ -1,4 +1,5 @@
 import {
+    DELETE_USER_MANAGE_ACT, DELETE_USER_MANAGE_ACT_FAIL, DELETE_USER_MANAGE_ACT_OK,
     GET_USER_MANAGE_ACT_FAIL,
     GET_USER_MANAGE_ACT_OK,
     ON_GET_USER_MANAGE_ACT
@@ -28,6 +29,21 @@ const currentUserManage = (state = initialState, action) => {
                 isLoading: false,
                 error: action.err,
             };
+        case DELETE_USER_MANAGE_ACT:
+            return {
+                ...state,
+                isDeleting: true,
+            };
+        case DELETE_USER_MANAGE_ACT_OK:
+            return {
+                ...state,
+                items: this.deleteAct(action.id),
+            };
+        case DELETE_USER_MANAGE_ACT_FAIL:
+                return {
+                    ...state,
+                    error: action.err,
+                };
         default:
             return state;
     }

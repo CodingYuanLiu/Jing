@@ -11,7 +11,6 @@ export default class ToolTip extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            toolTipVisible: false,
             layout: {
                 x: 0,
                 y: 0,
@@ -20,7 +19,7 @@ export default class ToolTip extends React.Component{
     };
 
     render() {
-        let {style} = this.props;
+        let {style, onPress} = this.props;
         if (!style) style = null;
 
         let toolTip = this._renderToolTip();
@@ -30,17 +29,17 @@ export default class ToolTip extends React.Component{
             >
                 <EllipsisIcon
                     color={"#bfbfbf"}
-                    onPress={this._onPress}
+                    onPress={(e) => {this._onPress(e, onPress)}}
                 />
                 {toolTip}
             </View>
         )
     };
     _renderToolTip = () => {
-        let {children, width, height, contentContainerStyle} = this.props;
+        let {children, width, height, contentContainerStyle, isVisible} = this.props;
         return (
             <Modal
-                isVisible={this.state.toolTipVisible}
+                isVisible={isVisible}
                 onBackdropPress={this._onBackdropPress}
                 style={
                     [
@@ -64,18 +63,19 @@ export default class ToolTip extends React.Component{
             </Modal>
         )
     };
-    _onPress = (e) => {
+    _onPress = (e, onPress) => {
         let {nativeEvent} = e;
         this.setState({
-            toolTipVisible: true,
             layout: {
                 x: nativeEvent.pageX,
                 y: nativeEvent.pageY,
             }
         });
+        onPress();
     };
     _onBackdropPress = () => {
-        this.setState({toolTipVisible: false});
+        let {onBackdropPress} = this.props;
+        onBackdropPress();
     };
     _getChildrenHeight = (children) => {
         let res = 0;
@@ -89,6 +89,9 @@ export default class ToolTip extends React.Component{
     }
 }
 ToolTip.propTypes = {
+    isVisible: PropTypes.bool.isRequired,
+    onPress: PropTypes.func,
+    onBackdropPress: PropTypes.func,
     style: ViewPropTypes.style,
     children: PropTypes.oneOfType([
         PropTypes.element,
@@ -102,6 +105,8 @@ ToolTip.defaultProps = {
     children: <View><Text>请添加children节点</Text></View>,
     height: 40,
     width: WINDOW.width / 2 - 30,
+    onPress: () => null,
+    onBackdropPress: () => null,
 };
 
 const styles = StyleSheet.create({

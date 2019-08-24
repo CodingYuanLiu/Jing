@@ -1,4 +1,5 @@
 import {
+    DELETE_USER_MANAGE_ACT, DELETE_USER_MANAGE_ACT_OK,
     GET_USER_MANAGE_ACT_FAIL,
     GET_USER_MANAGE_ACT_OK,
     ON_GET_USER_MANAGE_ACT
@@ -26,4 +27,23 @@ export const onGetCurrentUserManageAct = (jwt) => {
                 })
             })
     };
+};
+
+export const onDeleteCurrentUserManageAct = (id, jwt) => {
+    return dispatch => {
+        dispatch({
+            type: DELETE_USER_MANAGE_ACT,
+        });
+        Api.deleteAct(id, jwt)
+            .then(res => {
+                console.log(res);
+                dispatch({
+                    type: DELETE_USER_MANAGE_ACT_OK,
+                    id: id,
+                })
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
 };
