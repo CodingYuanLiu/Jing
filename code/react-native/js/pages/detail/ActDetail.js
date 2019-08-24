@@ -30,6 +30,8 @@ import {
     REJECTED
 } from "../../common/constant/Constant";
 import {WINDOW} from "../../common/constant/Constant";
+import Modal from "react-native-modal";
+import ImageViewer from "react-native-image-zoom-viewer";
 
 class DetailScreen extends React.Component {
     constructor(props) {
@@ -40,6 +42,8 @@ class DetailScreen extends React.Component {
             isJoining: false,
             joinStatus: 0,
             isTooltipVisible: false,
+            isImageViewerVisible: false,
+            index: 0,
         };
         this.actId = this.props.navigation.getParam("id");
     }
@@ -58,6 +62,7 @@ class DetailScreen extends React.Component {
         let ActTitle = this.renderTitle(title, tags);
         let body = this.renderBody(sponsor, specInfo, description, images, createTime, comments);
         let footer = this.renderFooter();
+        let imageViewer = this.renderImageViewer(images);
         return(
             <View style={{flex: 1,}}>
                 {header}
@@ -69,6 +74,7 @@ class DetailScreen extends React.Component {
                     {body}
                 </ScrollView>
                 {footer}
+                {imageViewer}
             </View>
         );
     };
@@ -154,11 +160,19 @@ class DetailScreen extends React.Component {
                         {
                             images.map((item, i) => {
                                 return (
-                                    <Image
-                                        source={{uri: item}}
-                                        key={i}
-                                        style={styles.bodyImage}
-                                    />)
+                                    <TouchableWithoutFeedback
+                                        onPress={() => {this.setState({
+                                            isImageViewerVisible: true,
+                                            index: i,
+                                        })}}
+                                    >
+                                        <Image
+                                            source={{uri: item}}
+                                            key={i}
+                                            style={styles.bodyImage}
+                                        />
+                                    </TouchableWithoutFeedback>
+                                    )
                             })
                         }
                     </View> : null
@@ -319,7 +333,34 @@ class DetailScreen extends React.Component {
             </View>
         )
     };
+    renderImageViewer = (images) => {
 
+        let imageViewerList = [];
+        let i = 0;
+        for (let item of images) {
+            imageViewerList.push({
+                url: item,
+                width: WINDOW.width,
+                height: WINDOW.height / 3,
+                key: i.toString(),
+            });
+            i++;
+        }
+        return (
+            <Modal
+                isVisible={this.state.isImageViewerVisible}
+                style={{margin: 0}}
+                userNativeDriver={true}
+            >
+                <ImageViewer
+                    imageUrls={imageViewerList}
+                    onSwipeDown={() => {this.setState({isImageViewerVisible: false})}}
+                    enableSwipeDown={true}
+                    index={this.state.index}
+                />
+            </Modal>
+        )
+    };
     renderFooter = () => {
         let commentIcon =
             <CommentIcon

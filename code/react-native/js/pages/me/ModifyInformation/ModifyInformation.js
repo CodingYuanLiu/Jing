@@ -425,16 +425,16 @@ class ModifyInformation extends React.PureComponent{
                 // modified both avatar and user info
                 await Api.updateInfo(data, jwt);
                 this.props.updateUserInfo(data);
-                let avatarUri = await Api.updateAvatar(avatarData, jwt);
-                this.props.updateUserAvatar(avatarUri);
+                let avatar = await Api.updateAvatar(avatarData, jwt);
+                this.props.updateUserAvatar(avatar);
                 this.setState({isSaving: false});
                 return "modify avatar and info ok";
             } else {
                 // only modified avatar
-                let avatarUri = await Api.updateAvatar(avatarData, jwt);
-                this.props.updateUserAvatar(avatarUri);
+                let avatar = await Api.updateAvatar(avatarData, jwt);
+                this.props.updateUserAvatar(avatar);
                 this.setState({isSaving: false});
-                return avatarUri;
+                return avatar;
             }
         } else {
             if (this.state.infoModified) {

@@ -11,9 +11,9 @@ export const updateUserInfo = (data) => ({
     type: actionTypes.UPDATE_USER_INFO,
     data: data,
 });
-export const updateUserAvatar = (avatar) => ({
+export const updateUserAvatar = (data) => ({
     type: actionTypes.UPDATE_USER_AVATAR,
-    avatar: avatar,
+    avatar: data.avatar,
 });
 
 

@@ -1,5 +1,5 @@
 import React from "react"
-import {View, StyleSheet, TextInput, TouchableHighlight, ScrollView, StatusBar} from 'react-native';
+import {View, StyleSheet, TextInput, TouchableHighlight, ScrollView, StatusBar, TouchableWithoutFeedback} from 'react-native';
 import PublishHeader from "./components/PublishHeader";
 import NavigationUtil from "../../navigator/NavUtil";
 import { connect } from "react-redux";
@@ -13,7 +13,10 @@ import Activity from "../../actions/activity";
 import LocalApi from "../../api/LocalApi";
 import Model from "../../api/Model";
 import {ConfirmModal} from "../../common/components/CustomModal";
-
+import ImageViewer from "react-native-image-zoom-viewer";
+import Modal from "react-native-modal";
+import {WINDOW} from "../../common/constant/Constant";
+import {CloseIcon, PlusIcon} from "../../common/components/Icons";
 
 class PublishPage extends React.PureComponent{
     constructor(props) {
@@ -29,6 +32,8 @@ class PublishPage extends React.PureComponent{
             saveModalVisible: false,
             saved: false,
             published: false,
+            isImageViewerVisible: false,
+            index: 0,
         }
     }
 
@@ -48,6 +53,9 @@ class PublishPage extends React.PureComponent{
         let endTimePicker = this.renderEndTimePicker();
         let specTimePicker = this.renderSpecTimePicker();
         let saveModal = this.renderSaveModal();
+        let imageViewer = this.renderImageViewer(images);
+
+        let footer = this.renderFooter();
         return(
             <View style={styles.container}>
                 {header}
@@ -57,13 +65,29 @@ class PublishPage extends React.PureComponent{
                         {
                             images.map((img, i) => {
                                 return (
-                                    <Image
+                                   <TouchableWithoutFeedback
+                                        onPress={() => {this.setState({
+                                            isImageViewerVisible: true,
+                                            index: i,
+                                        })}}
                                         key={i.toString()}
-                                        containerStyle={styles.imageContainer}
-                                        style={styles.image}
-                                        source={{uri: `data:${img.type};base64,${img.data}`}}
-                                        resizeMode={"cover"}
-                                    />
+                                   >
+                                       <View style={styles.imageContainer}>
+                                           <Image
+                                               style={styles.image}
+                                               source={{uri: `data:${img.type};base64,${img.data}`}}
+                                               resizeMode={"cover"}
+                                           />
+                                           <View style={styles.deleteImageIconContainer}>
+                                               <CloseIcon
+                                                   color={"#bfbfbf"}
+                                                   onPress={() => {this.deleteImage(i)}}
+                                                   iconStyle={styles.deleteImageIcon}
+                                                   size={18}
+                                               />
+                                           </View>
+                                       </View>
+                                   </TouchableWithoutFeedback>
                                 )
                             })
                         }
@@ -75,6 +99,8 @@ class PublishPage extends React.PureComponent{
                     {specTimePicker}
                 </ScrollView>
                 {saveModal}
+                {imageViewer}
+                {footer}
             </View>
         )
     }
@@ -130,9 +156,7 @@ class PublishPage extends React.PureComponent{
                 onPress={this.showImagePicker}
             >
                 <View style={styles.imagePickerContainer}>
-                    <Icon
-                        type={"material-community"}
-                        name={"plus"}
+                    <PlusIcon
                         color={"#bfbfbf"}
                         size={48}
                         containerStyle={styles.imagePickerIconContainer}
@@ -141,7 +165,35 @@ class PublishPage extends React.PureComponent{
             </TouchableHighlight>;
         return imagePicker;
     };
-
+    renderImageViewer = (images) => {
+        let imageViewList = [];
+        let i = 0;
+        for (let item of images) {
+            imageViewList.push({
+                url: `data:${item.type};base64,${item.data}`,
+                width: WINDOW.width,
+                height: WINDOW.height / 3,
+                props: {
+                    key: i.toString(),
+                },
+            });
+            i++;
+        }
+        return (
+            <Modal
+                isVisible={this.state.isImageViewerVisible}
+                style={{margin: 0}}
+                useNativeDriver={true}
+            >
+                <ImageViewer
+                    imageUrls={imageViewList}
+                    index={this.state.index}
+                    onSwipeDown={() => {this.setState({isImageViewerVisible: false})}}
+                    enableSwipeDown={true}
+                />
+            </Modal>
+        )
+    };
     renderCommonMenu = (endTime) => {
         return (
             <MenubarItem
@@ -264,10 +316,14 @@ class PublishPage extends React.PureComponent{
             />
         )
     };
+
+    renderFooter = () => {
+        return null;
+    };
     publish = () => {
         let publishAct = this.buildAct(this.props.publishAct, this.type);
         let data =
-            Model.transferActivityFromCamelToSnake(publishAct);
+            Model.buildActivity(publishAct);
 
         Api.publishAct(this.props.currentUser.jwt, data)
             .then (act => {
@@ -377,7 +433,6 @@ class PublishPage extends React.PureComponent{
                 this.saveByType({
                     images: newImages,
                 }, this.type);
-                console.log(newImages);
             }
         })
     };
@@ -397,7 +452,6 @@ class PublishPage extends React.PureComponent{
                 break;
             default:
                 console.log(type);
-                console.warn("type is invalid");
         }
     };
     goBack = () => {
@@ -441,6 +495,24 @@ class PublishPage extends React.PureComponent{
         this.setState({saveModalVisible: false});
         NavigationUtil.toPage(null, "Home");
     };
+    deleteImage = (i) => {
+        this.setState(state => {
+            let count = 0, list = [];
+            for (let item of state.images) {
+                if (count !== i) {
+                    list.push(item);
+                }
+                count++;
+            }
+            this.saveByType({
+                images: list,
+            }, this.type);
+            return {
+                ...state,
+                images: list,
+            }
+        })
+    }
 }
 
 const options = {
@@ -467,8 +539,9 @@ const mapDispatchToProps = dispatch => ({
 });
 export default connect(mapStateToProps, mapDispatchToProps)(PublishPage)
 
-const imageContainerLen = Util.getVerticalWindowDimension().width * 0.293;
-const imageLen = Util.getVerticalWindowDimension().width * 0.270;
+const imageContainerLen = WINDOW.width * 0.293;
+const imageLen = WINDOW.width * 0.270;
+const distance = imageContainerLen - imageLen;
 
 const styles = StyleSheet.create({
     container: {
@@ -520,17 +593,28 @@ const styles = StyleSheet.create({
         paddingLeft: "6%",
         paddingRight:  "6%",
         flexWrap: "wrap",
-        minHeight: imageContainerLen * 2,
+        paddingBottom: imageContainerLen,
     },
     imageContainer: {
         width: imageContainerLen,
         height: imageContainerLen,
         justifyContent: "center",
         alignItems: "center",
+        position: "relative",
     },
     image: {
         width: imageLen,
         height: imageLen,
+    },
+    deleteImageIcon: {
+        margin: 0,
+    },
+    deleteImageIconContainer: {
+        position: "absolute",
+        borderRadius: 100,
+        top: distance - 12,
+        right: distance - 12,
+        backgroundColor: "rgba(221,221,221,0.8)",
     },
     menuContainer: {
         marginRight: "2%",

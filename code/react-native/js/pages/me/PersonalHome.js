@@ -17,6 +17,7 @@ import {
 } from "../../actions/personalHome";
 import {onFollow, onUnFollow} from "../../actions/currentUserFollowing";
 import {GENDER_FEMALE, GENDER_SECRET} from "../../common/constant/Constant";
+import {updateUserInfo} from "../../actions/currentUser";
 
 const window = Util.getVerticalWindowDimension();
 const STICKY_HEADER_HEIGHT = 50;
@@ -104,7 +105,7 @@ class PersonalHome extends React.PureComponent {
                 <Image
                     source={{
                         uri: background.data ?
-                        `data:base64;${background.type},${background.data}` :
+                        `data:${background.type};base64,${background.data}` :
                             "http://image.jing855.cn/actImage/act16/img0"
                         ,
                     }}
@@ -149,7 +150,7 @@ class PersonalHome extends React.PureComponent {
             <Avatar
                 source={{
                     uri: newAvatar.data ?
-                    `data:base64;${newAvatar.type},${newAvatar.data}`
+                    `data:${newAvatar.type};base64,${newAvatar.data}`
                         : user.avatar
                 }}
                 rounded
@@ -358,13 +359,24 @@ class PersonalHome extends React.PureComponent {
             } else {
                 let data = response.data;
                 let type = response.type;
-
-                this.setState({
-                    avatar: {
-                        data: data,
-                        type: type,
-                    },
+                this.setState(state => {
+                    return {
+                        ...state,
+                        avatar: {
+                            data: data,
+                            type: type,
+                        }
+                    }
                 });
+                Api.updateAvatar(data, this.props.currentUser.jwt)
+                    .then(data => {
+                        console.log(data);
+                        this.props.updateUserInfo(data);
+                    })
+                    .catch(err => {
+
+                    });
+
             }
         });
     };
@@ -466,6 +478,7 @@ const mapDispatchToProps = dispatch => ({
     toggleNestScroll: (flag) => dispatch(toggleNestScroll(flag)),
     onFollow: (from, to, jwt, that) => dispatch(onFollow(from, to, jwt, that)),
     onUnFollow: (from, to, jwt, that) => dispatch(onUnFollow(from, to, jwt, that)),
+    updateUserInfo: (data) => dispatch(updateUserInfo(data)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(PersonalHome);
 
