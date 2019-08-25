@@ -4,6 +4,7 @@ import Modal from "react-native-modal";
 import ImageViewer from "react-native-image-zoom-viewer";
 import {Image} from "react-native-elements";
 import {WINDOW} from "../../common/constant/Constant";
+import ZhihuApi from "../../api/ZhihuApi";
 
 export default class DiscoverScreen extends React.PureComponent{
     constructor(props) {
@@ -37,7 +38,19 @@ export default class DiscoverScreen extends React.PureComponent{
                 },
             ],
             isVisible: false,
+            tags: [],
         }
+    };
+    componentDidMount(){
+        ZhihuApi.getInputTips("android")
+            .then(data => {
+                this.setState({
+                    tags: data,
+                })
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 
     render() {
@@ -62,6 +75,10 @@ export default class DiscoverScreen extends React.PureComponent{
                         imageUrls={this.state.images}
                     />
                 </Modal>
+
+                <Text>
+                    {JSON.stringify(this.state.tags)}
+                </Text>
             </View>
         )
     }

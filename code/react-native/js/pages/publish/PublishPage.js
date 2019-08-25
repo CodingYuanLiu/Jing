@@ -1,9 +1,9 @@
 import React from "react"
-import {View, StyleSheet, TextInput, TouchableHighlight, ScrollView, StatusBar, TouchableWithoutFeedback} from 'react-native';
+import {View, StyleSheet, TextInput, TouchableHighlight, ScrollView, StatusBar, TouchableWithoutFeedback, Text, FlatList, Keyboard, RefreshControl} from 'react-native';
 import PublishHeader from "./components/PublishHeader";
 import NavigationUtil from "../../navigator/NavUtil";
 import { connect } from "react-redux";
-import {Button, Icon, Image} from "react-native-elements";
+import {Button, Icon, Image, ListItem, SearchBar} from "react-native-elements";
 import ImagePicker from "react-native-image-picker";
 import Util from "../../common/util";
 import Api from "../../api/Api";
@@ -16,7 +16,8 @@ import {ConfirmModal} from "../../common/components/CustomModal";
 import ImageViewer from "react-native-image-zoom-viewer";
 import Modal from "react-native-modal";
 import {WINDOW} from "../../common/constant/Constant";
-import {CloseIcon, PlusIcon} from "../../common/components/Icons";
+import {CloseIcon, PlusIcon, SearchIcon} from "../../common/components/Icons";
+import ZhihuApi from "../../api/ZhihuApi";
 
 class PublishPage extends React.PureComponent{
     constructor(props) {
@@ -34,17 +35,39 @@ class PublishPage extends React.PureComponent{
             published: false,
             isImageViewerVisible: false,
             index: 0,
+            isFooterModalVisible: false,
+            tagInput: "",
+            tagCandidates: [],
+            remoteAddTag: [],
+            footerModalHeight: WINDOW.height / 5 * 4,
+            loadingTagCandidates: false
         }
     }
-
-    componentDidMount(){
-
+    componentDidMount() {
+        this.keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            () => {
+                this.setState({footerModalHeight: WINDOW.height / 2});
+                console.log(WINDOW.height);
+            }
+        );
+        this.keyboardDidHideListener = Keyboard.addListener(
+            'keyboardDidHide',
+            () => {
+                this.setState({footerModalHeight: WINDOW.height / 5 * 4})
+            }
+        );
     }
+    componentWillUnmount() {
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+    }
+
     render() {
         this.type = this.props.navigation.getParam("type");
         if (!this.type) this.type = "taxi";
-        let propsAct = this.buildAct(this.props.publishAct, this.type);
-        let {title, description, images, endTime} = propsAct;
+        let propsAct = this.getActByType(this.props.publishAct, this.type);
+        let {title, description, images, endTime, tags} = propsAct;
         let header = this.renderHeader();
         let detailInput = this.renderDetailInput(title, description);
         let imagePicker = this.renderImagePicker();
@@ -55,52 +78,56 @@ class PublishPage extends React.PureComponent{
         let saveModal = this.renderSaveModal();
         let imageViewer = this.renderImageViewer(images);
 
-        let footer = this.renderFooter();
+        let footer = this.renderFooter(tags);
+        let footerTagInputModal = this.renderFooterTagInputModal();
         return(
-            <View style={styles.container}>
-                {header}
-                <ScrollView style={styles.mainContainer}>
-                    {detailInput}
-                    <View style={styles.imageListContainer}>
-                        {
-                            images.map((img, i) => {
-                                return (
-                                   <TouchableWithoutFeedback
-                                        onPress={() => {this.setState({
-                                            isImageViewerVisible: true,
-                                            index: i,
-                                        })}}
-                                        key={i.toString()}
-                                   >
-                                       <View style={styles.imageContainer}>
-                                           <Image
-                                               style={styles.image}
-                                               source={{uri: `data:${img.type};base64,${img.data}`}}
-                                               resizeMode={"cover"}
-                                           />
-                                           <View style={styles.deleteImageIconContainer}>
-                                               <CloseIcon
-                                                   color={"#bfbfbf"}
-                                                   onPress={() => {this.deleteImage(i)}}
-                                                   iconStyle={styles.deleteImageIcon}
-                                                   size={18}
-                                               />
-                                           </View>
-                                       </View>
-                                   </TouchableWithoutFeedback>
-                                )
-                            })
-                        }
-                        {imagePicker}
-                    </View>
-                    {commonMenubar}
-                    {specMenubar}
-                    {endTimePicker}
-                    {specTimePicker}
-                </ScrollView>
-                {saveModal}
-                {imageViewer}
-                {footer}
+            <View style={{flex: 1,}}>
+                <View style={styles.container}>
+                    {header}
+                    <ScrollView style={styles.mainContainer}>
+                        {detailInput}
+                        <View style={styles.imageListContainer}>
+                            {
+                                images.map((img, i) => {
+                                    return (
+                                        <TouchableWithoutFeedback
+                                            onPress={() => {this.setState({
+                                                isImageViewerVisible: true,
+                                                index: i,
+                                            })}}
+                                            key={i.toString()}
+                                        >
+                                            <View style={styles.imageContainer}>
+                                                <Image
+                                                    style={styles.image}
+                                                    source={{uri: `data:${img.type};base64,${img.data}`}}
+                                                    resizeMode={"cover"}
+                                                />
+                                                <View style={styles.deleteImageIconContainer}>
+                                                    <CloseIcon
+                                                        color={"#bfbfbf"}
+                                                        onPress={() => {this.deleteImage(i)}}
+                                                        iconStyle={styles.deleteImageIcon}
+                                                        size={18}
+                                                    />
+                                                </View>
+                                            </View>
+                                        </TouchableWithoutFeedback>
+                                    )
+                                })
+                            }
+                            {imagePicker}
+                        </View>
+                        {commonMenubar}
+                        {specMenubar}
+                        {endTimePicker}
+                        {specTimePicker}
+                    </ScrollView>
+                    {saveModal}
+                    {imageViewer}
+                    {footer}
+                </View>
+                {footerTagInputModal}
             </View>
         )
     }
@@ -317,14 +344,183 @@ class PublishPage extends React.PureComponent{
         )
     };
 
-    renderFooter = () => {
-        return null;
+    renderFooter = (tags) => {
+        return (
+            <View style={styles.footerContainer}>
+                <Button
+                    type={"clear"}
+                    icon={
+                        <PlusIcon
+                            size={18}
+                            color={"#0084ff"}
+                            iconStyle={{fontWeight: "bold"}}
+                        />
+                    }
+                    title={`标签(${this.state.tags.length} / 5)`}
+                    titleStyle={styles.footerButtonTitle}
+                    containerStyle={{padding: 0, margin: 0,}}
+                    buttonStyle={{padding: 0, margin: 0}}
+                    onPress={() => {this.setState({isFooterModalVisible: true})}}
+                />
+                <ScrollView
+                    horizontal={true}
+                    style={{flex: 1, flexDirection: "row"}}
+                >
+                    {
+                        tags.map((item, i) => {
+                            return this.renderTag(item, i);
+                        })
+                    }
+                </ScrollView>
+            </View>
+        );
+    };
+    renderTag = (item, i ) => {
+        return  (
+            <View
+                style={styles.tagContainer}
+                key={i.toString()}
+            >
+                <Text
+                    style={styles.tagTitle}
+                >
+                    {item}
+                </Text>
+                <CloseIcon
+                    color={"#0084ff"}
+                    size={12}
+                    onPress={() => {this.deleteTag(i, item)}}
+                />
+            </View>
+        )
+    };
+    renderFooterTagInputModal = () => {
+        let rightButton=
+        <Button
+            type={"clear"}
+            title={"完成"}
+            titleStyle={{fontWeight: "bold", fontSize: 18,}}
+            onPress={this.hideFooterModal}
+            containerStyle={styles.footerModalRightButtonContainer}
+        />;
+        let header =
+            <View
+                style = {styles.footerModalHeaderContainer}
+            >
+            <Text
+                style={styles.footerModalHeaderTitle}
+            >
+                添加标签
+            </Text>
+            {rightButton}
+        </View>;
+        let tagInputPrompt =
+            this.state.tags.length === 0 ? "至少添加一个标签" :
+                this.state.tags.length === 5 ? "已达到标签添加上限" :
+                `还可以添加(${this.state.tags.length} / 5)个标签`;
+        let data = this.state.tagCandidates;
+        return (
+            <Modal
+                isVisible={this.state.isFooterModalVisible}
+                style={{margin: 0, position: "absolute", bottom: 0, height: WINDOW.height, width: WINDOW.width}}
+                useNativeDriver={true}
+                onBackdropPress={this.hideFooterModal}
+                propagateSwipe={true}
+                avoidKeyboard={false}
+            >
+                <View style={[styles.footerModalContainer, {height: this.state.footerModalHeight}]}>
+                    {header}
+                    <SearchBar
+                        searchIcon={
+                            <SearchIcon
+                                color={"#afafaf"}
+                            />
+                        }
+                        containerStyle={{backgroundColor: "transparent", borderTopWidth: 0, borderBottomWidth: 0}}
+                        inputContainerStyle={styles.footerModalSearchBar}
+                        lightTheme={true}
+                        placeholder={"搜索标签"}
+                        value={this.state.tagInput}
+                        onChangeText={this.handleChangeTagInput}
+
+                    />
+                    <Text
+                        style={styles.tagInputPromptTitle}
+                    >{tagInputPrompt}</Text>
+                    <View
+                        style={{
+                            paddingRight: 15,
+                            paddingLeft: 15,
+                            flexDirection: "row",
+                            flexWrap: "wrap",
+                            marginBottom: 20,
+                        }}
+                    >
+                        {
+                            this.state.tags.map((item, i) => {
+                                return this.renderTag(item, i);
+                            })
+                        }
+                    </View>
+                    <FlatList
+                        data={data}
+                        renderItem={this.renderTagCandidate}
+                        keyExtractor={(item) => item[2]}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.loadingTagCandidates}
+                                onRefresh={this.getTagCandidates}
+                                title={"加载中..."}
+                                titleColor={"#0084ff"}
+                                colors={["#0084ff"]}
+                                tintColor={"#0084ff"}
+                            />
+                        }
+                    />
+                </View>
+            </Modal>
+        )
+    };
+    renderTagCandidate = ({item}) => {
+          if(!Array.isArray(item) || item.length < 7) return null;
+          else {
+              return  (
+                  <ListItem
+                        leftAvatar={
+                            <Image
+                                source={{uri: item[3]}}
+                                style={{
+                                    width: 40,
+                                    height: 40,
+                                    borderRadius: 3,
+                                }}
+                            />
+                        }
+                        title={item[1]}
+                        titleStyle={{fontWeight: "bold", fontSize: 18}}
+                        rightElement={
+                            <Button
+                                title={"添加"}
+                                titleStyle={{fontSize: 14}}
+                                buttonStyle={{
+                                    backgroundColor: "#0084ff",
+                                    width: 64,
+                                    padding: 0,
+                                    paddingTop: 6,
+                                    paddingBottom: 6,
+                                }}
+                                onPress={() => {this.addTag(item[1])}}
+                            />
+                        }
+                  />
+              )
+          }
     };
     publish = () => {
-        let publishAct = this.buildAct(this.props.publishAct, this.type);
+        let publishAct = this.getActByType(this.props.publishAct, this.type);
         let data =
             Model.buildActivity(publishAct);
-
+        this.addRemoteTagCandidates();
         Api.publishAct(this.props.currentUser.jwt, data)
             .then (act => {
                 console.log(act);
@@ -338,6 +534,7 @@ class PublishPage extends React.PureComponent{
     handleBodyTextChange = text => {
         this.setState({description: text});
         this.saveByType({description: text}, this.type);
+        this.autoGetTag(this.state.title, text);
     };
     handleBodyTextBlur = () => {
         let text = this.state.description;
@@ -346,6 +543,7 @@ class PublishPage extends React.PureComponent{
     handleTitleTextChange = text => {
         this.setState({title: text});
         this.saveByType({title: text}, this.type);
+        this.autoGetTag(text, this.state.description);
     };
     handleTitleTextBlur = () => {
         let title = this.state.title;
@@ -412,6 +610,10 @@ class PublishPage extends React.PureComponent{
             specTimePickerVisible: false,
         })
     };
+    handleChangeTagInput = (text) => {
+        this.setState({tagInput: text});
+        this.getTagCandidates(text);
+    };
     showImagePicker = () => {
         ImagePicker.showImagePicker(options, res => {
             console.log("response : ", res);
@@ -435,6 +637,12 @@ class PublishPage extends React.PureComponent{
                 }, this.type);
             }
         })
+    };
+    hideFooterModal = () => {
+        this.setState({
+            isFooterModalVisible: false,
+            tagCandidates: [],
+        });
     };
     saveByType = (data, type) => {
         switch(type) {
@@ -465,7 +673,7 @@ class PublishPage extends React.PureComponent{
     toPublishDraft = () => {
         NavigationUtil.toPage(null, "PublishDraft");
     };
-    buildAct = (publishAct, type) => {
+    getActByType = (publishAct, type) => {
         switch(type) {
             case "taxi":
                 return publishAct.taxiAct;
@@ -482,7 +690,7 @@ class PublishPage extends React.PureComponent{
     };
     handleConfirmSave = () => {
         this.setState({saveModalVisible: false});
-        let item = this.buildAct(this.props.publishAct, this.type);
+        let item = this.getActByType(this.props.publishAct, this.type);
         LocalApi.savePublishDraft(item)
             .then(() => {
                 NavigationUtil.toPage(null, "Home");
@@ -512,7 +720,104 @@ class PublishPage extends React.PureComponent{
                 images: list,
             }
         })
-    }
+    };
+    deleteTag = (i, item) => {
+        this.setState(state => {
+            let count = 0, list = [], candidates = [];
+            for (let item of state.tags) {
+                if (count !== i) {
+                    list.push(item);
+                }
+                count++;
+            }
+            for (let tag of state.remoteAddTag) {
+                if (tag !== item) {
+                    candidates.push(tag);
+                }
+            }
+            this.saveByType({
+                tags: list,
+            }, this.type);
+            return {
+                ...state,
+                tags: list,
+                remoteAddTag: candidates,
+            }
+        })
+    };
+    autoGetTag = (title, description) => {
+        let {currentUser} = this.props;
+        Api.getTag(
+            {
+                title: title,
+                description: description},
+                currentUser.jwt,
+            )
+            .then(data => {
+                console.log(data);
+                this.saveByType({
+                    tags: data.tags,
+                }, this.type);
+                this.setState({tags: data.tags});
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
+    getTagCandidates = (text) => {
+        this.setState({
+            loadingTagCandidates: true,
+        });
+        let keyword = text ? text : this.state.tagInput;
+        ZhihuApi.getInputTips(keyword)
+            .then(data => {
+                console.log(data);
+                this.setState({
+                    tagCandidates: [...data[0]],
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            })
+            .finally(() => {
+                this.setState({
+                    loadingTagCandidates: false,
+                })
+            })
+    };
+    addTag = (tag) => {
+        if (this.state.tags.length >= 5) {
+            return ;
+        }
+        let tags = [
+            ...this.state.tags,
+            tag,
+        ];
+        let list = [];
+        for(let item of this.state.tagCandidates) {
+            if (tag !== item[1]) {
+                list.push(item);
+            }
+        }
+        this.setState({
+            tags: tags,
+            tagCandidates: list,
+        });
+        this.saveByType({
+            tags: tags,
+        }, this.type);
+
+    };
+    addRemoteTagCandidates = () => {
+        let {currentUser} = this.props;
+        Api.addTag(this.state.remoteAddTag, currentUser.jwt)
+            .then(data => {
+                console.log(data);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
 }
 
 const options = {
@@ -619,5 +924,72 @@ const styles = StyleSheet.create({
     menuContainer: {
         marginRight: "2%",
         marginLeft: "2%",
+    },
+
+    footerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        height: 40,
+        paddingLeft: 15,
+        paddingRight: 15,
+        backgroundColor: "#fff",
+    },
+    footerButtonTitle: {
+        fontSize: 14,
+    },
+    tagContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#ebfafa",
+        borderRadius: 100,
+        paddingLeft: 5,
+        paddingRight: 5,
+        paddingTop: 3,
+        paddingBottom: 3,
+        margin: 3,
+
+    },
+    tagTitle: {
+        color: "#0084ff",
+        fontSize: 14,
+        marginRight: 2,
+    },
+    footerModalContainer: {
+        position: "absolute",
+        width: WINDOW.width,
+        bottom: 0,
+        backgroundColor: "#fff",
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+    },
+    footerModalHeaderContainer: {
+        backgroundColor: "transparent",
+        height: 40,
+        marginBottom: 20,
+        position: "relative",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    footerModalHeaderTitle: {
+        fontWeight: "bold",
+        fontSize: 18,
+    },
+    footerModalRightButtonContainer: {
+        position: "absolute",
+        right: 15,
+    },
+    footerModalSearchBar: {
+        borderRadius: 8,
+        backgroundColor: "#eee",
+        marginLeft: 6,
+        marginRight: 6,
+        height: 36,
+        alignItems: "center",
+    },
+    tagInputPromptTitle: {
+        fontSize: 14,
+        color: "#bfbfbf",
+        marginLeft: 15,
+        marginBottom: 20,
     },
 });

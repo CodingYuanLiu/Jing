@@ -425,6 +425,24 @@ export default class Api {
                 })
         })
     }
+    static getTag = async (data, jwt) => {
+        let res = await axios.post("/api/user/act/gettag", data, {
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+            }
+        });
+        return res.data? res.data : [];
+    };
+
+    static addTag = async (data, jwt) => {
+        let res = await axios.post("/api/user/act/addtag", data, {
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+            }
+        });
+        return res.data;
+    };
+
     static deleteAct = async (id, jwt) => {
         let res = await axios.post(`/api/user/act/delete?act_id=${id}`, null, {
             headers: {
