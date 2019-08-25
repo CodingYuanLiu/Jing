@@ -5,7 +5,7 @@ const {
 let app = getApp()
 Page({
     data: {
-        navTab: ["全部", "推荐", "关注"],
+        navTab: ["最新", "推荐", "关注"],
         currentNavtab: "0",
         indicatorDots: false,
         autoplay: true,
@@ -20,7 +20,8 @@ Page({
         log: false,
         status_show: ["", "[人满]", "[已过期]"],
         no_content: false,
-        no_content_f: false
+        no_content_f: false,
+        avatar_src: "http://image.jing855.cn/defaultAvatar.png",
     },
     onLoad: function() {
         console.log('onLoad')
