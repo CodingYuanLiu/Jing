@@ -45,14 +45,14 @@ class PublishPage extends React.PureComponent{
     }
     componentDidMount() {
         this.keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
+            'keyboardWillShow',
             () => {
                 this.setState({footerModalHeight: WINDOW.height / 2});
                 console.log(WINDOW.height);
             }
         );
         this.keyboardDidHideListener = Keyboard.addListener(
-            'keyboardDidHide',
+            'keyboardWillHide',
             () => {
                 this.setState({footerModalHeight: WINDOW.height / 5 * 4})
             }
@@ -79,7 +79,7 @@ class PublishPage extends React.PureComponent{
         let imageViewer = this.renderImageViewer(images);
 
         let footer = this.renderFooter(tags);
-        let footerTagInputModal = this.renderFooterTagInputModal();
+        let footerTagInputModal = this.renderFooterTagInputModal(tags);
         return(
             <View style={{flex: 1,}}>
                 <View style={styles.container}>
@@ -356,7 +356,7 @@ class PublishPage extends React.PureComponent{
                             iconStyle={{fontWeight: "bold"}}
                         />
                     }
-                    title={`标签(${this.state.tags.length} / 5)`}
+                    title={`标签(${tags.length} / 5)`}
                     titleStyle={styles.footerButtonTitle}
                     containerStyle={{padding: 0, margin: 0,}}
                     buttonStyle={{padding: 0, margin: 0}}
@@ -394,7 +394,7 @@ class PublishPage extends React.PureComponent{
             </View>
         )
     };
-    renderFooterTagInputModal = () => {
+    renderFooterTagInputModal = (tags) => {
         let rightButton=
         <Button
             type={"clear"}
@@ -415,9 +415,9 @@ class PublishPage extends React.PureComponent{
             {rightButton}
         </View>;
         let tagInputPrompt =
-            this.state.tags.length === 0 ? "至少添加一个标签" :
-                this.state.tags.length === 5 ? "已达到标签添加上限" :
-                `还可以添加(${this.state.tags.length} / 5)个标签`;
+            tags.length === 0 ? "至少添加一个标签" :
+                tags.length === 5 ? "已达到标签添加上限" :
+                `还可以添加(${tags.length} / 5)个标签`;
         let data = this.state.tagCandidates;
         return (
             <Modal
@@ -457,7 +457,7 @@ class PublishPage extends React.PureComponent{
                         }}
                     >
                         {
-                            this.state.tags.map((item, i) => {
+                            tags.map((item, i) => {
                                 return this.renderTag(item, i);
                             })
                         }

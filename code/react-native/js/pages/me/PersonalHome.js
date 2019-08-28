@@ -106,7 +106,7 @@ class PersonalHome extends React.PureComponent {
                     source={{
                         uri: background.data ?
                         `data:${background.type};base64,${background.data}` :
-                            "http://image.jing855.cn/actImage/act16/img0"
+                            "https://pic1.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1200x500.jpg"
                         ,
                     }}
                     style={{width: window.width, height: BACKGROUND_IMAGE_HEIGHT}}

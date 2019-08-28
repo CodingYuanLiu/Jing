@@ -1,5 +1,9 @@
+import axios from "axios";
+
 const {client, jid} = require("@xmpp/client");
 const xml = require('@xmpp/xml');
+const basicUri = "202.120.40.8:30256";
+const basicToken = "YWRtaW46MTIzNDU=";
 
 export default class XmppApi {
     static xmpp;
@@ -136,7 +140,60 @@ export default class XmppApi {
 
 
 export class OpenFireApi{
-    register (username, password) {
+    register = async (username, password, nickname = null, email = null) => {
+        let data = {
+            username: username,
+            password: password,
+        };
+        if (nickname) data.name = nickname;
+        if (email) data.email = email;
 
-    }
+        let res = await axios.post(`${basicUri}/plugins/restapi/v1/users`, data, {
+            headers: {
+                "Authorization": `Basic ${basicToken}`,
+            }
+        });
+        return res.data;
+    };
+
+    updateUser = async (username, nickname = null, email = null) => {
+        let data = {
+            username,
+        };
+        if (nickname) data.name = nickname;
+        if (email) data.email = email;
+
+        let res = await axios.put(`${basicUri}/plugins/restapi/v1/users/oldUsername`, data, {
+            headers: {
+                "Authorization": `Basic ${basicToken}`,
+            }
+        });
+        return res.data;
+    };
+
+    createChatRoom = async (roomName, naturalName, description, maxUsers, owner) => {
+        let data =　{
+            roomName,
+            naturalName,
+            description,
+            maxUsers,
+            createDate: new Date(),
+            canAnyoneDiscoverJID: false,
+            canOccupantsChangeSubject: false,
+            canChangeNickname: false,
+            owners: {
+                owner: owner,
+            },
+            admins: {
+                admin: [owner,]
+            }
+        };
+
+        let res = await axios.post(`${basicUri}/plugins/restapi/v1/chatrooms`, data, {
+            headers: {
+                "Authorization": `Basic ${basicToken}`,
+            }
+        });
+
+    };
 }

@@ -1,91 +1,153 @@
 import React from "react"
 import { View, Text, StatusBar, StyleSheet, TouchableNativeFeedback } from 'react-native';
-import Modal from "react-native-modal";
-import ImageViewer from "react-native-image-zoom-viewer";
-import {Image} from "react-native-elements";
-import {WINDOW} from "../../common/constant/Constant";
-import ZhihuApi from "../../api/ZhihuApi";
+import HeaderBar from "../../common/components/HeaderBar";
+import {GiftedChat} from "react-native-gifted-chat";
+import {connect} from "react-redux";
+import {EmojiIcon, ImageIcon} from "../../common/components/Icons";
+import {Button} from "react-native-elements";
+import CameraRoll from "@react-native-community/cameraroll";
 
-export default class DiscoverScreen extends React.PureComponent{
+class DiscoverScreen extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
-            images: [
+            messages: [
                 {
-                    url: "https://pic1.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1200x500.jpg",
-                    width: WINDOW.width,
-                    height: WINDOW.height / 3,
+                    _id: 1,
+                    text: 'Hello developer',
+                    createdAt: new Date(),
+                    user: {
+                        _id: 2,
+                        name: 'React Native',
+                        avatar: 'https://placeimg.com/140/140/any',
+                    },
                 },
                 {
-                    url: "https://pic1.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1200x500.jpg",
-                    width: WINDOW.width,
-                    height: WINDOW.height / 3,
-                },
-                {
-                    url: "https://pic1.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1200x500.jpg",
-                    width: WINDOW.width,
-                    height: WINDOW.height / 3,
-                },
-                {
-                    url: "https://pic1.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1200x500.jpg",
-                    width: WINDOW.width,
-                    height: WINDOW.height / 3,
-                },
-                {
-                    url: "https://pic1.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1200x500.jpg",
-                    width: WINDOW.width,
-                    height: WINDOW.height / 3,
-                },
+                    _id: 2,
+                    text: 'My message',
+                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
+                    user: {
+                        _id: 2,
+                        name: 'React Native',
+                        avatar: 'https://facebook.github.io/react/img/logo_og.png',
+                    },
+                    image: 'https://facebook.github.io/react/img/logo_og.png',
+                    // You can also add a video prop:
+                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+                    // Any additional custom parameters are passed through
+                }
             ],
-            isVisible: false,
-            tags: [],
+            text: "",
         }
     };
     componentDidMount(){
-        ZhihuApi.getInputTips("android")
-            .then(data => {
-                this.setState({
-                    tags: data,
-                })
+    }
+
+    render() {
+        let {currentUser} = this.props;
+        return(
+            <View style={styles.container}>
+                <HeaderBar
+                    title={"测试哟过户"}
+                />
+                <GiftedChat
+                    //alignTop={}
+                    //initialText={}
+                    messages={this.state.messages}
+                    onSend={this.onSend}
+                    user={{
+                        _id: currentUser.username,
+                        name: currentUser.nickname,
+                        avatar: currentUser.avatar
+                    }}
+                    isAnimated={true}
+                    showUserAvatar={true}
+                    showAvatarForEveryMessage={true}
+                    renderSend={this.renderSend}
+                    text={this.state.text}
+                    onInputTextChanged={(text) => {this.setState({text: text})}}
+                    minComposerHeight={43}
+                />
+            </View>
+        )
+    };
+    renderSend = (props) => {
+        let imageIcon, sendButton;
+        !props.text || props.text === "" ?
+            imageIcon = (
+                <ImageIcon
+                    onPress={this.showImagePicker}
+                    size={26}
+                    style={{marginRight: 10, paddingLeft: 2, width: 40}}
+                />
+            ) : null;
+        props.text && props.text !== "" ?
+            sendButton = (
+                <Button
+                    type={"clear"}
+                    title={"发送"}
+                    onPress={
+                        ({createdAt, user, _id}) => {
+                            props.onSend({
+                                _id,
+                                text: props.text,
+                                createdAt,
+                                user,
+                            });
+                            this.setState({text: ""});
+                        }
+                    }
+                    buttonStyle={{padding: 0, }}
+                    containerStyle={{marginRight: 10, width: 40,justifyContent: "center"}}
+                />
+            ) : null;
+        return (
+            <View style={styles.sendButtonContainer}>
+                <EmojiIcon
+                    onPress={this.showEmojiPicker}
+                    size={26}
+                    style={{marginRight: 13,}}
+                />
+                {imageIcon}
+                {sendButton}
+            </View>
+        )
+    };
+    onSend = (message) => {
+        this.setState(previousState => ({
+            messages: GiftedChat.append(previousState.messages, message),
+        }))
+    };
+    showEmojiPicker = () => {
+
+    };
+    showImagePicker = () => {
+        CameraRoll.getPhotos(
+            {
+                first: 20,
+                assetType: 'Photos',
+            }
+        )
+            .then(res => {
+                console.log(res);
             })
             .catch(err => {
                 console.log(err);
             })
-    }
-
-    render() {
-
-        return(
-            <View style={styles.container}>
-                <TouchableNativeFeedback
-                    onPress={() => {this.setState({isVisible: true})}}
-                >
-                    <Image
-                        source={{uri: "https://pic1.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1200x500.jpg"}}
-                        style={{width: WINDOW.width, height: 200}}
-                    />
-                </TouchableNativeFeedback>
-                <Modal
-                    isVisible={this.state.isVisible}
-                    onBackdropPress={() => {this.setState({isVisible: false})}}
-                    backdropOpacity={1}
-                    style={{margin: 0}}
-                >
-                    <ImageViewer
-                        imageUrls={this.state.images}
-                    />
-                </Modal>
-
-                <Text>
-                    {JSON.stringify(this.state.tags)}
-                </Text>
-            </View>
-        )
-    }
+    };
 }
+const mapStateToProps = state => ({
+    currentUser: state.currentUser,
+});
+export default connect(mapStateToProps, null)(DiscoverScreen);
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    sendButtonContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        height: "100%",
     },
 });

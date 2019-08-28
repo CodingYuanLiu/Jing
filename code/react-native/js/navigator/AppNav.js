@@ -24,6 +24,7 @@ import PublishDraft from "../pages/publish/PublishDraft";
 import Feedback from "../pages/me/Feedback/Feedback";
 import FeedbackPage from "../pages/me/Feedback/FeedbackPage";
 import PersonalInformation from "../pages/me/PersonalInformation";
+import PrivateChat from "../pages/notification/pages/PrivateChat";
 
 
 const StartNav = createStackNavigator(
@@ -105,6 +106,9 @@ const MainNav = createStackNavigator(
         },
         PersonalInformation: {
             screen: PersonalInformation,
+        },
+        PrivateChat: {
+            screen: PrivateChat,
         }
     },
     {

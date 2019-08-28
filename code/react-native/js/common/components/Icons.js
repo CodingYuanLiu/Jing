@@ -767,6 +767,44 @@ class BirthdayCakeIcon extends React.PureComponent{
             />)
     }
 }
+class NumericIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress, number} = this.props;
+
+        return (
+            <Icon
+                type={"material-community"}
+                name={`numeric-${number}-circle`}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class CircleIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+
+        return (
+            <Icon
+                type={"material-community"}
+                name={"circle"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -811,4 +849,6 @@ export {
     GenderSecretIcon,
     MajorIcon,
     BirthdayCakeIcon,
+    NumericIcon,
+    CircleIcon,
 }
