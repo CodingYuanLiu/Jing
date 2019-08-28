@@ -80,7 +80,7 @@
                     </view>
                     <view class="answer-body">
                         <view data-id="{{act_id}}">
-                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black">{{item.description}}</text>
+                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black;margin-top: 5px">{{item.description}}</text>
                         </view>
                         <!-- <view>
                             <image src="{{item.feed_img}}"></image>
@@ -191,7 +191,7 @@
                     </view>
                     <view class="answer-body">
                         <view data-id="{{act_id}}">
-                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black">{{item.description}}</text>
+                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black;margin-top: 5px">{{item.description}}</text>
                         </view>
                         <!-- <view>
                             <image src="{{item.feed_img}}"></image>
@@ -307,7 +307,7 @@
                     </view>
                     <view class="answer-body">
                         <view data-id="{{act_id}}">
-                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black">{{item.description}}</text>
+                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black;margin-top: 5px">{{item.description}}</text>
                         </view>
                         <!-- <view>
                             <image src="{{item.feed_img}}"></image>
