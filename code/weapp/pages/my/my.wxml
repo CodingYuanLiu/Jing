@@ -16,9 +16,26 @@
             <text class="edit">查看或编辑个人主页</text>
         </view>
     </view>
+    <i-cell-group style="margin-top: 10px;width: 100vw;">
+        <i-cell title="我的活动" is-link url="/pages/my/mypublish/mypublish"></i-cell>
+        <i-cell title="正在参与" is-link url="/pages/dashboard/index"></i-cell>
+        <i-cell title="已结束" is-link url="/pages/dashboard/index"></i-cell>
+        <!-- <i-cell title="开关">
+                <switch slot="footer" checked />
+            </i-cell> -->
+    </i-cell-group>
+    <i-cell-group style="margin-top: 10px; width: 100vw">
+        <i-cell title="客服中心" is-link url="/pages/my/mypublish/mypublish"></i-cell>
+        <i-cell title="反馈" is-link url="/pages/dashboard/index"></i-cell>
+        <i-cell title="用户满意度调研" is-link url="/pages/dashboard/index"></i-cell>
+        <i-cell title="去评价" is-link url="/pages/dashboard/index"></i-cell>
+        <!-- <i-cell title="开关">
+                <switch slot="footer" checked />
+            </i-cell> -->
+    </i-cell-group>
+    <view style="width: 100vw" class="my">
 
-    <view class="my">
-        <view class="my-item flex-wrp" bindtap="handlePub">
+        <!-- <view class="my-item flex-wrp" bindtap="handlePub">
             <view class="myitem-icon flex-item">
                 <image src="../../images/icons/pubed_line.png"></image>
             </view>
@@ -34,15 +51,15 @@
                 <text>我加入的</text>
             </view>
         </view>
-        <!-- <view class="my-item flex-wrp" bindtap="">
+        <view class="my-item flex-wrp" bindtap="">
             <view class="myitem-icon flex-item">
                 <image src="../../images/icons/editing_line.png"></image>
             </view>
             <view class="myitem-name flex-item">
                 <text>我的草稿</text>
             </view>
-        </view> -->
-        <view class="my-item flex-wrp" bindtap="handleLook"> 
+        </view>
+        <view class="my-item flex-wrp" bindtap="handleLook">
             <view class="myitem-icon flex-item">
                 <image src="../../images/icons/recent_line.png"></image>
             </view>
@@ -65,7 +82,7 @@
             <view class="myitem-name flex-item">
                 <text>关注我的</text>
             </view>
-        </view>
+        </view> -->
         <!-- <view class="my-item flex-wrp" bindtap="handleFeedback">
             <view class="myitem-icon flex-item">
                 <image src="../../images/icons/feedback.png"></image>
