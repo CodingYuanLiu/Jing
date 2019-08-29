@@ -14,6 +14,7 @@ import { onGetCurrentUserFollower } from "../../actions/currentUserFollower";
 import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
 import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
 import {onLoadSettings} from "../../actions/setting";
+//import SplashScreen from "react-native-splash-screen";
 
 // fix xmpp.js cannot find base64 module error
 var base64 = require('base-64');
@@ -27,6 +28,7 @@ class StartPage extends React.Component {
 
     componentDidMount() {
         this.getStatus();
+      //  SplashScreen.hide();
     }
 
     render() {

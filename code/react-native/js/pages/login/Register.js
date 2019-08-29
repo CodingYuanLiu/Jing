@@ -1,21 +1,15 @@
 import React from "react"
-import { View, Text, StyleSheet } from 'react-native';
-import {Input, Button, Overlay} from "react-native-elements"
+import { View, TextInput, StyleSheet, Text } from 'react-native';
+import {Button, Image, ListItem} from "react-native-elements"
 import Dao from "../../api/Dao";
 import {setUserData} from "../../actions/currentUser";
 import {connect} from "react-redux";
 import Api from "../../api/Api"
-import NavigationUtil from "../../navigator/NavUtil";
-import XmppApi from "../../api/XmppApi";
+import XmppApi, {OpenFireApi} from "../../api/XmppApi";
 import Util from "../../common/util";
+import {CheckIconReversed, CircleIcon, CloseIcon, EyeIcon, EyeOffIcon} from "../../common/components/Icons";
+import HeaderBar from "../../common/components/HeaderBar";
 
-
-const errors = {
-    passwordNotMatch: "两次密码不一致哦～",
-    incomplete: "缺少字段哦～",
-    duplicateUsername: "用户名已经被占用啦～",
-    networkError: "亲，网络故障啦～",
-};
 
 class RegisterScreen extends React.PureComponent{
     constructor(props) {
@@ -23,145 +17,324 @@ class RegisterScreen extends React.PureComponent{
         this.state = {
             username: "",
             password: "",
-            confirmPassword: "",
-            phone: "",
-            nickname: "",
-            error: false,
-            errorMessage: "",
-            success:false,
+
+            usernameExists: false,
+
+            usernamePatternValid: false,
+            usernameStartValid: false,
+
+            passwordVisible: false,
+            passwordLengthValid: false,
+            passwordPatternValid: false,
+            loading: false,
         }
     }
 
-    register = () => {
-        const jwt = this.props.navigation.getParam("jwt");
 
-        let data = {
+    render() {
+        let header = this.renderHeader();
+        let logo = this.renderLogo();
+        let usernameInput = this.renderUsernameInput();
+        let passwordInput = this.renderPasswordInput();
+        let button = this.renderButton();
+        return(
+            <View style={styles.container}>
+                {header}
+                {logo}
+                <View style={styles.formContainer}>
+                    {usernameInput}
+                    {passwordInput}
+                    {button}
+                </View>
+            </View>
+        )
+    };
+    renderHeader = () => {
+        let leftIcon = (
+            <CloseIcon
+                color={"#7a7a7a"}
+                onPress={this.goBack}
+            />
+        );
+        return (
+            <HeaderBar
+                leftButton={leftIcon}
+                style={{backgroundColor: "#fff"}}
+            />
+        )
+    };
+    renderLogo = () => {
+        return (
+            <View
+                style={styles.headerContainer}
+            >
+                <Image
+                    style={styles.headerLogo}
+                    source={require("../../static/images/logo-white.png")}
+                />
+                <Text style={{fontSize: 22, color: "#0084ff", marginLeft: 20}}>
+                    注册
+                </Text>
+            </View>
+        )
+    };
+    renderUsernameInput = () => {
+        let clearIcon = this.state.username !== "" ?
+            <CloseIcon
+                color={"#bfbfbf"}
+                size={18}
+                onPress={() => {this.setState({username: ""})}}
+            /> : null;
+
+        let usernameStartValidIcon = this.renderTipsLeftIcon(this.state.usernameStartValid);
+        let usernamePatternValidIcon = this.renderTipsLeftIcon(this.state.usernamePatternValid);
+        return (
+            <View style={styles.itemContainer}>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        placeholder={"用户名"}
+                        onChangeText={(text) => {
+                            this.setState({username: text});
+                            this.verifyContent();
+                            this.usernameExists(text)
+                                .then((res) => {
+                                    console.log(res);
+                                })
+                        }}
+                        value={this.state.username}
+                        autoCompleteType={"username"}
+                        textContentType={"username"}
+                        keyboardType={"email-address"}
+                        style={{flex: 1, fontSize: 20,}}
+                    />
+                    {clearIcon}
+                </View>
+                <ListItem
+                    leftIcon={usernamePatternValidIcon}
+                    title={"用户名由6-20位字母、下划线或数字组成"}
+                    titleStyle={{fontSize: 14, color: "#9f9f9f"}}
+                    containerStyle={{padding: 10}}
+                />
+                <ListItem
+                    leftIcon={usernameStartValidIcon}
+                    title={"由字母或下划线开始"}
+                    titleStyle={{fontSize: 14, color: "#9f9f9f"}}
+                    containerStyle={{padding: 10}}
+                />
+            </View>
+        );
+    };
+    renderPasswordInput = () => {
+        let rightIcon = this.state.passwordVisible ?
+            <EyeIcon
+                color={"#bfbfbf"}
+                size={18}
+                onPress={() => {
+                    this.setState(
+                        {passwordVisible: false}
+                    )
+                }}
+            />
+            :
+            <EyeOffIcon
+                color={"#bfbfbf"}
+                size={18}
+                onPress={() => {
+                    this.setState(
+                        {passwordVisible: true}
+                    )
+                }}
+            />;
+
+        let clearIcon = this.state.password !== "" ?
+            <CloseIcon
+                color={"#bfbfbf"}
+                size={18}
+                onPress={() => {this.setState({password: ""})}}
+            /> : null;
+
+        let passwordLengthValidIcon = this.renderTipsLeftIcon(this.state.passwordLengthValid);
+        let passwordPatternIcon = this.renderTipsLeftIcon(this.state.passwordPatternValid);
+        return (
+            <View style={styles.itemContainer}>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        placeholder={"密码"}
+                        onChangeText={(text) => {
+                            this.setState({password: text});
+                            this.verifyContent();
+                        }}
+                        value={this.state.password}
+                        textContentType={"password"}
+                        autoCompleteType={"password"}
+                        secureTextEntry={this.state.passwordVisible}
+                        style={{flex: 1,fontSize: 20,}}
+                        onFocus={() => {console.log("react")}}
+                    />
+                    {clearIcon}
+                    {rightIcon}
+                </View>
+                <ListItem
+                    leftIcon={passwordLengthValidIcon}
+                    title={"密码有8-16位数字、字母或符号组成"}
+                    titleStyle={{fontSize: 14, color: "#9f9f9f"}}
+                    containerStyle={{padding: 10}}
+                />
+                <ListItem
+                    leftIcon={passwordPatternIcon}
+                    title={"至少含有2种及以上的字符"}
+                    titleStyle={{fontSize: 14, color: "#9f9f9f"}}
+                    containerStyle={{padding: 10}}
+                />
+            </View>
+        );
+    };
+    renderTipsLeftIcon = (flag) => {
+        return (
+            flag ?
+                <CheckIconReversed
+                    color={"#29a5ff"}
+                    size={14}
+                />
+                :
+                <CircleIcon
+                    color={"#afafaf"}
+                    size={10}
+                />
+        )
+    };
+    renderButton = () => {
+        let disabled = !this.verifyContent();
+        return (
+            <Button
+                title={"注册并登录"}
+                loading={this.state.loading}
+                disabled={disabled}
+                disabledStyle={{backgroundColor: "#cef5ff"}}
+                disabledTitleStyle={{color: "#fff"}}
+                onPress={() => {this.register()}}
+                containerStyle={{marginTop: 28}}
+            />
+        )
+    };
+    register = () => {
+        this.setState({loading: true});
+        let jwt = this.props.navigation.getParam("jwt");
+        let data = this.buildRegisterData();
+
+        this.registerAsync(data, jwt)
+            .catch(err => {
+                console.log(err);
+            });
+        this.setState({loading: false});
+    };
+    registerAsync = async (data, jwt) => {
+        try {
+            await Api.register(data, jwt);
+            let userInfo = await Api.getSelfDetail(jwt);
+            let openFirePassword = Util.cryptoOnpenFire(userInfo.username, userInfo.password);
+            await OpenFireApi.register({
+                username: userInfo.username,
+                password: openFirePassword,
+                name: `昵称`,
+                email: "",
+                properties: [
+                    {
+                        key: "background",
+                        value: "",
+                    },
+                    {
+                        key: "watermarkSetting",
+                        value: true,
+                    },
+                    {
+                        key: "saveDataSetting",
+                        value: false,
+                    },
+                ]
+            });
+
+            await Dao.saveString("@jwt", jwt);
+            this.props.setUserData({
+                ...userInfo,
+                username: userInfo.username,
+                password: userInfo.password,
+                nickname: "昵称",
+                jwt: jwt,
+            });
+            this.setState({success: true});
+            XmppApi.login(data.username, openFirePassword);
+
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    usernameExists = async (username) => {
+        let data = this.buildRegisterData();
+        let jwt = this.props.navigation.getParam("jwt");
+        try {
+            let res = await Api.register(data, jwt);
+            this.setState({usernameExists: false});
+            return res;
+        } catch (err ) {
+            this.setState({usernameExists: true})
+        }
+    };
+    buildRegisterData = () => {
+        return  {
             username: this.state.username,
             password: this.state.password,
             phone: this.state.phone,
             nickname: this.state.nickname,
         };
-        if (this.state.password !== this.state.confirmPassword) {
-            this.setState({error : true, errorMessage: errors.passwordNotMatch})
-        } else if (this.state.username === "" ||
-            this.state.password.length < 8 ||
-            this.state.phone === "" ||
-            this.state.nickname === "") {
-            this.setState({error: true, errorMessage: errors.incomplete})
-        } else {
-            Api.register(data, jwt)
-                .then( () => {
-                    Api.getSelfDetail(jwt)
-                        .then(data => {
-                            let password = Util.cryptoOnpenFire(data.username, data.password);
-                            XmppApi.register(
-                                data.username,
-                                password,
-                            )
-                                .then(() => {
-                                    this.props.setUser(data);
-                                    this.setState({success: true});
-                                    XmppApi.login(data.username, password);
-                                })
-                                .catch(err => {
-                                    // this is not very sure
-                                    console.log(err)
-                                })
-                        })
-                        .catch(err => {
-                            // this should happen very rare
-                            console.log(err);
-                        });
-                    Dao.saveString("@jwt", jwt)
-                        .catch(err => {
-                            // this should happen very rare
-                            Console.log(err);
-                        });
-                })
-                .catch(err => {
-                    if (err.status === 400){
-                        this.setState({error: true, errorMessage: errors.duplicateUsername})
-                    } else {
-                        this.setState({error: true, errorMessage: errors.networkError})
-                    }
-                })
-        }
     };
+    verifyContent = () => {
+        let usernameRegex = /^[a-zA-Z_-][a-zA-Z0-9_-]{5,20}$/;
+        let usernameStartRegex = /^[a-zA-Z_-]/;
+        let passwordRegex = /^.*((?=.*\d)(?=.*[A-Za-z]))|((?=.*[A-Za-z])(?=.*[!@#$%^&*? ]))|((?=.*\d)(?=.*[!@#$%^&*? ])).*$/;
 
-    render() {
-        return(
-            <View style={styles.container}>
-                <View style={styles.titleStyle}>
-                    <Text style={styles.text}>请填写亲的信息哦～</Text>
-                </View>
-                <View style={styles.formStyle}>
-                    <Input
-                        placeholder={"输入用户名"}
-                        onChangeText={(text) => {this.setState({username: text})}}
-                        value={this.state.username}
-                        textContentType={"username"}
-                        autoCompleteType={"username"}
-                        keyboardType={"email-address"}
-                    />
-                    <Input
-                        placeholder={"输入昵称"}
-                        onChangeText={(text) => {this.setState({nickname: text})}}
-                        value={this.state.nickname}
-                    />
-                    <Input
-                        placeholder={"输入密码"}
-                        onChangeText={(text) => {this.setState({password: text})}}
-                        value={this.state.password}
-                        textContentType={"password"}
-                        autoCompleteType={"password"}
-                        secureTextEntry={true}
-                    />
-                    <Input
-                        placeholder={"确认密码"}
-                        onChangeText={(text) => {this.setState({confirmPassword: text})}}
-                        value={this.state.confirmPassword}
-                        textContentType={"password"}
-                        autoCompleteType={"password"}
-                        secureTextEntry={true}
-                    />
-                    <Input
-                        placeholder={"输入手机号"}
-                        onChangeText={(text) => {this.setState({phone: text})}}
-                        value={this.state.phone}
-                        keyboardType={"phone-pad"}
-                    />
-                </View>
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title={"确定"}
-                        onPress={() => {this.register()}}
-                    />
-                </View>
-                <Overlay
-                    isVisible={this.state.error}
-                >
-                    <View>
-                        <Text>{this.state.errorMessage}</Text>
-                        <Button
-                            title={"确定"}
-                            onPress={() => {this.setState({error: false}) ;NavigationUtil.toPage(null, "Home")}}
-                        />
-                    </View>
-                </Overlay>
-                <Overlay
-                    isVisible={this.state.success}
-                >
-                    <View>
-                        <Text>注册成功</Text>
-                        <Button
-                            title={"确定"}
-                            onPress={() => {this.setState({success: false});NavigationUtil.toPage(null, "Home")}}
-                        />
-                    </View>
-                </Overlay>
-            </View>
-        )
-    }
+        let flag = true;
+        let usernameStartValid, usernamePatternValid,
+            passwordLengthValid, passwordPatternValid;
+
+        if(usernameStartRegex.test(this.state.username)) {
+            usernameStartValid = true;
+        } else {
+            usernameStartValid = false;
+            flag = false;
+        }
+
+        if(usernameRegex.test(this.state.username)) {
+            usernamePatternValid = true;
+        } else {
+            usernamePatternValid = false;
+            flag = false;
+        }
+
+        if (this.state.password.length >= 8 && this.state.password.length <= 16) {
+            passwordLengthValid = true;
+        } else {
+            passwordLengthValid = false;
+            flag = false;
+        }
+
+        if (passwordRegex.test(this.state.password)) {
+            passwordPatternValid = true;
+        } else {
+            passwordPatternValid = false;
+            flag = false;
+        }
+        this.setState({
+            usernamePatternValid,
+            usernameStartValid,
+            passwordLengthValid,
+            passwordPatternValid,
+        });
+        return flag;
+    };
+    goBack = () => {
+
+    };
 }
 
 const mapDispatchToProps = dispatch => ({
@@ -174,6 +347,26 @@ const styles = StyleSheet.create({
     container: {
         flex: 1
     },
-    formStyle: {
-    }
+    headerContainer: {
+        marginTop: 30,
+        width: "100%",
+        marginBottom: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+    },
+    headerLogo: {
+        width: 80,
+        height: 80,
+    },
+
+    formContainer: {
+        padding: 15,
+    },
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        borderBottomWidth: 0.5,
+        borderColor: "#eee",
+    },
 });

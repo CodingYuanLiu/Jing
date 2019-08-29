@@ -9,7 +9,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import DiscoverScreen from "../discover/Discover";
 import MeScreen from "../me/Me";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
+import Register from "../login/Register";
 export default class BottomTab extends React.Component{
     constructor(props) {
         super(props);
@@ -70,7 +70,7 @@ export default class BottomTab extends React.Component{
                         },
                     },
                     Discover: {
-                        screen : DiscoverScreen,
+                        screen : Register,
                         navigationOptions: {
                             tabBarLabel: "发现",
                             tabBarIcon: ({focused, tintColor}) => {

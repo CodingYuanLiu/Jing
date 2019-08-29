@@ -805,6 +805,64 @@ class CircleIcon extends React.PureComponent{
             />)
     }
 }
+class EyeIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+
+        return (
+            <Icon
+                type={"material-community"}
+                name={"eye"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class EyeOffIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+
+        return (
+            <Icon
+                type={"material-community"}
+                name={"eye-off"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+
+class CheckIconReversed extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+
+        return (
+            <Icon
+                type={"material-community"}
+                name={"checkbox-marked-circle"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -836,6 +894,7 @@ export {
     PaperPlaneIcon,
     EditIcon,
     CheckIcon,
+    CheckIconReversed,
     DotIcon,
     ClockIcon,
     CarIcon,
@@ -851,4 +910,6 @@ export {
     BirthdayCakeIcon,
     NumericIcon,
     CircleIcon,
+    EyeIcon,
+    EyeOffIcon,
 }

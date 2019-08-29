@@ -2,8 +2,6 @@ import axios from "axios";
 
 const {client, jid} = require("@xmpp/client");
 const xml = require('@xmpp/xml');
-const basicUri = "202.120.40.8:30256";
-const basicToken = "YWRtaW46MTIzNDU=";
 
 export default class XmppApi {
     static xmpp;
@@ -138,40 +136,36 @@ export default class XmppApi {
     }
 }
 
+const basicUri = "http://202.120.40.8:30256/plugins/restapi/v1";
+const basicToken = "lqynb";
 
 export class OpenFireApi{
-    register = async (username, password, nickname = null, email = null) => {
-        let data = {
-            username: username,
-            password: password,
-        };
-        if (nickname) data.name = nickname;
-        if (email) data.email = email;
+    static register = async (data) => {
 
-        let res = await axios.post(`${basicUri}/plugins/restapi/v1/users`, data, {
+        let res = await axios.post(`${basicUri}/users`, data, {
             headers: {
-                "Authorization": `Basic ${basicToken}`,
+                "Authorization": `${basicToken}`,
             }
         });
         return res.data;
     };
 
-    updateUser = async (username, nickname = null, email = null) => {
+    static updateUser = async (username, nickname = null, email = null) => {
         let data = {
             username,
         };
         if (nickname) data.name = nickname;
         if (email) data.email = email;
 
-        let res = await axios.put(`${basicUri}/plugins/restapi/v1/users/oldUsername`, data, {
+        let res = await axios.put(`${basicUri}/users/oldUsername`, data, {
             headers: {
-                "Authorization": `Basic ${basicToken}`,
+                "Authorization": `${basicToken}`,
             }
         });
         return res.data;
     };
 
-    createChatRoom = async (roomName, naturalName, description, maxUsers, owner) => {
+    static createChatRoom = async (roomName, naturalName, description, maxUsers, owner) => {
         let data =　{
             roomName,
             naturalName,
@@ -189,11 +183,66 @@ export class OpenFireApi{
             }
         };
 
-        let res = await axios.post(`${basicUri}/plugins/restapi/v1/chatrooms`, data, {
+        let res = await axios.post(`${basicUri}/chatrooms`, data, {
             headers: {
-                "Authorization": `Basic ${basicToken}`,
+                "Authorization": `${basicToken}`,
+            }
+        });
+        return res.data;
+    };
+
+    static getChatRoomInfo = async (roomName) => {
+        let res = await axios.get(`${basicUri}/chatrooms/${roomName}`, null, {
+            headers: {
+                "Authorization": `${basicToken}`
+            }
+        });
+        return res.data;
+    };
+
+    static getChatRoomParticipants = async (roomName) => {
+        let res = await axios.get(`${basicUri}/chatrooms/${roomName}/participants`, null, {
+            headers: {
+                "Authorization": `${basicToken}`,
+            }
+        });
+        return res.data;
+    };
+
+    static getChatRoomHistory = async (roomName) => {
+        let res = await axios.get(`${basicUri}/chatrooms/${roomName}/chathistory`, null, {
+            headers: {
+                "Authorization": `${basicToken}`,
+            }
+        });
+        return res.data;
+    };
+
+    static addUserToChatRoom = async (roomName, roles, name) => {
+        let res = await axios.post(`${basicUri}/chatrooms/${roomName}/${roles}/${name}`, null, {
+            headers: {
+                "Authorization": `${basicToken}`,
             }
         });
 
+        return res.data;
     };
+
+    // broadcast message to every user;
+    static broadcastMessage = async () => {
+        let data = {
+            message:'',
+        };
+        let res = await axios.post(`${basicUri}/messages/users`, data, {
+            headers: {
+                "Authorization": `${basicToken}`,
+            }
+        });
+    };
+
+    static sendMessage = async () => {
+
+    };
+
+
 }

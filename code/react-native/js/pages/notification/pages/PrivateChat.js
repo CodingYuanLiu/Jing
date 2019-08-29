@@ -8,6 +8,7 @@ import NavigationUtil from "../../../navigator/NavUtil";
 import {Button} from "react-native-elements";
 import CameraRoll from "@react-native-community/cameraroll";
 import {WINDOW} from "../../../common/constant/Constant";
+import XmppApi, {OpenFireApi} from "../../../api/XmppApi";
 
 
 class PrivateChat extends React.PureComponent{
@@ -496,9 +497,7 @@ class PrivateChat extends React.PureComponent{
     onSend = (props) => {
         let message = this.buildMessage(props);
         console.log(message);
-        this.setState(previousState => ({
-            messages: GiftedChat.append(previousState.messages, message),
-        }));
+        XmppApi.sendMessage(message);
         this.clearMessage();
     };
     buildMessage = (props) => {

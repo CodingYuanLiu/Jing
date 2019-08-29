@@ -403,7 +403,7 @@ class PersonalHome extends React.PureComponent {
     loadData = async (id) => {
         try {
             let data = await Api.getUserInfo(id);
-
+            console.log(data);
             this.setState({user: data});
         } catch (err) {
             console.log(err)
