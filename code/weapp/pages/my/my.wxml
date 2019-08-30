@@ -1,21 +1,27 @@
 <view class="container more">
-    <view class="user flex-wrp" bindtap="handleToLogin" hidden="{{log}}">
-        <view class="avatar flex-item">
-            <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
+    <i-card style="width:98%; margin-top: 15px" bindtap="handleToLogin" title="{{log?userInfo.nickname:'点击登录'}}" extra="额外内容" thumb="{{avatar_src}}">
+        <view slot="content">
+            <!-- <view class="user flex-wrp" bindtap="handleToLogin" hidden="{{log}}">
+                <view class="avatar flex-item">
+                    <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
+                </view>
+                <view class="user-info flex-item">
+                    <text class="userinfo-nickname">点击登录</text>
+                </view>
+            </view>
+            <view class="user flex-wrp" bindtap="handleToUserInfo" hidden="{{!log}}">
+                <view class="avatar flex-item">
+                    <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
+                </view>
+                <view class="user-info flex-item">
+                    <text class="userinfo-nickname">{{userInfo.nickname}}</text>
+                    <text class="edit">查看或编辑个人主页</text>
+                </view>
+            </view> -->
         </view>
-        <view class="user-info flex-item">
-            <text class="userinfo-nickname">点击登录</text>
-        </view>
-    </view>
-    <view class="user flex-wrp" bindtap="handleToUserInfo" hidden="{{!log}}">
-        <view class="avatar flex-item">
-            <image class="userinfo-avatar" src="{{avatar_src}}" background-size="cover"></image>
-        </view>
-        <view class="user-info flex-item">
-            <text class="userinfo-nickname">{{userInfo.nickname}}</text>
-            <text class="edit">查看或编辑个人主页</text>
-        </view>
-    </view>
+        <view slot="footer">尾部内容</view>
+    </i-card>
+
     <i-cell-group style="margin-top: 10px;width: 100vw;">
         <i-cell title="我的活动" is-link url="/pages/my/mypublish/mypublish"></i-cell>
         <i-cell title="正在参与" is-link url="/pages/dashboard/index"></i-cell>
