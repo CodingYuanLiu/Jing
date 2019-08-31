@@ -63,7 +63,7 @@ Page({
                                 })
                             } else if (res.data.message === "Login success") {
                                 app.globalData.jwt = res.data.jwt;
-                                console.log("jwt: "+res.data.jwt)
+                                console.log("jwt: " + res.data.jwt)
                                 console.log(123);
                                 wx.request({
                                     url: 'https://jing855.cn/api/user/status',
@@ -103,9 +103,12 @@ Page({
                                     header: {
                                         "Authorization": "Bearer " + app.globalData.jwt,
                                     },
-                                    success: function (res) {
+                                    success: function(res) {
                                         console.log(res)
                                         app.globalData.following = res.data
+                                        that.setData({
+                                            followingNum: res.data.length
+                                        })
                                     }
                                 })
                                 wx.request({
@@ -114,9 +117,13 @@ Page({
                                     header: {
                                         "Authorization": "Bearer " + app.globalData.jwt,
                                     },
-                                    success: function (res) {
+                                    success: function(res) {
                                         console.log(res)
                                         app.globalData.followers = res.data
+                                        that.setData({
+                                            followerNum: res.data.length
+                                        })
+
                                     }
                                 })
                                 wx.request({
@@ -125,7 +132,7 @@ Page({
                                     header: {
                                         "Authorization": "Bearer " + app.globalData.jwt,
                                     },
-                                    success: function (res) {
+                                    success: function(res) {
                                         console.log(res)
                                         app.globalData.friends = res.data
                                     }
@@ -158,6 +165,13 @@ Page({
                 })
             }
         }
+        wx.getStorage({
+            key: 'history',
+            success: function(res) {
+                let ids = Array.from(new Set(res.data))
+                that.setData({historyNum: ids.length})
+            }
+        })
     },
     handleLogout: function() {
         app.globalData.userInfo = null;
@@ -192,7 +206,7 @@ Page({
             url: '/pages/follow/follow?mode=follower',
         })
     },
-    handleFollowing: function () {
+    handleFollowing: function() {
         wx.navigateTo({
             url: '/pages/follow/follow?mode=following',
         })

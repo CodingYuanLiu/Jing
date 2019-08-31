@@ -2,10 +2,10 @@
     <view class="i-class i-card-header">
         <view class="i-card-header-content">
             <image class="i-card-header-thumb" src="{{ thumb }}" mode="aspectFit" wx:if="{{ thumb }}" />
-            {{ title }}
+            <label style="display: inline-block; margin-left: 13px; font-size: 20px;"> {{ title }}</label>
         </view>
         <view class="i-card-header-extra" wx:if="{{ extra }}">{{ extra }}</view>
     </view>
     <view class="i-class i-card-body"><slot name="content"></slot></view>
-    <view class="i-class i-card-footer"><slot name="footer"></slot></view>
+    <view class="i-class i-card-footer" style="font-size: 15px"><slot name="footer"></slot></view>
 </view>
