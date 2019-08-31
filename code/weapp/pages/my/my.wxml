@@ -1,8 +1,8 @@
 <view class="container more">
-<image style="width: 100%; position: absolute; top: 0" src="/images/mybackground.png"></image>
+    <image style="width: 100%; position: absolute; top: 0" src="/images/mybackground.png"></image>
     <i-card style="width:98%; margin-top: 15px" title="  {{log?userInfo.nickname:'登录即应，体验更多功能'}}" extra="" thumb="{{avatar_src}}" i-class="card-demo">
-        <view slot="content" wx:if="{{log}}">
-            <i-row>
+        <view slot="content" >
+            <i-row wx:if="{{log}}">
                 <i-col span="6" i-class="col-class">
                     我的活动
                     <view style="font-size: 25px">0</view>
@@ -20,8 +20,8 @@
                     <view style="font-size: 25px">{{historyNum}}</view>
                 </i-col>
             </i-row>
+            <view bindtap="handleToLogin" wx:if="{{!log}}">点击登录</view>
         </view>
-        <view slot="footer"  bindtap="handleToLogin" wx:if="{{!log}}">点击登录</view>
     </i-card>
     <!-- <view class="user flex-wrp" bindtap="handleToLogin" hidden="{{log}}">
                 <view class="avatar flex-item">
@@ -44,20 +44,14 @@
         <i-cell title="我的活动" is-link url="/pages/my/mypublish/mypublish"></i-cell>
         <i-cell title="正在参与" is-link url="/pages/dashboard/index"></i-cell>
         <i-cell title="已结束" is-link url="/pages/dashboard/index"></i-cell>
-        <!-- <i-cell title="开关">
-                <switch slot="footer" checked />
-            </i-cell> -->
     </i-cell-group>
-    <i-cell-group style="margin-top: 10px; width: 100vw">
+    <i-cell-group style="margin-top: 10px;margin-bottom: 10px; width: 100vw">
         <i-cell title="客服中心" is-link url="/pages/my/mypublish/mypublish"></i-cell>
         <i-cell title="反馈" is-link url="/pages/dashboard/index"></i-cell>
         <i-cell title="用户满意度调研" is-link url="/pages/dashboard/index"></i-cell>
-        <i-cell title="去评价" is-link url="/pages/dashboard/index"></i-cell>
-        <!-- <i-cell title="开关">
-                <switch slot="footer" checked />
-            </i-cell> -->
+        <!-- <i-cell title="去评价" is-link url="/pages/dashboard/index"></i-cell> -->
     </i-cell-group>
-    <view style="width: 100vw" class="my">
+    <!-- <view style="width: 100vw" class="my"> -->
 
         <!-- <view class="my-item flex-wrp" bindtap="handlePub">
             <view class="myitem-icon flex-item">
@@ -116,8 +110,8 @@
             </view>
         </view> -->
 
-    </view>
-    <view hidden="{{!log}}" style="width: 100%; background: white">
+    <!-- </view> -->
+    <view hidden="{{!log}}" style="width: 100%; background: white; float: bottom">
         <i-button style="width: 100%" type="error" bind:click="handleLogout">退出登录</i-button>
     </view>
     <i-toast id="toast" />
