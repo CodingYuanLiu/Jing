@@ -1,9 +1,10 @@
 import React from "react";
 import {View, Text} from "react-native";
 import { WebView } from 'react-native-webview';
-import NavigationUtil from '../../navigator/NavUtil';
+import {connect} from "react-redux";
 
-export default class JaccountWebView extends React.Component{
+
+class JaccountWebView extends React.Component{
     constructor(props) {
         super(props);
     }
@@ -20,7 +21,7 @@ export default class JaccountWebView extends React.Component{
                 code: code,
                 redirectUri: redirectUri
             };
-            NavigationUtil.toPage(params, "JaccountLoading")
+            this.props.navigation.navigate("JaccountLoading", params);
         }
     };
 
@@ -50,6 +51,11 @@ export default class JaccountWebView extends React.Component{
         )
     }
 }
+const mapStateToProps = state => ({
+    setting: state.setting,
+});
+
+export default connect(mapStateToProps, null)(JaccountWebView);
 
 
 

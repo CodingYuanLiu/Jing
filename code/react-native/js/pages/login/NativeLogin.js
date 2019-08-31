@@ -13,6 +13,9 @@ import Default from "../../common/constant/Constant";
 import Theme from "../../common/constant/Theme";
 import XmppApi from "../../api/XmppApi";
 import Util from "../../common/util";
+import LocalApi from "../../api/LocalApi";
+import SplashScreen from "react-native-splash-screen";
+import {toggleSkipLogin} from "../../actions/setting";
 
 class LoginScreen extends React.PureComponent {
     constructor(props) {
@@ -23,41 +26,46 @@ class LoginScreen extends React.PureComponent {
             isLoading: false,
             isError: false,
             btnDisabled: true,
+            skipLogin: true,
         }
     }
 
-    login = (name, pwd) => {
-        this.setState({isLoading: true});
-        if (name === "" || pwd === "") {
-            this.setState({isLoading: false})
-        }
-        Api.login(name, pwd)
-            .then(jwt => {
-                Dao.saveString("@jwt", jwt)
-                    .then(() => {
-                        Api.getSelfDetail(jwt)
-                            .then(data => {
-                                let password = Util.cryptoOnpenFire(data.username, data.password);
-                                XmppApi.login(data.username, password)
-                                    .then(() => {
-                                        this.props.setUserData(data);
-                                        NavigationUtil.toPage(null,"Home");
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                    })
-                            })
-                    })
-            }).catch(err => {
+    componentDidMount() {
+        LocalApi.getSkipLogin()
+            .then(skipLogin => {
+                console.log(skipLogin, "skiplogin");
                 this.setState({
-                    isLoading: false,
+                    skipLogin: skipLogin,
                 });
-                if (err.status === 400 ) {
-                    ToastAndroid.show(Default.LOGIN_ERROR, ToastAndroid.SHORT)
+                if (skipLogin) {
+                    this.props.navigation.navigate("Home", null);
                 } else {
-                    ToastAndroid.show(Default.UNKNOWN_ERROR_MESSAGE, ToastAndroid.SHORT)
+                    SplashScreen.hide();
+                    this.props.toggleSkipLogin(true);
                 }
-        })
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
+    render() {
+        let header = this.renderHeader();
+        let body = this.renderBody();
+        return (
+            <SafeAreaView style={{flex: 1}}>
+                <View style={styles.container}>
+                    {header}
+                    <View style={styles.title}>
+                        <Text h3>密码登录</Text>
+                    </View>
+                    {body}
+                    <View style={styles.bottom}>
+                        <Text>底部</Text>
+                    </View>
+                </View>
+            </SafeAreaView>
+        )
     };
 
     renderHeader = () => {
@@ -66,7 +74,14 @@ class LoginScreen extends React.PureComponent {
                 <Icon
                     type={"AntDesign"}
                     name={"close"}
-                    onPress={() => {NavigationUtil.toPage(null, "Home")}}
+                    onPress={() => {
+                        if (this.state.skipLogin) {
+                            NavigationUtil.back(this.props);
+                        } else {
+                            console.log(this.props.navigation);
+                            this.props.navigation.navigate("Home", null);
+                        }
+                    }}
                     color={"#a3a3a3"}
                     size={32}
                     iconStyle={styles.headerLeft}
@@ -130,32 +145,14 @@ class LoginScreen extends React.PureComponent {
                 <View style={styles.tips}>
                     <Text
                         style={styles.tipsLeft}
-                        onPress={() => {NavigationUtil.toPage(this.props, "ActDetail")}}
+                        onPress={this.toForgetPassword}
                     >忘记密码？</Text>
                     <Text
                         style={styles.tipsRight}
-                        onPress={() => {NavigationUtil.toPage(this.props, "JaccountLogin")}}
+                        onPress={this.toJaccountLogin}
                     >Jaccount登录</Text>
                 </View>
             </View>
-        )
-    };
-    render() {
-        let header = this.renderHeader();
-        let body = this.renderBody();
-        return (
-            <SafeAreaView style={{flex: 1}}>
-                <View style={styles.container}>
-                    {header}
-                    <View style={styles.title}>
-                        <Text h3>密码登录</Text>
-                    </View>
-                    {body}
-                    <View style={styles.bottom}>
-                        <Text>底部</Text>
-                    </View>
-                </View>
-            </SafeAreaView>
         )
     };
     handleUsername = (username) => {
@@ -174,13 +171,55 @@ class LoginScreen extends React.PureComponent {
             this.setState({btnDisabled: true})
         }
     };
+    toForgetPassword = () => {
+        this.props.navigation.navigate("", null);
+    };
+    toJaccountLogin = () => {
+        this.props.navigation.navigate("JaccountLogin", null );
+    };
+    login = (name, pwd) => {
+        this.setState({isLoading: true});
+        if (name === "" || pwd === "") {
+            this.setState({isLoading: false})
+        }
+        Api.login(name, pwd)
+            .then(jwt => {
+                Dao.saveString("@jwt", jwt)
+                    .then(() => {
+                        Api.getSelfDetail(jwt)
+                            .then(data => {
+                                let password = Util.cryptoOnpenFire(data.username, data.password);
+                                XmppApi.login(data.username, password)
+                                    .then(() => {
+                                        this.props.setUserData(data);
+                                        NavigationUtil.toPage(null,"Home");
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    })
+                            })
+                    })
+            }).catch(err => {
+            this.setState({
+                isLoading: false,
+            });
+            if (err.status === 400 ) {
+                ToastAndroid.show(Default.LOGIN_ERROR, ToastAndroid.SHORT)
+            } else {
+                ToastAndroid.show(Default.UNKNOWN_ERROR_MESSAGE, ToastAndroid.SHORT)
+            }
+        })
+    };
 }
-
+const mapStateToProps = state => ({
+    setting: state.setting,
+});
 const mapDispatchToProps = dispatch => ({
     setUserData: (user) => dispatch(setUserData(user)),
+    toggleSkipLogin: (flag) => dispatch(toggleSkipLogin(flag)),
 });
 
-export default connect(null, mapDispatchToProps)(LoginScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
 
 const styles = StyleSheet.create({
     container: {
@@ -195,7 +234,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     headerLeft: {
-        marginLeft: 20,
+        marginLeft: 15,
     },
     title: {
         marginTop: 40,
@@ -205,7 +244,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     main: {
-        width: "80%",
+        width: "100%",
         alignSelf: "center",
         flex: 4,
     },

@@ -12,6 +12,7 @@ import { createAppContainer } from 'react-navigation';
 import AppNav from './navigator/AppNav';
 import {Provider} from 'react-redux';
 import store from "./store/index"
+import {hasSkipLogin} from "./actions/setting";
 
 export default class App extends React.Component {
     constructor(props) {
@@ -19,7 +20,10 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-
+        console.log(store);
+        console.log(this.props);
+        store.dispatch(hasSkipLogin());
+        //store.dispatch()
     }
     componentWillUnmount() {}
 

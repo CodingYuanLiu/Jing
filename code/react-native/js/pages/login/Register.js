@@ -32,7 +32,6 @@ class RegisterScreen extends React.PureComponent{
 
 
     render() {
-        let header = this.renderHeader();
         let logo = this.renderLogo();
         let usernameInput = this.renderUsernameInput();
         let passwordInput = this.renderPasswordInput();
@@ -47,20 +46,6 @@ class RegisterScreen extends React.PureComponent{
                     {button}
                 </View>
             </View>
-        )
-    };
-    renderHeader = () => {
-        let leftIcon = (
-            <CloseIcon
-                color={"#7a7a7a"}
-                onPress={this.goBack}
-            />
-        );
-        return (
-            <HeaderBar
-                leftButton={leftIcon}
-                style={{backgroundColor: "#fff"}}
-            />
         )
     };
     renderLogo = () => {
@@ -212,7 +197,10 @@ class RegisterScreen extends React.PureComponent{
                 disabled={disabled}
                 disabledStyle={{backgroundColor: "#cef5ff"}}
                 disabledTitleStyle={{color: "#fff"}}
-                onPress={() => {this.register()}}
+                onPress={() => {
+                    this.register();
+                    this.props.navigation.navigate("Home", null);
+                }}
                 containerStyle={{marginTop: 28}}
             />
         )
@@ -331,9 +319,6 @@ class RegisterScreen extends React.PureComponent{
             passwordPatternValid,
         });
         return flag;
-    };
-    goBack = () => {
-
     };
 }
 

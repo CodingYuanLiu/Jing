@@ -2,18 +2,19 @@ import axios from "axios";
 
 const {client, jid} = require("@xmpp/client");
 const xml = require('@xmpp/xml');
-
+const baseOpenFireUri = "ws://202.120.40.8:30256";
 export default class XmppApi {
     static xmpp;
 
     static init(username, password, debug = true) {
         this.xmpp = client(
             {
-                service: "ws://202.120.40.8:30256/ws",
+                service: `${baseOpenFireUri}/ws`,
                 username: username,
                 password: password,
             }
         );
+        console.log(username, password);
         if (debug) {
             this.turnOnDebug();
             this.onError();
@@ -136,10 +137,15 @@ export default class XmppApi {
     }
 }
 
-const basicUri = "http://202.120.40.8:30256/plugins/restapi/v1";
+const basicUri = "http://202.120.40.8:30257/plugins/restapi/v1";
 const basicToken = "lqynb";
 
 export class OpenFireApi{
+    static searchUsers = async(para) => {
+        
+    };
+
+
     static register = async (data) => {
 
         let res = await axios.post(`${basicUri}/users`, data, {
@@ -175,6 +181,7 @@ export class OpenFireApi{
             canAnyoneDiscoverJID: false,
             canOccupantsChangeSubject: false,
             canChangeNickname: false,
+            persistent: true,
             owners: {
                 owner: owner,
             },

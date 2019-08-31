@@ -2,7 +2,6 @@ import {
     createSwitchNavigator,
     createStackNavigator
 } from 'react-navigation';
-import Start from '../pages/start/Start';
 import HomeScreen from '../pages/home/Home';
 import DetailScreen from '../pages/detail/ActDetail';
 import RegisterScreen from "../pages/login/Register";
@@ -25,15 +24,24 @@ import Feedback from "../pages/me/Feedback/Feedback";
 import FeedbackPage from "../pages/me/Feedback/FeedbackPage";
 import PersonalInformation from "../pages/me/PersonalInformation";
 import PrivateChat from "../pages/notification/pages/PrivateChat";
+import NativeLogin from "../pages/login/NativeLogin";
 
 
 const StartNav = createStackNavigator(
     {
         Start: {
-            screen: Start,
-            navigationOptions: {
-                header: null
-            }
+            screen: NativeLogin,
+        },
+        JaccountLogin: {
+            screen: JaccountLoginSwitch,
+        },
+        Register: {
+            screen: RegisterScreen,
+        },
+    },
+    {
+        defaultNavigationOptions: {
+            header: null
         }
     }
 );
@@ -130,6 +138,7 @@ export default createSwitchNavigator(
         },
         navigationOptions: {
             header: null,
+
         }
     }
 )

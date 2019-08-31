@@ -4,7 +4,8 @@ import com.facebook.react.ReactActivity;
 // import com.facebook.react.ReactActivityDelegate;
 // import com.facebook.react.ReactRootView;
 // import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
-
+import android.os.Bundle;
+import org.devio.rn.splashscreen.SplashScreen;
 
 public class MainActivity extends ReactActivity {
 
@@ -18,6 +19,12 @@ public class MainActivity extends ReactActivity {
     protected String getMainComponentName() {
         return "jing";
     }
+
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.show(this, true);  // here
+        super.onCreate(savedInstanceState);
+     }
 /*
     @Override
     protected ReactActivityDelegate createReactActivityDelegate() {

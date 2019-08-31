@@ -1,5 +1,6 @@
 import Util from "../common/util";
 import Dao from "./Dao";
+import awaitAsyncGenerator from "@babel/runtime/helpers/esm/awaitAsyncGenerator";
 
 export default class LocalApi {
     static savePublishDraft = async (item) => {
@@ -202,4 +203,19 @@ export default class LocalApi {
         }
     };
 
+    static getSkipLogin = async () => {
+        try{
+            let res = await Dao.get("@skipLogin");
+            return res === "true";
+        } catch (e) {
+            return false;
+        }
+    };
+    static saveSkipLogin = async (flag) => {
+        try {
+            await Dao.saveString("@skipLogin",flag.toString());
+        } catch (e) {
+            console.log(e);
+        }
+    };
 }

@@ -29,7 +29,11 @@ class JaccountLoadingScreen extends React.PureComponent{
 
                         // status = 12, first login with our app, redirect to register page
                         if (data.status === 12) {
-                            NavigationUtil.toPage({jwt:data.jwt}, "Register")
+                            if (this.props.setting.hasSkippedLogin) {
+                                NavigationUtil.toPage({jwt:data.jwt}, "Register")
+                            } else {
+                                this.props.navigation.navigate("Register", {jwt:data.jwt});
+                            }
                         }
                         // status = 0, login success, redirect to home page
                         else if (data.status === 0) {
@@ -42,7 +46,7 @@ class JaccountLoadingScreen extends React.PureComponent{
                                             this.props.setUserData(Model.transferUserInfo(data));
 
                                             // login ok, redirect to home page
-                                            NavigationUtil.toPage(null,"Home");
+                                            NavigationUtil.toPage({jwt:data.jwt},"Home");
                                         })
                                         .catch(err => {
 
@@ -82,7 +86,9 @@ class JaccountLoadingScreen extends React.PureComponent{
                 <Text style={styles.text}>似乎出了点问题</Text>
                 <Button
                 title={"返回App"}
-                onPress={() => {NavigationUtil.toPage(null, "Home")}}
+                onPress={() => {
+                    this.props.navigation.navigate("Home", null);
+                }}
                 />
             </View>;
         let isError = this.state.error;
@@ -94,11 +100,14 @@ class JaccountLoadingScreen extends React.PureComponent{
     }
 }
 
+const mapStateToProps = state => ({
+    setting: state.setting,
+});
 const mapDispatchToProps = dispatch => ({
     setUserData: user => dispatch(setUserData(user))
 });
 
-export default connect(null, mapDispatchToProps)(JaccountLoadingScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(JaccountLoadingScreen)
 
 const styles= StyleSheet.create({
     container: {
@@ -115,4 +124,4 @@ const styles= StyleSheet.create({
         color: "#0084ff",
         fontSize: 22
     },
-})
+});
