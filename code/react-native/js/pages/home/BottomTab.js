@@ -6,10 +6,9 @@ import NotificationScreen from "../notification/Notification";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PublishScreen from "../publish/Publish";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import DiscoverScreen from "../discover/Discover";
 import MeScreen from "../me/Me";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import Register from "../login/Register";
+import NativeLogin from "../login/NativeLogin";
 export default class BottomTab extends React.Component{
     constructor(props) {
         super(props);
@@ -70,7 +69,7 @@ export default class BottomTab extends React.Component{
                         },
                     },
                     Discover: {
-                        screen : Register,
+                        screen : NativeLogin,
                         navigationOptions: {
                             tabBarLabel: "发现",
                             tabBarIcon: ({focused, tintColor}) => {

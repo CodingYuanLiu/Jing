@@ -29,11 +29,7 @@ class JaccountLoadingScreen extends React.PureComponent{
 
                         // status = 12, first login with our app, redirect to register page
                         if (data.status === 12) {
-                            if (this.props.setting.hasSkippedLogin) {
-                                NavigationUtil.toPage({jwt:data.jwt}, "Register")
-                            } else {
-                                this.props.navigation.navigate("Register", {jwt:data.jwt});
-                            }
+                            this.props.navigation.navigate("Register", {jwt:data.jwt});
                         }
                         // status = 0, login success, redirect to home page
                         else if (data.status === 0) {
@@ -46,7 +42,7 @@ class JaccountLoadingScreen extends React.PureComponent{
                                             this.props.setUserData(Model.transferUserInfo(data));
 
                                             // login ok, redirect to home page
-                                            NavigationUtil.toPage({jwt:data.jwt},"Home");
+                                            this.props.navigation.navigate("Home", {jwt:data.jwt});
                                         })
                                         .catch(err => {
 
@@ -100,14 +96,11 @@ class JaccountLoadingScreen extends React.PureComponent{
     }
 }
 
-const mapStateToProps = state => ({
-    setting: state.setting,
-});
 const mapDispatchToProps = dispatch => ({
     setUserData: user => dispatch(setUserData(user))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(JaccountLoadingScreen)
+export default connect(null, mapDispatchToProps)(JaccountLoadingScreen)
 
 const styles= StyleSheet.create({
     container: {

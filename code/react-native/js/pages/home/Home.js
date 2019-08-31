@@ -34,7 +34,6 @@ class HomeScreen extends React.PureComponent{
     componentDidMount(){
         // Expose outer stack navigation to inner navigation
         NavigationUtil.Navigation = this.props.navigation;
-        console.log(this.props);
 
         this.getStatus();
         SplashScreen.hide();

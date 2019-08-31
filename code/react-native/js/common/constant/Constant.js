@@ -435,6 +435,7 @@ const JOINED = 0;
 const NOT_JOIN = -2;
 const IS_SPONSOR = 1;
 const REJECTED = -3;
+
 export {
     /**
      * activity constants

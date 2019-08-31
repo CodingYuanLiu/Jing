@@ -51,11 +51,8 @@ class JaccountWebView extends React.Component{
         )
     }
 }
-const mapStateToProps = state => ({
-    setting: state.setting,
-});
 
-export default connect(mapStateToProps, null)(JaccountWebView);
+export default connect(null, null)(JaccountWebView);
 
 
 

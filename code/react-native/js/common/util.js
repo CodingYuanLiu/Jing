@@ -64,4 +64,6 @@ export default class Util {
     static actStatusToText = (status) => {
         return "等待加入"
     };
+
+    static SKIP_LOGIN = false;
 }

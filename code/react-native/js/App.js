@@ -9,31 +9,71 @@
 import * as React from "react";
 import { createAppContainer } from 'react-navigation';
 
-import AppNav from './navigator/AppNav';
+import {MainNav, SwitchNav} from './navigator/AppNav';
 import {Provider} from 'react-redux';
 import store from "./store/index"
-import {hasSkipLogin} from "./actions/setting";
+import LocalApi from "./api/LocalApi";
 
 export default class App extends React.Component {
     constructor(props) {
-        super(props)
+        super(props);
+        this.state = {
+            skipLogin: 0,
+        }
     }
 
     componentDidMount() {
-        console.log(store);
-        console.log(this.props);
-        store.dispatch(hasSkipLogin());
-        //store.dispatch()
+        this.judgeSkipLogin();
     }
     componentWillUnmount() {}
 
     render() {
-        const App = createAppContainer(AppNav);
+        const SwitchApp = createAppContainer(SwitchNav);
+        const MainApp = createAppContainer(MainNav);
+        const {skipLogin} = this.state;
+
+        let App;
+        switch (skipLogin) {
+            case 0:
+                App = null;
+                break;
+            case 1:
+                App = <MainApp/>;
+                break;
+            case -1:
+                App = <SwitchApp/>;
+                break;
+            default:
+                App = null;
+        }
         return (
             <Provider store={store}>
-                <App />
+                {App}
             </Provider>
         )
-    }
+    };
+
+    judgeSkipLogin = () => {
+        LocalApi.getSkipLogin()
+            .then(res => {
+                console.log(res);
+                if (res) {
+                    this.setState({
+                        skipLogin: 1,
+                    })
+                } else {
+                    this.setState({
+                        skipLogin: -1,
+                    });
+                    LocalApi.saveSkipLogin(true)
+                        .catch(err => {
+                            console.log(err);
+                        })
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
 }
 

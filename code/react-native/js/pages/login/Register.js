@@ -38,7 +38,6 @@ class RegisterScreen extends React.PureComponent{
         let button = this.renderButton();
         return(
             <View style={styles.container}>
-                {header}
                 {logo}
                 <View style={styles.formContainer}>
                     {usernameInput}
@@ -154,7 +153,6 @@ class RegisterScreen extends React.PureComponent{
                         autoCompleteType={"password"}
                         secureTextEntry={this.state.passwordVisible}
                         style={{flex: 1,fontSize: 20,}}
-                        onFocus={() => {console.log("react")}}
                     />
                     {clearIcon}
                     {rightIcon}

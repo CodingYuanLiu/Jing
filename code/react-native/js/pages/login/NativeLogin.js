@@ -1,8 +1,6 @@
 import React from "react";
-import { View, StyleSheet, ToastAndroid } from "react-native";
-import {Button, Icon, Input, Text} from 'react-native-elements';
-import FontAwesome from "react-native-vector-icons/FontAwesome"
-import Fontisto from "react-native-vector-icons/Fontisto";
+import {View, StyleSheet, ToastAndroid, TextInput} from "react-native";
+import {Button, Image, Text} from 'react-native-elements';
 import { SafeAreaView } from 'react-navigation';
 import NavigationUtil from '../../navigator/NavUtil';
 import Api from "../../api/Api";
@@ -15,7 +13,8 @@ import XmppApi from "../../api/XmppApi";
 import Util from "../../common/util";
 import LocalApi from "../../api/LocalApi";
 import SplashScreen from "react-native-splash-screen";
-import {toggleSkipLogin} from "../../actions/setting";
+import {CloseIcon, EyeIcon, EyeOffIcon} from "../../common/components/Icons";
+import HeaderBar from "../../common/components/HeaderBar";
 
 class LoginScreen extends React.PureComponent {
     constructor(props) {
@@ -24,45 +23,31 @@ class LoginScreen extends React.PureComponent {
             username: "",
             password: "",
             isLoading: false,
-            isError: false,
             btnDisabled: true,
-            skipLogin: true,
+            passwordVisible: true,
         }
     }
 
     componentDidMount() {
-        LocalApi.getSkipLogin()
-            .then(skipLogin => {
-                console.log(skipLogin, "skiplogin");
-                this.setState({
-                    skipLogin: skipLogin,
-                });
-                if (skipLogin) {
-                    this.props.navigation.navigate("Home", null);
-                } else {
-                    SplashScreen.hide();
-                    this.props.toggleSkipLogin(true);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        SplashScreen.hide();
     }
 
     render() {
         let header = this.renderHeader();
-        let body = this.renderBody();
+        let logo = this.renderLogo();
+        let usernameInput = this.renderUsernameInput();
+        let passwordInput = this.renderPasswordInput();
+        let button = this.renderButton();
+        let action = this.renderAction();
         return (
             <SafeAreaView style={{flex: 1}}>
                 <View style={styles.container}>
                     {header}
-                    <View style={styles.title}>
-                        <Text h3>密码登录</Text>
-                    </View>
-                    {body}
-                    <View style={styles.bottom}>
-                        <Text>底部</Text>
-                    </View>
+                    {logo}
+                    {usernameInput}
+                    {passwordInput}
+                    {button}
+                    {action}
                 </View>
             </SafeAreaView>
         )
@@ -70,88 +55,135 @@ class LoginScreen extends React.PureComponent {
 
     renderHeader = () => {
         return (
-            <View style={styles.header}>
-                <Icon
-                    type={"AntDesign"}
-                    name={"close"}
-                    onPress={() => {
-                        if (this.state.skipLogin) {
-                            NavigationUtil.back(this.props);
-                        } else {
-                            console.log(this.props.navigation);
-                            this.props.navigation.navigate("Home", null);
-                        }
-                    }}
-                    color={"#a3a3a3"}
-                    size={32}
-                    iconStyle={styles.headerLeft}
+            <HeaderBar
+                leftButton={
+                    <CloseIcon
+                        onPress={() => {
+                            if (Util.SKIP_LOGIN) {
+                                NavigationUtil.back(this.props);
+                            } else {
+                                this.props.navigation.navigate("Home", null);
+                            }
+                        }}
+                        color={"#7a7a7a"}
+                    />
+                }
+                style={{backgroundColor: "#fff"}}
+            />
+        )
+    };
+    renderLogo = () => {
+        return (
+            <View
+                style={styles.LogoContainer}
+            >
+                <Image
+                    style={{width: 80, height: 80, borderRadius: 4,}}
+                    source={require("../../static/images/logo-white.png")}
                 />
+                <Text style={{fontSize: 22, fontWeight: "bold", color: "#0084ff", marginBottom: 20}}>
+                    密码登录
+                </Text>
             </View>
         )
     };
-    renderBody = () => {
+    renderUsernameInput = () => {
+        let clearIcon = this.state.username !== "" ?
+            <CloseIcon
+                color={"#bfbfbf"}
+                size={18}
+                onPress={() => {this.setState({username: ""})}}
+            /> : null;
         return (
-            <View style={styles.main}>
-                <View style={styles.inputContainer}>
-                    <Input
-                        leftIcon={
-                            <FontAwesome
-                                name={"user"}
-                                size={24}
-                                color={"#d3d3d3"}
-                            />
-                        }
-                        placeholder={"输入用户名"}
-                        textContentType={"username"}
-                        autoCompleteType={"username"}
-                        keyboardType={"email-address"}
-                        onChangeText={(username) => {this.handleUsername(username)}}
-                        value={this.state.username}
-                    />
-                    <Input
-                        leftIcon={
-                            <Fontisto
-                                name={"locked"}
-                                size={24}
-                                color={"#d3d3d3"}
-                            />
-                        }
-                        placeholder={"输入密码"}
-                        textContentType={"password"}
-                        autoCompleteType={"password"}
-                        secureTextEntry={true}
-                        onChangeText={(password) => {
-                            this.handlePassword(password)
-                        }}
-                        value={this.state.password}
-                    />
-                </View>
+            <View style={styles.inputContainer}>
+                <TextInput
+                    placeholder={"用户名"}
+                    onChangeText={this.handleUsername}
+                    value={this.state.username}
+                    autoCompleteType={"username"}
+                    textContentType={"username"}
+                    keyboardType={"email-address"}
+                    style={{flex: 1, fontSize: 18, }}
+                />
+                {clearIcon}
+            </View>
+        )
+    };
+    renderPasswordInput = () => {
+        let rightIcon = this.state.passwordVisible ?
+            <EyeIcon
+                color={"#bfbfbf"}
+                size={18}
+                onPress={() => {
+                    this.setState(
+                        {passwordVisible: false}
+                    )
+                }}
+            />
+            :
+            <EyeOffIcon
+                color={"#bfbfbf"}
+                size={18}
+                onPress={() => {
+                    this.setState(
+                        {passwordVisible: true}
+                    )
+                }}
+            />;
 
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title={"登录"} style={styles.button}
-                        onPress={() => {
-                            const username = this.state.username;
-                            const password = this.state.password;
-                            this.login(username, password)
-                        }}
-                        loading={this.state.isLoading}
-                        disabled={this.state.btnDisabled}
-                        disabledStyle={styles.buttonDisabled}
-                        titleStyle={styles.buttonTitle}
-                        disabledTitleStyle={styles.buttonTitleDisabled}
-                    />
-                </View>
-                <View style={styles.tips}>
-                    <Text
-                        style={styles.tipsLeft}
-                        onPress={this.toForgetPassword}
-                    >忘记密码？</Text>
-                    <Text
-                        style={styles.tipsRight}
-                        onPress={this.toJaccountLogin}
-                    >Jaccount登录</Text>
-                </View>
+        let clearIcon = this.state.password !== "" ?
+            <CloseIcon
+                color={"#bfbfbf"}
+                size={18}
+                onPress={() => {this.setState({password: ""})}}
+                style={{marginRight: 15,}}
+            /> : null;
+        return (
+            <View style={styles.inputContainer}>
+                <TextInput
+                    placeholder={"密码"}
+                    onChangeText={this.handlePassword}
+                    value={this.state.password}
+                    textContentType={"password"}
+                    autoCompleteType={"password"}
+                    secureTextEntry={this.state.passwordVisible}
+                    style={{flex: 1,fontSize: 18,}}
+                />
+                {clearIcon}
+                {rightIcon}
+            </View>
+        )
+    };
+    renderButton = () => {
+        return (
+            <Button
+                title={"登录"}
+                onPress={() => {
+                    const username = this.state.username;
+                    const password = this.state.password;
+                    this.login(username, password)
+                }}
+                loading={this.state.isLoading}
+                disabled={this.state.btnDisabled}
+
+                disabledTitleStyle={{color: "#fff"}}
+                disabledStyle={{backgroundColor: "#bde3ff"}}
+                titleStyle={styles.buttonTitle}
+                containerStyle={styles.buttonContainer}
+            />
+        )
+    };
+    renderAction = () => {
+        return (
+            <View style={styles.actionContainer}>
+                <Text
+                    style={{color: "#0084ff"}}
+                    onPress={this.toForgetPassword}
+                >忘记密码？</Text>
+                <Text
+                    style={{color: "#0084ff"}}
+                    onPress={this.toJaccountLogin}
+                >Jaccount登录</Text>
             </View>
         )
     };
@@ -175,7 +207,7 @@ class LoginScreen extends React.PureComponent {
         this.props.navigation.navigate("", null);
     };
     toJaccountLogin = () => {
-        this.props.navigation.navigate("JaccountLogin", null );
+        this.props.navigation.navigate("JaccountWeb", null );
     };
     login = (name, pwd) => {
         this.setState({isLoading: true});
@@ -200,91 +232,63 @@ class LoginScreen extends React.PureComponent {
                             })
                     })
             }).catch(err => {
-            this.setState({
-                isLoading: false,
-            });
             if (err.status === 400 ) {
                 ToastAndroid.show(Default.LOGIN_ERROR, ToastAndroid.SHORT)
             } else {
                 ToastAndroid.show(Default.UNKNOWN_ERROR_MESSAGE, ToastAndroid.SHORT)
             }
         })
+            .finally(() => {
+                this.setState({
+                    isLoading: false,
+                });
+            })
     };
 }
-const mapStateToProps = state => ({
-    setting: state.setting,
-});
+
 const mapDispatchToProps = dispatch => ({
     setUserData: (user) => dispatch(setUserData(user)),
-    toggleSkipLogin: (flag) => dispatch(toggleSkipLogin(flag)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
+export default connect(null, mapDispatchToProps)(LoginScreen)
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         position: "relative",
     },
-    header: {
-        marginTop:16,
-        height: 48,
-        width: "100%",
-        alignItems: "flex-start",
-        justifyContent: "center",
-    },
-    headerLeft: {
-        marginLeft: 15,
-    },
-    title: {
-        marginTop: 40,
-        height: 28,
-        width: "100%",
-        justifyContent: "center",
+
+    LogoContainer: {
+        marginTop: 10,
+        marginBottom: 10,
         alignItems: "center",
     },
-    main: {
-        width: "100%",
-        alignSelf: "center",
-        flex: 4,
-    },
+
     inputContainer: {
-        marginTop: 22
+        marginLeft: 15,
+        marginRight: 15,
+        marginBottom: 10,
+        borderBottomWidth: 0.5,
+        borderColor: "#eee",
+        flexDirection: "row",
+        alignItems: "center",
     },
-    buttonContainer: {
-        width: "93%",
-        marginTop: 20,
-        marginBottom: 8,
-        alignSelf: "center",
-    },
-    buttonTitle: {
-        color: Theme.WHITE,
-    },
-    button: {
-        flex: 1,
-    },
-    buttonDisabled: {
-        backgroundColor: "#bde3ff",
-    },
-    buttonTitleDisabled: {
-        color: Theme.WHITE,
-    },
-    tips: {
-        alignSelf: "center",
+
+    actionContainer: {
         width: "93%",
         height: 20,
         marginTop: 8,
-        fontSize: 12,
+        marginLeft: 15,
+        marginRight: 15,
         flexDirection: "row",
+        justifyContent: "space-between",
     },
-    tipsLeft: {
-        color: "#0084ff",
-        flex: 1,
+
+    buttonContainer: {
+        marginTop: 20,
+        marginBottom: 8,
+        marginLeft: 15,
+        marginRight: 15,
     },
-    tipsRight: {
-        color: "#0084ff",
-    },
-    bottom: {
-        //flex: 1,
-    }
-})
+
+});

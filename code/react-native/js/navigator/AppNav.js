@@ -7,7 +7,6 @@ import DetailScreen from '../pages/detail/ActDetail';
 import RegisterScreen from "../pages/login/Register";
 import SearchScreen from '../pages/search/Search';
 import PersonalHome from '../pages/me/PersonalHome';
-import {NativeLoginSwitch, JaccountLoginSwitch }from "../pages/login/LoginSwitch"
 import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
 import ChatRoom from "../pages/notification/pages/ChatRoom";
@@ -25,29 +24,10 @@ import FeedbackPage from "../pages/me/Feedback/FeedbackPage";
 import PersonalInformation from "../pages/me/PersonalInformation";
 import PrivateChat from "../pages/notification/pages/PrivateChat";
 import NativeLogin from "../pages/login/NativeLogin";
+import JaccountLoading from "../pages/login/JaccountLoading";
+import JaccountWebView from "../pages/login/JaccountWebView";
 
-
-const StartNav = createStackNavigator(
-    {
-        Start: {
-            screen: NativeLogin,
-        },
-        JaccountLogin: {
-            screen: JaccountLoginSwitch,
-        },
-        Register: {
-            screen: RegisterScreen,
-        },
-    },
-    {
-        defaultNavigationOptions: {
-            header: null
-        }
-    }
-);
-
-
-const MainNav = createStackNavigator(
+export const MainNav = createStackNavigator(
     {
         Home: {
             screen: HomeScreen,
@@ -56,10 +36,13 @@ const MainNav = createStackNavigator(
             screen: DetailScreen,
         },
         NativeLogin: {
-            screen: NativeLoginSwitch,
+            screen: NativeLogin,
         },
-        JaccountLogin: {
-            screen: JaccountLoginSwitch,
+        JaccountLoading: {
+            screen: JaccountLoading,
+        },
+        JaccountWeb: {
+            screen: JaccountWebView,
         },
         Register: {
             screen: RegisterScreen,
@@ -125,14 +108,34 @@ const MainNav = createStackNavigator(
         }
     }
 );
-
-export default createSwitchNavigator(
+const LoginNav = createStackNavigator(
     {
-        Start: StartNav,
+        NativeLogin: {
+            screen: NativeLogin,
+        },
+        JaccountWeb: {
+            screen: JaccountWebView,
+        },
+        JaccountLoading: {
+            screen: JaccountLoading,
+        },
+        Register: {
+            screen: RegisterScreen,
+        },
+    },
+    {
+        defaultNavigationOptions: {
+            header: null
+        }
+    }
+);
+export const SwitchNav =  createSwitchNavigator(
+    {
+        LoginSwitch: LoginNav,
         Main: MainNav,
     },
     {
-        initialRouteName: "Start",
+        initialRouteName: "LoginSwitch",
         defaultNavigationOptions: {
             header: null,
         },
@@ -141,4 +144,4 @@ export default createSwitchNavigator(
 
         }
     }
-)
+);
