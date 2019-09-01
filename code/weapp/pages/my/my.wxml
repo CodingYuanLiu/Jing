@@ -1,6 +1,6 @@
 <view class="container more">
     <image style="width: 100%; position: absolute; top: 0" src="/images/mybackground.png"></image>
-    <i-card style="width:98%; margin-top: 15px" title="  {{log?userInfo.nickname:'登录即应，体验更多功能'}}" extra="" thumb="{{avatar_src}}" i-class="card-demo">
+    <i-card style="width:98vw; margin-top: 15px" title="  {{log?userInfo.nickname:'登录即应，体验更多功能'}}" extra="" thumb="{{avatar_src}}" i-class="card-demo">
         <view slot="content" >
             <i-row wx:if="{{log}}">
                 <i-col span="6" i-class="col-class">
@@ -38,7 +38,7 @@
                 <view class="user-info flex-item">
                     <text class="userinfo-nickname">{{userInfo.nickname}}</text>
                     <text class="edit">查看或编辑个人主页</text>
-                </view>
+                </view>s
             </view> -->
     <i-cell-group style="margin-top: 10px;width: 100vw;">
         <i-cell title="我的活动" is-link url="/pages/my/mypublish/mypublish"></i-cell>
