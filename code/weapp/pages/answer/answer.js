@@ -387,7 +387,7 @@ Page({
         let id = event.currentTarget.dataset.id;
         console.log(id);
         wx.navigateTo({
-            url: '/pages/showuserinfo/showuserinfo?id=' + id,
+            url: '/pages/showUserinfo/showUserinfo?id=' + id,
         })
     },
     handleToRoutine: function() {
@@ -396,7 +396,7 @@ Page({
         let center_la = (this.data.content.origin.latitude + this.data.content.destination.latitude) / 2
         let center_lo = (this.data.content.origin.longitude + this.data.content.destination.longitude) / 2
         wx.navigateTo({
-            url: '/pages/showroutine/showroutine?ori=' + origin + "&dest=" + dest + "&latitude=" + center_la + "&longitude=" + center_lo,
+            url: '/pages/showRoutine/showRoutine?ori=' + origin + "&dest=" + dest + "&latitude=" + center_la + "&longitude=" + center_lo,
             success: function(res) {},
             fail: function(res) {},
             complete: function(res) {},

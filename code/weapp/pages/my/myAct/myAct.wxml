@@ -1,0 +1,112 @@
+<!--pages/my/myact/myact.wxml-->
+<!-- <text>pages/my/myact/myact.wxml</text> -->
+<i-tabs current="{{ current }}" color="#2A8CE5" bindchange="handleChange">
+    <i-tab key="tab1" title="我发布的"></i-tab>
+    <i-tab key="tab2" title="我参与的"></i-tab>
+</i-tabs>
+<view hidden="{{current==='tab2'}}">
+    <!--pages/my/mypublish/mypublish.wxml-->
+    <view hidden="{{!no_content_p}}"> 暂无 </view>
+    <scroll-view scroll-y="true" class="container discovery">
+        <view class="ctnt0">
+            <block wx:for="{{acts_p}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+                <view class="feed-item">
+                    <view class="feed-source">
+                        <a class="">
+                            <!-- <view class="avatar">
+                            <image src="{{item.feed_source_img}}"></image>
+                        </view> -->
+                            <!-- <text>{{item.feed_source_name}} · </text> -->
+                            <text>{{item.sponsor_username}} · {{item.type}} · </text>
+                            <text>{{item.create_time}}</text>
+                        </a>
+                    </view>
+                    <view class="feed-content">
+                        <view class="question" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                            <a class="question-link">
+                                <text>【{{item.type}}】 {{item.title}}</text>
+                            </a>
+                        </view>
+                        <view class="answer-body">
+                            <view data-id="{{act_id}}" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                                <text class="answer-txt" aid="{{act_id}}">{{item.description}}</text>
+                            </view>
+                            <!-- <view>
+                            <image src="{{item.feed_img}}"></image>
+                        </view> -->
+                            <view class="answer-actions">
+                                <view class="like dot">
+                                    <a>👍 {{item.good_num}} </a>
+                                </view>
+                                <view class="comments dot">
+                                    <a>{{item.comments.length}} 评论 </a>
+                                </view>
+                                <!-- <view class="follow-it">
+                                <a>{{item.comment_num}} 关注</a>
+                            </view> -->
+                                <label style="width: 19vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleParticipants" data-id="{{item.act_id}}">查看参与者</label>
+                                <label wx:if="{{item.status!==2}}" style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleModify" data-mode="{{item.type}}" data-id="{{item.act_id}}">修改</label>
+
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </block>
+        </view>
+    </scroll-view>
+</view>
+<view  hidden="{{current==='tab1'}}">
+    <!--pages/my/myjoin/myjoin.wxml-->
+    <i-toast id="toast" />
+    <view hidden="{{!no_content}}"> 暂无 </view>
+    <i-modal title="标题" visible="{{ visible }}" bind:ok="handleConfirmQuit" bind:cancel="handleCancelQuit">
+        <view>确定退出吗？会对您的评级有影响哦</view>
+    </i-modal>
+    <scroll-view scroll-y="true" class="container discovery">
+        <view class="ctnt0">
+            <block wx:for="{{acts}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+                <view class="feed-item">
+                    <view class="feed-source">
+                        <a class="">
+                            <!-- <view class="avatar">
+                            <image src="{{item.feed_source_img}}"></image>
+                        </view> -->
+                            <!-- <text>{{item.feed_source_name}} · </text> -->
+                            <text>{{item.sponsor_username}} · {{item.type}} · </text>
+                            <text>{{item.create_time}}</text>
+                        </a>
+
+                    </view>
+                    <view class="feed-content">
+                        <view class="question" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                            <a class="question-link">
+                                <text>【{{item.type}}】 {{item.title}}</text>
+                            </a>
+                        </view>
+                        <view class="answer-body">
+                            <view data-id="{{act_id}}" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                                <text class="answer-txt" aid="{{act_id}}">{{item.description}}</text>
+                            </view>
+                            <!-- <view>
+                            <image src="{{item.feed_img}}"></image>
+                        </view> -->
+                            <view class="answer-actions">
+                                <view class="like dot">
+                                    <a>👍 {{item.good_num}} </a>
+                                </view>
+                                <view class="comments dot">
+                                    <a>{{item.comments.length}} 评论 </a>
+                                </view>
+                                <!-- <view class="follow-it">
+                                <a>{{item.comment_num}} 关注</a>
+                            </view> -->
+                                <label wx:if="{{item.status===2}}" style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleFeedback" data-id="{{item.act_id}}">评价</label>
+                                <label style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleQuit" data-id="{{item.act_id}}">退出</label>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </block>
+        </view>
+    </scroll-view>
+</view>

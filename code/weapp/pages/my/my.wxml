@@ -3,9 +3,9 @@
     <i-card style="width:98vw; margin-top: 15px" title="  {{log?userInfo.nickname:'登录即应，体验更多功能'}}" extra="" thumb="{{avatar_src}}" i-class="card-demo">
         <view slot="content" >
             <i-row wx:if="{{log}}">
-                <i-col span="6" i-class="col-class">
+                <i-col span="6" i-class="col-class" bindtap="handleMyAct">
                     我的活动
-                    <view style="font-size: 25px">0</view>
+                    <view style="font-size: 25px">{{myActCount}}</view>
                 </i-col>
                 <i-col span="6" i-class="col-class" bindtap="handleFollowing">
                     关注
@@ -41,14 +41,14 @@
                 </view>s
             </view> -->
     <i-cell-group style="margin-top: 10px;width: 100vw;">
-        <i-cell title="我的活动" is-link url="/pages/my/mypublish/mypublish"></i-cell>
-        <i-cell title="正在参与" is-link url="/pages/dashboard/index"></i-cell>
-        <i-cell title="已结束" is-link url="/pages/dashboard/index"></i-cell>
+        <i-cell title="我的活动" is-link url="/pages/my/myAct/myAct"></i-cell>
+        <i-cell title="正在参与" is-link url="/pages/my/currentAct/currentAct"></i-cell>
+        <i-cell title="已结束" is-link url="/pages/my/endedAct/endedAct"></i-cell>
     </i-cell-group>
     <i-cell-group style="margin-top: 10px;margin-bottom: 10px; width: 100vw">
-        <i-cell title="客服中心" is-link url="/pages/my/mypublish/mypublish"></i-cell>
-        <i-cell title="反馈" is-link url="/pages/dashboard/index"></i-cell>
-        <i-cell title="用户满意度调研" is-link url="/pages/dashboard/index"></i-cell>
+        <i-cell title="客服中心" is-link url=""></i-cell>
+        <i-cell title="反馈" is-link url=""></i-cell>
+        <i-cell title="用户满意度调研" is-link url=""></i-cell>
         <!-- <i-cell title="去评价" is-link url="/pages/dashboard/index"></i-cell> -->
     </i-cell-group>
     <!-- <view style="width: 100vw" class="my"> -->

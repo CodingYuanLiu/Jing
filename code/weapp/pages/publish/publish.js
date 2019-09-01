@@ -97,22 +97,22 @@ Page({
         let idx = e.currentTarget.dataset.idx;
         if (idx === 0)
             wx.navigateTo({
-                url: '/pages/newact/newact?mode=takeout',
+                url: '/pages/newAct/newAct?mode=takeout',
             })
         else
         if (idx === 1)
             wx.navigateTo({
-                url: '/pages/newact/newact?mode=taxi',
+                url: '/pages/newAct/newAct?mode=taxi',
             })
         else
         if (idx === 2)
             wx.navigateTo({
-                url: '/pages/newact/newact?mode=order',
+                url: '/pages/newAct/newAct?mode=order',
             })
         else
         if (idx === 3)
             wx.navigateTo({
-                url: '/pages/newact/newact?mode=other',
+                url: '/pages/newAct/newAct?mode=other',
             })
 
     }

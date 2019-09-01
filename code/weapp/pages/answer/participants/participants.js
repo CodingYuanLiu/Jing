@@ -29,7 +29,7 @@ Page({
         let id = event.currentTarget.dataset.id;
         console.log(id);
         wx.navigateTo({
-            url: '/pages/showuserinfo/showuserinfo?id=' + id,
+            url: '/pages/showUserinfo/showUserinfo?id=' + id,
         })
     },
    
