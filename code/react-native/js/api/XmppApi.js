@@ -249,7 +249,5 @@ export class OpenFireApi{
 
     static sendMessage = async () => {
 
-    };
-
-
+    }
 }

@@ -73,7 +73,7 @@ const LoginWithJaccount =
         name={"alpha-j"}
         reverse
         color={"#5c9eff"}
-        onPress={() => {NavigationUtil.toPage(null, "JaccountLogin")}}
+        onPress={() => {NavigationUtil.toPage(null, "JaccountWeb")}}
     />;
 OfflineUserCard.defaultProps = {
     title: "登录即应，体验更多功能",

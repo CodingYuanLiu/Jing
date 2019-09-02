@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text, ScrollView, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Animated} from "react-native";
-import ParallaxScrollView from "react-native-parallax-scroll-view";
+import ParallaxScrollView from "../../common/components/ParallaxScrollView/index";
 import {ArrowLeftIcon, ChevronIcon, MessageOneToOneIcon, PlusIcon} from "../../common/components/Icons";
 import NavigationUtil from "../../navigator/NavUtil";
 import Util from "../../common/util";
@@ -83,7 +83,7 @@ class PersonalHome extends React.PureComponent {
                 contentContainerStyle={styles.contentContainer}
                 backgroundColor={"transparent"}
                 renderScrollComponent={this.renderScrollElement}
-                scrollEventListener={this.toggleNestScroll}
+                scrollEvent={this.toggleNestScroll}
             >
 
                 <View style={styles.container}>
