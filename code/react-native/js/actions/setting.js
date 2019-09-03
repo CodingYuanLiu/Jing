@@ -1,5 +1,4 @@
 import {
-    HAS_SKIPPED_LOGIN,
     TOGGLE_FIND_BY_PHONE_SETTING,
     TOGGLE_SAVE_DATA_SETTING,
     TOGGLE_WATERMARK_SETTING
@@ -76,42 +75,6 @@ const onLoadSettings = () => {
               })
     };
 };
-const hasSkipLogin = () => {
-    return dispatch => {
-        LocalApi.getSkipLogin()
-            .then(hasSkipLogin => {
-                dispatch({
-                    type: HAS_SKIPPED_LOGIN,
-                    flag: hasSkipLogin,
-                })
-            })
-            .catch(err => {
-                console.log(err);
-                dispatch({
-                    type: HAS_SKIPPED_LOGIN,
-                    flag: false,
-                })
-            })
-    };
-};
-const toggleSkipLogin = (flag) => {
-    return dispatch => {
-        LocalApi.saveSkipLogin(flag)
-            .then(() => {
-                dispatch({
-                    type: HAS_SKIPPED_LOGIN,
-                    flag: flag,
-                })
-            })
-            .catch(err => {
-                console.log(err);
-                dispatch({
-                    type: HAS_SKIPPED_LOGIN,
-                    flag: false,
-                })
-            })
-    };
-};
 const saveDefaultSetting = async () => {
     await LocalApi.saveFindByPhoneSetting(false);
     await LocalApi.saveSaveDataSetting(false);
@@ -130,6 +93,4 @@ export {
     toggleSaveDataSetting,
     toggleWaterMarkSetting,
     onLoadSettings,
-    hasSkipLogin,
-    toggleSkipLogin,
 }

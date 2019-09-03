@@ -26,6 +26,7 @@ import PrivateChat from "../pages/notification/pages/PrivateChat";
 import NativeLogin from "../pages/login/NativeLogin";
 import JaccountLoading from "../pages/login/JaccountLoading";
 import JaccountWebView from "../pages/login/JaccountWebView";
+import {LOGIN_STATUS} from "../common/constant/Constant";
 
 export const MainNav = createStackNavigator(
     {
@@ -108,30 +109,52 @@ export const MainNav = createStackNavigator(
         }
     }
 );
-const LoginNav = createStackNavigator(
+const LoginNav = (status) => {
+    return createStackNavigator(
+        {
+            NativeLogin: {
+                screen: NativeLogin,
+            },
+            JaccountWeb: {
+                screen: JaccountWebView,
+            },
+            JaccountLoading: {
+                screen: JaccountLoading,
+            },
+            Register: {
+                screen: RegisterScreen,
+            },
+        },
+        {
+            defaultNavigationOptions: {
+                header: null
+            },
+            initialRouteName: status === LOGIN_STATUS.FIRST_LOGIN ?
+                "NativeLogin" : status === LOGIN_STATUS.USERNAME_EMPTY ?
+                    "Register" : "NativeLogin",
+        }
+    );
+};
+export const FirstLoginNav =  createSwitchNavigator(
     {
-        NativeLogin: {
-            screen: NativeLogin,
-        },
-        JaccountWeb: {
-            screen: JaccountWebView,
-        },
-        JaccountLoading: {
-            screen: JaccountLoading,
-        },
-        Register: {
-            screen: RegisterScreen,
-        },
+        LoginSwitch: LoginNav(LOGIN_STATUS.FIRST_LOGIN),
+        Main: MainNav,
     },
     {
+        initialRouteName: "LoginSwitch",
         defaultNavigationOptions: {
-            header: null
+            header: null,
+        },
+        navigationOptions: {
+            header: null,
+
         }
     }
 );
-export const SwitchNav =  createSwitchNavigator(
+
+export const UsernameEmptyNav =  createSwitchNavigator(
     {
-        LoginSwitch: LoginNav,
+        LoginSwitch: LoginNav(LOGIN_STATUS.USERNAME_EMPTY),
         Main: MainNav,
     },
     {

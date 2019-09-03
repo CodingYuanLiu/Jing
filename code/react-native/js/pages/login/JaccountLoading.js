@@ -1,14 +1,20 @@
 import React from "react"
 import { View, Text, StyleSheet } from 'react-native';
-import {Button, Image} from "react-native-elements"
+import {Button} from "react-native-elements"
 import Api from '../../api/Api';
 import {setUserData} from '../../actions/currentUser';
 import {connect} from 'react-redux';
 import Dao from '../../api/Dao';
-import NavigationUtil from '../../navigator/NavUtil';
 import XmppApi from "../../api/XmppApi";
-import Util from "../../common/util";
 import Model from "../../api/Model";
+import {LOGIN_STATUS} from "../../common/constant/Constant";
+import store from "../../store";
+import {onGetCurrentUserFollower} from "../../actions/currentUserFollower";
+import {onGetCurrentUserFollowing} from "../../actions/currentUserFollowing";
+import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
+import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
+import {onLoadSettings} from "../../actions/setting";
+
 
 class JaccountLoadingScreen extends React.PureComponent{
     constructor(props) {
@@ -19,50 +25,11 @@ class JaccountLoadingScreen extends React.PureComponent{
     }
 
     componentDidMount() {
-        const code = this.props.navigation.getParam("code");
-        const redirectUri = this.props.navigation.getParam("redirectUri");
-
-        Api.loginWithJaccount(code, redirectUri)
-            .then(data => {
-                Dao.saveString("@jwt", data.jwt)
-                    .then(() => {
-
-                        // status = 12, first login with our app, redirect to register page
-                        if (data.status === 12) {
-                            this.props.navigation.navigate("Register", {jwt:data.jwt});
-                        }
-                        // status = 0, login success, redirect to home page
-                        else if (data.status === 0) {
-                            Api.getSelfDetail(data.jwt)
-                                .then(user => {
-                                    // xmpp password, crypt with username and password
-                                    let password = Util.cryptoOnpenFire(user.username, user.password);
-                                    XmppApi.login(user.username, password)
-                                        .then(() => {
-                                            this.props.setUserData(Model.transferUserInfo(data));
-
-                                            // login ok, redirect to home page
-                                            this.props.navigation.navigate("Home", {jwt:data.jwt});
-                                        })
-                                        .catch(err => {
-
-                                            // login fail, should display error message
-                                            console.log(err);
-                                        });
-                                })
-                        } else {
-                            // this should not happen
-                            console.log(new Error("login status is not 0 or 12"));
-                        }
-                    })
-                    .catch(err => {
-                        err.message = "save jwt fail";
-                        console.log(err);
-                    })
-            })
+        let  code = this.props.navigation.getParam("code");
+        let redirectUri = this.props.navigation.getParam("redirectUri");
+        this.login(code, redirectUri)
             .catch(err => {
-                err.message = "jaccount login fail";
-                this.setState({error:true})
+                console.log(err);
             })
     }
 
@@ -93,11 +60,36 @@ class JaccountLoadingScreen extends React.PureComponent{
                 {isError ? renderError : renderLoading}
             </View>
         )
-    }
+    };
+
+    login = async (code, redirectUri) => {
+        let loginRes = await Api.loginWithJaccount(code, redirectUri);
+        await Dao.saveString("@jwt", loginRes.jwt);
+
+        if (loginRes.status === LOGIN_STATUS.NEW_USER_IN_APP) {
+            this.props.navigation.navigate("Register", {jwt:loginRes.jwt});
+        }
+
+        else if (loginRes.status === LOGIN_STATUS.LOGGED) {
+            let data = await Api.getSelfDetail(loginRes.jwt);
+            await XmppApi.login(data);
+            await XmppApi.onStanza(store);
+            store.dispatch(onGetCurrentUserFollower(data.jwt));
+            store.dispatch(onGetCurrentUserFollowing(data.jwt));
+            store.dispatch(onGetCurrentUserManageAct(data.jwt));
+            store.dispatch(onGetCurrentUserJoinAct(data.jwt));
+            store.dispatch(setUserData(data));
+            store.dispatch(onLoadSettings());
+
+            this.props.navigation.navigate("Home", {jwt:data.jwt});
+        } else {
+            console.log(loginRes.status);
+        }
+    };
 }
 
 const mapDispatchToProps = dispatch => ({
-    setUserData: user => dispatch(setUserData(user))
+    setUserData: user => dispatch(setUserData(user)),
 });
 
 export default connect(null, mapDispatchToProps)(JaccountLoadingScreen)

@@ -1,5 +1,4 @@
 import {
-    HAS_SKIPPED_LOGIN,
     TOGGLE_FIND_BY_PHONE_SETTING,
     TOGGLE_SAVE_DATA_SETTING,
     TOGGLE_WATERMARK_SETTING
@@ -26,11 +25,6 @@ const setting = (state = initialState, action) => {
             return {
                 ...state,
                 saveDataActive: action.flag,
-            };
-        case HAS_SKIPPED_LOGIN:
-            return {
-                ...state,
-                hasSkippedLogin: action.flag,
             };
         default :
             return state;

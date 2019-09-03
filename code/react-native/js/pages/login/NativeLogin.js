@@ -8,13 +8,16 @@ import Dao from "../../api/Dao"
 import {setUserData} from '../../actions/currentUser';
 import {connect} from "react-redux";
 import Default from "../../common/constant/Constant";
-import Theme from "../../common/constant/Theme";
 import XmppApi from "../../api/XmppApi";
 import Util from "../../common/util";
-import LocalApi from "../../api/LocalApi";
-import SplashScreen from "react-native-splash-screen";
 import {CloseIcon, EyeIcon, EyeOffIcon} from "../../common/components/Icons";
 import HeaderBar from "../../common/components/HeaderBar";
+import store from "../../store";
+import {onGetCurrentUserFollower} from "../../actions/currentUserFollower";
+import {onGetCurrentUserFollowing} from "../../actions/currentUserFollowing";
+import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
+import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
+import {onLoadSettings} from "../../actions/setting";
 
 class LoginScreen extends React.PureComponent {
     constructor(props) {
@@ -26,10 +29,6 @@ class LoginScreen extends React.PureComponent {
             btnDisabled: true,
             passwordVisible: true,
         }
-    }
-
-    componentDidMount() {
-        SplashScreen.hide();
     }
 
     render() {
@@ -209,40 +208,38 @@ class LoginScreen extends React.PureComponent {
     toJaccountLogin = () => {
         this.props.navigation.navigate("JaccountWeb", null );
     };
-    login = (name, pwd) => {
+    login = async (name, pwd) => {
         this.setState({isLoading: true});
         if (name === "" || pwd === "") {
             this.setState({isLoading: false})
         }
-        Api.login(name, pwd)
-            .then(jwt => {
-                Dao.saveString("@jwt", jwt)
-                    .then(() => {
-                        Api.getSelfDetail(jwt)
-                            .then(data => {
-                                let password = Util.cryptoOnpenFire(data.username, data.password);
-                                XmppApi.login(data.username, password)
-                                    .then(() => {
-                                        this.props.setUserData(data);
-                                        NavigationUtil.toPage(null,"Home");
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                    })
-                            })
-                    })
-            }).catch(err => {
+
+        try {
+            let jwt = await Api.login(name, pwd);
+            await Dao.saveString("@jwt", jwt);
+            let data = await Api.getSelfDetail(jwt);
+            await XmppApi.login(data);
+            await XmppApi.onStanza(store);
+
+            store.dispatch(onGetCurrentUserFollower(data.jwt));
+            store.dispatch(onGetCurrentUserFollowing(data.jwt));
+            store.dispatch(onGetCurrentUserManageAct(data.jwt));
+            store.dispatch(onGetCurrentUserJoinAct(data.jwt));
+            store.dispatch(setUserData(data));
+            store.dispatch(onLoadSettings());
+
+            this.props.navigation.navigate("Home", null);
+        }
+        catch (err) {
             if (err.status === 400 ) {
                 ToastAndroid.show(Default.LOGIN_ERROR, ToastAndroid.SHORT)
             } else {
                 ToastAndroid.show(Default.UNKNOWN_ERROR_MESSAGE, ToastAndroid.SHORT)
             }
-        })
-            .finally(() => {
-                this.setState({
-                    isLoading: false,
-                });
-            })
+        }
+        this.setState({
+            isLoading: false,
+        });
     };
 }
 

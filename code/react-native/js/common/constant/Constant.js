@@ -436,6 +436,22 @@ const NOT_JOIN = -2;
 const IS_SPONSOR = 1;
 const REJECTED = -3;
 
+
+const PRESENCE = {
+    BUSY: "忙碌",
+    ONLINE: "在线",
+    LEAVE: "离开",
+};
+
+const LOGIN_STATUS = {
+    OFFLINE: -2,
+    WAITING: -1,
+    LOGGED: 0,
+    FIRST_LOGIN: 1,
+    USERNAME_EMPTY: 2,
+    NEW_USER_IN_APP: 12,
+};
+
 export {
     /**
      * activity constants
@@ -468,5 +484,11 @@ export {
     JOINED,
     NOT_JOIN,
     IS_SPONSOR,
-    REJECTED
+    REJECTED,
+
+    LOGIN_STATUS,
+
+
+    PRESENCE,
+
 }

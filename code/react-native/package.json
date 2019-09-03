@@ -20,6 +20,7 @@
     "react": "16.8.6",
     "react-native": "0.60.0",
     "react-native-amap3d": "^1.1.1",
+    "react-native-device-info": "^2.3.2",
     "react-native-elements": "^1.1.0",
     "react-native-fast-image": "^7.0.2",
     "react-native-fs": "^2.14.1",

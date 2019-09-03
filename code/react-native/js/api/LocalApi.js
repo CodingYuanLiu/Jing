@@ -203,18 +203,34 @@ export default class LocalApi {
         }
     };
 
-    static getSkipLogin = async () => {
+    static getFirstLogin = async () => {
         try{
-            let res = await Dao.get("@skipLogin");
+            let res = await Dao.get("@isFirstLogin");
             return res === "true";
         } catch (e) {
-            return false;
+            return true;
         }
     };
-    static saveSkipLogin = async (flag) => {
+    static saveFirstLogin = async (flag) => {
         try {
-            await Dao.saveString("@skipLogin",flag.toString());
+            await Dao.saveString("@isFirstLogin",flag.toString());
         } catch (e) {
+            console.log(e);
+        }
+    };
+
+    static getToken = async () => {
+        try {
+            return await Dao.get("@jwt");
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    static saveToken = async (token) => {
+        try {
+            await Dao.saveString("@jwt", token);
+        }catch (e) {
             console.log(e);
         }
     };

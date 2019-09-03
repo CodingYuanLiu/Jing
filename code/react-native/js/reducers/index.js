@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import currentAct from "./currentAct";
-import xmpp from "./xmpp";
 import recommendAct from "./recommendAct";
 import myAct from "./myAct";
 import typeAct from "./typeAct";
@@ -13,6 +12,8 @@ import currentUserJoin from "./currentUserJoin";
 import currentUserManage from "./currentUserManage";
 import setting from "./setting";
 import personalHome from "./personalHome";
+import chatRoom from "./chatRoom";
+import privateMessage from "./privateMessage";
 
 export default combineReducers({
     currentAct,
@@ -28,6 +29,7 @@ export default combineReducers({
     recommendAct,
     typeAct,
     setting,
-    xmpp,
+    chatRoom,
+    privateMessage,
 })
 

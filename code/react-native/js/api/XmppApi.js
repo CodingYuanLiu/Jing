@@ -1,15 +1,23 @@
 import axios from "axios";
+import {PRESENCE} from "../common/constant/Constant";
+import DeviceInfo from "react-native-device-info";
+import Util from "../common/util";
+
 
 const {client, jid} = require("@xmpp/client");
 const xml = require('@xmpp/xml');
 const baseOpenFireUri = "ws://202.120.40.8:30256";
+
+
 export default class XmppApi {
     static xmpp;
 
     static init(username, password, debug = true) {
+        this.getResource().catch();
         this.xmpp = client(
             {
                 service: `${baseOpenFireUri}/ws`,
+                resource: DeviceInfo.getDeviceName(),
                 username: username,
                 password: password,
             }
@@ -22,6 +30,48 @@ export default class XmppApi {
             this.onOnline();
 
         }
+    };
+
+    static getResource = async () => {
+        console.log(await DeviceInfo.getDeviceName());
+        console.log(await DeviceInfo.getDevice());
+        console.log(await DeviceInfo.getBrand());
+        console.log(await DeviceInfo.getDeviceCountry());
+        console.log(await DeviceInfo.getDeviceLocale());
+        console.log(await DeviceInfo.getDeviceType());
+        console.log(await DeviceInfo.getBaseOS());
+        console.log(await DeviceInfo.getAvailableLocationProviders());
+        console.log(await DeviceInfo.getBatteryLevel());
+        console.log(await DeviceInfo.getCameraPresence());
+        console.log(await DeviceInfo.getPhoneNumber());
+        console.log(await DeviceInfo.getSystemName());
+        console.log(await DeviceInfo.getApplicationName());
+        console.log(await DeviceInfo.getDeviceId());
+        console.log(await DeviceInfo.getCodename());
+        console.log(await DeviceInfo.getCarrier());
+        console.log(await DeviceInfo.getBuildNumber());
+        console.log(await DeviceInfo.getBootloader());
+        console.log(await DeviceInfo.getBundleId());
+        console.log(await DeviceInfo.getFingerprint());
+        console.log(await DeviceInfo.getFontScale());
+        console.log(await DeviceInfo.getHardware());
+        console.log(await DeviceInfo.getHost());
+        console.log(await DeviceInfo.getIPAddress());
+        console.log(await DeviceInfo.getIncremental());
+        console.log(await DeviceInfo.getInstallReferrer());
+        console.log(await DeviceInfo.getInstanceID());
+        console.log(await DeviceInfo.getLastUpdateTime());
+        console.log(await DeviceInfo.getMACAddress());
+        console.log(await DeviceInfo.getManufacturer());
+        console.log(await DeviceInfo.getModel());
+        //console.log(await DeviceInfo.getPowerState());
+        console.log(await DeviceInfo.getSystemVersion());
+        console.log(await DeviceInfo.getType());
+        console.log(await DeviceInfo.getUserAgent());
+        console.log(await DeviceInfo.isLocationEnabled());
+        console.log(await DeviceInfo.getSystemAvailableFeatures());
+        console.log(await DeviceInfo.isAirPlaneMode());
+        console.log(await DeviceInfo.getVersion());
     };
 
     static turnOnDebug() {
@@ -43,13 +93,8 @@ export default class XmppApi {
     }
     static onOnline() {
         this.xmpp.on('online', async address => {
-            console.log('🗸', 'online as', address);
-
-            const presence = xml('presence', {},
-                xml('show', {}, 'chat'),
-                xml('status', {}, 'presence!'),
-            );
-            this.xmpp.send(presence)
+            console.log('online as', address);
+            await this.sendPresence(PRESENCE.ONLINE);
         });
     }
     static onOffline() {
@@ -57,84 +102,101 @@ export default class XmppApi {
             console.log('⏹', 'offline')
         });
     }
-    static onStanza(
-        callback = async stanza => {
-        console.log(stanza.toString());
-    }, props) {
-        this.xmpp.on('stanza', callback);
+    static onStanza(store) {
+        this.xmpp.on('stanza', async stanza => {
+            console.log(stanza, store);
+        });
     }
-
-    static login(username, password){
+    onStanza = async standaz => {
+        console.log(standaz);
+        // message from group chat
+        if (standaz.is("message")) {
+            if (standaz.children && standaz.children.length > 0){
+                let jid = standaz.attrs.from;
+                let roomId=jid.substring(0, jid.indexOf("/"));
+                let username = jid.substring(jid.indexOf("/") + 1);
+                let nickname = standaz.attrs.nickname ?
+                    standaz.attrs.nickname : username;
+                let msg = {};
+                msg.user = {
+                    _id: username,
+                    name: nickname,
+                };
+                msg.user.avatar = standaz.attrs.avatar ?
+                    standaz.attrs.avatar : "http://m.imeitou.com/uploads/allimg/171123/3-1G123203S6-50.jpg";
+                for (let child of standaz.children) {
+                    if (child.name === "body") {
+                        msg.text = child.children[0];
+                    }
+                    if (child.name === "delay"){
+                        msg.createAt=child.attrs.stamp;
+                    }
+                    if (child.name === "stanza-id") {
+                        msg._id = child.attrs.id;
+                    }
+                }
+                if (!msg.createAt) {
+                    msg.createAt = new Date();
+                }
+                if (msg.text) {
+                    this.props.onSendMessage(roomId, msg);
+                } else {
+                    // message has no body
+                    console.warn("is message, but no body");
+                }
+            }
+            console.log(this.props.xmpp);
+        }
+    };
+    static login(data){
+        let password = Util.cryptoOnpenFire(data.username, data.password);
+        let jid = `user${data.id}`;
+        let username = data.username;
         this.init(username, password);
         return this.xmpp.start()
     }
 
-    static logout() {
-        this.xmpp.stop();
-    }
+    static logout = async () => {
+        await this.xmpp.stop();
+    };
 
-    static sendMessage(message) {
-        return new Promise((resolve, reject) => {
-            this.xmpp.send(message)
-                .then(() => {
-                    resolve();
-                })
-                .catch(err => {
-                    reject(err);
-                })
-        })
-    }
-    static getChatList() {
-        return new Promise((resolve, reject) => {
-            this.xmpp.send(
-                xml('iq', {
-                    type: 'get',
-                    id: 'chatlist',
-                    to: 'conference.202.120.40.8'
-                }, xml('query', {
-                    xmlns: 'http://jabber.org/protocol/disco#items'
-                }))
-            ).then(() => {
-                resolve()
-            }).catch(err => {
-                reject(err)
-            })
-        })
-    }
+    static sendPresence = async (status) => {
+        let presence = xml('presence', {},
+            xml('show', {}, 'chat'),
+            xml('priority', {}, 1),
+            xml('status', {}, status),
+        );
+        await this.xmpp.send(presence);
+    };
 
-    static register(username, password) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    static sendChatStates = async (to, status) => {
+        let chatStates = xml('message', {
+            to: to,
+            type: 'chat',
+        }, xml(status, {
+            xmlns: 'http://jabber.org/protocol/chatstates',
+        }));
 
-        const xmpp = client({
-            service: 'ws://202.120.40.8:30256/ws',
-            username: '__reg__',
-            password: '__reg__',
-        });
-        xmpp.on('stanza', async stanza => {
-            if (stanza.is('iq') && stanza.attrs.id === 'reg2') {
-                const type = stanza.attrs.type;
-                if (type === 'error') {
-                    console.log("Register error");
-                } else {
-                    console.log("Register successfully");
-                }
-                xmpp.stop();
+        await this.xmpp.send(chatStates);
+    };
+
+    static sendMessage = async (from, to, type, id, text, images = null) => {
+        let listString;
+        if (images) {
+            for (let item of images) {
+                listString = `${listString} ${item}`
             }
-        });
-        xmpp.on('online', async address => {
-            xmpp.send(
-                xml('iq', {type: 'set', id: 'reg2'},
-                    xml('query', {xmlns: 'jabber:iq:register'},
-                        xml('username', {}, username),
-                        xml('email', {}, 'dfyshisb@163.com'),
-                        xml('name', {}, '测试用户'),
-                        xml('password', {}, password),
-                    )
-                )
-            )
-        });
-        return xmpp.start();
-    }
+        }
+        let message = xml('message', {
+            from,
+            to,
+            type,
+            id,
+        }, xml('body', {}, text),
+            xml('images', {}, listString) );
+
+        await this.xmpp.send(text);
+    };
 }
 
 const basicUri = "http://202.120.40.8:30257/plugins/restapi/v1";
@@ -145,9 +207,7 @@ export class OpenFireApi{
 
     };
 
-
     static register = async (data) => {
-
         let res = await axios.post(`${basicUri}/users`, data, {
             headers: {
                 "Authorization": `${basicToken}`,
@@ -246,8 +306,36 @@ export class OpenFireApi{
             }
         });
     };
+}
 
-    static sendMessage = async () => {
+const PRIVATE_MESSAGE_BASIC_URI = "http://39.105.54.161:8080";
 
-    }
+export class PrivateMessageApi {
+    static getChatList = async (jwt) => {
+        let res = await axios.get(`${PRIVATE_MESSAGE_BASIC_URI}/chat`, {
+            headers: {
+                "Authorization": jwt,
+            }
+        });
+
+        return res.data;
+    };
+    static getChatHistory = async (senderId, jwt) => {
+        let res = await axios.get(`${PRIVATE_MESSAGE_BASIC_URI}/chat?sender_id=${senderId}`, {
+            headers: {
+                "Authorization": jwt,
+            }
+        });
+
+        return res.data;
+
+    };
+    static addMessage = async (message, jwt) => {
+        let res = await axios.post(`${PRIVATE_MESSAGE_BASIC_URI}/chat`, message, {
+            headers: {
+                "Authorization": jwt,
+            }
+        });
+        return res.data;
+    };
 }
