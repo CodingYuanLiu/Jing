@@ -167,7 +167,7 @@ class PersonalHome extends React.PureComponent {
                 reverseColor={"#fff"}
                 size={14}
                 containerStyle={styles.userRightIconContainer}
-                onPress={() => {alert("去聊天吗")}}
+                onPress={this.toPrivateMessage}
             />
         );
         let avatarComponent = (
@@ -425,6 +425,9 @@ class PersonalHome extends React.PureComponent {
     };
     toPersonalInformationPage = () => {
         NavigationUtil.toPage({user: this.state.user}, "PersonalInformation");
+    };
+    toPrivateMessage = () => {
+        NavigationUtil.toPage({receiver: this.state.user}, "PrivateChat");
     };
     follow = () => {
         let currentUser = this.props.currentUser;

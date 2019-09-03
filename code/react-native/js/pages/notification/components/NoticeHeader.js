@@ -10,16 +10,12 @@ export default class NoticeHeader extends React.PureComponent{
     }
 
     render() {
-
-
-        // If provide button, then function  has to be bind with that button,
-        // else, use default button, and must provide a callback function
         const checkIcon =
             <Icon
                 type={"material-community"}
                 name={"playlist-check"}
                 color={"#b3b3b3"}
-            />
+            />;
         const rightBtn =
             <Button
                 iconRight
@@ -28,7 +24,7 @@ export default class NoticeHeader extends React.PureComponent{
                 title={"全部已读"}
                 titleStyle={{color:"#b3b3b3"}}
                 onPress={() => {this.props.onPress()}}
-            />
+            />;
         const rightButton = this.props.rightButton ? this.props.rightButton : rightBtn
 
 
@@ -37,7 +33,6 @@ export default class NoticeHeader extends React.PureComponent{
                 <View style={styles.left}>
                     <Text style={styles.text}>{this.props.title}</Text>
                 </View>
-                <View style={styles.middle}></View>
                 <View style={[styles.right, this.props.buttonContainerStyle ]}>
                     {rightButton}
                 </View>
@@ -52,11 +47,11 @@ NoticeHeader.propTypes={
     rightButton: PropTypes.element,
     buttonContainerStyle: ViewPropTypes.style,
     onPress: PropTypes.func,
-}
+};
 
 NoticeHeader.defaultProps={
     title: "系统通知",
-}
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -69,9 +64,6 @@ const styles = StyleSheet.create({
     },
     left: {
         marginLeft: 10,
-    },
-    middle: {
-        flex: 1,
     },
     text:{
         fontSize: 16,

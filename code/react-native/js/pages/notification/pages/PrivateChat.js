@@ -1,182 +1,28 @@
 import React from "react"
-import {View, Text, StatusBar, StyleSheet, TouchableWithoutFeedback, Keyboard, FlatList, Image} from 'react-native';
+import {View, Text, StatusBar, StyleSheet, TouchableWithoutFeedback, Keyboard, FlatList, Image, RefreshControl} from 'react-native';
 import HeaderBar from "../../../common/components/HeaderBar";
 import {GiftedChat} from "react-native-gifted-chat";
 import {connect} from "react-redux";
-import {ArrowLeftIcon, CircleIcon, EmojiIcon, ImageIcon, NumericIcon} from "../../../common/components/Icons";
+import {
+    AlertCircleIcon,
+    ArrowLeftIcon,
+    CircleIcon,
+    EmojiIcon,
+    ImageIcon,
+    NumericIcon
+} from "../../../common/components/Icons";
 import NavigationUtil from "../../../navigator/NavUtil";
 import {Button} from "react-native-elements";
 import CameraRoll from "@react-native-community/cameraroll";
 import {WINDOW} from "../../../common/constant/Constant";
-import XmppApi, {OpenFireApi} from "../../../api/XmppApi";
+import XmppApi, {OpenFireApi, PrivateMessageApi} from "../../../api/XmppApi";
 
 
 class PrivateChat extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
-            messages: [
-                {
-                    _id: 1,
-                    text: 'Hello developer',
-                    createdAt: new Date(),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                },
-                {
-                    _id: 2,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 3,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 4,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 5,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 6,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 7,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 8,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 9,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 10,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                },
-                {
-                    _id: 11,
-                    text: 'My message',
-                    createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
-                    user: {
-                        _id: 2,
-                        name: 'React Native',
-                        avatar: 'https://placeimg.com/140/140/any',
-                    },
-                    image: ['https://placeimg.com/140/140/any','https://placeimg.com/140/140/any'],
-
-                    // You can also add a video prop:
-                    //video: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-                    // Any additional custom parameters are passed through
-                }
-            ],
+            messages: [],
             text: "",
             isFooterVisible: false,
             keyboardHeight: null,
@@ -242,7 +88,18 @@ class PrivateChat extends React.PureComponent{
                         },
                     }}
                     renderMessageImage={this.renderMessageImage}
-
+                    renderCustomView={this.renderCustomView}
+                    renderLoading={
+                        () =>
+                        <RefreshControl
+                            refreshing={this.state.isLoading}
+                            onRefresh={this.loadData}
+                            title={"加载中..."}
+                            titleColor={"#0084ff"}
+                            colors={["#0084ff"]}
+                            tintColor={"#0084ff"}
+                        />
+                    }
                 />
                 {footer}
             </View>
@@ -314,6 +171,26 @@ class PrivateChat extends React.PureComponent{
                 {imageIcon}
                 {sendButton}
             </View>
+        )
+    };
+    renderCustomView = (props) => {
+        let {currentMessage} = props;
+        if (currentMessage.error !== null && currentMessage.error !== undefined) {
+            return (
+                <AlertCircleIcon
+                    color={"#ee4417"}
+                    size={24}
+                    style={{position: "absolute", left: -29, top: 10}}
+                />
+            )
+        }
+        return (
+            <Button
+                loading={currentMessage.isLoading}
+                type={"clear"}
+                buttonStyle={{margin: 0, padding: 0}}
+                containerStyle={{position: "absolute", left: -29, top: 10}}
+            />
         )
     };
     renderMessageImage = (props) => {
@@ -496,15 +373,60 @@ class PrivateChat extends React.PureComponent{
     };
     onSend = (props) => {
         let message = this.buildMessage(props);
+        this.setState(previousState => ({
+            messages: GiftedChat.append(previousState.messages, message),
+        }));
         console.log(message);
-        XmppApi.sendMessage(message);
+        this.sendAsync(props, message)
+            .catch(err => {console.log(err)});
         this.clearMessage();
+
+    };
+    sendAsync = async (props, message) => {
+        try {
+            let receiver = this.props.navigation.getParam("receiver");
+            let {currentUser} = this.props;
+            let data = await PrivateMessageApi.addMessage({
+                text: message.text,
+                receiverId: receiver.id,
+                receiverName: receiver.nickname,
+                receiverAvatar: receiver.avatar,
+                senderId: currentUser.id,
+                senderName: currentUser.nickname,
+                senderAvatar: currentUser.avatar,
+            }, this.props.currentUser.jwt);
+
+            let from = XmppApi.getJid(this.props.currentUser);
+            let to = XmppApi.getJid(this.props.navigation.getParam("receiver"));
+            await XmppApi.sendMessage(
+                "zhao@202.120.40.8", "diving_fish@202.120.40.8", "chat", props.messageIdGenerator(),
+                message.text, message.image
+            );
+            message.isLoading = false;
+            this.setState(state => {
+                return {
+                    ...state,
+                    messages: [...state.messages]
+                }
+            });
+        } catch (err) {
+            console.log(err);
+            message.error = err;
+            this.setState(state => {
+                return {
+                    ...state,
+                    messages: [...state.messages]
+                }
+            });
+        }
     };
     buildMessage = (props) => {
         let message = {
             user: props.user,
             createdAt: new Date(),
             _id: props.messageIdGenerator(),
+            isLoading: true,
+            error: new Error(""),
         };
         if (this.state.text !== "") {
             message.text = this.state.text;

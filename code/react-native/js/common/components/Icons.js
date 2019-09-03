@@ -1,6 +1,5 @@
 import React from "react";
 import { Icon } from "react-native-elements";
-import {TouchableWithoutFeedback} from "react-native-gesture-handler";
 
 class SearchIcon extends React.PureComponent{
     constructor(props) {
@@ -863,6 +862,26 @@ class CheckIconReversed extends React.PureComponent{
             />)
     }
 }
+
+class AlertCircleIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+
+        return (
+            <Icon
+                type={"material-community"}
+                name={"alert-circle"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -912,4 +931,5 @@ export {
     CircleIcon,
     EyeIcon,
     EyeOffIcon,
+    AlertCircleIcon,
 }

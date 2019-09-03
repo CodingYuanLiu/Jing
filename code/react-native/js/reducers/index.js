@@ -13,7 +13,7 @@ import currentUserManage from "./currentUserManage";
 import setting from "./setting";
 import personalHome from "./personalHome";
 import chatRoom from "./chatRoom";
-import privateMessage from "./privateMessage";
+import privateChat from "./privateChat";
 
 export default combineReducers({
     currentAct,
@@ -30,6 +30,6 @@ export default combineReducers({
     typeAct,
     setting,
     chatRoom,
-    privateMessage,
+    privateChat,
 })
 

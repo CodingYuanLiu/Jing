@@ -13,7 +13,7 @@ export default class XmppApi {
     static xmpp;
 
     static init(username, password, debug = true) {
-        this.getResource().catch();
+        //this.getResource().catch();
         this.xmpp = client(
             {
                 service: `${baseOpenFireUri}/ws`,
@@ -104,7 +104,7 @@ export default class XmppApi {
     }
     static onStanza(store) {
         this.xmpp.on('stanza', async stanza => {
-            console.log(stanza, store);
+            console.log(stanza);
         });
     }
     onStanza = async standaz => {
@@ -181,10 +181,10 @@ export default class XmppApi {
     };
 
     static sendMessage = async (from, to, type, id, text, images = null) => {
-        let listString;
+        let listString = "";
         if (images) {
             for (let item of images) {
-                listString = `${listString} ${item}`
+                listString = listString + " " + item;
             }
         }
         let message = xml('message', {
@@ -195,7 +195,11 @@ export default class XmppApi {
         }, xml('body', {}, text),
             xml('images', {}, listString) );
 
-        await this.xmpp.send(text);
+        await this.xmpp.send(message);
+    };
+
+    static getJid = (user) => {
+        return `user${user.id}@202.120.40.8`
     };
 }
 
@@ -312,12 +316,11 @@ const PRIVATE_MESSAGE_BASIC_URI = "http://39.105.54.161:8080";
 
 export class PrivateMessageApi {
     static getChatList = async (jwt) => {
-        let res = await axios.get(`${PRIVATE_MESSAGE_BASIC_URI}/chat`, {
+        let res = await axios.get(`${PRIVATE_MESSAGE_BASIC_URI}/chat/list`, {
             headers: {
                 "Authorization": jwt,
             }
         });
-
         return res.data;
     };
     static getChatHistory = async (senderId, jwt) => {
@@ -326,7 +329,7 @@ export class PrivateMessageApi {
                 "Authorization": jwt,
             }
         });
-
+        console.log(res);
         return res.data;
 
     };
@@ -336,6 +339,7 @@ export class PrivateMessageApi {
                 "Authorization": jwt,
             }
         });
+        console.log(res);
         return res.data;
     };
 }
