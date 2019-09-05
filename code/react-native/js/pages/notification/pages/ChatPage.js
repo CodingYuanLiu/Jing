@@ -1,24 +1,25 @@
 import React from "react"
-import {View, Text, StatusBar, StyleSheet, TouchableWithoutFeedback, Keyboard, FlatList, Image, RefreshControl} from 'react-native';
+import {View, Text, StatusBar, StyleSheet, TouchableWithoutFeedback, Keyboard, FlatList, Image, RefreshControl, PermissionsAndroid} from 'react-native';
 import HeaderBar from "../../../common/components/HeaderBar";
 import {GiftedChat} from "react-native-gifted-chat";
 import {connect} from "react-redux";
 import {
     AlertCircleIcon,
     ArrowLeftIcon,
-    CircleIcon,
     EmojiIcon,
     ImageIcon,
-    NumericIcon
 } from "../../../common/components/Icons";
 import NavigationUtil from "../../../navigator/NavUtil";
 import {Button} from "react-native-elements";
 import CameraRoll from "@react-native-community/cameraroll";
 import {WINDOW} from "../../../common/constant/Constant";
 import XmppApi, {OpenFireApi, PrivateMessageApi} from "../../../api/XmppApi";
+import base64 from "react-native-base64";
+
+const RNFS = require("react-native-fs");
 
 
-class PrivateChat extends React.PureComponent{
+class ChatPage extends React.PureComponent{
     constructor(props) {
         super(props);
         this.state = {
@@ -344,42 +345,53 @@ class PrivateChat extends React.PureComponent{
     };
 
     getPhotosPreview = () => {
-        CameraRoll.getPhotos(
-            this.state.pageInfo ? {
-                first: 5,
-                after: this.state.pageInfo.end_cursor,
-                assetType: 'Photos',
-            } : {
-                first: 5,
-                assetType: 'Photos',
-            }
-        )
-            .then(res => {
-                if (this.state.images.length <= 0) {
-                    this.setState({
-                        isFooterVisible: true,
-                        footerComponent: 2,
-                    })
+        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE)
+            .then((granted) => {
+                if (granted) {
+                    CameraRoll.getPhotos(
+                        this.state.pageInfo ? {
+                            first: 5,
+                            after: this.state.pageInfo.end_cursor,
+                            assetType: 'Photos',
+                        } : {
+                            first: 5,
+                            assetType: 'Photos',
+                        }
+                    )
+                        .then(res => {
+                            if (this.state.images.length <= 0) {
+                                this.setState({
+                                    isFooterVisible: true,
+                                    footerComponent: 2,
+                                })
+                            }
+                            this.setState({
+                                images: [...this.state.images, ...res.edges,],
+                                pageInfo: res.page_info,
+                            });
+                            console.log(res);
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        })
                 }
-                this.setState({
-                    images: [...this.state.images, ...res.edges,],
-                    pageInfo: res.page_info,
-                });
-                console.log(res);
             })
             .catch(err => {
-                console.log(err);
+
             })
     };
     onSend = (props) => {
-        let message = this.buildMessage(props);
-        this.setState(previousState => ({
-            messages: GiftedChat.append(previousState.messages, message),
-        }));
-        console.log(message);
-        this.sendAsync(props, message)
+        this.buildMessage(props)
+            .then(message => {
+                this.setState(previousState => ({
+                    messages: GiftedChat.append(previousState.messages, message),
+                }));
+                console.log(message);
+                this.sendAsync(props, message)
+                    .catch(err => {console.log(err)});
+                this.clearMessage();
+            })
             .catch(err => {console.log(err)});
-        this.clearMessage();
 
     };
     sendAsync = async (props, message) => {
@@ -388,18 +400,18 @@ class PrivateChat extends React.PureComponent{
             let {currentUser} = this.props;
             let data = await PrivateMessageApi.addMessage({
                 text: message.text,
-                receiverId: receiver.id,
-                receiverName: receiver.nickname,
-                receiverAvatar: receiver.avatar,
-                senderId: currentUser.id,
-                senderName: currentUser.nickname,
-                senderAvatar: currentUser.avatar,
+                thatUserId: receiver.id,
+                thatUserName: receiver.nickname,
+                thatUserAvatar: receiver.avatar,
+                thisUserId: currentUser.id,
+                thisUserName: currentUser.nickname,
+                thisUserAvatar: currentUser.avatar,
             }, this.props.currentUser.jwt);
 
             let from = XmppApi.getJid(this.props.currentUser);
             let to = XmppApi.getJid(this.props.navigation.getParam("receiver"));
             await XmppApi.sendMessage(
-                "zhao@202.120.40.8", "diving_fish@202.120.40.8", "chat", props.messageIdGenerator(),
+                from, to, "chat", props.messageIdGenerator(),
                 message.text, message.image
             );
             message.isLoading = false;
@@ -420,7 +432,7 @@ class PrivateChat extends React.PureComponent{
             });
         }
     };
-    buildMessage = (props) => {
+    buildMessage = async (props) => {
         let message = {
             user: props.user,
             createdAt: new Date(),
@@ -434,9 +446,13 @@ class PrivateChat extends React.PureComponent{
         if (this.state.sendImages.length !== 0 ) {
             message.image = [];
             for (let item of this.state.sendImages) {
-                message.image.push(item.node.image.uri)
+                let imgData = await RNFS.readFile(item.node.image.uri, "base64");
+                console.log(imgData);
+                message.image.push(imgData);
+                console.log(imgData);
             }
         }
+        console.log(message);
         return message;
     };
     clearMessage = () => {
@@ -504,7 +520,7 @@ class PrivateChat extends React.PureComponent{
 const mapStateToProps = state => ({
     currentUser: state.currentUser,
 });
-export default connect(mapStateToProps, null)(PrivateChat);
+export default connect(mapStateToProps, null)(ChatPage);
 
 const styles = StyleSheet.create({
     container: {
