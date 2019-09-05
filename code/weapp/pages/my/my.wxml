@@ -1,6 +1,6 @@
 <view class="container more">
     <image style="width: 100%; position: absolute; top: 0" src="/images/mybackground.png"></image>
-    <i-card style="width:98vw; margin-top: 15px" title="  {{log?userInfo.nickname:'登录即应，体验更多功能'}}" extra="" thumb="{{avatar_src}}" i-class="card-demo">
+    <i-card style="width:98vw; margin-top: 15px" title="  {{log?userInfo.nickname:'登录即应，更多功能'}}" extra="" thumb="{{avatar_src}}" i-class="card-demo">
         <view slot="content" >
             <i-row wx:if="{{log}}">
                 <i-col span="6" i-class="col-class" bindtap="handleMyAct">
@@ -20,7 +20,7 @@
                     <view style="font-size: 25px">{{historyNum}}</view>
                 </i-col>
             </i-row>
-            <view bindtap="handleToLogin" wx:if="{{!log}}">点击登录</view>
+            <view bindtap="handleToLogin" wx:if="{{!log}}">点击此处登录</view>
         </view>
     </i-card>
     <!-- <view class="user flex-wrp" bindtap="handleToLogin" hidden="{{log}}">
@@ -111,6 +111,7 @@
         </view> -->
 
     <!-- </view> -->
+    <!-- <button open-type='feedback'>意见反馈</button> -->
     <view hidden="{{!log}}" style="width: 100%; background: white; float: bottom">
         <i-button style="width: 100%" type="error" bind:click="handleLogout">退出登录</i-button>
     </view>

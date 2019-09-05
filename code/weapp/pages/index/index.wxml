@@ -14,73 +14,73 @@
                             <image src="{{item.sponsor_avatar!=='http://image.jing855.cn/'?item.sponsor_avatar:avatar_src}}"></image>
                         </view>
                         <!-- <text>{{item.feed_source_name}} · </text> -->
-                        <text>{{item.sponsor_username}} · {{item.type}} · </text>
+                        <text>{{item.sponsor_username}}</text>
                     </a>
                 </view>
                 <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}">
-                    <view class="question" >
+                    <view class="question">
                         <a class="question-link">
-                            <text style="font-size: 19px">{{item.title}} {{status_show[item.status]}}</text>
+                            <text style="font-size: 17px">{{item.title}} {{status_show[item.status]}}</text>
                         </a>
                         <i-row wx:if="{{item.type === 'order'}}">
-                            <i-col span="16" i-class="col-class">
+                            <i-col span="{{item.images.length>0?16:24}}" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">网购店铺 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.store}}</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">网购店铺 </label>
+                                    <text class="contentLabel">{{item.store}}</text>
                                 </view>
                             </i-col>
-                            <i-col span="8" i-class="col-class">
+                            <i-col span="{{item.images.length>0?8:0}}" i-class="col-class">
                                 <image wx:if="{{item.images.length>0}}" mode="aspectFill" style="width: 100%; height: 70px; margin:10px; border-radius: 5px" src="{{item.images[0]}}"></image>
                             </i-col>
                         </i-row>
                         <i-row wx:if="{{item.type === 'takeout'}}">
-                            <i-col span="16" i-class="col-class">
+                            <i-col span="{{item.images.length>0?16:24}}" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">下单时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.order_time}} \n</text>
-                                     <label style="font-size: 15px; color: #A9A9A9">外卖店铺 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.store}} \n</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">下单时间 </label>
+                                    <text class="contentLabel">{{item.order_time}} \n</text>
+                                    <label class="nameLabel">外卖店铺 </label>
+                                    <text class="contentLabel">{{item.store}} \n</text>
                                 </view>
                             </i-col>
-                            <i-col span="8" i-class="col-class">
+                            <i-col span="{{item.images.length>0?8:0}}" i-class="col-class">
                                 <image wx:if="{{item.images.length>0}}" mode="aspectFill" style="width: 100%; height: 70px; margin:10px; border-radius: 5px" src="{{item.images[0]}}"></image>
                             </i-col>
                         </i-row>
                         <i-row wx:if="{{item.type === 'taxi'}}">
-                            <i-col span="16" i-class="col-class">
+                            <i-col span="{{item.images.length>0?16:24}}" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">出发时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.depart_time}} \n</text>
-                                    <label style="font-size: 15px; color: #696969">{{item.origin.title}} ➡ {{item.destination.title}}</label>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">出发时间 </label>
+                                    <text class="contentLabel">{{item.depart_time}} \n</text>
+                                    <label class="contentLabel">{{item.origin.title}} ➡ {{item.destination.title}}</label>
                                 </view>
                             </i-col>
-                            <i-col span="8" i-class="col-class">
+                            <i-col span="{{item.images.length>0?8:0}}" i-class="col-class">
                                 <image wx:if="{{item.images.length>0}}" mode="aspectFill" style="width: 100%; height: 70px; margin:10px; border-radius: 5px" src="{{item.images[0]}}"></image>
                             </i-col>
                         </i-row>
                         <i-row wx:if="{{item.type === 'other'}}">
-                            <i-col span="16" i-class="col-class">
+                            <i-col span="{{item.images.length>0?16:24}}" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">活动时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.activity_time}}</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">活动时间 </label>
+                                    <text class="contentLabel">{{item.activity_time}}</text>
                                 </view>
                             </i-col>
-                            <i-col span="8" i-class="col-class">
+                            <i-col span="{{item.images.length>0?8:0}}" i-class="col-class">
                                 <image wx:if="{{item.images.length>0}}" mode="aspectFill" style="width: 100%; height: 70px; margin:10px; border-radius: 5px" src="{{item.images[0]}}"></image>
                             </i-col>
                         </i-row>
                     </view>
                     <view class="answer-body">
                         <view data-id="{{act_id}}">
-                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black;margin-top: 5px">{{item.description}}</text>
+                            <text class="answer-txt" aid="{{act_id}}" style="font-size:16px;color:black;margin-top: 5px">{{item.description}}</text>
                         </view>
                         <!-- <view>
                             <image src="{{item.feed_img}}"></image>
@@ -125,21 +125,21 @@
                             <image src="{{item.sponsor_avatar!=='http://image.jing855.cn/'?item.sponsor_avatar:avatar_src}}"></image>
                         </view>
                         <!-- <text>{{item.feed_source_name}} · </text> -->
-                        <text>{{item.sponsor_username}} · {{item.type}} · </text>
+                        <text>{{item.sponsor_username}}</text>
                     </a>
                 </view>
                 <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}">
-                    <view class="question" >
+                    <view class="question">
                         <a class="question-link">
-                            <text style="font-size: 19px">{{item.title}} {{status_show[item.status]}}</text>
+                            <text style="font-size: 17px">{{item.title}} {{status_show[item.status]}}</text>
                         </a>
                         <i-row wx:if="{{item.type === 'order'}}">
                             <i-col span="16" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">网购店铺 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.store}}</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">网购店铺 </label>
+                                    <text class="contentLabel">{{item.store}}</text>
                                 </view>
                             </i-col>
                             <i-col span="8" i-class="col-class">
@@ -149,12 +149,12 @@
                         <i-row wx:if="{{item.type === 'takeout'}}">
                             <i-col span="16" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">下单时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.order_time}} \n</text>
-                                     <label style="font-size: 15px; color: #A9A9A9">外卖店铺 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.store}} \n</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">下单时间 </label>
+                                    <text class="contentLabel">{{item.order_time}} \n</text>
+                                    <label class="nameLabel">外卖店铺 </label>
+                                    <text class="contentLabel">{{item.store}} \n</text>
                                 </view>
                             </i-col>
                             <i-col span="8" i-class="col-class">
@@ -164,11 +164,11 @@
                         <i-row wx:if="{{item.type === 'taxi'}}">
                             <i-col span="16" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">出发时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.depart_time}} \n</text>
-                                    <label style="font-size: 15px; color: #696969">{{item.origin.title}} ➡ {{item.destination.title}}</label>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">出发时间 </label>
+                                    <text class="contentLabel">{{item.depart_time}} \n</text>
+                                    <label class="contentLabel">{{item.origin.title}} ➡ {{item.destination.title}}</label>
                                 </view>
                             </i-col>
                             <i-col span="8" i-class="col-class">
@@ -178,10 +178,10 @@
                         <i-row wx:if="{{item.type === 'other'}}">
                             <i-col span="16" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">活动时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.activity_time}}</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">活动时间 </label>
+                                    <text class="contentLabel">{{item.activity_time}}</text>
                                 </view>
                             </i-col>
                             <i-col span="8" i-class="col-class">
@@ -191,7 +191,7 @@
                     </view>
                     <view class="answer-body">
                         <view data-id="{{act_id}}">
-                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black;margin-top: 5px">{{item.description}}</text>
+                            <text class="answer-txt" aid="{{act_id}}" style="font-size:16px;color:black;margin-top: 5px">{{item.description}}</text>
                         </view>
                         <!-- <view>
                             <image src="{{item.feed_img}}"></image>
@@ -241,21 +241,21 @@
                             <image src="{{item.sponsor_avatar!=='http://image.jing855.cn/'?item.sponsor_avatar:avatar_src}}"></image>
                         </view>
                         <!-- <text>{{item.feed_source_name}} · </text> -->
-                        <text>{{item.sponsor_username}} · {{item.type}} · </text>
+                        <text>{{item.sponsor_username}}</text>
                     </a>
                 </view>
                 <view class="feed-content" bindtap="bindQueTap" data-id="{{item.act_id}}">
-                    <view class="question" >
+                    <view class="question">
                         <a class="question-link">
-                            <text style="font-size: 19px">{{item.title}} {{status_show[item.status]}}</text>
+                            <text style="font-size: 17px">{{item.title}} {{status_show[item.status]}}</text>
                         </a>
                         <i-row wx:if="{{item.type === 'order'}}">
                             <i-col span="16" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">网购店铺 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.store}}</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">网购店铺 </label>
+                                    <text class="contentLabel">{{item.store}}</text>
                                 </view>
                             </i-col>
                             <i-col span="8" i-class="col-class">
@@ -265,12 +265,12 @@
                         <i-row wx:if="{{item.type === 'takeout'}}">
                             <i-col span="16" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">下单时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.order_time}} \n</text>
-                                     <label style="font-size: 15px; color: #A9A9A9">外卖店铺 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.store}} \n</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">下单时间 </label>
+                                    <text class="contentLabel">{{item.order_time}} \n</text>
+                                    <label class="nameLabel">外卖店铺 </label>
+                                    <text class="contentLabel">{{item.store}} \n</text>
                                 </view>
                             </i-col>
                             <i-col span="8" i-class="col-class">
@@ -280,11 +280,11 @@
                         <i-row wx:if="{{item.type === 'taxi'}}">
                             <i-col span="16" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">出发时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.depart_time}} \n</text>
-                                    <label style="font-size: 15px; color: #696969">{{item.origin.title}} ➡ {{item.destination.title}}</label>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">出发时间 </label>
+                                    <text class="contentLabel">{{item.depart_time}} \n</text>
+                                    <label class="contentLabel">{{item.origin.title}} ➡ {{item.destination.title}}</label>
                                 </view>
                             </i-col>
                             <i-col span="8" i-class="col-class">
@@ -294,10 +294,10 @@
                         <i-row wx:if="{{item.type === 'other'}}">
                             <i-col span="16" i-class="col-class">
                                 <view style="margin-top: 10px;">
-                                    <label style="font-size: 15px; color: #A9A9A9">截止时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.create_time}} \n</text>
-                                    <label style="font-size: 15px; color: #A9A9A9">活动时间 </label>
-                                    <text style="font-size: 15px; color: #696969">{{item.activity_time}}</text>
+                                    <label class="nameLabel">截止时间 </label>
+                                    <text class="contentLabel">{{item.create_time}} \n</text>
+                                    <label class="nameLabel">活动时间 </label>
+                                    <text class="contentLabel">{{item.activity_time}}</text>
                                 </view>
                             </i-col>
                             <i-col span="8" i-class="col-class">
@@ -307,7 +307,7 @@
                     </view>
                     <view class="answer-body">
                         <view data-id="{{act_id}}">
-                            <text class="answer-txt" aid="{{act_id}}" style="font-size:17px;color:black;margin-top: 5px">{{item.description}}</text>
+                            <text class="answer-txt" aid="{{act_id}}" style="font-size:16px;color:black;margin-top: 5px">{{item.description}}</text>
                         </view>
                         <!-- <view>
                             <image src="{{item.feed_img}}"></image>

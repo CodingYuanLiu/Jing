@@ -40,6 +40,7 @@ Page({
             this.setData({
                 log: true
             })
+            this.refresh();
         }
     },
     switchTab: function(e) {

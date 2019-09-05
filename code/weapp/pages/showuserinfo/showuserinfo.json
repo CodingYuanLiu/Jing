@@ -6,6 +6,8 @@
         "i-tabs": "../../dist/tabs/index",
         "i-tab": "../../dist/tab/index",
         "i-rate": "../../dist/rate/index",
-        "i-card": "../../dist/card/index"
+        "i-card": "../../dist/card/index",
+        "i-row": "../../dist/row/index",
+        "i-col": "../../dist/col/index"
     }
 }
