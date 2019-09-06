@@ -194,7 +194,7 @@ class CommentModal extends React.PureComponent{
             },
             time: Util.dateTimeToString(new Date()),
         };
-        this.props.addComment(comment, this.props.currentUser.jwt);
+        this.props.addComment(comment, this.props.currentUser);
         this.setState({commentContent: ""});
     };
 
@@ -223,7 +223,7 @@ const mapStateToProps = state => ({
     currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
-    addComment: (comment, jwt) => dispatch(Activity.addComment(comment, jwt)),
+    addComment: (comment, currentUser) => dispatch(Activity.addComment(comment, currentUser)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CommentModal);

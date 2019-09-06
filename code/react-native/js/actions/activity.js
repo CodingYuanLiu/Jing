@@ -142,9 +142,9 @@ const onLoadActDetail = (id, jwt, currentUserId, followingList) => {
 const resetActDetail = () => ({
    type: actionTypes.RESET_ACT_DETAIL,
 });
-const addComment = (comment, jwt) => {
+const addComment = (comment, currentUser) => {
     return dispatch => {
-        Api.addComment(Model.buildComment(comment), jwt)
+        Api.addComment(Model.buildComment(comment), currentUser)
             .then(data => {
                 dispatch({
                     type: actionTypes.ADD_COMMENT_OK,

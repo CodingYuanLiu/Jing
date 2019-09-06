@@ -2,6 +2,8 @@ import axios from "axios"
 import qs from "qs"
 import Model from "./Model";
 import LocalApi from "./LocalApi";
+import XmppApi from "./XmppApi";
+import {CHAT_TYPE} from "../common/constant/Constant";
 
 axios.defaults.baseURL="http://202.120.40.8:30255";
 axios.defaults.withCredentials=true;
@@ -322,7 +324,7 @@ export default class Api {
                     'Authorization': `Bearer ${token}`,
                 }
             });
-            console.log(res);
+
             let acts = res.data ? res.data : [];
             acts = Model.transferActivityList(acts);
             let participants;
@@ -347,7 +349,7 @@ export default class Api {
         this.recordBehavior(data.type, "scanning", jwt)
             .catch(err => {
                 console.log(err);
-            })
+            });
 
         return data;
 
@@ -452,49 +454,36 @@ export default class Api {
         });
         return res.data;
     };
-    static addComment(comment, jwt) {
-        let data = {
-            receiver_id: comment.receiver_id,
-            content: comment.content,
-            act_id :comment.act_id,
-            time: comment.time,
-        };
-        return new Promise((resolve, reject) => {
-            axios.post("/api/user/act/comment",data, {
-                headers: {
-                    "Authorization": `Bearer ${jwt}`
-                }
-            })
-                .then(res => {
-                    resolve(res.data)
-                })
-                .catch(err => {
-                    Reject(err, reject)
-                })
-        })
-    }
+    static addComment = async (comment, currentUser) => {
+        let res = await axios.post("/api/user/act/comment",comment, {
+            headers: {
+                "Authorization": `Bearer ${currentUser.jwt}`
+            }
+        });
+        await XmppApi.sendMessage(`user${comment.receiver_id}`, `user${currentUser.id}`, CHAT_TYPE.PRIVATE_CHAT,
+                "comment", {
+            // comment message
+            }
+            )
+    };
 
     /**
      *
      * activity applicants api
      */
-    static joinAct(act, jwt) {
-        return new Promise((resolve, reject) => {
-            axios.post(`/api/user/act/join?act_id=${act.id}`, null, {
-                headers: {
-                    'Authorization': `Bearer ${jwt}`,
-                }
-            })
-                .then(res => {
-                    resolve(res.data);
-                    this.recordBehavior(act.type, "join", jwt)
-                        .catch(err => {console.log(err)})
-                })
-                .catch(err => {
-                    Reject(err, reject);
-                })
-        })
-    }
+    static joinAct = async (act, jwt) => {
+        let res = await axios.post(`/api/user/act/join?act_id=${act.id}`, null, {
+            headers: {
+                'Authorization': `Bearer ${jwt}`,
+            }
+        });
+
+        await XmppApi.sendMessage(null, null, CHAT_TYPE.PRIVATE_CHAT,
+            "join", {
+            // message
+            }
+            )
+    };
 
     static getActApplicants(jwt) {
         return new Promise((resolve, reject) => {
@@ -726,37 +715,26 @@ export default class Api {
      * @returns {Promise<R>}
      */
 
-    static follow(from, to, jwt) {
-        return new Promise((resolve, reject) => {
-            axios.get(`/api/user/follow?id=${to}`, {
-                headers: {
-                    'Authorization': `Bearer ${jwt}`,
-                },
-            })
-                .then(res => {
-                    resolve(res.data);
-                })
-                .catch(err => {
-                    Reject(err, reject);
-                })
+    static follow = async (from, to, jwt) => {
+        let res = await axios.get(`/api/user/follow?id=${to}`, {
+            headers: {
+                'Authorization': `Bearer ${jwt}`,
+            },
         });
-    }
-    static unFollow(from, to, jwt) {
-        return new Promise((resolve, reject) => {
-            axios.get(`/api/user/unfollow?id=${to}`, {
-                headers: {
-                    'Authorization': `Bearer ${jwt}`,
-                },
-            })
-                .then(res => {
-                    resolve(res.data);
-                })
-                .catch(err => {
-                    Reject(err, reject);
-                    console.log(err);
-                })
+        await XmppApi.sendMessage(`user${from}`, `user${to}`, CHAT_TYPE.PRIVATE_CHAT,
+            "follow", {
+                // message
+            }
+        )
+    };
+    static unFollow = async (from, to, jwt) => {
+        let res = await axios.get(`/api/user/unfollow?id=${to}`, {
+            headers: {
+                'Authorization': `Bearer ${jwt}`,
+            },
         });
-    }
+
+    };
     static getFollowings(jwt) {
         return new Promise((resolve, reject) => {
             axios.get("/api/user/followings", {
