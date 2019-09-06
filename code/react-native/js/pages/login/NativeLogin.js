@@ -218,8 +218,7 @@ class LoginScreen extends React.PureComponent {
             let jwt = await Api.login(name, pwd);
             await Dao.saveString("@jwt", jwt);
             let data = await Api.getSelfDetail(jwt);
-            await XmppApi.login(data);
-            await XmppApi.onStanza(store);
+
 
             store.dispatch(onGetCurrentUserFollower(data.jwt));
             store.dispatch(onGetCurrentUserFollowing(data.jwt));
@@ -228,6 +227,8 @@ class LoginScreen extends React.PureComponent {
             store.dispatch(setUserData(data));
             store.dispatch(onLoadSettings());
 
+            await XmppApi.login(data);
+            await XmppApi.onStanza(store, data);
             this.props.navigation.navigate("Home", null);
         }
         catch (err) {

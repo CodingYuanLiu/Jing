@@ -102,7 +102,7 @@ export default class App extends React.Component {
                 });
             }
             await XmppApi.login(data);
-            await XmppApi.onStanza(store);
+            await XmppApi.onStanza(store, data);
 
 
         }catch (e) {

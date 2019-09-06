@@ -23,14 +23,13 @@ export class PrivateMessageApi {
 
     };
     static addMessage = async (message, jwt) => {
-        console.log(message);
+
         if(message.image !== null && message.image !== undefined) {
             let list = [];
             for(let item of message.image) {
                 list.push(await RNFS.readFile(item, "base64"));
             }
             message.image = list;
-            console.log(message.image)
         }
         let res = await axios.post(`${PRIVATE_MESSAGE_BASIC_URI}/chat`, message, {
             headers: {

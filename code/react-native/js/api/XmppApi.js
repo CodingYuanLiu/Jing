@@ -113,8 +113,8 @@ export default class XmppApi {
                     let kind = attrs.id;
                     let from = attrs.from;
                     let message = {};
-                    message.createdAt = attrs.createdAt;
-
+                    message.createdAt = new Date(stanza.getChild("body").attrs.createdAt);
+                    message._id = stanza.getChild("body").attrs._id;
                     if (kind === "comment") {
 
                     } else if (kind === "join") {
@@ -139,6 +139,7 @@ export default class XmppApi {
                             message._id = stanzaIdElement.attrs.id;
                         }
                         console.log(message);
+
                         PrivateMessageApi.addMessage({
                             text: message.text,
                             image: !message.image?message.image.filter(item => item !== ""): null,
@@ -192,29 +193,33 @@ export default class XmppApi {
     };
 
     static sendMessage = async (from, to, type, kind, msg) => {
-        let listString = "";
-        if (msg.image !== null && msg.image !== undefined) {
-            for (let item of msg.image) {
-                listString = listString + " " + item;
+        try {
+            let listString = "";
+            if (msg.image !== null && msg.image !== undefined) {
+                for (let item of msg.image) {
+                    listString = listString + " " + item;
+                }
             }
+            let message = xml('message', {
+                    from,
+                    to,
+                    type,
+                    id: kind,
+                },  xml('user', {
+                    _id: msg.user._id,
+                    name: msg.user.name,
+                    avatar: msg.user.avatar,
+                }),
+                xml('body', {
+                     _id: msg._id,
+                     createdAt: msg.createdAt,
+                }, msg.text),
+                xml('image', {}, listString)
+            );
+            await this.xmpp.send(message);
+        } catch (e) {
+            console.log(e);
         }
-        let message = xml('message', {
-            from,
-            to,
-            type,
-            id: kind,
-            createdAt: msg.createdAt,
-        },  xml('user', {
-            _id: msg.user._id,
-            name: msg.user.name,
-            avatar: msg.user.avatar,
-            }),
-            xml('body', {}, msg.text),
-            xml('image', {}, listString),
-            xml('stanza-id', {}, msg._id)
-        );
-        console.log(message);
-        await this.xmpp.send(message);
     };
 
     static getJid = (receiver, type) => {

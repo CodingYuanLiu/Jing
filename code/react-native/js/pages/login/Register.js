@@ -9,6 +9,12 @@ import XmppApi, {OpenFireApi} from "../../api/XmppApi";
 import Util from "../../common/util";
 import {CheckIconReversed, CircleIcon, CloseIcon, EyeIcon, EyeOffIcon} from "../../common/components/Icons";
 import HeaderBar from "../../common/components/HeaderBar";
+import store from "../../store";
+import {onGetCurrentUserFollower} from "../../actions/currentUserFollower";
+import {onGetCurrentUserFollowing} from "../../actions/currentUserFollowing";
+import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
+import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
+import {onLoadSettings} from "../../actions/setting";
 
 
 class RegisterScreen extends React.PureComponent{
@@ -244,7 +250,12 @@ class RegisterScreen extends React.PureComponent{
                     ]
                 });
             }
-
+            if (hasLoginOnWechat) {
+                store.dispatch(onGetCurrentUserFollower(data.jwt));
+                store.dispatch(onGetCurrentUserFollowing(data.jwt));
+                store.dispatch(onGetCurrentUserManageAct(data.jwt));
+                store.dispatch(onGetCurrentUserJoinAct(data.jwt));
+            }
             await Dao.saveString("@jwt", jwt);
             this.props.setUserData({
                 ...userInfo,
@@ -252,7 +263,10 @@ class RegisterScreen extends React.PureComponent{
                 jwt: jwt,
             });
             this.setState({success: true});
-            XmppApi.login(`user${userInfo.id}`, "lqynb0413");
+            store.dispatch(setUserData(data));
+            store.dispatch(onLoadSettings());
+            await XmppApi.login(data);
+            await XmppApi.onStanza(store, data);
 
         } catch (e) {
             console.log(e);

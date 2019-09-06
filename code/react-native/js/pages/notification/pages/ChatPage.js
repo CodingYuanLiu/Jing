@@ -159,7 +159,7 @@ class ChatPage extends React.PureComponent{
     };
     renderCustomView = (props) => {
         let {currentMessage} = props;
-        console.log(currentMessage);
+
         if (currentMessage.error !== null && currentMessage.error !== undefined) {
             return (
                 <AlertCircleIcon
@@ -208,7 +208,7 @@ class ChatPage extends React.PureComponent{
     };
     onSend = (props) => {
         let message = this.buildMessage(props);
-        console.log(message);
+
         this.sendAsync(props, message)
             .catch(err => {console.log(err)});
 
@@ -240,6 +240,7 @@ class ChatPage extends React.PureComponent{
                     from, to, CHAT_TYPE.PRIVATE_CHAT, "normal",
                     message,
                 );
+                console.log(message);
             } else {
                 let from = XmppApi.getJid(this.props.currentUser, CHAT_TYPE.PRIVATE_CHAT);
                 let to = XmppApi.getJid(null, CHAT_TYPE.GROUP_CHAT);
