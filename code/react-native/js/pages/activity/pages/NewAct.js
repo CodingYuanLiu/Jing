@@ -34,6 +34,7 @@ class NewAct extends React.PureComponent{
             {title: "外卖", name: "takeout"},
             {title: "其他", name: "other"},
         ];
+        console.log(actStore.items);
         return(
             <View style={styles.container}>
                 <View

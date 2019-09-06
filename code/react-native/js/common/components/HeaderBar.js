@@ -58,6 +58,7 @@ NavigationBar.propTypes = {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: "#0084ff",
+        height: Platform.OS === "ios" ? NAV_BAR_HEIGHT_IOS : NAV_BAR_HEIGHT_ANDROID,
     },
     navBarBtn: {
         alignItems: "center",
@@ -70,7 +71,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        height: Platform.OS === "ios" ? NAV_BAR_HEIGHT_IOS : NAV_BAR_HEIGHT_ANDROID,
+        height: "100%",
+        width: "100%",
     },
     navBarTitleContainer: {
         alignItems: "center",

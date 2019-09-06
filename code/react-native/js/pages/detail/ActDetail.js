@@ -22,7 +22,7 @@ import ToolTip from "../../common/components/ToolTip";
 import {
     ACT_TYPE_ORDER, ACT_TYPE_OTHER,
     ACT_TYPE_TAKEOUT,
-    ACT_TYPE_TAXI,
+    ACT_TYPE_TAXI, CHAT_TYPE,
     IS_SPONSOR,
     JOINED,
     JOINING,
@@ -137,7 +137,7 @@ class DetailScreen extends React.Component {
                                 return(
                                     <Tag
                                         title={tag}
-                                        key={i}
+                                        key={i.toString()}
                                     />);
                             }) : null
                     }
@@ -165,10 +165,10 @@ class DetailScreen extends React.Component {
                                             isImageViewerVisible: true,
                                             index: i,
                                         })}}
+                                        key={i.toString()}
                                     >
                                         <Image
                                             source={{uri: item}}
-                                            key={i}
                                             style={styles.bodyImage}
                                         />
                                     </TouchableWithoutFeedback>
@@ -335,17 +335,14 @@ class DetailScreen extends React.Component {
     };
     renderImageViewer = (images) => {
 
-        let imageViewerList = [];
-        let i = 0;
-        for (let item of images) {
-            imageViewerList.push({
+        let imageViewerList = images.map((item, i) => (
+            {
                 url: item,
                 width: WINDOW.width,
                 height: WINDOW.height / 3,
                 key: i.toString(),
-            });
-            i++;
-        }
+            }
+        ));
         return (
             <Modal
                 isVisible={this.state.isImageViewerVisible}
@@ -372,7 +369,7 @@ class DetailScreen extends React.Component {
             <PaperPlaneIcon
                 color={"#b4b4b4"}
                 size={24}
-                onPress={() => {alert("按到message icon了！")}}
+                onPress={this.toPrivateChat}
             />
         );
         let editIcon = (
@@ -540,7 +537,8 @@ class DetailScreen extends React.Component {
         }
     };
     toChatPage = () => {
-        console.log("you pressed me!");
+        let {sponsor} = this.props.currentAct;
+        NavigationUtil.toPage({receiver: sponsor, type: CHAT_TYPE.PRIVATE_CHAT}, "ChatPage");
     };
 
     // function for act detail logic
@@ -570,7 +568,7 @@ class DetailScreen extends React.Component {
         };
         Api.joinAct(act, jwt)
             .then(() => {
-                this.setState({joinStatus: JOINED});
+                this.setState({joinStatus: JOINING});
                 this.props.joinAct(user);
             })
             .catch(err => {

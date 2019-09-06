@@ -451,7 +451,10 @@ const LOGIN_STATUS = {
     USERNAME_EMPTY: 2,
     NEW_USER_IN_APP: 12,
 };
-
+const CHAT_TYPE = {
+    GROUP_CHAT: "groupchat",
+    PRIVATE_CHAT: "chat",
+};
 export {
     /**
      * activity constants
@@ -488,6 +491,7 @@ export {
 
     LOGIN_STATUS,
 
+    CHAT_TYPE,
 
     PRESENCE,
 

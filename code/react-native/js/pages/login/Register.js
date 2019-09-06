@@ -206,50 +206,53 @@ class RegisterScreen extends React.PureComponent{
     register = () => {
         this.setState({loading: true});
         let jwt = this.props.navigation.getParam("jwt");
+        let hasLoginOnWechat = this.props.navigation.getParam("hasLoginOnWechat");
         let data = this.buildRegisterData();
 
-        this.registerAsync(data, jwt)
+        this.registerAsync(data, jwt, hasLoginOnWechat)
+            .then(() => {
+                this.setState({loading: false});
+                this.props.navigation.navigate("Home", null);
+            })
             .catch(err => {
                 console.log(err);
             });
-        this.setState({loading: false});
     };
-    registerAsync = async (data, jwt) => {
+    registerAsync = async (data, jwt, hasLoginOnWechat) => {
         try {
             await Api.register(data, jwt);
             let userInfo = await Api.getSelfDetail(jwt);
-            let openFirePassword = Util.cryptoOnpenFire(userInfo.username, userInfo.password);
-            await OpenFireApi.register({
-                username: userInfo.username,
-                password: openFirePassword,
-                name: `昵称`,
-                email: "",
-                properties: [
-                    {
-                        key: "background",
-                        value: "",
-                    },
-                    {
-                        key: "watermarkSetting",
-                        value: true,
-                    },
-                    {
-                        key: "saveDataSetting",
-                        value: false,
-                    },
-                ]
-            });
+            if ( !hasLoginOnWechat ) {
+                await OpenFireApi.register({
+                    username: `user${userInfo.id}`,
+                    password: "lqynb0413",
+                    name: userInfo.nickname,
+                    email: "",
+                    properties: [
+                        {
+                            key: "background",
+                            value: "",
+                        },
+                        {
+                            key: "watermarkSetting",
+                            value: true,
+                        },
+                        {
+                            key: "saveDataSetting",
+                            value: false,
+                        },
+                    ]
+                });
+            }
 
             await Dao.saveString("@jwt", jwt);
             this.props.setUserData({
                 ...userInfo,
-                username: userInfo.username,
-                password: userInfo.password,
                 nickname: "昵称",
                 jwt: jwt,
             });
             this.setState({success: true});
-            XmppApi.login(data.username, openFirePassword);
+            XmppApi.login(`user${userInfo.id}`, "lqynb0413");
 
         } catch (e) {
             console.log(e);

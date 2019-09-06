@@ -67,11 +67,14 @@ class JaccountLoadingScreen extends React.PureComponent{
         await Dao.saveString("@jwt", loginRes.jwt);
 
         if (loginRes.status === LOGIN_STATUS.NEW_USER_IN_APP) {
-            this.props.navigation.navigate("Register", {jwt:loginRes.jwt});
+            this.props.navigation.navigate("Register", {jwt:loginRes.jwt, hasLoginOnWechat: false});
         }
 
         else if (loginRes.status === LOGIN_STATUS.LOGGED) {
             let data = await Api.getSelfDetail(loginRes.jwt);
+            if (data.username === "" || data.username === null || data.username === undefined) {
+                this.props.navigation.navigate("Register", {jwt:loginRes.jwt, hasLoginOnWechat: true});
+            }
             await XmppApi.login(data);
             await XmppApi.onStanza(store);
             store.dispatch(onGetCurrentUserFollower(data.jwt));

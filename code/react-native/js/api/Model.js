@@ -82,6 +82,9 @@ export default class Model {
         }
         let res = [];
         for (let item of list) {
+            if (item.act_id === 21) {
+                continue;
+            }
             res = [...res, this.transferActivityFromSnakeToCamel(item)];
         }
         return res;

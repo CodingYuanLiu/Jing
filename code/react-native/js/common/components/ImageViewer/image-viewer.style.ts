@@ -59,8 +59,8 @@ export const simpleStyle: {
     position: 'absolute',
     left: 0,
     right: 0,
-    top: 38,
-    zIndex: 13,
+    top: 18,
+    zIndex: 99,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'transparent'

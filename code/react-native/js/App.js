@@ -14,6 +14,8 @@ import {onGetCurrentUserJoinAct} from "./actions/currentUserJoin";
 import {setUserData} from "./actions/currentUser";
 import XmppApi from "./api/XmppApi";
 import {onLoadSettings} from "./actions/setting";
+import {PermissionsAndroid} from "react-native";
+
 
 var base64 = require('base-64');
 global.btoa = base64.encode;
@@ -33,6 +35,8 @@ export default class App extends React.Component {
             .catch(err => {
                 console.log(err);
             });
+        this.getPermission()
+            .catch();
     }
 
     render() {
@@ -105,6 +109,52 @@ export default class App extends React.Component {
             this.setState({
                 loginStatus: LOGIN_STATUS.OFFLINE
             });
+            console.log(e);
+        }
+    };
+    getPermission = async () => {
+        try {
+            const cameraGranted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                {
+                    title: "请求",
+                    message: "要允许即应访问相机吗",
+                    buttonNeutral: "忽略",
+                    buttonNegative: "拒绝",
+                    buttonPositive: "允许"
+                }
+            );
+            const readExternalGranted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+                {
+                    title: "请求",
+                    message: "要允许即应访问照片、媒体吗",
+                    buttonNeutral: "忽略",
+                    buttonNegative: "拒绝",
+                    buttonPositive: "允许"
+                }
+            );
+            const readContactsExternalGranted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+                {
+                    title: "请求",
+                    message: "要允许即应访问通讯录吗",
+                    buttonNeutral: "忽略",
+                    buttonNegative: "拒绝",
+                    buttonPositive: "允许"
+                }
+            );
+            const readPhoneGranted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+                {
+                    title: "请求",
+                    message: "要允许即应访问手机号吗",
+                    buttonNeutral: "忽略",
+                    buttonNegative: "拒绝",
+                    buttonPositive: "允许"
+                }
+            )
+        } catch (e) {
             console.log(e);
         }
     };

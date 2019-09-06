@@ -6,18 +6,16 @@ import {connect} from "react-redux";
 import {
     AlertCircleIcon,
     ArrowLeftIcon,
-    EmojiIcon,
     ImageIcon,
 } from "../../../common/components/Icons";
 import NavigationUtil from "../../../navigator/NavUtil";
 import {Button} from "react-native-elements";
-import CameraRoll from "@react-native-community/cameraroll";
-import {WINDOW} from "../../../common/constant/Constant";
-import XmppApi, {OpenFireApi, PrivateMessageApi} from "../../../api/XmppApi";
-import base64 from "react-native-base64";
-
-const RNFS = require("react-native-fs");
-
+import {CHAT_TYPE, WINDOW} from "../../../common/constant/Constant";
+import XmppApi from "../../../api/XmppApi";
+import {PrivateMessageApi} from "../../../api/PrivateMessageApi";
+import ToolTip from "../../../common/components/ToolTip";
+import {addPrivateMessage, getPrivateChatHistory, forceFlushPrivateMessage} from "../../../actions/privateChat";
+import ImagePicker from "react-native-image-picker";
 
 class ChatPage extends React.PureComponent{
     constructor(props) {
@@ -25,49 +23,32 @@ class ChatPage extends React.PureComponent{
         this.state = {
             messages: [],
             text: "",
-            isFooterVisible: false,
-            keyboardHeight: null,
-            footerComponent: 0,
+
             images: [],
-            sendImages: [],
+            isHeaderTooltipVisible: false,
+            index: 0,
         }
     };
-    componentWillMount() {
-        this.keyboardDidShowListener = Keyboard.addListener(
-            'keyboardDidShow',
-            (e) => {
-                if (!this.state.keyboardHeight) {
-                    this.setState({keyboardHeight: e.endCoordinates.height,})
-                }
-                this.setState({
-                    isFooterVisible: false,
-                });
-            }
-        );
-        this.keyboardDidHideListener = Keyboard.addListener(
-            'keyboardDidHide',
-            (e) => {
-                console.log(e);
-            }
-        );
-    }
-
-    componentWillUnmount() {
-        this.keyboardDidShowListener.remove();
-        this.keyboardDidHideListener.remove();
+    componentDidMount() {
+        this.loadData();
     }
 
     render() {
-        let {currentUser} = this.props;
+        let {currentUser, privateChat} = this.props;
         let receiver = this.props.navigation.getParam("receiver");
-
+        let chatProps = privateChat[receiver.id];
+        if (!chatProps) {
+            chatProps = {
+                messages: [],
+                isLoading: false,
+            }
+        }
         let header = this.renderHeader(receiver);
-        let footer = this.renderFooter();
         return(
             <View style={styles.container}>
                 {header}
                 <GiftedChat
-                    messages={this.state.messages}
+                    messages={chatProps.messages}
                     onSend={this.onSend}
                     user={{
                         _id: currentUser.id,
@@ -81,19 +62,12 @@ class ChatPage extends React.PureComponent{
                     text={this.state.text}
                     onInputTextChanged={(text) => {this.setState({text: text})}}
                     minComposerHeight={43}
-
-                    textInputProps={{
-                        onEndEditing: (e) => {console.log(e)},
-                        onFocus: (e) => {
-                            this.setState({isFooterVisible: false})
-                        },
-                    }}
                     renderMessageImage={this.renderMessageImage}
                     renderCustomView={this.renderCustomView}
                     renderLoading={
                         () =>
                         <RefreshControl
-                            refreshing={this.state.isLoading}
+                            refreshing={chatProps.isLoading}
                             onRefresh={this.loadData}
                             title={"加载中..."}
                             titleColor={"#0084ff"}
@@ -101,8 +75,9 @@ class ChatPage extends React.PureComponent{
                             tintColor={"#0084ff"}
                         />
                     }
+                    renderAvatarOnTop={true}
+                    inverted={false}
                 />
-                {footer}
             </View>
         )
     };
@@ -113,6 +88,21 @@ class ChatPage extends React.PureComponent{
                 onPress={this.goBack}
             />
         );
+        let rightButton = (
+            <ToolTip
+                isVisible={this.state.isHeaderTooltipVisible}
+                onPress={() => {this.setState({isHeaderTooltipVisible: true})}}
+                onBackdropPress={() => {this.setState({isHeaderTooltipVisible: false})}}
+            >
+                <Button
+                    type={"clear"}
+                    title={"详情"}
+                />
+            </ToolTip>);
+        let type = this.props.navigation.getParam("type");
+        if (type === CHAT_TYPE.PRIVATE_CHAT) {
+            rightButton = null;
+        }
         return (
             <HeaderBar
                 title={receiver.nickname}
@@ -120,31 +110,25 @@ class ChatPage extends React.PureComponent{
                 titleStyle={styles.headerTitle}
                 style={styles.headerContainer}
                 leftButton={leftIcon}
+                rightButton={rightButton}
             />
         )
     };
     renderSend = (props) => {
-        this.chatProps = props;
-        let emojiIcon, imageIcon, sendButton;
-        let imageBadge = this.state.sendImages.length > 0 ?(
+        let imageIcon, sendButton;
+        let imageBadge = this.state.images.length > 0 ?(
             <View
                 style={[styles.imageBadge, {backgroundColor: "#00ccff",}]}>
                 <Text
                     style={{color: "#fff",textAlign: "center"}}
-                >{this.state.sendImages.length}</Text>
+                >{this.state.images.length}</Text>
             </View>
         ) : null;
-        emojiIcon = (
-            <EmojiIcon
-                onPress={this.showEmojiPicker}
-                size={26}
-                style={{marginRight: 5,}}
-            />
-        );
+
         imageIcon = (
             <View style={{marginRight: 5, position: "relative",}}>
                 <ImageIcon
-                    onPress={this.showImagePicker}
+                    onPress={this.launchImage}
                     size={26}
                 />
                 {imageBadge}
@@ -152,7 +136,7 @@ class ChatPage extends React.PureComponent{
         );
         sendButton = (
             this.state.text === "" &&
-                this.state.sendImages.length === 0 ?
+                this.state.images.length === 0 ?
             null :
                 <Button
                     type={"clear"}
@@ -168,7 +152,6 @@ class ChatPage extends React.PureComponent{
         );
         return (
             <View style={styles.sendButtonContainer}>
-                {emojiIcon}
                 {imageIcon}
                 {sendButton}
             </View>
@@ -176,6 +159,7 @@ class ChatPage extends React.PureComponent{
     };
     renderCustomView = (props) => {
         let {currentMessage} = props;
+        console.log(currentMessage);
         if (currentMessage.error !== null && currentMessage.error !== undefined) {
             return (
                 <AlertCircleIcon
@@ -187,7 +171,7 @@ class ChatPage extends React.PureComponent{
         }
         return (
             <Button
-                loading={currentMessage.isLoading}
+                loading={currentMessage.pending}
                 type={"clear"}
                 buttonStyle={{margin: 0, padding: 0}}
                 containerStyle={{position: "absolute", left: -29, top: 10}}
@@ -197,6 +181,7 @@ class ChatPage extends React.PureComponent{
     renderMessageImage = (props) => {
         let {currentMessage} = props;
         let images;
+        if (!currentMessage.image) return null;
         if (Array.isArray(currentMessage.image)) {
             images = currentMessage.image;
         } else {
@@ -206,321 +191,181 @@ class ChatPage extends React.PureComponent{
             <View>
                 {
                     images.map((item, i) => {
-                        return (
-                            <Image
-                                source={{uri: item}}
-                                key={i.toString()}
-                                style={styles.messageImage}
-                            />
-                        )
+                        if (item === "") return null;
+                        else {
+                            return (
+                                <Image
+                                    source={{uri: item}}
+                                    key={i.toString()}
+                                    style={styles.messageImage}
+                                />
+                            )
+                        }
                     })
                 }
             </View>
         )
     };
-    renderFooter = () => {
-          if (!this.state.isFooterVisible) return null;
-          else {
-              let component = null;
-              if (this.state.footerComponent === 1) {
-                  component = this.renderEmojiPicker();
-              } else if (this.state.footerComponent === 2) {
-                  component = this.renderImagePicker();
-              }
-              return  (
-                  <View style={[styles.footerContainer, {height: this.state.keyboardHeight? this.state.keyboardHeight: 268} ]}>
-                      {component}
-                  </View>
-              )
-          }
-    };
-    renderEmojiPicker = () => {
-        return (
-            <Text>
-                表情包
-            </Text>
-        )
-    };
-    renderImagePicker = () => {
-        let sendButton = (
-            this.state.sendImages.length === 0 ?
-                <Button
-                    title={`发送`}
-                    disabled
-                    disabledStyle={styles.ImagePickerFooterSendButtonDisabled}
-                />
-                :
-                <Button
-                    title={`发送(${this.state.sendImages.length})`}
-                    buttonStyle={styles.ImagePickerFooterSendButton}
-                    onPress={() => {this.onSend(this.chatProps)}}
-            />
-        );
-        let footer = (
-            <View style={styles.ImagePickerFooterContainer}>
-                <Button
-                    type={"clear"}
-                    title={"相册"}
-                    buttonStyle={{padding: 0}}
-                    containerStyle={{marginRight: 15}}
-                    onPress={this.toAlbumPage}
-                />
-                <Button
-                    type={"clear"}
-                    title={"原图"}
-                    buttonStyle={{padding: 0}}
-                    containerStyle={{marginRight: 15}}
-                    onPress={() => {this.setState({})}}
-                />
-                <View
-                    style={{flex: 1,}}
-                />
-                {sendButton}
-            </View>
-        );
-        return (
-            <View style={{flex: 1,}}>
-                <FlatList
-                    data={this.state.images}
-                    keyExtractor={item => item.node.image.filename}
-                    horizontal={true}
-                    renderItem={this.renderImagePreviewItem}
-                />
-                {footer}
-            </View>
-            )
-    };
-    renderImagePreviewItem = ({item}) => {
-        let checkIcon = (
-            item.checked && item.checked !== 0 ?
-                <TouchableWithoutFeedback
-                    onPress={() => {this.unSelectItem(item)}}
-                >
-                    <View
-                    style={[styles.imagePreviewCheckIconContainer, {backgroundColor: "#00ccff",}]}>
-                        <Text
-                            style={{color: "#fff",textAlign: "center"}}
-                        >{item.checked}</Text>
-                    </View>
-                </TouchableWithoutFeedback>
-                :
-                <TouchableWithoutFeedback
-                    onPress={() => {this.selectItem(item)}}
-                >
-                    <View
-                        style={[styles.imagePreviewCheckIconContainer, {backgroundColor: "rgba(50,50,50,0.7)"}]}
-                    />
-                </TouchableWithoutFeedback>
-        );
-        return (
-            <View style={styles.imagePreviewItemContainer}>
-                <Image
-                    source={{uri: item.node.image.uri}}
-                    style={{height: this.getImageDimension(item).height, width: this.getImageDimension(item).width, borderRadius: 2}}
-                />
-                {checkIcon}
-            </View>
-        )
-    };
-    renderImageViewer = () => {
-        return null;
-    };
-    showEmojiPicker = () => {
-        Keyboard.dismiss();
-        this.setState({
-            isFooterVisible: true,
-            footerComponent: 1,
-        });
-    };
-    showImagePicker = () => {
-        Keyboard.dismiss();
-        if (this.state.images.length <= 0) {
-            this.getPhotosPreview();
-        } else {
-            this.setState({
-                isFooterVisible: true,
-                footerComponent: 2,
-            })
-        }
-    };
-
-    getPhotosPreview = () => {
-        PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE)
-            .then((granted) => {
-                if (granted) {
-                    CameraRoll.getPhotos(
-                        this.state.pageInfo ? {
-                            first: 5,
-                            after: this.state.pageInfo.end_cursor,
-                            assetType: 'Photos',
-                        } : {
-                            first: 5,
-                            assetType: 'Photos',
-                        }
-                    )
-                        .then(res => {
-                            if (this.state.images.length <= 0) {
-                                this.setState({
-                                    isFooterVisible: true,
-                                    footerComponent: 2,
-                                })
-                            }
-                            this.setState({
-                                images: [...this.state.images, ...res.edges,],
-                                pageInfo: res.page_info,
-                            });
-                            console.log(res);
-                        })
-                        .catch(err => {
-                            console.log(err);
-                        })
-                }
-            })
-            .catch(err => {
-
-            })
-    };
     onSend = (props) => {
-        this.buildMessage(props)
-            .then(message => {
-                this.setState(previousState => ({
-                    messages: GiftedChat.append(previousState.messages, message),
-                }));
-                console.log(message);
-                this.sendAsync(props, message)
-                    .catch(err => {console.log(err)});
-                this.clearMessage();
-            })
+        let message = this.buildMessage(props);
+        console.log(message);
+        this.sendAsync(props, message)
             .catch(err => {console.log(err)});
 
+        this.clearMessage();
     };
     sendAsync = async (props, message) => {
+        let receiver = this.props.navigation.getParam("receiver");
         try {
-            let receiver = this.props.navigation.getParam("receiver");
+            this.props.addPrivateMessage(receiver.id, message);
+            let type = this.props.navigation.getParam("type");
             let {currentUser} = this.props;
-            let data = await PrivateMessageApi.addMessage({
-                text: message.text,
-                thatUserId: receiver.id,
-                thatUserName: receiver.nickname,
-                thatUserAvatar: receiver.avatar,
-                thisUserId: currentUser.id,
-                thisUserName: currentUser.nickname,
-                thisUserAvatar: currentUser.avatar,
-            }, this.props.currentUser.jwt);
 
-            let from = XmppApi.getJid(this.props.currentUser);
-            let to = XmppApi.getJid(this.props.navigation.getParam("receiver"));
-            await XmppApi.sendMessage(
-                from, to, "chat", props.messageIdGenerator(),
-                message.text, message.image
-            );
-            message.isLoading = false;
-            this.setState(state => {
-                return {
-                    ...state,
-                    messages: [...state.messages]
-                }
-            });
+            if( type === CHAT_TYPE.PRIVATE_CHAT) {
+                let data = await PrivateMessageApi.addMessage({
+                    text: message.text,
+                    image: message.image,
+                    thatUserId: receiver.id,
+                    thatUserName: receiver.nickname,
+                    thatUserAvatar: receiver.avatar,
+                    thisUserId: currentUser.id,
+                    thisUserName: currentUser.nickname,
+                    thisUserAvatar: currentUser.avatar,
+                    isSelf: true,
+                }, this.props.currentUser.jwt);
+                message.image = data.message.image;
+                let from = XmppApi.getJid(this.props.currentUser, CHAT_TYPE.PRIVATE_CHAT);
+                let to = XmppApi.getJid(this.props.navigation.getParam("receiver"), CHAT_TYPE.PRIVATE_CHAT);
+                await XmppApi.sendMessage(
+                    from, to, CHAT_TYPE.PRIVATE_CHAT, "normal",
+                    message,
+                );
+            } else {
+                let from = XmppApi.getJid(this.props.currentUser, CHAT_TYPE.PRIVATE_CHAT);
+                let to = XmppApi.getJid(null, CHAT_TYPE.GROUP_CHAT);
+                await XmppApi.sendMessage(
+                    from, to, CHAT_TYPE.GROUP_CHAT, props.messageIdGenerator(),
+                    message
+                );
+            }
+            message.pending = false;
+            this.props.forceFlushPrivateMessage(receiver.id, message);
         } catch (err) {
             console.log(err);
+            message.pending = false;
             message.error = err;
-            this.setState(state => {
-                return {
-                    ...state,
-                    messages: [...state.messages]
-                }
-            });
+            this.props.forceFlushPrivateMessage(receiver.id, message);
         }
     };
-    buildMessage = async (props) => {
+    buildMessage = (props) => {
         let message = {
             user: props.user,
+            image: null,
+            text: "",
             createdAt: new Date(),
             _id: props.messageIdGenerator(),
-            isLoading: true,
-            error: new Error(""),
+            pending: true,
         };
         if (this.state.text !== "") {
             message.text = this.state.text;
         }
-        if (this.state.sendImages.length !== 0 ) {
+        if (this.state.images.length !== 0 ) {
             message.image = [];
-            for (let item of this.state.sendImages) {
-                let imgData = await RNFS.readFile(item.node.image.uri, "base64");
-                console.log(imgData);
-                message.image.push(imgData);
-                console.log(imgData);
+            for (let item of this.state.images) {
+                message.image.push(item);
             }
         }
-        console.log(message);
         return message;
     };
     clearMessage = () => {
         this.setState(state => {
-            for(let item of state.sendImages) {
+            for(let item of state.images) {
                 item.checked = 0;
             }
             return {
-                images: [...state.images],
-                sendImages: [],
+                images: [],
                 text: "",
             }
         })
     };
-    getImageDimension = (item) => {
-        let height, width, keyboardHeight;
-        keyboardHeight = this.state.keyboardHeight ? this.state.keyboardHeight : 268;
-        height = keyboardHeight - 45 - 3 - 3;// padding 3, 3, footer 45
-        width = height / item.node.image.height * item.node.image.width;
-        return {
-            height,
-            width,
-        }
-    };
-    selectItem = (item) => {
-        this.setState(state => {
-            item.checked = state.sendImages.length + 1;
-            state.sendImages.push(item);
-            return {
-                state,
-                sendImages: state.sendImages,
-                images: [...state.images],
-            }
-        })
 
-    };
-    unSelectItem = (item) => {
-        item.checked = 0;
-        this.setState(state => {
-            let tmpImages = [], index = 1;
-            for (let img of state.sendImages ) {
-                if (img.node.image.filename !== item.node.image.filename) {
-                    img.checked = index;
-                    tmpImages.push(img);
-                    index++;
-                } else {
-                    img.checked = 0;
-                }
-            }
-
-            return {
-                ...state,
-                sendImages: tmpImages,
-                images: [...state.images],
-            }
-        });
-    };
     goBack = () => {
         NavigationUtil.back(this.props);
     };
-    toAlbumPage = () => {
+    launchImage = () => {
 
+        ImagePicker.launchImageLibrary(options, response => {
+
+            if (response.didCancel) {
+                // ....
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            } else {
+                let {uri} = response;
+                this.setState(state => {
+                    return {
+                        ...state,
+                        images: [...state.images, uri],
+                    }
+                })
+            }
+        })
+    };
+    getImageSmallDimension = (width, height) => {
+        let halfWindowWidth = WINDOW.width / 2;
+        let smallHeight, smallWidth;
+        smallWidth = halfWindowWidth;
+        smallHeight = smallWidth / width * height;
+        return {
+            smallWidth,
+            smallHeight,
+        }
+    };
+    loadData = () => {
+        let type = this.props.navigation.getParam("type");
+        let receiver = this.props.navigation.getParam("receiver");
+        let {currentUser} = this.props;
+        if (type === CHAT_TYPE.PRIVATE_CHAT) {
+            let {privateChat} = this.props;
+            if (!privateChat.hasLoadHistory) {
+                let {id} = receiver;
+                this.props.getPrivateChatHistory(id, currentUser.jwt);
+            } else {
+                // do nothing
+            }
+        } else if(type === CHAT_TYPE.GROUP_CHAT) {
+
+        } else {
+            console.log("miss type param");
+        }
     };
 }
+const options = {
+    title: "选择",
+    cancelButtonTitle: "取消",
+    takePhotoButtonTitle: "拍摄",
+    chooseFromLibraryButtonTitle: "从相册选择",
+    storageOptions: {
+        skipBackup: true,
+        path: 'images',
+    },
+    quality: 0.4,
+    noData: true,
+};
 const mapStateToProps = state => ({
     currentUser: state.currentUser,
+    privateChat: state.privateChat,
+    chtRoom: state.chatRoom,
 });
-export default connect(mapStateToProps, null)(ChatPage);
+const mapDispatchToProps = dispatch => ({
+    getPrivateChatHistory: (senderId, jwt) => dispatch(getPrivateChatHistory(senderId, jwt)),
+    addPrivateMessage: (id, message) => dispatch(addPrivateMessage(id, message)),
+    forceFlushPrivateMessage: (id, message) => dispatch(forceFlushPrivateMessage(id, message)),
+    getChatRoomHistory: () => dispatch(),
+    addChatRoomMessage: () => dispatch(),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatPage);
 
 const styles = StyleSheet.create({
     container: {
@@ -546,12 +391,12 @@ const styles = StyleSheet.create({
     },
 
     messageImage: {
-        width: WINDOW.width / 3,
-        height: WINDOW.height / 4,
         borderRadius: 10,
         marginTop: 12,
         marginRight: 12,
         marginLeft: 12,
+        width: WINDOW.width / 2,
+        height: WINDOW.height / 3,
     },
     imageBadge: {
         position: "absolute",
@@ -566,54 +411,5 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
 
-    footerContainer: {
-        width: WINDOW.width,
-        justifyContent: "center",
-        alignItems: "center",
-    },
 
-    ImagePickerFooterContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        height: 45,
-        width: "100%",
-        paddingLeft: 15,
-        paddingRight: 15,
-        borderTopWidth: 0.5,
-        borderTopColor: "#eee",
-    },
-    ImagePickerFooterSendButton: {
-        paddingTop: 5,
-        paddingBottom: 5,
-        paddingLeft: 15,
-        paddingRight: 15,
-        borderRadius: 20,
-        backgroundColor: "#00a0ff"
-    },
-    ImagePickerFooterSendButtonDisabled: {
-        paddingTop: 5,
-        paddingBottom: 5,
-        paddingLeft: 15,
-        paddingRight: 15,
-        borderRadius: 20,
-        backgroundColor: "#96e0ff"
-    },
-    imagePreviewItemContainer: {
-        padding: 3,
-        position: "relative",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    imagePreviewCheckIconContainer: {
-        position: "absolute",
-        top: 5,
-        right: 5,
-        borderRadius: 50,
-        borderWidth: 1,
-        borderColor: "#fff",
-        width: 20,
-        height: 20,
-        justifyContent: "center",
-        alignItems: "center",
-    },
 });

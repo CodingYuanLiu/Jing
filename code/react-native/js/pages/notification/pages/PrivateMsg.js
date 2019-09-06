@@ -6,6 +6,7 @@ import {getPrivateChatList} from "../../../actions/privateChat";
 import UserAvatar from "../../../common/components/UserAvatar";
 import Util from "../../../common/util";
 import NavigationUtil from "../../../navigator/NavUtil";
+import {CHAT_TYPE} from "../../../common/constant/Constant";
 
 
 class PrivateMsgScreen extends React.PureComponent{
@@ -101,7 +102,7 @@ class PrivateMsgScreen extends React.PureComponent{
         this.props.getPrivateChatList(currentUser.jwt);
     };
     toPrivateChat = (item) => {
-        NavigationUtil.toPage({receiver: item.user}, "PrivateChat")
+        NavigationUtil.toPage({receiver: item.user, type: CHAT_TYPE.PRIVATE_CHAT}, "ChatPage")
     };
 }
 

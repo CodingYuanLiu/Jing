@@ -1,5 +1,5 @@
 import {
-    ADD_PRIVATE_MESSAGE_LIST,
+    ADD_PRIVATE_MESSAGE_LIST, FLUSH_PRIVATE_MESSAGE,
     GET_PRIVATE_MESSAGE_HISTORY_FAIL,
     GET_PRIVATE_MESSAGE_HISTORY_OK, GET_PRIVATE_MESSAGE_LIST_FAIL, GET_PRIVATE_MESSAGE_LIST_OK,
     ON_GET_PRIVATE_MESSAGE_HISTORY, ON_GET_PRIVATE_MESSAGE_LIST,
@@ -11,15 +11,25 @@ const initialState = {
     isLoading: false,
 };
 
+const flushPrivateMessage = (messages, message) => {
+    let size = messages.length;
+    for(let i = size - 1; i--; i > 0) {
+        if(messages[i]._id === message._id) {
+            messages[i] = message;
+        }
+    }
+    return [...messages];
+};
+
 const privateChat = (state=initialState, action) => {
     switch (action.type) {
         case ON_SEND_PRIVATE_MESSAGE:
             return {
                 ...state,
-                [action.item]: {
-                    ...state[action.item],
-                    data: state[action.item] && state[action.item].data?
-                        [action.message, ...state[action.item].data]
+                [action.id]: {
+                    ...state[action.id],
+                    messages: state[action.id] && state[action.id].messages?
+                        [...state[action.id].messages, action.message]
                         : [action.message],
                 }
             };
@@ -37,7 +47,7 @@ const privateChat = (state=initialState, action) => {
         case GET_PRIVATE_MESSAGE_LIST_OK:
             return {
                 ...state,
-                chatList: action.data,
+                chatList: action.list,
                 isLoading: false,
             };
         case GET_PRIVATE_MESSAGE_LIST_FAIL:
@@ -49,24 +59,34 @@ const privateChat = (state=initialState, action) => {
         case ON_GET_PRIVATE_MESSAGE_HISTORY:
             return {
                 ...state,
-                [action.item]: {
+                [action.id]: {
                     isLoading: true,
                 }
             };
         case GET_PRIVATE_MESSAGE_HISTORY_OK:
             return {
                 ...state,
-                [action.item]: {
+                [action.id]: {
                     isLoading: false,
-                    data: state[action.item].data,
+                    messages: action.messages,
+                    hasLoadHistory: true,
                 }
             };
         case GET_PRIVATE_MESSAGE_HISTORY_FAIL:
             return {
                 ...state,
-                [action.item]: {
+                [action.id]: {
                     isLoading: false,
                     error: action.err,
+                }
+            };
+        case FLUSH_PRIVATE_MESSAGE:
+            console.log("props change",state[action.id]);
+            return {
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    messages: flushPrivateMessage(state[action.id].messages, action.message),
                 }
             };
         default:

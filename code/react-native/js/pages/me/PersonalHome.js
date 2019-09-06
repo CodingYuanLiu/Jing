@@ -16,7 +16,7 @@ import {
     toggleNestScroll
 } from "../../actions/personalHome";
 import {onFollow, onUnFollow} from "../../actions/currentUserFollowing";
-import {GENDER_FEMALE, GENDER_SECRET} from "../../common/constant/Constant";
+import {CHAT_TYPE, GENDER_FEMALE, GENDER_SECRET} from "../../common/constant/Constant";
 import {updateUserInfo} from "../../actions/currentUser";
 
 const window = Util.getVerticalWindowDimension();
@@ -427,7 +427,7 @@ class PersonalHome extends React.PureComponent {
         NavigationUtil.toPage({user: this.state.user}, "PersonalInformation");
     };
     toPrivateMessage = () => {
-        NavigationUtil.toPage({receiver: this.state.user}, "PrivateChat");
+        NavigationUtil.toPage({receiver: this.state.user, type: CHAT_TYPE.PRIVATE_CHAT}, "ChatPage");
     };
     follow = () => {
         let currentUser = this.props.currentUser;

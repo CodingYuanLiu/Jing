@@ -131,46 +131,10 @@ class MeScreen extends React.PureComponent{
     };
 
     renderActMenu = () => {
-        return (
-            <View style={styles.actContainer}>
-                <ListItem
-                title={"我的活动"}
-                chevron
-                onPress={() => {NavigationUtil.toPage(null, "MyAct")}}
-                />
-                <ListItem
-                title={"正在参与"}
-                chevron
-                onPress={() => {NavigationUtil.toPage(null, "MyCurrentAct")}}
-                />
-                <ListItem
-                title={"已结束"}
-                chevron
-                onPress={() => {NavigationUtil.toPage(null, "MyFinishAct")}}
-                />
-            </View>
-        )
+        return null;
     };
     renderHelpMenu = () => {
-        return (
-            <View style={styles.helpContainer}>
-                <ListItem
-                title={"客服中心"}
-                chevron
-                />
-                <ListItem
-                title={"反馈"}
-                chevron
-                />
-                <ListItem
-                title={"用户满意度调研"}
-                chevron
-                />
-                <ListItem
-                title={"去评价"}
-                />
-            </View>
-        )
+        return null;
     };
 
     toUserHome = () => {

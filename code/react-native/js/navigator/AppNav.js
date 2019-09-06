@@ -9,7 +9,6 @@ import SearchScreen from '../pages/search/Search';
 import PersonalHome from '../pages/me/PersonalHome';
 import PublishStack from "../pages/publish/PublishStack";
 import CommentModal from "../pages/detail/CommentModal";
-import ChatRoom from "../pages/notification/pages/ChatRoom";
 import ModifyInformation from "../pages/me/ModifyInformation/ModifyInformation";
 import DormitoryPage from "../pages/me/ModifyInformation/DormitoryPage";
 import MajorPage from "../pages/me/ModifyInformation/MajorPage";
@@ -22,7 +21,7 @@ import PublishDraft from "../pages/publish/PublishDraft";
 import Feedback from "../pages/me/Feedback/Feedback";
 import FeedbackPage from "../pages/me/Feedback/FeedbackPage";
 import PersonalInformation from "../pages/me/PersonalInformation";
-import PrivateChat from "../pages/notification/pages/PrivateChat";
+import ChatPage from "../pages/notification/pages/ChatPage";
 import NativeLogin from "../pages/login/NativeLogin";
 import JaccountLoading from "../pages/login/JaccountLoading";
 import JaccountWebView from "../pages/login/JaccountWebView";
@@ -72,9 +71,6 @@ export const MainNav = createStackNavigator(
         ActComment: {
             screen: CommentModal,
         },
-        ChatRoom: {
-            screen: ChatRoom,
-        },
         Following: {
             screen: Following,
         },
@@ -99,8 +95,8 @@ export const MainNav = createStackNavigator(
         PersonalInformation: {
             screen: PersonalInformation,
         },
-        PrivateChat: {
-            screen: PrivateChat,
+        ChatPage: {
+            screen: ChatPage,
         }
     },
     {

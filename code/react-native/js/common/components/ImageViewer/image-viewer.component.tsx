@@ -18,6 +18,8 @@ import {
 import ImageZoom from 'react-native-image-pan-zoom';
 import styles from './image-viewer.style';
 import { IImageInfo, IImageSize, Props, State } from './image-viewer.type';
+import {WINDOW} from "../../constant/Constant";
+
 
 export default class ImageViewer extends React.Component<Props, State> {
   public static defaultProps = new Props();
@@ -33,8 +35,8 @@ export default class ImageViewer extends React.Component<Props, State> {
   private positionXNumber = 0;
   private positionX = new Animated.Value(0);
 
-  private width = 0;
-  private height = 0;
+    private width = WINDOW.width;
+  private height = WINDOW.height;
 
   private styles = styles(0, 0, 'transparent');
 
@@ -68,7 +70,7 @@ export default class ImageViewer extends React.Component<Props, State> {
           // 显示动画
           Animated.timing(this.fadeAnim, {
             toValue: 1,
-            duration: 100
+            duration: 200
           }).start();
         }
       );
@@ -410,27 +412,28 @@ export default class ImageViewer extends React.Component<Props, State> {
   /**
    * 完成布局
    */
-  public handleLayout = (event: any) => {
-    console.log(event);
-    // if (event.nativeEvent.layout.width !== this.width) {
-    //   this.hasLayout = true;
-    //
-    //   this.width = event.nativeEvent.layout.width;
-    //   this.height = event.nativeEvent.layout.height;
-    //   this.styles = styles(this.width, this.height, this.props.backgroundColor || 'transparent');
-    //
-    //   // 强制刷新
-    //   this.forceUpdate();
-    //   this.jumpToCurrentImage();
-    // }
-  };
+  // public handleLayout = (event: any) => {
+  //   console.log(event);
+  //   if (event.nativeEvent.layout.width !== this.width) {
+  //     this.hasLayout = true;
+  //
+  //     if (!this.hasLayout) {
+  //       this.width = event.nativeEvent.layout.width;
+  //       this.height = event.nativeEvent.layout.height;
+  //       this.styles = styles(this.width, this.height, this.props.backgroundColor || 'transparent');
+  //
+  //     }
+  //     // 强制刷新
+  //     //this.forceUpdate();
+  //     this.jumpToCurrentImage();
+  //   }
+  // };
 
   /**
    * 获得整体内容
    */
   public getContent() {
     // 获得屏幕宽高
-    console.log(this.width, this.height);
     const screenWidth = this.width;
     const screenHeight = this.height;
 
@@ -451,12 +454,6 @@ export default class ImageViewer extends React.Component<Props, State> {
         return <View key={index} style={{ width: screenWidth, height: screenHeight }} />;
       }
 
-      // 如果高大于屏幕高度,整体缩放高度是屏幕高度
-      if (height > screenHeight) {
-        const HeightPixel = screenHeight / height;
-        width *= HeightPixel;
-        height *= HeightPixel;
-      }
 
       // 如果此时度宽还大于屏幕宽度,整体缩放宽度是屏幕宽度
       if (width > screenWidth) {
@@ -695,7 +692,7 @@ export default class ImageViewer extends React.Component<Props, State> {
 
     return (
       <View
-        onLayout={this.handleLayout}
+        //onLayout={this.handleLayout}
         style={{
           flex: 1,
           overflow: 'hidden',

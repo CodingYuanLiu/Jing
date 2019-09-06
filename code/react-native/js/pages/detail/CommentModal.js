@@ -90,7 +90,7 @@ class CommentModal extends React.PureComponent{
                 <FlatList
                     data={comments}
                     renderItem={this.renderCommentItem}
-                    keyExtractor={item => (item.time)}
+                    keyExtractor={(item, i) => (i.toString())}
                     refreshControl={
                         <RefreshControl
                             refreshing={false}

@@ -322,6 +322,7 @@ export default class Api {
                     'Authorization': `Bearer ${token}`,
                 }
             });
+            console.log(res);
             let acts = res.data ? res.data : [];
             acts = Model.transferActivityList(acts);
             let participants;
