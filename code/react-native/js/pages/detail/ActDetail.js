@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, StatusBar} from "react-native"
+import {View, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, Animated} from "react-native"
 import {Button, Image, ListItem } from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
 import {
@@ -33,6 +33,7 @@ import {WINDOW} from "../../common/constant/Constant";
 import Modal from "react-native-modal";
 import ImageViewer from "react-native-image-zoom-viewer";
 
+
 class DetailScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -43,9 +44,11 @@ class DetailScreen extends React.Component {
             joinStatus: 0,
             isTooltipVisible: false,
             isImageViewerVisible: false,
+            isTitleVisible: false,
             index: 0,
         };
         this.actId = this.props.navigation.getParam("id");
+        this.scrollY = new Animated.Value(0);
     }
 
     componentDidMount(){
@@ -58,7 +61,7 @@ class DetailScreen extends React.Component {
         let {title, comments, tags, images,
             createTime, description, sponsor} = activity;
         let specInfo = {}; // waiting for modifying
-        let header = this.renderHeader();
+        let header = this.renderHeader(title);
         let ActTitle = this.renderTitle(title, tags);
         let body = this.renderBody(sponsor, specInfo, description, images, createTime, comments);
         let footer = this.renderFooter();
@@ -66,19 +69,25 @@ class DetailScreen extends React.Component {
         return(
             <View style={{flex: 1,}}>
                 {header}
-                <ScrollView
+                <Animated.ScrollView
                     style={styles.container}
-                    onScroll={this._onScroll}
+                    onScroll={Animated.event(
+                        [{nativeEvent: {contentOffset: {y: this.scrollY}}}],
+                        {useNativeDriver: true, listener: () => {console.log(this.scrollY.interpolate({
+                                inputRange: [0, 40, 50],
+                                outputRange: [0, 2, 2],
+                            }))}}
+                    )}
                 >
                     {ActTitle}
                     {body}
-                </ScrollView>
+                </Animated.ScrollView>
                 {footer}
                 {imageViewer}
             </View>
         );
     };
-    renderHeader = () => {
+    renderHeader = (title) => {
         let leftIcon = (
             <ArrowLeftIcon
                 color={"#5a5a5a"}
@@ -90,11 +99,36 @@ class DetailScreen extends React.Component {
         return(
             <HeaderBar
                 leftButton={leftIcon}
+                titleView={
+                    <Animated.View
+                        style={[
+                            styles.headerTitleContainer,
+                            {
+                                opacity: this.scrollY.interpolate({
+                                    inputRange: [0, 50],
+                                    outputRange: [0, 1],
+                                }),
+                                transform: [
+                                    {
+                                        translateY: this.scrollY.interpolate({
+                                            inputRange: [0, 30, 100],
+                                            outputRange: [20, 0, 0],
+                                        })
+                                    }
+                                ]
+                            }
+                        ]}
+                    >
+                        <Text
+                            style={styles.headerTitle}
+                        >{title}</Text>
+                    </Animated.View>
+                }
+                titleLayoutStyle={{alignItems: "flex-start"}}
                 style={{
-                        backgroundColor: "#fff",
-                        marginLeft: 12,
-                        marginRight: 12,
-                    }}
+                    backgroundColor: "#fff",
+                    elevation: 2,
+                }}
                 rightButton={rightIcon}
             />
         );
@@ -384,7 +418,7 @@ class DetailScreen extends React.Component {
                 <TouchableWithoutFeedback
                     onPress={this.toChatPage}
                 >
-                    <View>
+                    <View style={styles.bottomRightIcon}>
                         {editIcon}
                         <Text style={styles.bottomIconText}>编辑</Text>
                     </View>
@@ -405,7 +439,7 @@ class DetailScreen extends React.Component {
             <TouchableWithoutFeedback
                 onPress={this.toComments}
             >
-                <View style={styles.bottomRightIcon}>
+                <View>
                     {commentIcon}
                     <Text style={styles.bottomIconText}>评论</Text>
                 </View>
@@ -633,9 +667,6 @@ class DetailScreen extends React.Component {
     toggleEveningMode = ()　=> {
         alert("没有事情发生")
     };
-    _onScroll = () => {
-
-    };
 }
 
 const mapStateToProps = state => ({
@@ -665,6 +696,16 @@ const styles = StyleSheet.create({
     },
 
     // header style, including title, tags
+    headerTitleContainer: {
+        flex: 1,
+        justifyContent: "center",
+    },
+    headerTitle: {
+        fontWeight: "800",
+        fontSize: 18,
+        color: "#3a3a3a",
+        textAlign: "center",
+    },
     titleContainer:{
         backgroundColor: "#fff",
         paddingLeft:"6%",
@@ -824,8 +865,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
     },
     bottomRightIcon: {
-        paddingRight: 12,
-        paddingLeft: 12,
+        marginRight: 18,
     },
     bottomButtonContainer: {
         padding: 0,
