@@ -1,4 +1,5 @@
 <!--pages/showuserinfo/fb_comments/fb_comments.wxml-->
+<i-toast id="toast" />
 <view class="container">
     <block wx:for="{{comments}}" wx:key="id" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
         <i-card style="width: 100%" i-class="card-demo" full title="{{item.commentator_nickname}}" thumb="{{item.commentator_avatar}}" extra="{{item.time}}">
@@ -10,7 +11,7 @@
         </view> -->
         </i-card>
     </block>
-    <view style="height: 10vh"></view>
+    <view style="height: 10vh"  wx:if="{{!no_content}}"></view>
     <view class="answer-footer flex-wrp">
         <view class="operation">
             <view class="search flex-wrp">

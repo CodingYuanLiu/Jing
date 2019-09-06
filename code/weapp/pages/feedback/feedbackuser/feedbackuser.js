@@ -68,6 +68,12 @@ Page({
                 "honesty": that.data.starIndexH,
                 "honesty_desc": that.data.detailH,
                 "fb_images": []
+            },
+            success: function(res) {
+                console.log(res);
+                wx.navigateBack({
+
+                })
             }
         })
 

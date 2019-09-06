@@ -1,3 +1,9 @@
 {
-    "navigationBarTitleText": "发现活动"
+    "navigationBarTitleText": "发现活动",
+    "usingComponents": {
+        "i-toast": "../../dist/toast/index",
+        "i-row": "../../dist/row/index",
+        "i-col": "../../dist/col/index",
+        "i-button": "../../dist/button/index"
+    }
 }

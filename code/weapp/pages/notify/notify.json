@@ -1,6 +1,8 @@
 {
     "navigationBarTitleText": "通知",
     "usingComponents": {
-        "i-modal": "../../dist/modal/index"
+        "i-modal": "../../dist/modal/index",
+        "i-tabs": "../../dist/tabs/index",
+        "i-tab": "../../dist/tab/index"
     }
 }

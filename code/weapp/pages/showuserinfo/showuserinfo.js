@@ -51,15 +51,37 @@ Page({
             }
         })
         wx.request({
+            url: 'https://jing855.cn/api/public/act/quitratio?user_id=' + that.data.id,
+            method: 'GET',
+            success: function(res) {
+                that.setData({
+                    quitRatio: res.data.ratio
+                })
+            }
+        })
+        wx.request({
             url: 'https://jing855.cn/api/public/feedback/query?receiver_id=' + that.data.id,
             method: 'GET',
             success: function(res) {
                 console.log(res)
-                if (res.statusCode === 200)
+                if (res.statusCode === 200) {
                     that.setData({
                         feedback: res.data
                     })
-                else that.setData({
+                    let sumH = 0;
+                    let sumC = 0;
+                    let sumP = 0;
+                    for (let i = 0; i < res.data.length; i++) {
+                        sumH += res.data[i].honesty;
+                        sumC += res.data[i].communication;
+                        sumP += res.data[i].punctuality;
+                    }
+                    that.setData({
+                        avgC: sumC / res.data.length,
+                        avgH: sumH / res.data.length,
+                        avgP: sumP / res.data.length,
+                    })
+                } else that.setData({
                     feedback: []
                 })
             }
@@ -124,6 +146,14 @@ Page({
         let fb_id = this.data.feedback[id].feedback_id
         wx.navigateTo({
             url: './fb_comments/fb_comments?id=' + fb_id + '&comments=' + comments,
+        })
+    },
+    handleToShowUserinfo: function(e) {
+        let id = e.currentTarget.dataset.id
+        console.log(id)
+        // console.log(this.data.feedback[id])
+        wx.navigateTo({
+            url: '/pages/showUserinfo/showUserinfo?id=' + id,
         })
     }
 })

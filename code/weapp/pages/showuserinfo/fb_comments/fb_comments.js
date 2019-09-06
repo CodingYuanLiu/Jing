@@ -1,12 +1,16 @@
 // pages/showuserinfo/fb_comments/fb_comments.js
-let app = getApp()
+let app = getApp();
+const {
+    $Toast
+} = require('../../../dist/base/index');
 Page({
 
     /**
      * 页面的初始数据
      */
     data: {
-        your_comment: ''
+        your_comment: '',
+        no_content: false
     },
 
     /**
@@ -21,8 +25,20 @@ Page({
         })
         console.log(id)
         console.log(comments)
+        if (comments.length === 0) {
+            this.setData({
+                no_content: true
+            });
+        }
     },
     handleAddComment: function() {
+        if (app.globalData.userInfo === null) {
+            $Toast({
+                content: '请登录',
+                type: 'error',
+            });
+            return;
+        }
         let that = this
         let date = new Date()
         let dateStr = date.toString()
@@ -48,7 +64,8 @@ Page({
             success: function() {
                 that.setData({
                     comments: that.data.comments.concat(con),
-                    your_comment: ''
+                    your_comment: '',
+                    no_content: false,
                 })
 
             }

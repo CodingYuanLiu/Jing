@@ -63,7 +63,7 @@ Page({
                                 })
                             } else if (res.data.message === "Login success") {
                                 app.globalData.jwt = res.data.jwt;
-                                console.log("jwt: "+res.data.jwt)
+                                console.log("jwt: " + res.data.jwt)
                                 console.log(123);
                                 wx.request({
                                     url: 'https://jing855.cn/api/user/status',
@@ -103,9 +103,12 @@ Page({
                                     header: {
                                         "Authorization": "Bearer " + app.globalData.jwt,
                                     },
-                                    success: function (res) {
+                                    success: function(res) {
                                         console.log(res)
                                         app.globalData.following = res.data
+                                        that.setData({
+                                            followingNum: res.data.length
+                                        })
                                     }
                                 })
                                 wx.request({
@@ -114,9 +117,13 @@ Page({
                                     header: {
                                         "Authorization": "Bearer " + app.globalData.jwt,
                                     },
-                                    success: function (res) {
+                                    success: function(res) {
                                         console.log(res)
                                         app.globalData.followers = res.data
+                                        that.setData({
+                                            followerNum: res.data.length
+                                        })
+
                                     }
                                 })
                                 wx.request({
@@ -125,14 +132,64 @@ Page({
                                     header: {
                                         "Authorization": "Bearer " + app.globalData.jwt,
                                     },
-                                    success: function (res) {
+                                    success: function(res) {
                                         console.log(res)
                                         app.globalData.friends = res.data
                                     }
                                 })
-                            } else {
-
-                            }
+                                wx.request({
+                                    url: 'https://jing855.cn/api/user/act/myact',
+                                    method: 'GET',
+                                    header: {
+                                        "Authorization": "Bearer " + app.globalData.jwt,
+                                    },
+                                    success: function(res) {
+                                        if (res.data.acts === null) {
+                                            wx.request({
+                                                url: 'https://jing855.cn/api/user/act/manageact',
+                                                method: 'GET',
+                                                header: {
+                                                    "Authorization": "Bearer " + app.globalData.jwt,
+                                                },
+                                                success: function(res) {
+                                                    if (res.data.acts === null) {
+                                                        that.setData({
+                                                            myActCount: 0
+                                                        });
+                                                    } else {
+                                                        that.setData({
+                                                            myActCount: res.data.acts.length
+                                                        });
+                                                    }
+                                                }
+                                            })
+                                        } else {
+                                            let count = res.data.acts.length;
+                                            wx.request({
+                                                url: 'https://jing855.cn/api/user/act/manageact',
+                                                method: 'GET',
+                                                header: {
+                                                    "Authorization": "Bearer " + app.globalData.jwt,
+                                                },
+                                                success: function(res) {
+                                                    if (res.data.acts === null) {
+                                                        that.setData({
+                                                            myActCount: count
+                                                        });
+                                                    } else {
+                                                        that.setData({
+                                                            myActCount: count + res.data.acts.length
+                                                        });
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    },
+                                    fail: function(res) {
+                                        console.log(res)
+                                    }
+                                })
+                            } else {}
                         },
                     })
                 } else {
@@ -158,6 +215,15 @@ Page({
                 })
             }
         }
+        wx.getStorage({
+            key: 'history',
+            success: function(res) {
+                let ids = Array.from(new Set(res.data))
+                that.setData({
+                    historyNum: ids.length
+                })
+            }
+        })
     },
     handleLogout: function() {
         app.globalData.userInfo = null;
@@ -169,30 +235,25 @@ Page({
             log: false
         });
     },
-    add: function(a, b) {
-        return a + b;
-    },
-    handlePub: function() {
+    // add: function(a, b) {
+    //     return a + b;
+    // },
+    handleMyAct: function() {
         wx.navigateTo({
-            url: '/pages/my/mypublish/mypublish',
+            url: '/pages/my/myAct/myAct',
         })
     },
-    handleJoin: function() {
-        wx.navigateTo({
-            url: '/pages/my/myjoin/myjoin',
-        })
-    },
-    handleFeedback: function() {
-        wx.navigateTo({
-            url: '/pages/feedback/feedback',
-        })
-    },
+    // handleFeedback: function() {
+    //     wx.navigateTo({
+    //         url: '/pages/feedback/feedback',
+    //     })
+    // },
     handleFollower: function() {
         wx.navigateTo({
             url: '/pages/follow/follow?mode=follower',
         })
     },
-    handleFollowing: function () {
+    handleFollowing: function() {
         wx.navigateTo({
             url: '/pages/follow/follow?mode=following',
         })

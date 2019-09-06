@@ -62,3 +62,7 @@
 .my .my-item:last-child .myitem-name{
   border-bottom: none;
 }
+
+.card-demo image {
+  border-radius: 50%;
+}

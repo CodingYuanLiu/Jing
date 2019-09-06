@@ -519,7 +519,7 @@ Page({
     },
     handleStoreSelect: function() {
         wx.navigateTo({
-            url: '/pages/selectstore/selectstore',
+            url: '/pages/selectStore/selectStore',
         })
     },
     handleMemberInput: function(event) {

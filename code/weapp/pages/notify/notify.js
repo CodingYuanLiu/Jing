@@ -6,6 +6,8 @@ const {
 
 Page({
     data: {
+        // navTab: ["加入申请",  "我的申请"],
+        // currentNavtab: 0,
         focus: false,
         inputValue: '',
         aid: 0,
@@ -13,9 +15,10 @@ Page({
         loged: true,
         applicant: [],
         notify_length: 0,
-        // navTab: ["通知"],
-        // currentNavtab: "0",
+        navTab: ["加入申请", "我的申请"],
+        currentNavtab: "0",
         visible: false,
+        current: 'tab1',
     },
     bindButtonTap: function() {
         this.setData({
@@ -117,8 +120,8 @@ Page({
                 header: {
                     "Authorization": "Bearer " + app.globalData.jwt,
                 },
-                success: function (res) {
-                    if (res.data === null) {
+                success: function(res) {
+                    if (res.data.errcode === 301) {
                         that.setData({
                             applicant: [],
                             notify_length: 0
@@ -135,10 +138,61 @@ Page({
                     })
                 }
             })
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/refused',
+                method: 'GET',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                success: function(res) {
+                    if (res.data !== null) {
+                        that.setData({
+                            refusedActs: res.data
+                        })
+                    } else {
+                        that.setData({
+                            refusedActs: []
+                        })
+                    }
+                }
+            })
+            wx.request({
+                url: 'https://jing855.cn/api/user/act/getunacceptedapp',
+                method: 'GET',
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                success: function (res) {
+                    if (res.data.errcode !== 300 && res.data.errcode!=301) {
+                        that.setData({
+                            unacceptedApp: res.data
+                        })
+                    } else {
+                        that.setData({
+                            unacceptedApp: []
+                        })
+                    }
+                }
+            })
         }
 
     },
     onShow: function() {
         this.onLoad();
-    }
+    },
+    handleChange({
+        detail
+    }) {
+        this.setData({
+            current: detail.key
+        });
+    },
+    bindQueTap: function (event) {
+        let actid = event.currentTarget.dataset.id
+        console.log(actid);
+        console.log(23);
+        wx.navigateTo({
+            url: '../answer/answer?id=' + actid
+        })
+    },
 })

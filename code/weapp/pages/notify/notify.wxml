@@ -1,15 +1,13 @@
-<!--logs.wxml-->
 <view hidden="{{loged}}">请登录</view>
-<!-- <view hidden="{{!loged}}" class="top-tab flex-wrp flex-tab">
+<view hidden="{{!loged}}" class="top-tab flex-wrp flex-tab">
     <view class="toptab flex-item {{currentNavtab==idx ? 'active' : ''}}" wx:for="{{navTab}}" wx:for-index="idx" wx:for-item="itemName" data-idx="{{idx}}" bindtap="switchTab">
         {{itemName}}
     </view>
-</view> -->
-<scroll-view hidden="{{!loged}}" scroll-y="true" class="container notify" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
-    <view class="ctnt0">
-    <!-- <view class="ctnt0" hidden="{{currentNavtab==0 ? '' : true}}"> -->
+</view>
+<scroll-view hidden="{{!loged}}" scroll-y="true" class="container notify withtab" bindscrolltoupper="upper" bindscrolltolower="lower" bindscroll="scroll" scroll-into-view="{{toView}}" scroll-top="{{scrollTop}}">
+    <view class="ctnt0" hidden="{{currentNavtab==0 ? '' : true}}">
         <view class="unread">
-            <text>{{notify_length}} 条未读</text>
+            <text>{{notify_length}} 条未处理申请</text>
             <image src="/images/allread.png"></image>
         </view>
         <block wx:for="{{applicant}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
@@ -24,7 +22,53 @@
             </view>
         </block>
     </view>
+    <view class="ctnt1" hidden="{{currentNavtab==1 ? '' : true}}">
+        <i-tabs current="{{ current }}" color="	#00BFFF" bindchange="handleChange">
+            <i-tab key="tab1" title="等待接受"></i-tab>
+            <i-tab key="tab2" title="已被拒绝"></i-tab>
+            <!-- <i-tab key="tab3" title="已通过"></i-tab> -->
+        </i-tabs>
 
+        <!-- 待接受 -->
+        <view wx:if="{{current === 'tab1'}}">
+            <block wx:for="{{unacceptedApp}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+                <view class="notify-item flex-wrp" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                    <!-- <view class="avatar flex-item">
+                        <image wx:if="{{item.applicant_avatar}}" src="{{item.applicant_avatar!==null?item.applicant_avatar:'/images/icons/timg.jpg'}}"></image>
+                    </view> -->
+                    <view class="notify-content flex-item" style="margin: 10px">
+                        <!-- <text class="notify-source">申请加入</text> -->
+                        <text class="notify-title" style="color: black">{{item.act_title}}</text>
+                    </view>
+                </view>
+            </block>
+            <view class="notify-item flex-wrp" style="border: 0" wx:if="{{unacceptedApp.length === 0}}">
+                <view class="notify-content flex-item" style="margin: 10px">
+                    <text class="notify-title" style="color: black">暂无相关申请</text>
+                </view>
+            </view>
+        </view>
+
+        <!-- 已拒绝 -->
+        <view wx:if="{{current === 'tab2'}}">
+            <block wx:for="{{refusedActs}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+                <view class="notify-item flex-wrp" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                    <!-- <view class="avatar flex-item">
+                        <image wx:if="{{item.applicant_avatar}}" src="{{item.applicant_avatar!==null?item.applicant_avatar:'/images/icons/timg.jpg'}}"></image>
+                    </view> -->
+                    <view class="notify-content flex-item" style="margin: 10px">
+                        <!-- <text class="notify-source">申请加入</text> -->
+                        <text class="notify-title" style="color: black">{{item.act_title}}</text>
+                    </view>
+                </view>
+            </block>
+            <view class="notify-item flex-wrp" style="border: 0" wx:if="{{refusedActs.length === 0}}">
+                <view class="notify-content flex-item" style="margin: 10px">
+                    <text class="notify-title" style="color: black">暂无相关申请</text>
+                </view>
+            </view>
+        </view>
+    </view>
 </scroll-view>
 <i-modal title="" visible="{{ visible }}" bind:ok="handleOk" bind:cancel="handleCancel">
     <view>{{message}}</view>

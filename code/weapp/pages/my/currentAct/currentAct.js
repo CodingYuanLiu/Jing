@@ -31,8 +31,16 @@ Page({
                     });
                 }
                 console.log(res);
+                let all = res.data.acts;
+                let current = [];
+                let date = (new Date()).toString();
+                for (let i = 0; i < all.length; i++) {
+                    if (new Date(all[i].end_time) < date) {
+                        current.push(all[i]);
+                    }
+                }
                 that.setData({
-                    acts: res.data.acts
+                    acts: current
                 })
             },
             fail: function(res) {

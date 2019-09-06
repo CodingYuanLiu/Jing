@@ -24,18 +24,43 @@
     </i-tabs>
     <!-- <i-panel title="个人信息"> -->
     <view wx:if="{{current === 'tab1'}}">
-        <i-input value="{{ user.username }}" disabled type="text" maxlength="10" title="用户名" />
-        <i-input value="{{ user.nickname }}" disabled type="text" maxlength="10" title="昵称" />
-        <i-input value="{{ user.signature }}" disabled type="text" title="个性签名" maxlength="50" />
-        <i-input value="{{ user.phone }}" wx:if="{{user.privacy === 0}}" disabled type="number" title="联系电话" maxlength="11" />
-        <i-input value="{{ user.birthday }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="生日" maxlength="11" />
-        <i-input value="{{ user.dormitory }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="宿舍" maxlength="11" />
-        <i-input value="{{ user.major }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="专业" maxlength="11" />
-        <i-input value="{{ genders[user.gender] }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="性别" maxlength="11" />
-        <i-input value="{{ levels[user.privacy+1] }}" disabled type="text" title="隐私设置" maxlength="11" />
+        <view style="margin: 30px">
+            <!-- 平均分 -->
+            <i-row>
+                <i-col span="6" i-class="col-class">
+                    沟通
+                    <view style="font-size: 25px">{{avgC}}</view>
+                </i-col>
+                <i-col span="6" i-class="col-class">
+                    守时
+                    <view style="font-size: 25px">{{avgP}}</view>
+                </i-col>
+                <i-col span="6" i-class="col-class">
+                    诚信
+                    <view style="font-size: 25px;">{{avgH}}</view>
+                </i-col>
+                <i-col span="6" i-class="col-class">
+                    退出率
+                    <view style="font-size: 25px;">{{quitRatio}}</view>
+                </i-col>
+            </i-row>
+        </view>
+        <view style="margin: 10px">
+            <i-input value="{{ user.username }}" disabled type="text" maxlength="10" title="用户名" />
+            <i-input value="{{ user.nickname }}" disabled type="text" maxlength="10" title="昵称" />
+            <i-input value="{{ user.signature }}" disabled type="text" title="个性签名" maxlength="50" />
+            <i-input value="{{ user.phone }}" wx:if="{{user.privacy === 0}}" disabled type="number" title="联系电话" maxlength="11" />
+            <i-input value="{{ user.birthday }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="生日" maxlength="11" />
+            <i-input value="{{ user.dormitory }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="宿舍" maxlength="11" />
+            <i-input value="{{ user.major }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="专业" maxlength="11" />
+            <i-input value="{{ genders[user.gender] }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="性别" maxlength="11" />
+            <i-input value="{{ levels[user.privacy+1] }}" disabled type="text" title="隐私设置" maxlength="11" />
+        </view>
+
     </view>
     <!-- </i-panel> -->
     <view wx:if="{{current === 'tab2'}}">
+
         <block wx:for="{{feedback}}" wx:key="id" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
             <i-card full title="{{item.act_title}}" extra="2019-09-09">
                 <view slot="content">
@@ -63,8 +88,9 @@
 
                     <!-- <text style="margin-left:300rpx">{{item.honesty_desc}}</text> -->
                 </view>
-                <view slot="footer"> 
-                    <label bindtap="handleToComments" data-id="{{idx}}" style="float: right; margin-bottom: 5px;">评价 {{item.fb_comments.length}}</label>
+                <view slot="footer">
+                    <label bindtap="handleToShowUserinfo" data-id="{{item.user_id}}" style="float: left; margin-bottom: 5px;margin-left:10px"> {{item.user_nickname}}</label>
+                    <label bindtap="handleToComments" data-id="{{idx}}" style="float: right; margin-bottom: 5px;margin-right:10px">评论 {{item.fb_comments.length}}</label>
                 </view>
             </i-card>
         </block>
