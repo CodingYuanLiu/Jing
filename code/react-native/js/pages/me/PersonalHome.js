@@ -109,7 +109,7 @@ class PersonalHome extends React.PureComponent {
                             "https://pic1.zhimg.com/v2-3b4fc7e3a1195a081d0259246c38debc_1200x500.jpg"
                         ,
                     }}
-                    style={{width: window.width, height: BACKGROUND_IMAGE_HEIGHT}}
+                    style={{width: window.width, height: BACKGROUND_IMAGE_HEIGHT, zIndex: 10}}
                 />
             </TouchableWithoutFeedback>
         )

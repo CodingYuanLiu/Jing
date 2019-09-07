@@ -69,7 +69,7 @@ export default class JoinItem extends React.Component{
             <ToolTip
                 isVisible={this.state.isTooltipVisible}
                 onPress={() => {this.setState({isTooltipVisible: true})}}
-                onBackdropPress={this.setState({isTooltipVisible: false})}
+                onBackdropPress={() => {this.setState({isTooltipVisible: false})}}
             >
                 {feedbackButton}
                 {quitButton}

@@ -1,4 +1,5 @@
 import Util from "../common/util";
+import common from "react-native-linear-gradient/common";
 
 export default class Model {
     static transferUserInfo(data) {
@@ -215,7 +216,7 @@ export default class Model {
                 id: data.act_id,
                 title: data.act_title,
             },
-            feedbackId: data.feedback_id,
+            id: data.feedback_id,
             communication: {
                 data: data.communication,
                 desc: data.communication_desc,
@@ -229,7 +230,7 @@ export default class Model {
                 desc: data.punctuality_desc,
             },
             images: data.fb_images ? data.fb_images : [],
-            comments: data.fb_comments ? data.fb_comments : [],
+            comments: data.fb_comments ? this.transferFeedbackCommentList(data.fb_comments) : [],
             createTime: data.time,
             user: {
                 id: data.user_id,
@@ -246,6 +247,31 @@ export default class Model {
         }
         return res;
     };
+    static transferFeedbackCommentList = (list) => {
+        if (!list) return [];
+        let res = [];
+        for (let item of list) {
+            res.push(this.transferFeedbackComment(item))
+        }
+        return res;
+    };
+    static transferFeedbackComment = (comment) => {
+        return{
+            description: comment.comment_desc,
+            id: comment.commentator_id,
+            avatar: comment.commentator_avatar,
+            nickname: comment.commentator_nickname,
+            time: comment.time,
+        }
+    };
+    static buildFeedbackComment = (comment) => {
+        console.log(comment);
+        return {
+            object_id: comment.id,
+            time: comment.time,
+            commentator_desc: comment.text,
+        }
+    };
     static buildFeedbackItem = (data) => {
         return {
             act_id: data.actId,
@@ -259,13 +285,6 @@ export default class Model {
             time: Util.dateTimeToString(new Date()),
             fb_images: data.feedbackImages,
         }
-    };
-    static buildFeedbackComment = (data) => {
-        return {
-            object_id: data.feedbackId,
-            time: Util.dateTimeToString(new Date()),
-            commentator_desc: data.content,
-        };
     };
 
     /**

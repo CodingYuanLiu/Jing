@@ -19,6 +19,7 @@ import RecentScan from "../pages/me/RecentScan";
 import MyAct from "../pages/me/MyAct";
 import PublishDraft from "../pages/publish/PublishDraft";
 import Feedback from "../pages/me/Feedback/Feedback";
+import PublishFeedbackPage from "../pages/me/Feedback/PublishFeedbackPage";
 import FeedbackPage from "../pages/me/Feedback/FeedbackPage";
 import PersonalInformation from "../pages/me/PersonalInformation";
 import ChatPage from "../pages/notification/pages/ChatPage";
@@ -26,6 +27,7 @@ import NativeLogin from "../pages/login/NativeLogin";
 import JaccountLoading from "../pages/login/JaccountLoading";
 import JaccountWebView from "../pages/login/JaccountWebView";
 import {LOGIN_STATUS} from "../common/constant/Constant";
+import FeedbackDetail from "../pages/me/Feedback/FeedbackDetail";
 
 export const MainNav = createStackNavigator(
     {
@@ -88,6 +90,12 @@ export const MainNav = createStackNavigator(
         },
         Feedback: {
             screen: Feedback,
+        },
+        PublishFeedbackPage: {
+            screen: PublishFeedbackPage,
+        },
+        FeedbackDetail: {
+            screen: FeedbackDetail,
         },
         FeedbackPage: {
             screen: FeedbackPage,

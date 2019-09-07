@@ -7,7 +7,6 @@ import HeaderBar from "../../../common/components/HeaderBar";
 import Api from "../../../api/Api";
 import NavigationUtil from "../../../navigator/NavUtil";
 import Util from "../../../common/util";
-import {HAVE_FEEDBACK, NO_FEEDBACK} from "../../../common/constant/Constant";
 
 export default class Feedback extends React.Component{
     constructor(props) {
@@ -173,26 +172,15 @@ export default class Feedback extends React.Component{
         )
     };
     renderItemRightButton = (item) => {
-        let status = item.status;
-        let title, onPress;
-        if (item.status === HAVE_FEEDBACK) {
-            title = "查看评价";
-            onPress = this.toUserFeedback;
-        } else if (item.status === NO_FEEDBACK) {
-            title = "评价";
-            onPress = this.toFeedbackPage;
-        } else {
-            title = "评价";
-            onPress = this.toFeedbackPage;
-        }
+
         return (
             <Button
                 type={"clear"}
-                title={title}
+                title={"查看评价"}
                 titleStyle={styles.itemRightButtonTitle}
                 buttonStyle={styles.itemRightButton}
                 containerStyle={styles.itemRightButtonContainer}
-                onPress={() => {onPress(item)}}
+                onPress={() => {this.toFeedbackPage(item)}}
             />
         );
     };
@@ -204,10 +192,11 @@ export default class Feedback extends React.Component{
     };
     toFeedbackPage = (user) => {
         let act = this.props.navigation.getParam("act");
-        NavigationUtil.toPage({props: {
+        console.log(user);
+        NavigationUtil.toPage({
                 user: user,
                 act: act,
-            }}, "FeedbackPage");
+            }, "FeedbackPage");
     };
     loadParticipants = () => {
         let { id } = this.props.navigation.getParam("act");
@@ -222,7 +211,6 @@ export default class Feedback extends React.Component{
     goBack = () => {
         NavigationUtil.back(this.props);
     };
-    toUserFeedback: () => {};
 }
 
 const imageContainerLen = Util.getVerticalWindowDimension().width * 0.293;
@@ -320,19 +308,18 @@ const styles = StyleSheet.create({
         padding: 0,
     },
     itemRightButtonContainer:{
-        borderColor: "#ffe635",
+        borderColor: "#0084ff",
         borderRadius: 4,
         borderWidth: 1,
     },
     itemRightButton: {
-        padding: 0,
-        marginTop: 6,
-        marginBottom: 6,
-        marginLeft: 12,
-        marginRight: 12,
+        paddingTop: 5,
+        paddingBottom: 5,
+        paddingLeft: 10,
+        paddingRight: 10,
     },
     itemRightButtonTitle: {
-        color: "#ffe635"
+        color: "#0084ff"
     },
     itemTitle: {
         fontWeight: "bold",

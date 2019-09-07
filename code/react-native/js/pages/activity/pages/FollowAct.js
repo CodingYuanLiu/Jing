@@ -6,6 +6,8 @@ import Modal from "react-native-modal";
 import Avatar from "react-native-elements/src/avatar/Avatar";
 import ActItem from "../components/ActItem";
 import NavigationUtil from "../../../navigator/NavUtil";
+import HeaderBar from "../../../common/components/HeaderBar";
+import {CloseIcon} from "../../../common/components/Icons";
 
 class FollowActScreen extends React.PureComponent{
     constructor(props) {
@@ -29,8 +31,8 @@ class FollowActScreen extends React.PureComponent{
         let modal = this.renderModal();
         return(
             <View style={styles.container}>
-                {header}
                 <FlatList
+                    ListHeaderComponent={header}
                     data={this.state.items}
                     keyExtractor={item => item.id.toString()}
                     renderItem={this.renderItem}
@@ -59,8 +61,14 @@ class FollowActScreen extends React.PureComponent{
                     horizontal={true}
                 >
                     {
-                        this.props.currentUserFollowing.items.map((item) => {
-                            return this.renderAvatar(item);
+                        this.props.currentUserFollowing.items.map((item, i) => {
+                            return (
+                                <View
+                                    key={i.toString()}
+                                >
+                                    {this.renderAvatar(item)}
+                                </View>
+                            )
                         })
                     }
                 </ScrollView>
@@ -74,7 +82,7 @@ class FollowActScreen extends React.PureComponent{
             >
                 <Avatar
                     source={{uri: item.avatar}}
-                    size={48}
+                    size={45}
                     onPress={() => {
                         this.onPressAvatar(item)
                     }}
@@ -106,12 +114,21 @@ class FollowActScreen extends React.PureComponent{
                 <Animated.View
                     style={styles.modalContainer}
                 >
+                    <HeaderBar
+                        leftButton={
+                            <CloseIcon
+                                color={"#555"}
+                                onPress={() => {this.setState({isModalVisible: false})}}
+                            />
+                        }
+                        style={{backgroundColor: "transparent"}}
+                    />
                     <Animated.ScrollView>
                         {
                             this.state.items
                                 .filter(item => item.sponsor.id === this.state.modalSponsor.id)
                                 .map(item => {
-                                    this.renderItem({item});
+                                    return this.renderItem({item});
                             })
                         }
                     </Animated.ScrollView>
@@ -203,7 +220,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(FollowActScreen)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "rgb(252,252,252)",
+        backgroundColor: "rgb(250,250,250)",
     },
     headerContainer: {
         marginTop: 8,

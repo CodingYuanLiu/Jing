@@ -1,136 +1,271 @@
 import React from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
-import { ListItem, Button } from "react-native-elements";
-import UserAvatar from "../../../common/components/UserAvatar";
-import FeedbackItem from "./FeedbackItem";
-import ImagePicker from "react-native-image-picker";
-import { ArrowLeftIcon, ImageIcon } from "../../../common/components/Icons";
-import HeaderBar from "../../../common/components/HeaderBar";
-import NavigationUtil from "../../../navigator/NavUtil";
-import Util from "../../../common/util";
-import { Image } from "react-native-elements";
+import {View, FlatList, RefreshControl, Text, StyleSheet, Image, TouchableWithoutFeedback} from "react-native";
 import Api from "../../../api/Api";
-import { connect } from "react-redux";
-import Model from "../../../api/Model";
+import {Rating, Button} from "react-native-elements";
+import HeaderBar from "../../../common/components/HeaderBar";
+import {ArrowLeftIcon, CommentIcon} from "../../../common/components/Icons";
+import NavigationUtil from "../../../navigator/NavUtil";
+import UserAvatar from "../../../common/components/UserAvatar";
+import UserNickname from "../../../common/components/UserNickname";
+import Util from "../../../common/util";
+import {WINDOW} from "../../../common/constant/Constant";
+import {connect} from "react-redux";
+import ToolTip from "../../../common/components/ToolTip";
 
-
+const FILTER_TYPE = {
+    ALL: 0,
+    GOOD: 1,
+    NORMAL: 2,
+    BAD: 3,
+    IMAGE: 4,
+};
 class FeedbackPage extends React.Component{
     constructor(props) {
         super(props);
+        let user = this.props.navigation.getParam("user");
+        let act = this.props.navigation.getParam("act");
+        this.receiver = user;
+        this.act = act;
+        this.isSelf = user.id === this.props.currentUser.id;
         this.state = {
-            communicationDesc: "",
-            honestyDesc: "",
-            punctualityDesc: "",
-            communicationData: 5,
-            honestyData: 5,
-            punctualityData: 5,
-            feedbackImages: [],
-            isLoading: false,
+            feedbackList: [],
+            goodList: [],
+            badList: [],
+            normalList: [],
+            imageList: [],
+            filter: FILTER_TYPE.ALL,
+            feedbackButtonVisible: false,
+            isTooltipVisible: false,
         };
     };
 
+    componentDidMount() {
+        this.loadData();
+    }
+
     render() {
+
         let header = this.renderHeader();
-        let receiver = this.renderUser();
-        let feedback = this.renderFeedback();
-        let imageList = this.renderImageList();
+        let top = this.renderTop();
         let footer = this.renderFooter();
         return (
-            <View style={styles.container}>
+            <View
+                style={styles.container}
+            >
                 {header}
-                <ScrollView style={styles.mainContainer}>
-                    {receiver}
-                    {feedback}
-                    {imageList}
-                </ScrollView>
+                {top}
+
+                    <FlatList
+                        data={this.filterData()}
+                        renderItem={this.renderItem}
+                        keyExtractor={item => item.user.id.toString()}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.isLoading}
+                                onRefresh={this.loadData}
+                                title={"加载中..."}
+                                titleColor={"#0084ff"}
+                                colors={["#0084ff"]}
+                                tintColor={"#0084ff"}
+                            />
+                        }
+                    />
                 {footer}
             </View>
         )
     };
+
     renderHeader = () => {
-        let leftIcon = (
-            <ArrowLeftIcon
-                color={"#7a7a7a"}
-                size={24}
-                onPress={this.goBack}
-            />
-        );
-        let rightButton = (
+        let feedbackButton = (
             <Button
                 type={"clear"}
-                title={"确定"}
-                buttonStyle={styles.headerRightButton}
-                containerStyle={styles.headerRightButtonContainer}
-                onPress={this.publishFeedback}
-                loading={this.state.isLoading}
+                title={"评价"}
+                titleStyle={{color: "#0084ff"}}
+                onPress={this.toPublishFeedbackPage}
             />
         );
         return (
             <HeaderBar
-                leftButton={leftIcon}
-                title={"评价"}
-                titleStyle={styles.headerTitle}
-                titleLayoutStyle={styles.headerTitleContainer}
+                leftButton={
+                    <ArrowLeftIcon
+                        color={"#555"}
+                        onPress={this.goBack}
+                    />
+                }
+                title={`${this.receiver.nickname} 的评价`}
+                titleStyle={{color: "#555", fontSize: 20}}
+                titleLayoutStyle={{alignItems: "flex-start"}}
                 style={styles.headerContainer}
-                rightButton={rightButton}
-            />
-        );
-    };
-    renderUser = () => {
-        let {user} = this.props.navigation.getParam("props");
-        let avatar = (
-            <UserAvatar
-                id={user.id}
-                source={{uri: user.avatar}}
-            />
-        );
-        return (
-            <ListItem
-                leftAvatar={avatar}
-                title={user.nickname}
-                titleStyle={styles.userTitle}
-                subtitle={user.signature}
-                subtitleStyle={styles.userSubtitle}
-                containerStyle={styles.userContainer}
+                rightButton={this.state.feedbackButtonVisible ? feedbackButton : null}
             />
         )
     };
-    renderFeedback = () => {
+
+    renderTop = () => {
+        let goodTitle = "好评", allTitle = `全部 ${this.state.feedbackList.length}`,
+            normalTitle = "中评", badTitle = "差评",
+            imageTitle = "有图";
+        let {goodList, badList, normalList, imageList} = this.state;
+        if (goodList.length > 0) {
+            goodTitle += ` ${goodList.length}`;
+        }
+        if (badList.length > 0) {
+            badTitle += ` ${badList.length}`;
+        }
+        if (imageList.length > 0) {
+            imageTitle += ` ${imageTitle}`;
+        }
+        if (normalList.length > 0) {
+            normalTitle += ` ${normalTitle}`;
+        }
         return (
-            <View style={styles.feedbackContainer}>
-                <FeedbackItem
-                    label={"联系状态"}
-                    onRating={this.onRatingCommunication}
-                    text={this.state.communicationDesc}
-                    onChangeText={this.onChangeCommunicationDesc}
-                />
-                <FeedbackItem
-                    label={"准时"}
-                    onRating={this.onRatingPunctuality}
-                    text={this.state.punctualityDesc}
-                    onChangeText={this.onChangePunctualityDesc}
-                />
-                <FeedbackItem
-                    label={"诚信"}
-                    onRating={this.onRatingHonesty}
-                    text={this.state.honestyDesc}
-                    onChangeText={this.onChangeHonestyDesc}
-                />
+            <View
+                style={styles.topContainer}
+            >
+                {
+                    this.renderFilter(allTitle, FILTER_TYPE.ALL)}
+                {
+                    this.renderFilter(goodTitle, FILTER_TYPE.GOOD)}
+                {
+                    this.renderFilter(normalTitle, FILTER_TYPE.NORMAL)}
+                {
+                    this.renderFilter(badTitle, FILTER_TYPE.BAD)}
+                {
+                    this.renderFilter(imageTitle, FILTER_TYPE.IMAGE)
+                }
             </View>
         )
     };
-    renderImageList = () => {
+
+    renderFilter = (title, type) => {
         return (
-            <View style={styles.feedbackImageListContainer}>
+            <Button
+                title={title}
+                titleStyle={{
+                    color: this.state.filter === type ?
+                        "#fff" : "#555",
+                    fontSize: 12,
+                }}
+                buttonStyle={[
+                    styles.filterButton,
+                    {
+                        backgroundColor: this.state.filter === type ?
+                            "#0084ff" : "#e5e5e5",
+                    }
+                ]}
+                containerStyle={styles.filterButtonContainer}
+                onPress={() => {this.setState({filter: type})}}
+                touchableComponent={TouchableWithoutFeedback}
+            />
+        )
+    };
+
+    renderItem = ({item}) => {
+        let user = this.renderUser(item);
+        let rating = this.renderRating(item);
+        let body = this.renderItemBody(item);
+        let footer = this.renderItemFooter(item);
+        return (
+            <TouchableWithoutFeedback
+                onPress={() => {this.toFeedbackDetail(item)}}
+            >
+                <View style={styles.itemContainer}>
+                    {user}
+                    <View
+                        style={{marginLeft: 15, marginRight:  15}}
+                    >
+                        {rating}
+                        {body}
+                        {footer}
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
+        )
+    };
+    renderUser = (item) => {
+        let tooltip = (
+            <ToolTip
+                isVisible={this.state.isTooltipVisible}
+                onPress={() => {this.setState({isTooltipVisible: true})}}
+                onBackdropPress={() => {this.setState({isTooltipVisible: false})}}
+                style={styles.itemUserToolTip}
+            >
+                <Button
+                    type={"clear"}
+                    title={"删除"}
+                    onPress={() => {this.deleteFeedback(item)}}
+                />
+            </ToolTip>
+        );
+        return(
+            <View
+                style={styles.itemUserContainer}
+            >
+                <UserAvatar
+                    source={{uri: item.user.avatar}}
+                    size={36}
+
+                />
+                <UserNickname
+                    title={item.user.nickname}
+                    style={{color: "#444", fontSize: 14, marginLeft: 15}}
+                    id={item.user.id}
+                />
+                {item.user.id === this.props.currentUser.id ?
+                    tooltip : null
+                }
+            </View>
+        )
+    };
+    renderRating = (item) => {
+        let rating = this.getItemRating(item);
+
+        return(
+            <Rating
+                style={styles.rating}
+                showRating={false}
+                startingValue={rating}
+                imageSize={16}
+                ratingCount={5}
+                readOnly={true}
+            />
+        )
+    };
+    renderItemBody = (item) => {
+        return (
+            <View>
+                <View>
+                    <Text style={{fontSize: 15, color: "#8a8a8a"}}>联系状态:{"  "}
+                        <Text
+                            style={{color: "#444"}}
+                        >
+                            {item.communication.desc}
+                        </Text>
+                    </Text>
+                </View>
+                <View>
+                    <Text style={{fontSize: 15, color: "#8a8a8a"}}>是否诚信:{"  "}
+                        <Text style={{color: "#444"}}>
+                            {item.honesty.desc}
+                        </Text>
+                    </Text>
+                </View>
+
+                <View>
+                    <Text style={{fontSize: 15, color: "#8a8a8a"}}>是否准时:{"  "}
+                        <Text style={{color: "#444"}}>
+                            {item.punctuality.desc}
+                        </Text>
+                    </Text>
+
+                </View>
                 {
-                    this.state.feedbackImages.map((item, i) => {
+                    item.images.map((item,i) => {
                         return (
                             <Image
-                                source={{uri: `data:${item.type};base64,${item.data}`}}
                                 key={i.toString()}
-                                resizeMode={"cover"}
-                                containerStyle={styles.feedbackImageContainer}
-                                style={styles.feedbackImage}
+                                source={{uri: item}}
+                                style={styles.itemImage}
                             />
                         )
                     })
@@ -138,90 +273,109 @@ class FeedbackPage extends React.Component{
             </View>
         )
     };
-    renderFooter = () => {
-        let imageIcon = (
-            <ImageIcon
-                size={20}
-                color={"#8a8a8a"}
-            />
-        );
+    renderItemFooter = (item) => {
         return (
-            <View style={styles.footerContainer}>
-                <Button
-                    title={"添加图片"}
-                    titleStyle={styles.footerButtonTitle}
-                    icon={imageIcon}
-                    type={"clear"}
-                    onPress={this.showImagePicker}
-                    buttonStyle={styles.footerButton}
-                    containerStyle={styles.footerButtonContainer}
-                />
-                <View style={{flex: 1,}}/>
+            <View
+                style={styles.itemFooterContainer}
+            >
+                <Text>{Util.dateTimeToDisplayString(new Date(item.createTime))}</Text>
+               <View style={styles.metadataContainer}>
+                   <CommentIcon
+                    color={"#bfbfbf"}
+                   />
+                   <Text
+                    style={{fontSize: 15, color: "#999", textAlign: "center"}}
+                   >{item.comments.length}</Text>
+               </View>
             </View>
         )
     };
-    showImagePicker = () => {
-        ImagePicker.showImagePicker(imageOptions, res => {
-            if (res.didCancel) {
-                // ...
-            } else if (res.error) {
-                // ...
-            } else {
-                let type = res.type;
-                let img =  res.data;
-                let images = this.state.feedbackImages;
-                let newImages = [{type: type, data: img}, ...images];
+    renderFooter = () => {
+        return (
+            <View
+                style={styles.footerContainer}
+            >
+                <Button
+                    type={"clear"}
+                    title={"查看活动"}
+                    titleStyle={{color: "#0084ff"}}
+                    onPress={this.toActDetail}
+                />
+            </View>
+        )
+    };
+    filterData = () => {
+        switch (this.state.filter) {
+            case FILTER_TYPE.ALL:
+                return this.state.feedbackList;
+            case FILTER_TYPE.GOOD:
+                return this.state.goodList;
+            case FILTER_TYPE.NORMAL:
+                return this.state.normalList;
+            case FILTER_TYPE.BAD:
+                return this.state.badList;
+            case FILTER_TYPE.IMAGE:
+                return this.state.imageList;
+            default:
+                return [];
+        }
+    };
+    loadData = () => {
+        Api.getFeedback(this.receiver.id)
+            .then(data => {
+                let feedbackList = data.filter(item => item.act.id === this.act.id);
+                let goodList = [], normalList = [], badList = [], imageList = [], itemRating, feedbackButtonVisible = true;
+                if (feedbackList.length > 0) {
+                    for (let item of feedbackList) {
+                        if (this.isSelf || item.user.id === this.props.currentUser.id) {
+                            feedbackButtonVisible = false;
+                        }
+                        itemRating = this.getItemRating(item);
+                        if (itemRating > 4) {
+                            goodList.push(item);
+                        } else if (itemRating <= 4 && itemRating > 2) {
+                            normalList.push(item);
+                        } else if (itemRating <= 2) {
+                            badList.push(item);
+                        }
+                        if (item.images.length > 0) {
+                            imageList.push(item);
+                        }
+                    }
+                } else {
+                    feedbackButtonVisible = !this.isSelf;
+                }
                 this.setState({
-                    feedbackImages: newImages,
-                });
-            }
-        })
-    };
-    onRatingCommunication = (rating) => {
-        this.setState({communicationData: rating})
-    };
-    onRatingHonesty = (rating) => {
-        this.setState({honestyData: rating})
-    };
-    onRatingPunctuality = (rating) => {
-        this.setState({punctualityData: rating})
-    };
-    onChangeCommunicationDesc = (text) => {
-        this.setState({communicationDesc: text})
-    };
-    onChangeHonestyDesc = (text) => {
-        this.setState({honestyDesc: text});
-    };
-    onChangePunctualityDesc = (text)  => {
-        this.setState({punctualityDesc: text});
-    };
-    goBack = () => {
-        NavigationUtil.back(this.props);
-    };
-    publishFeedback = () => {
-        this.setState({isLoading: true});
-        let data = this.buildFeedback();
-        let {currentUser} = this.props;
-        Api.publishFeedback(Model.buildFeedbackItem(data), currentUser.jwt)
-            .then(res => {
-                console.log(res);
+                    feedbackList,
+                    goodList,
+                    normalList,
+                    badList,
+                    imageList,
+                    feedbackButtonVisible,
+                })
             })
             .catch(err => {
                 console.log(err);
             })
-            .finally(() => {
-                this.setState({isLoading: false});
-            })
     };
-    buildFeedback = () => {
-        let state = this.state;
-        let {user, act} = this.props.navigation.getParam("props");
-        return {
-            actId: act.id,
-            receiverId: user.id,
-            ...state,
-        }
-    }
+    goBack = () => {
+        NavigationUtil.back(this.props);
+    };
+    toPublishFeedbackPage = () => {
+        NavigationUtil.toPage({act: this.act, user: this.receiver}, "PublishFeedbackPage")
+    };
+    toFeedbackDetail = (feedback) => {
+        NavigationUtil.toPage({feedback}, "FeedbackDetail")
+    };
+    toActDetail = () => {
+        NavigationUtil.toPage({id: this.act.id}, "ActDetail")
+    };
+    getItemRating = (item) => {
+        return (item.communication.data + item.honesty.data + item.punctuality.data) / 3;
+    };
+    deleteFeedback = (item) => {
+        // ...
+    };
 }
 
 const mapStateToProps = state => ({
@@ -231,119 +385,91 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, null)(FeedbackPage);
 
 
-
-const imageOptions = {
-    title: "选择",
-    cancelButtonTitle: "取消",
-    takePhotoButtonTitle: "拍摄",
-    chooseFromLibraryButtonTitle: "从相册选择",
-    storageOptions: {
-        skipBackup: true,
-        path: 'images',
-    },
-    quality: 0.4,
-};
-
-const imageContainerLen = Util.getVerticalWindowDimension().width * 0.293;
-const imageLen = Util.getVerticalWindowDimension().width * 0.270;
-
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#eee",
+        backgroundColor: "#f3f3f3",
+        position: "relative",
     },
-    headerContainer: {
-        backgroundColor: "#fff",
-        elevation: 3,
-    },
-    headerTitleContainer: {
-        justifyContent: "flex-start",
-        alignItems: "flex-start",
-    },
-    headerTitle: {
-        fontWeight: "800",
-        fontSize: 20,
-        color: "#3a3a3a",
-    },
-    headerRightButton: {
-        padding: 0,
-        margin: 0,
-    },
-    headerRightButtonContainer: {
-        marginRight: 15,
-    },
-
-    userContainer: {
-        marginLeft: 5,
-        marginRight: 5,
-        marginTop: 5,
-        borderRadius: 5,
-        backgroundColor: "#fff",
-    },
-    userTitle: {
-        fontWeight: "bold",
-        fontSize: 18,
-    },
-    userSubtitle: {
-        fontWeight: "700",
-        color: "#9a9a9a",
-    },
-
-    mainContainer: {
-        flex: 1,
-    },
-    feedbackContainer: {
-        marginTop: 15,
-        marginLeft: 5,
-        marginRight: 5,
-        paddingLeft: 15,
-        paddingRight: 15,
-        paddingTop: 15,
-        borderRadius: 5,
-        backgroundColor: "#fff",
-        flex: 1,
-    },
-
-    feedbackImageListContainer: {
+    topContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
-        minHeight: imageContainerLen,
-        backgroundColor: "#fff",
-        marginLeft: 5,
-        marginRight: 5,
         paddingLeft: 15,
         paddingRight: 15,
+        paddingTop: 5,
+        paddingBottom: 5,
+        backgroundColor: "#f3f3f3",
     },
-    feedbackImageContainer: {
-        width: imageContainerLen,
-        height: imageContainerLen,
-        justifyContent: "center",
+    filterButtonContainer: {
+        margin: 6,
+    },
+    filterButton: {
+        paddingTop: 5,
+        paddingBottom: 5,
+        paddingLeft: 18,
+        paddingRight: 18,
+        borderRadius: 50,
+        backgroundColor: "red",
+    },
+    headerContainer: {
+        elevation: 2,
+        backgroundColor: "#fff",
+    },
+
+    itemContainer: {
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 5,
+        marginTop: 5,
+        marginBottom: 5,
+        elevation: 2,
+        backgroundColor: "#fff",
+    },
+    itemUserContainer: {
+        flexDirection: "row",
         alignItems: "center",
+        marginBottom: 10,
+        position: "relative",
     },
-    feedbackImage: {
-        width: imageLen,
-        height: imageLen,
+    itemUserToolTip:{
+        position: "absolute",
+        right: 10,
+
+    },
+    rating: {
+        backgroundColor: "red",
+        alignSelf: "flex-start",
+        alignItems: "flex-start",
+        marginBottom: 10,
+    },
+    itemImage: {
+        // 30: 2* 15,
+        // 24: 3 images, margin 4
+        width: ( WINDOW.width - 30 - 30 - 24) / 3,
+        height: (WINDOW.height - 30 - 30 - 24 ) / 3,
+        margin: 4,
         borderRadius: 3,
     },
 
-    footerContainer: {
-        width: "100%",
+    itemFooterContainer: {
+        alignItems: "center",
+        justifyContent: "space-between",
         flexDirection: "row",
-        backgroundColor: "#fff",
+        marginBottom: 10,
         marginTop: 10,
     },
-    footerButtonContainer: {
-        //...
-        flex: 1,
-    },
-    footerButton: {
-        padding: 0,
-        margin: 0,
-        height: 40
-    },
-    footerButtonTitle: {
-        color: "#8a8a8a",
+    metadataContainer: {
+        flexDirection: "row",
+        alignItems: "center",
     },
 
+    footerContainer: {
+        position: "absolute",
+        bottom: 0,
+        height: 48,
+        width: WINDOW.width,
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#eee",
+    }
 });

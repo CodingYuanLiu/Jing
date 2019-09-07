@@ -629,7 +629,7 @@ export default class Api {
                      * feedbackId: data.feedback_id
                      */
                     let data = res.data;
-                    resolve({feedbackId: data.feedback_id});
+                    resolve({id: data.feedback_id});
                 })
                 .catch(err => {
                     Reject(err, reject)
@@ -707,6 +707,17 @@ export default class Api {
                  })
         });
     };
+
+    static commentFeedback = async (data, currentUser) => {
+        let res = await axios.post("api/user/feedback/comment", data, {
+            headers: {
+                "Authorization": `Bearer ${currentUser.jwt}`,
+            }
+        });
+
+        return res.data;
+    };
+
     /**
      *
      * @param from
