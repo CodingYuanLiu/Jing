@@ -1,6 +1,8 @@
 // pages/showuserinfo/showuserinfo.js
 var app = getApp()
-
+const {
+    $Toast
+} = require('../../dist/base/index');
 Page({
 
     /**
@@ -17,6 +19,7 @@ Page({
         genders: ['女', '男', '保密'],
         levels: ['不可见', '全部可见', '好友可见'],
         current: 'tab1',
+        followed: false
     },
 
     /**
@@ -86,7 +89,36 @@ Page({
                 })
             }
         })
+        wx.request({
+            url: 'https://jing855.cn/api/public/act/findbyuser?id='+that.data.id,
+            method: 'GET',
+            success: function(res) {
+                that.setData({acts: res.data.acts})
+            }
+        })
+        if (app.globalData.userInfo !== null) {
+            if (app.globalData.following !== null) {
+                let i = 0;
+                for (i = 0; i < app.globalData.following.length; i++) {
+                    console.log("finding")
+                    if (app.globalData.following[i].id.toString() === that.data.id) {
+                        that.setData({
+                            followed: true
+                        })
+                        console.log("followed!!!!!!")
+                        break
+                    }
 
+                }
+                if (i == app.globalData.following.length)
+                    that.setData({
+                        followed: false
+                    })
+            } else
+                that.setData({
+                    followed: false
+                })
+        }
     },
     onShow: function() {
         let that = this;
@@ -106,19 +138,164 @@ Page({
             }
         })
         wx.request({
+            url: 'https://jing855.cn/api/public/act/quitratio?user_id=' + that.data.id,
+            method: 'GET',
+            success: function(res) {
+                that.setData({
+                    quitRatio: res.data.ratio
+                })
+            }
+        })
+        wx.request({
             url: 'https://jing855.cn/api/public/feedback/query?receiver_id=' + that.data.id,
             method: 'GET',
             success: function(res) {
                 console.log(res)
-                if (res.statusCode === 200)
+                if (res.statusCode === 200) {
                     that.setData({
                         feedback: res.data
                     })
-                else that.setData({
+                    let sumH = 0;
+                    let sumC = 0;
+                    let sumP = 0;
+                    for (let i = 0; i < res.data.length; i++) {
+                        sumH += res.data[i].honesty;
+                        sumC += res.data[i].communication;
+                        sumP += res.data[i].punctuality;
+                    }
+                    that.setData({
+                        avgC: sumC / res.data.length,
+                        avgH: sumH / res.data.length,
+                        avgP: sumP / res.data.length,
+                    })
+                } else that.setData({
                     feedback: []
                 })
             }
         })
+        wx.request({
+            url: 'https://jing855.cn/api/public/act/findbyuser?id=' + that.data.id,
+            method: 'GET',
+            success: function (res) {
+                that.setData({ acts: res.data.acts })
+            }
+        })
+        if (app.globalData.userInfo !== null) {
+            if (app.globalData.following !== null) {
+                let i = 0;
+                for (i = 0; i < app.globalData.following.length; i++) {
+                    console.log("finding")
+                    if (app.globalData.following[i].id.toString() === that.data.id) {
+                        that.setData({
+                            followed: true
+                        })
+                        console.log("followed!!!!!!")
+                        break
+                    }
+
+                }
+                if (i == app.globalData.following.length)
+                    that.setData({
+                        followed: false
+                    })
+            } else
+                that.setData({
+                    followed: false
+                })
+        }
+    },
+    bindQueTap: function (event) {
+        let actid = event.currentTarget.dataset.id
+        console.log(actid);
+        console.log(23);
+        wx.navigateTo({
+            url: '../answer/answer?id=' + actid
+        })
+    },
+    handleFollow: function(event) {
+        if (app.globalData.userInfo === null) {
+            $Toast({
+                content: '请登录',
+                type: 'warning',
+            });
+            return
+        }
+        let id = this.data.id;
+        let that = this;
+        if (!that.data.followed) {
+            // console.log(id);
+            wx.request({
+                url: 'https://jing855.cn/api/user/follow?id=' + id,
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                method: 'GET',
+                success: function(res) {
+                    // console.log(100000);
+                    console.log(res);
+                    // $Toast.hide();
+                    if (res.statusCode === 200) {
+                        $Toast({
+                            content: '成功',
+                            type: 'success',
+                        });
+                        // that.setData({
+                        //     followed: true
+                        // })
+                    } else {
+                        $Toast({
+                            content: res.data.message,
+                            // type: 'success',
+                        });
+                    }
+                    wx.request({
+                        url: 'https://jing855.cn/api/user/followings',
+                        method: 'GET',
+                        header: {
+                            "Authorization": "Bearer " + app.globalData.jwt,
+                        },
+                        success: function(res) {
+                            console.log(res)
+                            app.globalData.following = res.data
+                            that.onShow();
+                        }
+                    })
+
+                }
+            })
+        } else {
+            wx.request({
+                url: 'https://jing855.cn/api/user/unfollow?id=' + id,
+                header: {
+                    "Authorization": "Bearer " + app.globalData.jwt,
+                },
+                method: 'GET',
+                success: function(res) {
+                    // console.log(100000);
+                    console.log(res);
+                    // $Toast.hide();
+                    if (res.statusCode === 200)
+                        $Toast({
+                            content: '成功',
+                            type: 'success',
+                        });
+                    wx.request({
+                        url: 'https://jing855.cn/api/user/followings',
+                        method: 'GET',
+                        header: {
+                            "Authorization": "Bearer " + app.globalData.jwt,
+                        },
+                        success: function(res) {
+                            console.log(res)
+                            app.globalData.following = res.data
+
+                            that.onShow();
+                        }
+                    })
+
+                }
+            })
+        }
     },
     handleChange({
         detail
@@ -155,5 +332,15 @@ Page({
         wx.navigateTo({
             url: '/pages/showUserinfo/showUserinfo?id=' + id,
         })
-    }
+    },
+    handleToDetail: function () {
+        // let id = e.currentTarget.dataset.id
+        // console.log(id)
+        // console.log(this.data.feedback[id])
+        let detail = JSON.stringify(this.data.user)
+        // let fb_id = this.data.feedback[id].feedback_id
+        wx.navigateTo({
+            url: './detail/detail?detail=' + detail,
+        })
+    },
 })

@@ -25,19 +25,26 @@ Page({
                 "Authorization": "Bearer " + app.globalData.jwt,
             },
             success: function(res) {
-                if (res.data.acts === null) {
-                    that.setData({
-                        no_content: true
-                    });
-                }
+                // let list = [];
+                // for ()
+                
                 console.log(res);
                 let all = res.data.acts;
                 let current = [];
-                let date = (new Date()).toString();
+                // let date = new Date();
                 for (let i = 0; i < all.length; i++) {
-                    if (new Date(all[i].end_time) < date) {
+                    // console.log('get')
+                    // console.log(new Date(all[i].end_time))
+                    // console.log('new')
+                    // console.log(date)
+                    if (all[i].status !== 2) {
                         current.push(all[i]);
                     }
+                }
+                if (current.length === 0) {
+                    that.setData({
+                        no_content: true
+                    });
                 }
                 that.setData({
                     acts: current

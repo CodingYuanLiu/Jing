@@ -1,6 +1,6 @@
 <!--pages/my/myjoin/myjoin.wxml-->
 <i-toast id="toast" />
-<view hidden="{{!no_content}}"> 暂无 </view>
+<view hidden="{{!no_content}}"> 暂无相关活动 </view>
 <i-modal title="标题" visible="{{ visible }}" bind:ok="handleConfirmQuit" bind:cancel="handleCancelQuit">
     <view>确定退出吗？会对您的评级有影响哦</view>
 </i-modal>
@@ -42,8 +42,8 @@
                             <!-- <view class="follow-it">
                                 <a>{{item.comment_num}} 关注</a>
                             </view> -->
-                            <label wx:if="{{item.status===2}}" style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleFeedback" data-id="{{item.act_id}}">评价</label>
-                             <label style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleQuit" data-id="{{item.act_id}}">退出</label>
+                            <label style="width: 19vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleParticipants" data-id="{{item.act_id}}">查看参与者</label>
+                            <label style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleQuit" data-id="{{item.act_id}}">退出</label>
                         </view>
                     </view>
                 </view>

@@ -46,71 +46,11 @@
         <i-cell title="已结束" is-link url="/pages/my/endedAct/endedAct"></i-cell>
     </i-cell-group>
     <i-cell-group style="margin-top: 10px;margin-bottom: 10px; width: 100vw">
-        <i-cell title="客服中心" is-link url=""></i-cell>
-        <i-cell title="反馈" is-link url=""></i-cell>
+        <i-cell title="使用帮助" is-link url="./help/help"></i-cell>
+        <i-cell title="关于即应" is-link url="./about/about"></i-cell>
         <i-cell title="用户满意度调研" is-link url=""></i-cell>
         <!-- <i-cell title="去评价" is-link url="/pages/dashboard/index"></i-cell> -->
     </i-cell-group>
-    <!-- <view style="width: 100vw" class="my"> -->
-
-        <!-- <view class="my-item flex-wrp" bindtap="handlePub">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/pubed_line.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>我发布的</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="handleJoin">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/add_line.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>我加入的</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/editing_line.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>我的草稿</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="handleLook">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/recent_line.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>最近浏览</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="handleFollowing">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/following.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>我关注的</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="handleFollower">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/follower.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>关注我的</text>
-            </view>
-        </view> -->
-        <!-- <view class="my-item flex-wrp" bindtap="handleFeedback">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/feedback.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>用户反馈</text>
-            </view>
-        </view> -->
-
-    <!-- </view> -->
     <!-- <button open-type='feedback'>意见反馈</button> -->
     <view hidden="{{!log}}" style="width: 100%; background: white; float: bottom">
         <i-button style="width: 100%" type="error" bind:click="handleLogout">退出登录</i-button>
