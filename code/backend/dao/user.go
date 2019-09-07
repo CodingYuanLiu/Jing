@@ -33,7 +33,7 @@ type Join struct {
 	ID 		int 		`gorm:"primary_key;auto_increment"`
 	UserID	int
 	ActID	int
-	IsAdmin int		// 0: common member 1: publisher -1: applicant -2: pigeon
+	IsAdmin int		// 0: common member 1: publisher -1: applicant -2: pigeon -3: rejected
 }
 
 type TagDict struct{
