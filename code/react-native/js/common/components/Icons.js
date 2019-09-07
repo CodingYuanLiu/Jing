@@ -351,6 +351,42 @@ class CaretRightIcon extends React.PureComponent{
             />)
     }
 }
+class CaretDownIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"antdesign"}
+                name={"caretdown"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+class CaretUpIcon extends React.PureComponent{
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+        return (
+            <Icon
+                type={"antdesign"}
+                name={"caretup"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 class SettingIcon extends React.PureComponent{
     constructor(props) {
         super(props);
@@ -903,6 +939,8 @@ export {
     EmojiIcon,
     LeftUpArrowIcon,
     CaretRightIcon,
+    CaretUpIcon,
+    CaretDownIcon,
     ReplyIcon,
     SettingIcon,
     MessageOneToOneIcon,

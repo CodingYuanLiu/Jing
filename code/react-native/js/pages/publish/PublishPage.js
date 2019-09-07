@@ -16,7 +16,7 @@ import {ConfirmModal} from "../../common/components/CustomModal";
 import ImageViewer from "react-native-image-zoom-viewer";
 import Modal from "react-native-modal";
 import {WINDOW} from "../../common/constant/Constant";
-import {CloseIcon, PlusIcon, SearchIcon} from "../../common/components/Icons";
+import {CaretDownIcon, CaretUpIcon, CloseIcon, PlusIcon, SearchIcon} from "../../common/components/Icons";
 import ZhihuApi from "../../api/ZhihuApi";
 
 class PublishPage extends React.PureComponent{
@@ -40,19 +40,20 @@ class PublishPage extends React.PureComponent{
             tagCandidates: [],
             remoteAddTag: [],
             footerModalHeight: WINDOW.height / 5 * 4,
-            loadingTagCandidates: false
+            loadingTagCandidates: false,
+            maxMember: 5,
         }
     }
     componentDidMount() {
         this.keyboardDidShowListener = Keyboard.addListener(
-            'keyboardWillShow',
-            () => {
-                this.setState({footerModalHeight: WINDOW.height / 2});
-                console.log(WINDOW.height);
+            'keyboardDidShow',
+            (e) => {
+                console.log(e);
+                this.setState({footerModalHeight: this.state.footerModalHeight - e.endCoordinates.height});
             }
         );
         this.keyboardDidHideListener = Keyboard.addListener(
-            'keyboardWillHide',
+            'keyboardDidHide',
             () => {
                 this.setState({footerModalHeight: WINDOW.height / 5 * 4})
             }
@@ -122,10 +123,10 @@ class PublishPage extends React.PureComponent{
                         {specMenubar}
                         {endTimePicker}
                         {specTimePicker}
+                        {footer}
                     </ScrollView>
                     {saveModal}
                     {imageViewer}
-                    {footer}
                 </View>
                 {footerTagInputModal}
             </View>
@@ -347,31 +348,64 @@ class PublishPage extends React.PureComponent{
     renderFooter = (tags) => {
         return (
             <View style={styles.footerContainer}>
-                <Button
-                    type={"clear"}
-                    icon={
-                        <PlusIcon
-                            size={18}
-                            color={"#0084ff"}
-                            iconStyle={{fontWeight: "bold"}}
+                <View
+                    style={styles.footerButtonLine}
+                >
+                    <Button
+                        type={"clear"}
+                        icon={
+                            <PlusIcon
+                                size={18}
+                                color={"#0084ff"}
+                                iconStyle={{fontWeight: "bold"}}
+                            />
+                        }
+                        title={`标签(${tags.length} / 5)`}
+                        titleStyle={styles.footerButtonTitle}
+                        containerStyle={{padding: 0, margin: 0,}}
+                        buttonStyle={{padding: 0, margin: 0}}
+                        onPress={() => {this.setState({isFooterModalVisible: true})}}
+                    />
+                    <View
+                        style={styles.maxMemberPicker}
+                    >
+                        <TextInput
+                            placeholder={"成员上限"}
+                            style={
+                                styles.maxMemberPickerInput
+                            }
+                            value={`${this.state.maxMember}`}
+                            keyboardType={"numeric"}
+                            onChangeText={(text) => {
+                                if (/^\d+$/.test(text)) {
+                                    this.setState({maxMember: Number(text)})
+                                }
+                            }}
                         />
-                    }
-                    title={`标签(${tags.length} / 5)`}
-                    titleStyle={styles.footerButtonTitle}
-                    containerStyle={{padding: 0, margin: 0,}}
-                    buttonStyle={{padding: 0, margin: 0}}
-                    onPress={() => {this.setState({isFooterModalVisible: true})}}
-                />
-                <ScrollView
-                    horizontal={true}
-                    style={{flex: 1, flexDirection: "row"}}
+                        <CaretUpIcon
+                            color={"#0084ff"}
+                            onPress={() => {this.setState({maxMember: this.state.maxMember + 1})}}
+                            style={{marginLeft: 10, marginRight:10}}
+                        />
+                        <CaretDownIcon
+                            color={"#0084ff"}
+                            onPress={() => {this.setState({maxMember: this.state.maxMember - 1})}}
+                            style={{marginRight:10}}
+                        />
+                    </View>
+                </View>
+                <View
+                    style={{flex: 1, flexDirection: "row", flexWrap: "wrap", marginTop: 10,
+                    marginBottom: 20}}
                 >
                     {
                         tags.map((item, i) => {
-                            return this.renderTag(item, i);
+                            return <View
+                                key={i.toString()}
+                            >{this.renderTag(item, i)}</View>
                         })
                     }
-                </ScrollView>
+                </View>
             </View>
         );
     };
@@ -458,7 +492,11 @@ class PublishPage extends React.PureComponent{
                     >
                         {
                             tags.map((item, i) => {
-                                return this.renderTag(item, i);
+                                return <View
+                                    key={i.toString()}
+                                >
+                                    {this.renderTag(item, i)}
+                                </View>;
                             })
                         }
                     </View>
@@ -516,6 +554,9 @@ class PublishPage extends React.PureComponent{
               )
           }
     };
+    modify = () => {
+        // ...
+    };
     publish = () => {
         let publishAct = this.getActByType(this.props.publishAct, this.type);
         let data =
@@ -523,22 +564,11 @@ class PublishPage extends React.PureComponent{
         this.addRemoteTagCandidates();
         Api.publishAct(this.props.currentUser.jwt, data)
             .then (act => {
-                console.log(act);
                 NavigationUtil.toPage({id: act.id}, "ActDetail");
             })
             .catch(err => {
                 console.log(err);
             })
-    };
-
-    handleBodyTextChange = text => {
-        this.setState({description: text});
-        this.saveByType({description: text}, this.type);
-        this.autoGetTag(this.state.title, text);
-    };
-    handleBodyTextBlur = () => {
-        let text = this.state.description;
-        this.saveByType({description: text}, this.type);
     };
     handleTitleTextChange = text => {
         this.setState({title: text});
@@ -548,6 +578,15 @@ class PublishPage extends React.PureComponent{
     handleTitleTextBlur = () => {
         let title = this.state.title;
         this.saveByType({title: title}, this.type);
+    };
+    handleBodyTextChange = text => {
+        this.setState({description: text});
+        this.saveByType({description: text}, this.type);
+        this.autoGetTag(this.state.title, text);
+    };
+    handleBodyTextBlur = () => {
+        let text = this.state.description;
+        this.saveByType({description: text}, this.type);
     };
     handleClickEndTime = () => {
         this.setState({
@@ -750,7 +789,8 @@ class PublishPage extends React.PureComponent{
         Api.getTag(
             {
                 title: title,
-                description: description},
+                description: description
+            },
                 currentUser.jwt,
             )
             .then(data => {
@@ -927,15 +967,32 @@ const styles = StyleSheet.create({
     },
 
     footerContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        height: 40,
         paddingLeft: 15,
         paddingRight: 15,
         backgroundColor: "#fff",
     },
+    footerButtonLine: {
+        flexDirection: "row",
+        height: 40,
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
     footerButtonTitle: {
         fontSize: 14,
+    },
+    maxMemberPicker: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    maxMemberPickerInput: {
+        fontSize: 14,
+        color: "#0084ff",
+        backgroundColor: "#eee",
+        borderRadius: 50,
+        textAlign: "center",
+        height: 32,
+        lineHeight: 32,
+        padding: 0
     },
     tagContainer: {
         flexDirection: "row",
