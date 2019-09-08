@@ -154,6 +154,10 @@ func DeleteActivity(actId int) error {
 	return nil
 }
 
+func DeleteApplication(actId int,userId int){
+	db.Where("act_id = ? and user_id = ?",actId, userId).Delete(Join{})
+}
+
 func GetJoinedActivity(userId int) (acts []int) {
 	var joins []Join
 	db.Where("user_id = ? and is_admin = ?", userId, 0).Find(&joins)
