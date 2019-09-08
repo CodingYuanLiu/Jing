@@ -1,2 +1,17 @@
 <!--pages/my/about/about.wxml-->
-<text>这是关于页面，还没有想好放哪些内容</text>
+<view style="height: 15vh">
+    <text decode="{{true}}" space="{{true}}">&nbsp;&nbsp;</text>
+</view>
+<i-row>
+    <i-col span="4" i-class="col-class">
+        <text decode="{{true}}" space="{{true}}">&nbsp;&nbsp;</text>
+    </i-col>
+    <i-col span="16" i-class="col-class">
+        <image src="/images/icons/logo.jpg" style="width: 100%;" mode="aspectFit"></image>
+        <label style="display: block; font-size: 20px; text-align: center">即应信息匹配平台 - 小程序端</label>
+        <label style="display: block; font-size: 13px; color: darkgrey;text-align: center">v1.0.0</label>
+    </i-col>
+    <i-col span="4" i-class="col-class">
+        <text decode="{{true}}" space="{{true}}">&nbsp;&nbsp;</text>
+    </i-col>
+</i-row>

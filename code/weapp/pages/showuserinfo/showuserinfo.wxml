@@ -95,25 +95,25 @@
                 <view slot="content">
 
                     <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                        <label style="display:inline-block">沟通</label>
+                        <label style="display:inline-block; font-size: 16px; color: black">沟通</label>
                         <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.communication}}" data-id="{{item.id}}">
                         </i-rate>
                     </view>
-                    <i-input value="{{item.communication_desc}}" disabled type="text" maxlength="100" title="" />
+                    <i-input style="color: #A9A9A9" value="{{item.communication_desc}}" disabled type="text" maxlength="100" title="" />
                     <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                        <label style="display:inline-block">守时</label>
+                        <label style="display:inline-block; font-size: 16px; color: black">守时</label>
                         <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.punctuality}}" data-id="{{item.id}}">
                         </i-rate>
                     </view>
-                    <i-input value="{{item.punctuality_desc}}" disabled type="text" maxlength="100" title="" />
+                    <i-input style="color: #A9A9A9" value="{{item.punctuality_desc}}" disabled type="text" maxlength="100" title="" />
 
                     <!-- <text style="margin-left:300rpx">{{item.punctuality_desc}}</text> -->
                     <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                        <label style="display:inline-block">诚信</label>
+                        <label style="display:inline-block; font-size: 16px; color: black">诚信</label>
                         <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.honesty}}" data-id="{{item.id}}">
                         </i-rate>
                     </view>
-                    <i-input value="{{item.honesty_desc}}" disabled type="text" maxlength="100" title="" />
+                    <i-input style="color: #A9A9A9" value="{{item.honesty_desc}}" disabled type="text" maxlength="100" title="" />
 
                     <!-- <text style="margin-left:300rpx">{{item.honesty_desc}}</text> -->
                 </view>

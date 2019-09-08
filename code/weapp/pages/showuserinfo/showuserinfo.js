@@ -58,7 +58,7 @@ Page({
             method: 'GET',
             success: function(res) {
                 that.setData({
-                    quitRatio: res.data.ratio
+                    quitRatio: res.data.ratio.toFixed(3)
                 })
             }
         })
@@ -142,7 +142,7 @@ Page({
             method: 'GET',
             success: function(res) {
                 that.setData({
-                    quitRatio: res.data.ratio
+                    quitRatio: res.data.ratio.toFixed(3)
                 })
             }
         })
@@ -169,7 +169,10 @@ Page({
                         avgP: sumP / res.data.length,
                     })
                 } else that.setData({
-                    feedback: []
+                    feedback: [],
+                    avgC: 5,
+                    avgH: 5,
+                    avgP: 5,
                 })
             }
         })

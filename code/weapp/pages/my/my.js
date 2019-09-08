@@ -105,10 +105,17 @@ Page({
                                     },
                                     success: function(res) {
                                         console.log(res)
-                                        app.globalData.following = res.data
-                                        that.setData({
-                                            followingNum: res.data.length
-                                        })
+                                        if (res.data === null) {
+                                            app.globalData.following = []
+                                            that.setData({
+                                                followingNum: 0
+                                            })
+                                        } else {
+                                            app.globalData.following = res.data
+                                            that.setData({
+                                                followingNum: res.data.length
+                                            })
+                                        }
                                     }
                                 })
                                 wx.request({
@@ -119,11 +126,17 @@ Page({
                                     },
                                     success: function(res) {
                                         console.log(res)
-                                        app.globalData.followers = res.data
-                                        that.setData({
-                                            followerNum: res.data.length
-                                        })
-
+                                        if (res.data === null) {
+                                            app.globalData.followers = []
+                                            that.setData({
+                                                followerNum: 0
+                                            })
+                                        } else {
+                                            app.globalData.followers = res.data
+                                            that.setData({
+                                                followerNum: res.data.length
+                                            })
+                                        }
                                     }
                                 })
                                 wx.request({
@@ -218,9 +231,21 @@ Page({
         wx.getStorage({
             key: 'history',
             success: function(res) {
-                let ids = Array.from(new Set(res.data))
+                console.log(res)
+                if (res.data.length === 0) {
+                    that.setData({
+                        historyNum: 0
+                    })
+                } else {
+                    let ids = Array.from(new Set(res.data))
+                    that.setData({
+                        historyNum: ids.length
+                    })
+                }
+            },
+            fail: function() {
                 that.setData({
-                    historyNum: ids.length
+                    historyNum: 0
                 })
             }
         })
