@@ -18,6 +18,7 @@ import {onGetCurrentUserFollowing} from "../../actions/currentUserFollowing";
 import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
 import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
 import {onLoadSettings} from "../../actions/setting";
+import SplashScreen from "react-native-splash-screen";
 
 class LoginScreen extends React.PureComponent {
     constructor(props) {
@@ -29,6 +30,10 @@ class LoginScreen extends React.PureComponent {
             btnDisabled: true,
             passwordVisible: true,
         }
+    }
+
+    componentDidMount(): void {
+        SplashScreen.hide();
     }
 
     render() {

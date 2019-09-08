@@ -66,4 +66,35 @@ export default class Util {
     };
 
     static SKIP_LOGIN = false;
+
+    static distanceToDisplayString = (distance) => {
+        if (distance > 1000) {
+            return `${Number(distance / 1000).toFixed(2)}km`
+        } else return `${distance}m`;
+    };
+
+    static durationToDisplayString = (seconds) => {
+        let days = 0, hours = 0, minutes = 0;
+        if (seconds > 3600 * 24) {
+            days = Number(seconds / 3600 / 24).toFixed();
+        }
+        seconds -= days * 3600 * 24;
+        if (seconds > 3600) {
+            hours = (seconds / 3600).toFixed();
+        }
+        seconds -= hours * 3600;
+        if (seconds > 60) {
+            minutes = (seconds / 60).toFixed();
+        }
+
+        let res = "";
+        if (days > 0) res = `${days}天`;
+        if (hours > 0) {
+            res = `${res}${hours}小时`
+        } else if (days > 0) {
+            return res;
+        } else {
+            return `${res}${minutes}分钟`;
+        }
+    };
 }

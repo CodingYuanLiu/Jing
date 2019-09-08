@@ -28,6 +28,7 @@ import JaccountLoading from "../pages/login/JaccountLoading";
 import JaccountWebView from "../pages/login/JaccountWebView";
 import {LOGIN_STATUS} from "../common/constant/Constant";
 import FeedbackDetail from "../pages/me/Feedback/FeedbackDetail";
+import TaxiOriginDestDetail from "../pages/detail/TaxiOriginDestDetail";
 
 export const MainNav = createStackNavigator(
     {
@@ -36,6 +37,9 @@ export const MainNav = createStackNavigator(
         },
         ActDetail: {
             screen: DetailScreen,
+        },
+        TaxiOriginDestDetail: {
+            screen: TaxiOriginDestDetail,
         },
         NativeLogin: {
             screen: NativeLogin,

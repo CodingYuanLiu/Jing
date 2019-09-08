@@ -30,6 +30,12 @@
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
         <meta-data
                 android:name="com.amap.api.v2.apikey"
-                android:value="7a541426131381c7198a306b55ae4ba3" />
+                android:value="617d2c2e23b1d390b3ab75e14975ec32" />
+<!--        <meta-data-->
+<!--                android:name="JPUSH_CHANNEL"-->
+<!--                android:value="developer-default" />-->
+<!--        <meta-data-->
+<!--                android:name="JPUSH_APPKEY"-->
+<!--                android:value="2f80004aee94999f696790fc" />-->
     </application>
 </manifest>

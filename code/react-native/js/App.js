@@ -21,7 +21,9 @@ var base64 = require('base-64');
 global.btoa = base64.encode;
 global.atob = base64.decode;
 
-
+const FirstLoginApp = createAppContainer(FirstLoginNav);
+const UsernameEmptyApp = createAppContainer(UsernameEmptyNav);
+const MainApp = createAppContainer(MainNav);
 export default class App extends React.Component {
     constructor(props) {
         super(props);
@@ -40,9 +42,6 @@ export default class App extends React.Component {
     }
 
     render() {
-        const FirstLoginApp = createAppContainer(FirstLoginNav);
-        const UsernameEmptyApp = createAppContainer(UsernameEmptyNav);
-        const MainApp = createAppContainer(MainNav);
         const {loginStatus} = this.state;
 
         let App;
@@ -62,9 +61,7 @@ export default class App extends React.Component {
             default:
                 App = null;
         }
-        if (this.state.loginStatus !== LOGIN_STATUS.WAITING) {
-            SplashScreen.hide();
-        }
+
         return (
             <Provider store={store}>
                 {App}
@@ -86,12 +83,12 @@ export default class App extends React.Component {
             let jwt = await LocalApi.getToken();
             let data = await Api.getSelfDetail(jwt);
 
-            store.dispatch(onGetCurrentUserFollower(jwt));
-            store.dispatch(onGetCurrentUserFollowing(jwt));
-            store.dispatch(onGetCurrentUserManageAct(jwt));
-            store.dispatch(onGetCurrentUserJoinAct(jwt));
-            store.dispatch(setUserData(data));
-            store.dispatch(onLoadSettings());
+            // store.dispatch(onGetCurrentUserFollower(jwt));
+            // store.dispatch(onGetCurrentUserFollowing(jwt));
+            // store.dispatch(onGetCurrentUserManageAct(jwt));
+            // store.dispatch(onGetCurrentUserJoinAct(jwt));
+            // store.dispatch(setUserData(data));
+            // store.dispatch(onLoadSettings());
             if (data.username === "") {
                 this.setState({
                     loginStatus: LOGIN_STATUS.USERNAME_EMPTY,
@@ -114,46 +111,19 @@ export default class App extends React.Component {
     };
     getPermission = async () => {
         try {
-            const cameraGranted = await PermissionsAndroid.request(
+            let permissions = [
                 PermissionsAndroid.PERMISSIONS.CAMERA,
-                {
-                    title: "请求",
-                    message: "要允许即应访问相机吗",
-                    buttonNeutral: "忽略",
-                    buttonNegative: "拒绝",
-                    buttonPositive: "允许"
-                }
-            );
-            const readExternalGranted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-                {
-                    title: "请求",
-                    message: "要允许即应访问照片、媒体吗",
-                    buttonNeutral: "忽略",
-                    buttonNegative: "拒绝",
-                    buttonPositive: "允许"
-                }
-            );
-            const readContactsExternalGranted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-                {
-                    title: "请求",
-                    message: "要允许即应访问通讯录吗",
-                    buttonNeutral: "忽略",
-                    buttonNegative: "拒绝",
-                    buttonPositive: "允许"
-                }
-            );
-            const readPhoneGranted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
-                {
-                    title: "请求",
-                    message: "要允许即应访问手机号吗",
-                    buttonNeutral: "忽略",
-                    buttonNegative: "拒绝",
-                    buttonPositive: "允许"
-                }
-            )
+                PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+
+            ];
+            const permissionResponse = await PermissionsAndroid.requestMultiple(
+                permissions,
+            );
+
         } catch (e) {
             console.log(e);
         }

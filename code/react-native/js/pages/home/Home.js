@@ -3,6 +3,7 @@ import NavigationUtil from '../../navigator/NavUtil';
 import { View } from "react-native"
 import {connect} from "react-redux";
 import BottomTab from "./BottomTab";
+import SplashScreen from "react-native-splash-screen";
 
 class HomeScreen extends React.PureComponent{
     constructor(props) {
@@ -12,6 +13,7 @@ class HomeScreen extends React.PureComponent{
 
     componentDidMount(){
         NavigationUtil.Navigation = this.props.navigation;
+        SplashScreen.hide();
     };
 
     render() {

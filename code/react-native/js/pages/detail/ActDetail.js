@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, ScrollView, TouchableWithoutFeedback, Animated} 
 import {Button, Image, ListItem } from "react-native-elements";
 import NavigationUtil from "../../navigator/NavUtil";
 import {
-    ArrowLeftIcon, CheckIcon, CloseIcon,
+    ArrowLeftIcon, CaretRightIcon, CheckIcon, ChevronIcon, CloseIcon,
     CommentIcon,
     EditIcon,
     PaperPlaneIcon,
@@ -58,12 +58,11 @@ class DetailScreen extends React.Component {
 
     render() {
         let activity = this.props.currentAct;
-        let {title, comments, tags, images,
+        let {title, comments, images,
             createTime, description, sponsor} = activity;
-        let specInfo = {}; // waiting for modifying
         let header = this.renderHeader(title);
-        let ActTitle = this.renderTitle(title, tags);
-        let body = this.renderBody(sponsor, specInfo, description, images, createTime, comments);
+        let ActTitle = this.renderTitle(activity);
+        let body = this.renderBody(sponsor, description, images, createTime, comments);
         let footer = this.renderFooter();
         let imageViewer = this.renderImageViewer(images);
         return(
@@ -73,10 +72,7 @@ class DetailScreen extends React.Component {
                     style={styles.container}
                     onScroll={Animated.event(
                         [{nativeEvent: {contentOffset: {y: this.scrollY}}}],
-                        {useNativeDriver: true, listener: () => {console.log(this.scrollY.interpolate({
-                                inputRange: [0, 40, 50],
-                                outputRange: [0, 2, 2],
-                            }))}}
+                        {useNativeDriver: true}
                     )}
                 >
                     {ActTitle}
@@ -160,10 +156,13 @@ class DetailScreen extends React.Component {
             </ToolTip>
         );
     };
-    renderTitle = (title, tags) => {
+    renderTitle = (activity) => {
+        let {title, tags,} = activity;
+        let spec = this.renderSpecHeader(activity);
         return (
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>{title}</Text>
+                {spec}
                 <View style={styles.tagContainer}>
                     {
                         tags && tags.length > 0 ?
@@ -179,7 +178,148 @@ class DetailScreen extends React.Component {
             </View>
         );
     };
-    renderBody = (sponsor, specInfo, description, images, createTime, comments) => {
+    renderSpecHeader = (activity) => {
+        let { type, origin, dest,
+            departTime, endTime, store, orderTime, activityTime} = activity;
+        let originDestComponent = null;
+        let departTimeComponent = null;
+        let endTimeComponent;
+        let storeComponent = null;
+        let orderTimeComponent = null;
+        let activityComponent = null;
+        endTimeComponent = (
+            <Text
+                style={styles.specLabel}
+            >
+                报名截止
+                <Text
+                    style={styles.specTitle}
+                >
+                    {`: ${endTime}`}
+                </Text>
+            </Text>
+        );
+        if (type === ACT_TYPE_OTHER) {
+            activityComponent = (
+                <Text
+                    style={styles.specLabel}
+                >
+                    活动开始
+                    <Text
+                        style={styles.specTitle}
+                    >
+                        {`: ${activityTime}`}
+                    </Text>
+                </Text>
+            )
+        } else if (type === ACT_TYPE_ORDER) {
+            storeComponent = (
+                <Text
+                    style={styles.specLabel}
+                >
+                    网购店铺
+                    <Text
+                        style={styles.specTitle}
+                    >
+                        {`: ${store}`}
+                    </Text>
+                </Text>
+            )
+        } else if (type === ACT_TYPE_TAKEOUT) {
+            orderTimeComponent = (
+                <Text
+                    style={styles.specLabel}
+                >
+                    下单时间
+                    <Text
+                        style={styles.specTitle}
+                    >
+                        {`: ${orderTime}`}
+                    </Text>
+                </Text>
+            );
+            storeComponent = (
+                <Text
+                    style={styles.specLabel}
+                >
+                    下单店铺
+                    <Text
+                        style={styles.specTitle}
+                    >
+                        {`: ${store}`}
+                    </Text>
+                </Text>
+            )
+        } else if (type === ACT_TYPE_TAXI) {
+            departTimeComponent = (
+                <Text
+                    style={styles.specLabel}
+                >
+                    出发时间
+                    <Text
+                        style={styles.specTitle}
+                    >
+                        {`: ${departTime}`}
+                    </Text>
+                </Text>
+            );
+            originDestComponent = (
+                <View>
+                    <Text
+                        style={styles.specLabel}
+                    >
+                        {`出发到达: `}
+                    </Text>
+                    <TouchableWithoutFeedback
+                        onPress={this.toTaxiOriginDestDetail}
+                    >
+                        <View
+                            style={{flexDirection: "row", flex: 1,alignItems: "center"}}
+                        >
+                            <Text
+                                ellipsizeMode={"middle"}
+                                numberOfLines={1}
+                                style={[styles.specTitle, {flex: 1,}]}
+                            >
+                                {`${origin.title}`}
+                            </Text>
+                            <CaretRightIcon
+                                color={"#8f8f8f"}
+                                size={18}
+                            />
+                            <Text
+                                ellipsizeMode={"middle"}
+                                numberOfLines={1}
+                                style={[styles.specTitle, {flex: 1,}]}
+                            >
+                                {` ${dest.title}`}
+                            </Text>
+                            <ChevronIcon
+                                size={18}
+                                color={"#afafaf"}
+                            />
+                        </View>
+                    </TouchableWithoutFeedback>
+                </View>
+            )
+        } else {
+            // ....
+        }
+
+        return (
+            <View
+                style={styles.specContainer}
+            >
+                {endTimeComponent}
+                {activityComponent}
+                {departTimeComponent}
+                {orderTimeComponent}
+                {storeComponent}
+                {originDestComponent}
+            </View>
+        )
+    };
+    renderBody = (sponsor, description, images, createTime, comments) => {
         let comment = this.renderComment(comments);
         let sponsorComponent = this.renderSponsor(sponsor);
         let participantList = this.renderParticipantList();
@@ -281,7 +421,7 @@ class DetailScreen extends React.Component {
     renderParticipantList = () => {
         let { participants } = this.props.currentAct;
         if (!participants) participants = [];
-        console.log(participants);
+
         let title = (
             <View style={styles.participantComponentTitleContainer}>
                 <Text style={styles.participantComponentTitle}>
@@ -584,7 +724,6 @@ class DetailScreen extends React.Component {
         Api.getUserActStatus(id, jwt)
             .then(data => {
                 this.setState({joinStatus: data.status});
-                console.log(data);
             })
             .catch(err => {
                 console.log(err);
@@ -667,6 +806,10 @@ class DetailScreen extends React.Component {
     toggleEveningMode = ()　=> {
         alert("没有事情发生")
     };
+    toTaxiOriginDestDetail = () => {
+        let {currentAct} = this.props;
+        NavigationUtil.toPage({origin: currentAct.origin, dest: currentAct.dest}, "TaxiOriginDestDetail")
+    };
 }
 
 const mapStateToProps = state => ({
@@ -723,7 +866,17 @@ const styles = StyleSheet.create({
         marginBottom: 12,
         marginTop: 10,
     },
-
+    specContainer: {
+        marginTop: 10,
+        marginBottom: 10,
+        marginLeft: 8,
+    },
+    specLabel: {
+        color: "#0084ff",
+    },
+    specTitle: {
+        color: "#444",
+    },
     // body style, including user info, text, images, metadata
     bodyContainer: {
         backgroundColor: "#fff",

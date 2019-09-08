@@ -15,6 +15,7 @@ import {onGetCurrentUserFollowing} from "../../actions/currentUserFollowing";
 import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
 import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
 import {onLoadSettings} from "../../actions/setting";
+import SplashScreen from "react-native-splash-screen";
 
 
 class RegisterScreen extends React.PureComponent{
@@ -36,6 +37,9 @@ class RegisterScreen extends React.PureComponent{
         }
     }
 
+    componentDidMount(): void {
+        SplashScreen.hide();
+    }
 
     render() {
         let logo = this.renderLogo();
@@ -203,7 +207,6 @@ class RegisterScreen extends React.PureComponent{
                 disabledTitleStyle={{color: "#fff"}}
                 onPress={() => {
                     this.register();
-                    this.props.navigation.navigate("Home", null);
                 }}
                 containerStyle={{marginTop: 28}}
             />
