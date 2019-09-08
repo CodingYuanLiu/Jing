@@ -41,7 +41,7 @@ export default class XmppApi {
         console.log(await DeviceInfo.getAvailableLocationProviders());
         console.log(await DeviceInfo.getBatteryLevel());
         console.log(await DeviceInfo.getCameraPresence());
-        console.log(await DeviceInfo.getPhoneNumber());
+
         console.log(await DeviceInfo.getSystemName());
         console.log(await DeviceInfo.getApplicationName());
         console.log(await DeviceInfo.getDeviceId());

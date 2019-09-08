@@ -97,4 +97,7 @@ export default class Util {
             return `${res}${minutes}分钟`;
         }
     };
+
+    static TOKEN = "";
+    static HAS_ACCOUNT_FLAG = false;
 }

@@ -8,7 +8,6 @@ import PublishScreen from "../publish/Publish";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MeScreen from "../me/Me";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import NativeLogin from "../login/NativeLogin";
 import Discover from "../discover/Discover";
 export default class BottomTab extends React.Component{
     constructor(props) {
@@ -43,7 +42,7 @@ export default class BottomTab extends React.Component{
                         screen : NotificationScreen,
                         navigationOptions: {
                             tabBarLabel: "消息",
-                            tabBarIcon: ({focused, tintColor}) => {
+                            tabBarIcon: ({tintColor}) => {
                                 return (
                                     <Ionicons
                                         name={"ios-notifications"}

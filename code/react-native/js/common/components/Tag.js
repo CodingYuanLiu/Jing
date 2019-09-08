@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         maxWidth: 100,
         minWidth: 20,
+        marginTop: 6,
     },
     text: {
         color: "#a4a4a4",

@@ -5,10 +5,8 @@ import Dao from "../../api/Dao";
 import {setUserData} from "../../actions/currentUser";
 import {connect} from "react-redux";
 import Api from "../../api/Api"
-import XmppApi, {OpenFireApi} from "../../api/XmppApi";
-import Util from "../../common/util";
+import XmppApi from "../../api/XmppApi";
 import {CheckIconReversed, CircleIcon, CloseIcon, EyeIcon, EyeOffIcon} from "../../common/components/Icons";
-import HeaderBar from "../../common/components/HeaderBar";
 import store from "../../store";
 import {onGetCurrentUserFollower} from "../../actions/currentUserFollower";
 import {onGetCurrentUserFollowing} from "../../actions/currentUserFollowing";
@@ -16,11 +14,13 @@ import {onGetCurrentUserManageAct} from "../../actions/currentUserManage";
 import {onGetCurrentUserJoinAct} from "../../actions/currentUserJoin";
 import {onLoadSettings} from "../../actions/setting";
 import SplashScreen from "react-native-splash-screen";
+import Util from "../../common/util";
 
 
 class RegisterScreen extends React.PureComponent{
     constructor(props) {
         super(props);
+        console.log(props);
         this.state = {
             username: "",
             password: "",
@@ -34,6 +34,8 @@ class RegisterScreen extends React.PureComponent{
             passwordLengthValid: false,
             passwordPatternValid: false,
             loading: false,
+            phone: "-1",
+            nickname: "昵称",
         }
     }
 
@@ -55,7 +57,7 @@ class RegisterScreen extends React.PureComponent{
                     {button}
                 </View>
             </View>
-        )
+        );
     };
     renderLogo = () => {
         return (
@@ -82,18 +84,25 @@ class RegisterScreen extends React.PureComponent{
 
         let usernameStartValidIcon = this.renderTipsLeftIcon(this.state.usernameStartValid);
         let usernamePatternValidIcon = this.renderTipsLeftIcon(this.state.usernamePatternValid);
+
+        let errorPrompt = this.state.usernameExists ?
+            <ListItem
+                leftIcon={<CircleIcon size={10} color={"#ee5223"}/>}
+                title={"用户名已存在"}
+                titleStyle={{fontSize: 14, color: "#ee5223"}}
+                containerStyle={{padding: 10, margin: 0}}
+            /> : null;
         return (
             <View style={styles.itemContainer}>
                 <View style={styles.inputContainer}>
                     <TextInput
                         placeholder={"用户名"}
                         onChangeText={(text) => {
-                            this.setState({username: text});
-                            this.verifyContent();
-                            this.usernameExists(text)
-                                .then((res) => {
-                                    console.log(res);
-                                })
+                            let res = this.verifyContent(text, this.state.password);
+                            this.setState({
+                                username: text,
+                                ...res,
+                            });
                         }}
                         value={this.state.username}
                         autoCompleteType={"username"}
@@ -103,6 +112,7 @@ class RegisterScreen extends React.PureComponent{
                     />
                     {clearIcon}
                 </View>
+                {errorPrompt}
                 <ListItem
                     leftIcon={usernamePatternValidIcon}
                     title={"用户名由6-20位字母、下划线或数字组成"}
@@ -119,13 +129,13 @@ class RegisterScreen extends React.PureComponent{
         );
     };
     renderPasswordInput = () => {
-        let rightIcon = this.state.passwordVisible ?
+        let rightIcon = !this.state.passwordVisible ?
             <EyeIcon
                 color={"#bfbfbf"}
                 size={18}
                 onPress={() => {
                     this.setState(
-                        {passwordVisible: false}
+                        {passwordVisible: true}
                     )
                 }}
             />
@@ -135,7 +145,7 @@ class RegisterScreen extends React.PureComponent{
                 size={18}
                 onPress={() => {
                     this.setState(
-                        {passwordVisible: true}
+                        {passwordVisible: false}
                     )
                 }}
             />;
@@ -155,13 +165,16 @@ class RegisterScreen extends React.PureComponent{
                     <TextInput
                         placeholder={"密码"}
                         onChangeText={(text) => {
-                            this.setState({password: text});
-                            this.verifyContent();
+                            let res = this.verifyContent(this.state.username, text);
+                            this.setState({
+                                password: text,
+                                ...res,
+                            });
                         }}
                         value={this.state.password}
                         textContentType={"password"}
                         autoCompleteType={"password"}
-                        secureTextEntry={this.state.passwordVisible}
+                        secureTextEntry={!this.state.passwordVisible}
                         style={{flex: 1,fontSize: 20,}}
                     />
                     {clearIcon}
@@ -197,27 +210,29 @@ class RegisterScreen extends React.PureComponent{
         )
     };
     renderButton = () => {
-        let disabled = !this.verifyContent();
         return (
             <Button
                 title={"注册并登录"}
                 loading={this.state.loading}
-                disabled={disabled}
+                disabled={
+                    !this.state.passwordPatternValid || !this.state.passwordLengthValid
+                    || !this.state.usernamePatternValid || !this.state.usernameStartValid
+                }
                 disabledStyle={{backgroundColor: "#cef5ff"}}
                 disabledTitleStyle={{color: "#fff"}}
-                onPress={() => {
-                    this.register();
-                }}
+                onPress={this.register}
                 containerStyle={{marginTop: 28}}
             />
         )
     };
     register = () => {
         this.setState({loading: true});
-        let jwt = this.props.navigation.getParam("jwt");
-        let hasLoginOnWechat = this.props.navigation.getParam("hasLoginOnWechat");
+        let jwt = this.props.navigation.getParam("jwt") ?
+            this.props.navigation.getParam("jwt"): Util.TOKEN;
+        let hasLoginOnWechat = this.props.navigation.getParam("hasLoginOnWechat")?
+            this.props.navigation.getParam("hasLoginOnWechat") : Util.HAS_ACCOUNT_FLAG;
         let data = this.buildRegisterData();
-
+        console.log(data, jwt, hasLoginOnWechat);
         this.registerAsync(data, jwt, hasLoginOnWechat)
             .then(() => {
                 this.setState({loading: false});
@@ -229,7 +244,8 @@ class RegisterScreen extends React.PureComponent{
     };
     registerAsync = async (data, jwt, hasLoginOnWechat) => {
         try {
-            await Api.register(data, jwt);
+            let res = await Api.register(data, jwt);
+            console.log(res);
             let userInfo = await Api.getSelfDetail(jwt);
             if ( !hasLoginOnWechat ) {
                 await OpenFireApi.register({
@@ -253,37 +269,24 @@ class RegisterScreen extends React.PureComponent{
                     ]
                 });
             }
-            if (hasLoginOnWechat) {
-                store.dispatch(onGetCurrentUserFollower(data.jwt));
-                store.dispatch(onGetCurrentUserFollowing(data.jwt));
-                store.dispatch(onGetCurrentUserManageAct(data.jwt));
-                store.dispatch(onGetCurrentUserJoinAct(data.jwt));
+            else {
+                this.props.onGetCurrentUserFollower(jwt);
+                this.props.onGetCurrentUserFollowing(jwt);
+                this.props.onGetCurrentUserManageAct(jwt);
+                this.props.onGetCurrentUserJoinAct(jwt);
             }
             await Dao.saveString("@jwt", jwt);
             this.props.setUserData({
                 ...userInfo,
-                nickname: "昵称",
-                jwt: jwt,
             });
-            this.setState({success: true});
-            store.dispatch(setUserData(data));
-            store.dispatch(onLoadSettings());
-            await XmppApi.login(data);
-            await XmppApi.onStanza(store, data);
 
-        } catch (e) {
-            console.log(e);
-        }
-    };
-    usernameExists = async (username) => {
-        let data = this.buildRegisterData();
-        let jwt = this.props.navigation.getParam("jwt");
-        try {
-            let res = await Api.register(data, jwt);
-            this.setState({usernameExists: false});
-            return res;
-        } catch (err ) {
-            this.setState({usernameExists: true})
+            this.props.setUserData(userInfo);
+            this.props.onLoadSettings();
+            await XmppApi.login(userInfo);
+            await XmppApi.onStanza(store, userInfo);
+
+        } catch (err) {
+            console.log(err);
         }
     };
     buildRegisterData = () => {
@@ -294,57 +297,44 @@ class RegisterScreen extends React.PureComponent{
             nickname: this.state.nickname,
         };
     };
-    verifyContent = () => {
+    verifyContent = (username, password) => {
         let usernameRegex = /^[a-zA-Z_-][a-zA-Z0-9_-]{5,20}$/;
         let usernameStartRegex = /^[a-zA-Z_-]/;
         let passwordRegex = /^.*((?=.*\d)(?=.*[A-Za-z]))|((?=.*[A-Za-z])(?=.*[!@#$%^&*? ]))|((?=.*\d)(?=.*[!@#$%^&*? ])).*$/;
 
-        let flag = true;
         let usernameStartValid, usernamePatternValid,
             passwordLengthValid, passwordPatternValid;
 
-        if(usernameStartRegex.test(this.state.username)) {
-            usernameStartValid = true;
-        } else {
-            usernameStartValid = false;
-            flag = false;
-        }
+        usernameStartValid = usernameStartRegex.test(username);
 
-        if(usernameRegex.test(this.state.username)) {
-            usernamePatternValid = true;
-        } else {
-            usernamePatternValid = false;
-            flag = false;
-        }
+        usernamePatternValid = usernameRegex.test(username);
 
-        if (this.state.password.length >= 8 && this.state.password.length <= 16) {
-            passwordLengthValid = true;
-        } else {
-            passwordLengthValid = false;
-            flag = false;
-        }
+        passwordLengthValid = password.length >= 8 && password.length <= 16;
 
-        if (passwordRegex.test(this.state.password)) {
-            passwordPatternValid = true;
-        } else {
-            passwordPatternValid = false;
-            flag = false;
-        }
-        this.setState({
+        passwordPatternValid = passwordRegex.test(password);
+        return{
             usernamePatternValid,
             usernameStartValid,
             passwordLengthValid,
             passwordPatternValid,
-        });
-        return flag;
+        };
     };
 }
 
-const mapDispatchToProps = dispatch => ({
-    setUserData: user => dispatch(setUserData(user)),
+const mapStateToProps = state => ({
+    currentUser: state.currentUser,
 });
 
-export default connect(null, mapDispatchToProps)(RegisterScreen)
+const mapDispatchToProps = dispatch => ({
+    setUserData: user => dispatch(setUserData(user)),
+    onLoadSettings: () => dispatch(onLoadSettings()),
+    onGetCurrentUserFollower: (jwt) => dispatch(onGetCurrentUserFollower(jwt)),
+    onGetCurrentUserFollowing: (jwt) => dispatch(onGetCurrentUserFollowing(jwt)),
+    onGetCurrentUserManageAct: (jwt) => dispatch(onGetCurrentUserManageAct(jwt)),
+    onGetCurrentUserJoinAct: (jwt) => dispatch(onGetCurrentUserJoinAct(jwt)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(RegisterScreen)
 
 const styles = StyleSheet.create({
     container: {

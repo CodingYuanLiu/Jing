@@ -437,6 +437,12 @@ const CHAT_TYPE = {
     GROUP_CHAT: "groupchat",
     PRIVATE_CHAT: "chat",
 };
+
+const PUBLISH_ACTION = {
+    PUBLISH: "publish",
+    MODIFY: "modify",
+};
+const DEFAULT_IMAGE = "http://pxafsavqu.bkt.clouddn.com/empty_image.png";
 export {
     /**
      * activity constants
@@ -476,5 +482,6 @@ export {
     CHAT_TYPE,
 
     PRESENCE,
-
+    DEFAULT_IMAGE,
+    PUBLISH_ACTION,
 }

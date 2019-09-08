@@ -68,18 +68,11 @@ class JaccountLoadingScreen extends React.PureComponent{
 
         if (loginRes.status === LOGIN_STATUS.NEW_USER_IN_APP) {
             this.props.navigation.navigate("Register", {jwt:loginRes.jwt, hasLoginOnWechat: false});
-            return ;
         }
 
         else if (loginRes.status === LOGIN_STATUS.LOGGED) {
             let data = await Api.getSelfDetail(loginRes.jwt);
-            console.log(data);
-            if (data.username === "" || data.username === null || data.username === undefined) {
-                this.props.navigation.navigate("Register", {jwt:loginRes.jwt, hasLoginOnWechat: true});
-                console.log("no username, register");
-                return ;
-            }
-            console.log("go to this line");
+
             store.dispatch(onGetCurrentUserFollower(data.jwt));
             store.dispatch(onGetCurrentUserFollowing(data.jwt));
             store.dispatch(onGetCurrentUserManageAct(data.jwt));
@@ -88,6 +81,12 @@ class JaccountLoadingScreen extends React.PureComponent{
             store.dispatch(onLoadSettings());
             await XmppApi.login(data);
             await XmppApi.onStanza(store, data);
+
+            if (data.username === "" || data.username === null || data.username === undefined) {
+                this.props.navigation.navigate("Register", {jwt:loginRes.jwt, hasLoginOnWechat: true});
+                return ;
+            }
+
             this.props.navigation.navigate("Home", {jwt:data.jwt});
         } else {
             console.log(loginRes.status);

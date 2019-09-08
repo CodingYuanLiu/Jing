@@ -862,6 +862,7 @@ const styles = StyleSheet.create({
     },
     tagContainer: {
         flexDirection: "row",
+        flexWrap: "wrap",
         alignItems: "center",
         marginBottom: 12,
         marginTop: 10,

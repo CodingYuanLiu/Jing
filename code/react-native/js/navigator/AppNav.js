@@ -117,35 +117,52 @@ export const MainNav = createStackNavigator(
         }
     }
 );
-const LoginNav = (status) => {
-    return createStackNavigator(
-        {
-            NativeLogin: {
-                screen: NativeLogin,
-            },
-            JaccountWeb: {
-                screen: JaccountWebView,
-            },
-            JaccountLoading: {
-                screen: JaccountLoading,
-            },
-            Register: {
-                screen: RegisterScreen,
-            },
+const FirstLoginStart = createStackNavigator(
+    {
+        NativeLogin: {
+            screen: NativeLogin,
         },
-        {
-            defaultNavigationOptions: {
-                header: null
-            },
-            initialRouteName: status === LOGIN_STATUS.FIRST_LOGIN ?
-                "NativeLogin" : status === LOGIN_STATUS.USERNAME_EMPTY ?
-                    "Register" : "NativeLogin",
-        }
-    );
-};
+        JaccountWeb: {
+            screen: JaccountWebView,
+        },
+        JaccountLoading: {
+            screen: JaccountLoading,
+        },
+        Register: {
+            screen: RegisterScreen,
+        },
+    },
+    {
+        defaultNavigationOptions: {
+            header: null
+        },
+        initialRouteName: "NativeLogin",
+    }
+);
+const UsernameEmptyStart = createStackNavigator({
+        Register: {
+            screen: RegisterScreen,
+        },
+        NativeLogin: {
+            screen: NativeLogin,
+        },
+        JaccountWeb: {
+            screen: JaccountWebView,
+        },
+        JaccountLoading: {
+            screen: JaccountLoading,
+        },
+    },
+    {
+        defaultNavigationOptions: {
+            header: null
+        },
+        initialRouteName: "Register"
+    }
+);
 export const FirstLoginNav =  createSwitchNavigator(
     {
-        LoginSwitch: LoginNav(LOGIN_STATUS.FIRST_LOGIN),
+        LoginSwitch: FirstLoginStart,
         Main: MainNav,
     },
     {
@@ -155,14 +172,13 @@ export const FirstLoginNav =  createSwitchNavigator(
         },
         navigationOptions: {
             header: null,
-
         }
     }
 );
 
 export const UsernameEmptyNav =  createSwitchNavigator(
     {
-        LoginSwitch: LoginNav(LOGIN_STATUS.USERNAME_EMPTY),
+        LoginSwitch: UsernameEmptyStart,
         Main: MainNav,
     },
     {
@@ -172,7 +188,6 @@ export const UsernameEmptyNav =  createSwitchNavigator(
         },
         navigationOptions: {
             header: null,
-
         }
     }
 );

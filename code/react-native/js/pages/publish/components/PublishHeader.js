@@ -27,6 +27,7 @@ export default class PublishHeader extends React.PureComponent{
                 buttonStyle={styles.button}
                 disable={this.props.disabled}
                 onPress={this.props.onNext ? this.props.onNext : this.props.onPublish}
+                {...this.props.buttonProps}
             />;
         let style= this.props.style;
         return (
@@ -50,6 +51,7 @@ PublishHeader.propTypes = {
     onPublish: PropTypes.func,
     buttonTitle: PropTypes.string,
     buttonType: PropTypes.string,
+    buttonProps: PropTypes.object,
     disabled: PropTypes.bool,
     titleView: PropTypes.element,
     titleLayoutStyle: ViewPropTypes.style,

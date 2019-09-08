@@ -15,13 +15,18 @@ import Model from "../../api/Model";
 import {ConfirmModal} from "../../common/components/CustomModal";
 import ImageViewer from "react-native-image-zoom-viewer";
 import Modal from "react-native-modal";
-import {WINDOW} from "../../common/constant/Constant";
+import {PUBLISH_ACTION, WINDOW} from "../../common/constant/Constant";
 import {CaretDownIcon, CaretUpIcon, CloseIcon, PlusIcon, SearchIcon} from "../../common/components/Icons";
 import ZhihuApi from "../../api/ZhihuApi";
+import currentUser from "../../reducers/currentUser";
 
+
+let tagId = 1;
 class PublishPage extends React.PureComponent{
     constructor(props) {
         super(props);
+        this.type = this.props.navigation.getParam("type");
+        this.action = this.props.navigation.getParam("action");
         this.state = {
             type: "taxi",
             description: "",
@@ -38,17 +43,16 @@ class PublishPage extends React.PureComponent{
             isFooterModalVisible: false,
             tagInput: "",
             tagCandidates: [],
-            remoteAddTag: [],
+            remoteAddTags: [],
             footerModalHeight: WINDOW.height / 5 * 4,
             loadingTagCandidates: false,
-            maxMember: 5,
-        }
+            isLoading: false,
+        };
     }
     componentDidMount() {
         this.keyboardDidShowListener = Keyboard.addListener(
             'keyboardDidShow',
             (e) => {
-                console.log(e);
                 this.setState({footerModalHeight: this.state.footerModalHeight - e.endCoordinates.height});
             }
         );
@@ -66,9 +70,8 @@ class PublishPage extends React.PureComponent{
 
     render() {
         this.type = this.props.navigation.getParam("type");
-        if (!this.type) this.type = "taxi";
         let propsAct = this.getActByType(this.props.publishAct, this.type);
-        let {title, description, images, endTime, tags} = propsAct;
+        let {title, description, images, endTime, tags, maxMember} = propsAct;
         let header = this.renderHeader();
         let detailInput = this.renderDetailInput(title, description);
         let imagePicker = this.renderImagePicker();
@@ -79,7 +82,7 @@ class PublishPage extends React.PureComponent{
         let saveModal = this.renderSaveModal();
         let imageViewer = this.renderImageViewer(images);
 
-        let footer = this.renderFooter(tags);
+        let footer = this.renderFooter(tags, maxMember);
         let footerTagInputModal = this.renderFooterTagInputModal(tags);
         return(
             <View style={{flex: 1,}}>
@@ -144,9 +147,12 @@ class PublishPage extends React.PureComponent{
             <PublishHeader
                 style={styles.headerContainer}
                 onClose={this.goBack}
-                onPublish={this.publish}
-                buttonTitle={"发布"}
-                buttonType={"solid"}
+                onPublish={this.action === PUBLISH_ACTION.PUBLISH ? this.publish : this.modify}
+                buttonTitle={this.action === PUBLISH_ACTION.PUBLISH ? "发布" : "修改" }
+                buttonProps={{
+                    loading: this.state.isLoading,
+                    type: "solid",
+                }}
                 titleView={title}
                 titleLayoutStyle={styles.headerTitle}
             />
@@ -345,7 +351,7 @@ class PublishPage extends React.PureComponent{
         )
     };
 
-    renderFooter = (tags) => {
+    renderFooter = (tags, maxMember) => {
         return (
             <View style={styles.footerContainer}>
                 <View
@@ -369,27 +375,38 @@ class PublishPage extends React.PureComponent{
                     <View
                         style={styles.maxMemberPicker}
                     >
+                        <Text
+                            style={{color: "#0084ff", fontSize: 14, marginRight: 5}}
+                        >成员上限</Text>
                         <TextInput
-                            placeholder={"成员上限"}
                             style={
                                 styles.maxMemberPickerInput
                             }
-                            value={`${this.state.maxMember}`}
+                            value={`${maxMember}`}
                             keyboardType={"numeric"}
-                            onChangeText={(text) => {
-                                if (/^\d+$/.test(text)) {
-                                    this.setState({maxMember: Number(text)})
+                            onChange={({nativeEvent}) => {
+                                let {text} = nativeEvent;
+                                if (/^\d+$|^$/.test(text)) {
+                                    this.saveByType({maxMember: Number(text)}, this.type);
                                 }
                             }}
                         />
                         <CaretUpIcon
                             color={"#0084ff"}
-                            onPress={() => {this.setState({maxMember: this.state.maxMember + 1})}}
+                            onPress={() => {
+                                let maxMemberCopy = maxMember;
+                                maxMemberCopy++;
+                                this.saveByType({maxMember: maxMemberCopy}, this.type);
+                            }}
                             style={{marginLeft: 10, marginRight:10}}
                         />
                         <CaretDownIcon
                             color={"#0084ff"}
-                            onPress={() => {this.setState({maxMember: this.state.maxMember - 1})}}
+                            onPress={() => {
+                                let maxMemberCopy = maxMember;
+                                maxMemberCopy--;
+                                this.saveByType({maxMember: maxMemberCopy}, this.type);
+                            }}
                             style={{marginRight:10}}
                         />
                     </View>
@@ -409,22 +426,25 @@ class PublishPage extends React.PureComponent{
             </View>
         );
     };
-    renderTag = (item, i ) => {
+    renderTag = (item) => {
+        let deleteIcon = item.canDelete ?
+            <CloseIcon
+                color={"#0084ff"}
+                size={12}
+                onPress={() => {this.deleteTag(item)}}
+            />: null;
         return  (
             <View
                 style={styles.tagContainer}
-                key={i.toString()}
             >
                 <Text
                     style={styles.tagTitle}
                 >
-                    {item}
+                    {item.title}
                 </Text>
-                <CloseIcon
-                    color={"#0084ff"}
-                    size={12}
-                    onPress={() => {this.deleteTag(i, item)}}
-                />
+                {
+                    deleteIcon
+                }
             </View>
         )
     };
@@ -491,11 +511,11 @@ class PublishPage extends React.PureComponent{
                         }}
                     >
                         {
-                            tags.map((item, i) => {
+                            tags.map((item) => {
                                 return <View
-                                    key={i.toString()}
+                                    key={item.id}
                                 >
-                                    {this.renderTag(item, i)}
+                                    {this.renderTag(item)}
                                 </View>;
                             })
                         }
@@ -503,7 +523,9 @@ class PublishPage extends React.PureComponent{
                     <FlatList
                         data={data}
                         renderItem={this.renderTagCandidate}
-                        keyExtractor={(item) => item[2]}
+                        keyExtractor={(item,i) => {
+                            return Array.isArray(item) ? item[2] : i.toString()
+                        }}
                         refreshControl={
                             <RefreshControl
                                 refreshing={this.state.loadingTagCandidates}
@@ -520,51 +542,78 @@ class PublishPage extends React.PureComponent{
         )
     };
     renderTagCandidate = ({item}) => {
-          if(!Array.isArray(item) || item.length < 7) return null;
-          else {
-              return  (
-                  <ListItem
-                        leftAvatar={
-                            <Image
-                                source={{uri: item[3]}}
-                                style={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 3,
-                                }}
-                            />
-                        }
-                        title={item[1]}
-                        titleStyle={{fontWeight: "bold", fontSize: 18}}
-                        rightElement={
-                            <Button
-                                title={"添加"}
-                                titleStyle={{fontSize: 14}}
-                                buttonStyle={{
-                                    backgroundColor: "#0084ff",
-                                    width: 64,
-                                    padding: 0,
-                                    paddingTop: 6,
-                                    paddingBottom: 6,
-                                }}
-                                onPress={() => {this.addTag(item[1])}}
-                            />
-                        }
-                  />
-              )
-          }
+        return  (
+            <ListItem
+                leftAvatar={
+                    <Image
+                        source={{uri: item[3]}}
+                        style={{
+                            width: 40,
+                            height: 40,
+                            borderRadius: 3,
+                        }}
+                    />
+                }
+                title={item[1]}
+                titleStyle={{fontWeight: "bold", fontSize: 18}}
+                rightElement={
+                    <Button
+                        title={"添加"}
+                        titleStyle={{fontSize: 14}}
+                        buttonStyle={{
+                            backgroundColor: "#0084ff",
+                            width: 64,
+                            padding: 0,
+                            paddingTop: 6,
+                            paddingBottom: 6,
+                        }}
+                        onPress={() => {this.addTag({
+                            title: item[1],
+                            image: item[3],
+                            id: item[2],
+                            canDelete: true,
+                        })}}
+                    />
+                }
+            />
+        )
     };
     modify = () => {
         // ...
+        this.setState({isLoading: true});
+        let publishAct = this.getActByType(this.props.publishAct, this.type);
+        let data = Model.buildActivity(publishAct);
+        let {currentUser} = this.props;
+        Api.modifyAct(data, currentUser.jwt)
+            .then(act => {
+                this.setState({isLoading: false});
+                NavigationUtil.toPage({id: publishAct.id}, "ActDetail");
+            })
+            .catch(err => {
+                console.log(err);
+            })
     };
     publish = () => {
+        this.setState({isLoading: true});
         let publishAct = this.getActByType(this.props.publishAct, this.type);
         let data =
             Model.buildActivity(publishAct);
-        this.addRemoteTagCandidates();
-        Api.publishAct(this.props.currentUser.jwt, data)
+        let {currentUser} = this.props;
+        Api.publishAct(data, this.props.currentUser.jwt)
             .then (act => {
-                NavigationUtil.toPage({id: act.id}, "ActDetail");
+                Api.addTag({
+                    tags: this.state.remoteAddTags.map(item => item.title)
+                }, currentUser.jwt)
+                    .then(data => {
+                        console.log(data);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+                    .finally(() => {
+                        this.setState({isLoading: false});
+                        NavigationUtil.toPage({id: act.id}, "ActDetail");
+                    })
             })
             .catch(err => {
                 console.log(err);
@@ -655,8 +704,6 @@ class PublishPage extends React.PureComponent{
     };
     showImagePicker = () => {
         ImagePicker.showImagePicker(options, res => {
-            console.log("response : ", res);
-
             if (res.didCancel) {
                 console.log('User cancelled image picker');
             } else if (res.error) {
@@ -730,6 +777,7 @@ class PublishPage extends React.PureComponent{
     handleConfirmSave = () => {
         this.setState({saveModalVisible: false});
         let item = this.getActByType(this.props.publishAct, this.type);
+
         LocalApi.savePublishDraft(item)
             .then(() => {
                 NavigationUtil.toPage(null, "Home");
@@ -760,30 +808,6 @@ class PublishPage extends React.PureComponent{
             }
         })
     };
-    deleteTag = (i, item) => {
-        this.setState(state => {
-            let count = 0, list = [], candidates = [];
-            for (let item of state.tags) {
-                if (count !== i) {
-                    list.push(item);
-                }
-                count++;
-            }
-            for (let tag of state.remoteAddTag) {
-                if (tag !== item) {
-                    candidates.push(tag);
-                }
-            }
-            this.saveByType({
-                tags: list,
-            }, this.type);
-            return {
-                ...state,
-                tags: list,
-                remoteAddTag: candidates,
-            }
-        })
-    };
     autoGetTag = (title, description) => {
         let {currentUser} = this.props;
         Api.getTag(
@@ -794,11 +818,18 @@ class PublishPage extends React.PureComponent{
                 currentUser.jwt,
             )
             .then(data => {
-                console.log(data);
+                let list = [];
+                for (let item of data.tags) {
+                    list.push({
+                        title: item,
+                        canDelete: false,
+                        id: (tagId++).toString(),
+                    })
+                }
+                this.setState({tags: list});
                 this.saveByType({
-                    tags: data.tags,
+                    tags: list,
                 }, this.type);
-                this.setState({tags: data.tags});
             })
             .catch(err => {
                 console.log(err);
@@ -812,8 +843,11 @@ class PublishPage extends React.PureComponent{
         ZhihuApi.getInputTips(keyword)
             .then(data => {
                 console.log(data);
+                let list = data[0].filter(item => {
+                    return Array.isArray(item) && item.length >= 7;
+                });
                 this.setState({
-                    tagCandidates: [...data[0]],
+                    tagCandidates: list,
                 });
             })
             .catch(err => {
@@ -829,34 +863,51 @@ class PublishPage extends React.PureComponent{
         if (this.state.tags.length >= 5) {
             return ;
         }
+        console.log(tag);
         let tags = [
             ...this.state.tags,
             tag,
         ];
         let list = [];
         for(let item of this.state.tagCandidates) {
-            if (tag !== item[1]) {
+            if (tag.id !== item[2]) {
                 list.push(item);
             }
         }
         this.setState({
             tags: tags,
             tagCandidates: list,
+            remoteAddTags: [...this.state.remoteAddTags, tag],
         });
         this.saveByType({
             tags: tags,
         }, this.type);
 
     };
-    addRemoteTagCandidates = () => {
-        let {currentUser} = this.props;
-        Api.addTag(this.state.remoteAddTag, currentUser.jwt)
-            .then(data => {
-                console.log(data);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+    deleteTag = (item) => {
+        if (!item.canDelete) return;
+        console.log(item);
+        let list = [], candidates = [];
+        let {state} = this;
+        for (let tag of state.tags) {
+            if (tag.id !== item.id) {
+                list.push(tag);
+            }
+        }
+        for (let tag of state.remoteAddTags) {
+            if (tag.id !== item.id) {
+                candidates.push(tag);
+            }
+        }
+
+        this.setState( {
+                tags: list,
+                tagCandidates: [["topic", item.title, item.id, item.image], ...state.tagCandidates],
+                remoteAddTag: candidates,
+        });
+        this.saveByType({
+            tags: list,
+        }, this.type);
     };
 }
 
@@ -992,7 +1043,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         height: 32,
         lineHeight: 32,
-        padding: 0
+        padding: 0,
+        minWidth: 36,
     },
     tagContainer: {
         flexDirection: "row",

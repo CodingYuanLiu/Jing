@@ -1,6 +1,6 @@
 import * as React from "react";
+import {StatusBar} from "react-native";
 import { createAppContainer } from 'react-navigation';
-import SplashScreen from "react-native-splash-screen";
 import {FirstLoginNav, MainNav, UsernameEmptyNav} from './navigator/AppNav';
 import {Provider} from 'react-redux';
 import store from "./store/index"
@@ -15,6 +15,7 @@ import {setUserData} from "./actions/currentUser";
 import XmppApi from "./api/XmppApi";
 import {onLoadSettings} from "./actions/setting";
 import {PermissionsAndroid} from "react-native";
+import Util from "./common/util";
 
 
 var base64 = require('base-64');
@@ -39,6 +40,7 @@ export default class App extends React.Component {
             });
         this.getPermission()
             .catch();
+        StatusBar.setBackgroundColor("#0084ff", true);
     }
 
     render() {
@@ -82,13 +84,15 @@ export default class App extends React.Component {
             }
             let jwt = await LocalApi.getToken();
             let data = await Api.getSelfDetail(jwt);
-
-            // store.dispatch(onGetCurrentUserFollower(jwt));
-            // store.dispatch(onGetCurrentUserFollowing(jwt));
-            // store.dispatch(onGetCurrentUserManageAct(jwt));
-            // store.dispatch(onGetCurrentUserJoinAct(jwt));
-            // store.dispatch(setUserData(data));
-            // store.dispatch(onLoadSettings());
+            Util.TOKEN = jwt; Util.HAS_ACCOUNT_FLAG = data.username === "";
+            store.dispatch(onGetCurrentUserFollower(jwt));
+            store.dispatch(onGetCurrentUserFollowing(jwt));
+            store.dispatch(onGetCurrentUserManageAct(jwt));
+            store.dispatch(onGetCurrentUserJoinAct(jwt));
+            store.dispatch(setUserData(data));
+            store.dispatch(onLoadSettings());
+            await XmppApi.login(data);
+            await XmppApi.onStanza(store, data);
             if (data.username === "") {
                 this.setState({
                     loginStatus: LOGIN_STATUS.USERNAME_EMPTY,
@@ -98,8 +102,7 @@ export default class App extends React.Component {
                     loginStatus: LOGIN_STATUS.LOGGED,
                 });
             }
-            await XmppApi.login(data);
-            await XmppApi.onStanza(store, data);
+
 
 
         }catch (e) {

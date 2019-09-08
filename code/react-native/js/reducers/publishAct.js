@@ -22,6 +22,7 @@ const initialState = {
         dest: {
             title: "",
         },
+        maxMember: 5,
     },
     orderAct: {
         type: "order",
@@ -31,6 +32,7 @@ const initialState = {
         tags: [],
         images: [],
         store: "",
+        maxMember: 5,
     },
     takeoutAct: {
         type: "takeout",
@@ -41,6 +43,7 @@ const initialState = {
         images: [],
         store: "",
         orderTime: "",
+        maxMember: 5,
     },
     otherAct: {
         type: "other",
@@ -50,6 +53,7 @@ const initialState = {
         tags: [],
         images: [],
         activityTime: "",
+        maxMember: 5,
     },
 };
 
@@ -57,6 +61,7 @@ const initialState = {
 const publishAct = (state=initialState, action) => {
     switch (action.type) {
         case SAVE_TAXI_ACT:
+            console.log(action.act);
             return {
                 ...state,
                 taxiAct: {

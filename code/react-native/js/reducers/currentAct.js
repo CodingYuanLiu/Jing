@@ -5,6 +5,7 @@ import {
     ADD_COMMENT_FAIL,
     ON_LOADING_ACT_DETAIL, RESET_ACT_DETAIL, SET_DETAIL_IS_FRIENDS, SET_DETAIL_IS_NOT_FRIENDS, ADD_PARTICIPANT,
 } from "../common/constant/ActionTypes"
+import {DEFAULT_IMAGE} from "../common/constant/Constant";
 
 const initialState = {
     // actId for fetching act detail use,
@@ -15,7 +16,7 @@ const initialState = {
 
     // who publish this activity
     sponsor: {
-        avatar: "",
+        avatar: DEFAULT_IMAGE,
         signature: "",
         nickname: "",
         id: 0,

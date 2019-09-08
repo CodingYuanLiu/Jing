@@ -4,6 +4,7 @@ import Model from "./Model";
 import LocalApi from "./LocalApi";
 import XmppApi from "./XmppApi";
 import {CHAT_TYPE} from "../common/constant/Constant";
+import DeviceInfo from "react-native-device-info";
 
 axios.defaults.baseURL="http://202.120.40.8:30255";
 axios.defaults.withCredentials=true;
@@ -144,7 +145,12 @@ export default class Api {
                     resolve(res.data)
                 })
                 .catch(err => {
-                    Reject(err, reject)
+                    if (err.status === 400 ) {
+                        reject({
+                            exits: true,
+                            message: "用户名已存在"
+                        })
+                    }
                 })
         })
     };
@@ -427,17 +433,33 @@ export default class Api {
                     Reject(err, reject)
                 })
         })
-    }
+    };
+    static modifyAct(data, jwt) {
+        return new Promise((resolve, reject) => {
+            axios.post("/api/user/act/modify", data, {
+                headers: {
+                    "Authorization": `Bearer ${jwt}`,
+                }
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    Reject(err, reject);
+                })
+        });
+    };
     static getTag = async (data, jwt) => {
         let res = await axios.post("/api/user/act/gettag", data, {
             headers: {
                 "Authorization": `Bearer ${jwt}`,
             }
         });
-        return res.data? res.data : [];
+        return res.data.tags? res.data : {tags:[]};
     };
 
     static addTag = async (data, jwt) => {
+        console.log(data);
         let res = await axios.post("/api/user/act/addtag", data, {
             headers: {
                 "Authorization": `Bearer ${jwt}`,

@@ -18,6 +18,7 @@ import HeaderBar from "../../common/components/HeaderBar";
 import NavigationUtil from "../../navigator/NavUtil";
 import Activity from "../../actions/activity";
 import {connect} from "react-redux";
+import {PUBLISH_ACTION} from "../../common/constant/Constant";
 
 class PublishDraft extends React.PureComponent{
     constructor(props) {
@@ -225,7 +226,7 @@ class PublishDraft extends React.PureComponent{
                 console.log("invalid act type");
                 // this should not happen
         }
-        NavigationUtil.toPage({type: item.type}, "PublishPage");
+        NavigationUtil.toPage({type: item.type, action: PUBLISH_ACTION.PUBLISH}, "PublishPage");
     };
 }
 

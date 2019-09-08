@@ -26,7 +26,7 @@ export default class ActItem extends React.PureComponent{
         let image = this.renderImage(imageUri);
         let actSpec = this.renderActSpec(type);
         let sponsorInfo = this.renderSponsorInfo(sponsor);
-        let miniActionBar = this.renderMiniActionBar();
+        let tooltip = this.renderTooltip();
         let maxMemberMeta = this.props.metadata.maxMember.toString();
         let commentMeta = this.props.metadata.comments.toString();
         let participantsMeta = this.props.metadata.participants.toString();
@@ -68,9 +68,9 @@ export default class ActItem extends React.PureComponent{
                                 <Text style={styles.metadata}>{`${commentMeta} 评论`}</Text>
                             </View>
                         </View>
+                        {tooltip}
                     </View>
                 </TouchableNativeFeedback>
-                {miniActionBar}
             </View>
         )
     };
@@ -148,7 +148,7 @@ export default class ActItem extends React.PureComponent{
             />
         )
     };
-    renderMiniActionBar = () => {
+    renderTooltip = () => {
         return(
             <ToolTip
                 style={[styles.miniActionContainer]}
@@ -189,7 +189,7 @@ export default class ActItem extends React.PureComponent{
         NavigationUtil.toPage({id: id}, "PersonalHome");
     };
     reportThis = () => {
-        this.setState({isTooltipVisible: false,});
+        alert("暂时没有举报功能");
     };
     deleteAct = () => {
         let id = this.props;
@@ -198,7 +198,6 @@ export default class ActItem extends React.PureComponent{
     };
     shieldThisPerson = () => {
         alert("暂时没有屏蔽功能");
-        //this.setState({isTooltipVisible: false,});
     };
 }
 
@@ -256,6 +255,7 @@ const styles = StyleSheet.create({
         paddingRight: 10,
         backgroundColor: "#fff",
         elevation: 1,
+        position: "relative",
     },
     innerContainer: {
         flex: 1,
@@ -277,10 +277,9 @@ const styles = StyleSheet.create({
     },
     miniActionContainer: {
         position: "absolute",
-        right: 20,
-        top: 15,
+        right: 30,
+        top: 10,
         justifyContent: "center",
-        backgroundColor: "red",
     },
     titleContainer: {
         width: "100%",
@@ -295,6 +294,7 @@ const styles = StyleSheet.create({
     tagContainer:{
         width: "100%",
         flexDirection: "row",
+        flexWrap: "wrap",
         alignItems: "center",
     },
     bodyContainer: {

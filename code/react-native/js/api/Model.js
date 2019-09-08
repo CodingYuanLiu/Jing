@@ -101,7 +101,7 @@ export default class Model {
             create_time: Util.dateTimeToString(new Date()),
             title: publishAct.title,
             description: publishAct.description,
-            tag: publishAct.tags,
+            tag: publishAct.tags.map(item => item.title),
             images: images,
             max_member: publishAct.maxMember,
         };
@@ -109,10 +109,14 @@ export default class Model {
 
             data.depart_time = publishAct.departTime;
             data.origin = {
-                title: publishAct.origin,
+                title: publishAct.origin.title,
+                latitude: publishAct.origin.latitude,
+                longitude: publishAct.origin.longitude,
             };
             data.destination = {
-                title: publishAct.dest,
+                title: publishAct.dest.title,
+                latitude: publishAct.dest.latitude,
+                longitude: publishAct.dest.longitude,
             };
         } else if (data.type === "order") {
             data.store = publishAct.store;

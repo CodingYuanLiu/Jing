@@ -4,6 +4,7 @@ import { Icon, Button } from "react-native-elements";
 import NavigationUtil from '../../navigator/NavUtil';
 import {connect} from "react-redux";
 import {ArrowDownIcon, FoodIcon, MultiUserIcon, ShoppingBagIcon, TaxiIcon} from "../../common/components/Icons";
+import {PUBLISH_ACTION} from "../../common/constant/Constant";
 
 class PublishScreen extends React.PureComponent{
     constructor(props) {
@@ -99,7 +100,7 @@ class PublishScreen extends React.PureComponent{
         }
     };
     toPublishPage = type => {
-        NavigationUtil.toPage({type: type}, "PublishPage");
+        NavigationUtil.toPage({type: type, action: PUBLISH_ACTION.PUBLISH}, "PublishPage");
         /*
         if (this.props.logged) {
             NavigationUtil.toPage({actType: type}, "PublishCommon");
