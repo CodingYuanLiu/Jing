@@ -99,13 +99,15 @@ Page({
                                 app.globalData.jwt = res.data.jwt;
                                 console.log(app.globalData.jwt);
                                 wx.request({
-                                    url: 'https://jing855.cn/api/public/status',
+                                    url: 'https://jing855.cn/api/user/status',
                                     method: 'GET',
                                     header: {
                                         "Authorization": "Bearer " + res.data.jwt,
                                     },
                                     success: function(res) {
                                         app.globalData.userid = res.data.id;
+                                        console.log('注册用户：user' + res.data.id)
+                                        that.register('user'+res.data.id, 'lqynb0413');
                                         wx.request({
                                             url: 'https://jing855.cn/api/user/info/update',
                                             method: 'PUT',
@@ -162,5 +164,24 @@ Page({
         this.setData({
             phone: event.detail.detail.value
         });
+    },
+    register: function(username, password) {
+        let data = {
+            username: username,
+            password: password
+        }
+        wx.request({
+            url: 'http://202.120.40.8:30257/plugins/restapi/v1/users',
+            method: 'POST',
+            header: {
+                "Authorization": "lqynb",
+            },
+            data: data,
+            success: function(res) {
+                console.log('openfire')
+                console.log(res)
+                // return res.data;
+            }
+        })
     }
 })

@@ -1,5 +1,5 @@
 <view class="container more">
-    <image style="width: 100%; position: absolute; top: 0" src="/images/mybackground.png"></image>
+    <image style="width: 100%; position: absolute; top: 0; height: 90px" src="/images/mybackground.png"></image>
     <i-card style="width:98vw; margin-top: 15px" title="  {{log?userInfo.nickname:'登录即应，更多功能'}}" extra="" thumb="{{avatar_src}}" i-class="card-demo">
         <view slot="content" >
             <i-row wx:if="{{log}}">
@@ -40,15 +40,15 @@
                     <text class="edit">查看或编辑个人主页</text>
                 </view>s
             </view> -->
-    <i-cell-group style="margin-top: 10px;width: 100vw;">
+    <i-cell-group wx:if="{{log}}" style="margin-top: 10px;width: 100vw;">
         <i-cell title="我的活动" is-link url="/pages/my/myAct/myAct"></i-cell>
-        <i-cell title="正在参与" is-link url="/pages/my/currentAct/currentAct"></i-cell>
-        <i-cell title="已结束" is-link url="/pages/my/endedAct/endedAct"></i-cell>
+        <!-- <i-cell title="正在参与" is-link url="/pages/my/currentAct/currentAct"></i-cell> -->
+        <i-cell title="缓存设置" is-link url="/pages/my/setting/setting"></i-cell>
     </i-cell-group>
     <i-cell-group style="margin-top: 10px;margin-bottom: 10px; width: 100vw">
-        <i-cell title="使用帮助" is-link url="./help/help"></i-cell>
+        <!-- <i-cell title="使用帮助" is-link url="./help/help"></i-cell> -->
         <i-cell title="关于即应" is-link url="./about/about"></i-cell>
-        <i-cell title="用户满意度调研" is-link url=""></i-cell>
+        <i-cell wx:if="{{log}}" title="修改个人信息" is-link url="../userinfo/userinfo"></i-cell>
         <!-- <i-cell title="去评价" is-link url="/pages/dashboard/index"></i-cell> -->
     </i-cell-group>
     <!-- <button open-type='feedback'>意见反馈</button> -->
