@@ -5841,10 +5841,10 @@ react-native-textinput-effects@^0.5.1:
   resolved "https://registry.yarnpkg.com/react-native-textinput-effects/-/react-native-textinput-effects-0.5.1.tgz#52b54bb56b58a4b67b5d3fa4ffccba3d288cd8c9"
   integrity sha512-9ywFH1S4WV/IkYcGwFYZrOYx5j84WvbhzWbLO52rN1PxgjI1tfZu8c5Ju8fsA7eLKuXt7YRen4iVTYYahrFq1w==
 
-react-native-timeline-listview@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/react-native-timeline-listview/-/react-native-timeline-listview-0.2.3.tgz#e46b7f0fd2c2206329eee6194795e03899afe882"
-  integrity sha1-5Gt/D9LCIGMp7uYZR5XgOJmv6II=
+react-native-timeline-flatlist@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-timeline-flatlist/-/react-native-timeline-flatlist-0.5.0.tgz#6f7e02c16a4bb073e15865ce2bda7c84a6dd8472"
+  integrity sha512-3W6JQLNGsoCsqyoXgBAa+oj2p88cIoX68et67ts0T/f2suuD8xdzsUXreqkDwfFSQ+OQevRO0qmkJqoQqZ62HQ==
 
 react-native-vector-icons@^6.6.0:
   version "6.6.0"

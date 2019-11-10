@@ -443,6 +443,7 @@ const PUBLISH_ACTION = {
     MODIFY: "modify",
 };
 const DEFAULT_IMAGE = "http://pxafsavqu.bkt.clouddn.com/empty_image.png";
+const DEFAULT_GROUP_CHAT_AVATAR = "http://pxafsavqu.bkt.clouddn.com/group_chat_avatar.png";
 export {
     /**
      * activity constants
@@ -483,5 +484,6 @@ export {
 
     PRESENCE,
     DEFAULT_IMAGE,
+    DEFAULT_GROUP_CHAT_AVATAR,
     PUBLISH_ACTION,
 }

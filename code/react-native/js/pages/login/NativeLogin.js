@@ -220,10 +220,11 @@ class LoginScreen extends React.PureComponent {
         }
 
         try {
-            let jwt = await Api.login(name, pwd);
-            await Dao.saveString("@jwt", jwt);
-            let data = await Api.getSelfDetail(jwt);
-
+            let loginRes = await Api.login(name, pwd);
+            console.log(loginRes);
+            await Dao.saveString("@jwt", loginRes.jwt);
+            let data = await Api.getSelfDetail(loginRes.jwt);
+            console.log(data);
 
             store.dispatch(onGetCurrentUserFollower(data.jwt));
             store.dispatch(onGetCurrentUserFollowing(data.jwt));

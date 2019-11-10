@@ -1,11 +1,13 @@
-import {CHAT_TYPE, PRESENCE} from "../common/constant/Constant";
+import {CHAT_TYPE, DEFAULT_IMAGE, PRESENCE} from "../common/constant/Constant";
 import DeviceInfo from "react-native-device-info";
 import {addPrivateMessage} from "../actions/privateChat";
 
 const {client, jid} = require("@xmpp/client");
 const xml = require('@xmpp/xml');
 const baseOpenFireUri = "ws://202.120.40.8:30256";
-
+import {PrivateMessageApi} from "./PrivateMessageApi";
+import LocalApi from "./LocalApi";
+import {addGroupChatMessage} from "../actions/groupChat";
 
 export default class XmppApi {
     static xmpp;
@@ -105,12 +107,41 @@ export default class XmppApi {
             console.log(stanza);
             if (stanza.is("message")) {
                 let attrs = stanza.attrs;
-                if (attrs.type === CHAT_TYPE.GROUP_CHAT) {
+                let kind = attrs.id;
+                if (attrs.type === CHAT_TYPE.GROUP_CHAT && kind === "groupchat") {
+                    let message = {};
+                    let from = attrs.from;
+                    let roomId = Number(from.substring(3, from.indexOf("@")));
+                    message.createdAt = new Date(stanza.getChild("body").attrs.createdAt);
+                    message._id = stanza.getChild("body").attrs._id;
+                    let userElement = stanza.getChild("user");
+                    message.user = {
+                        _id: Number(userElement.attrs._id),
+                        name: userElement.attrs.name,
+                        avatar: userElement.attrs.avatar,
+                    };
 
+                    message.text = stanza.getChild("body").text();
+                    let imageElement = stanza.getChild("image");
+                    if (imageElement.text() !== "") {
+                        message.image = imageElement.text().split(" ");
+                        message.image = message.image.filter(item => item !== "");
+                    }
+                    let stanzaIdElement = stanza.getChild("stanza-id");
+                    if (stanzaIdElement !== null && stanzaIdElement !== undefined) {
+                        message._id = stanzaIdElement.attrs.id;
+                    }
 
+                    let delayElement = stanza.getChild("delay");
 
+                    message.pending = false;
+                    if (message.user._id === currentUser.id && !delayElement) {
+                        // ... nothing happened
+                    } else {
+                        console.log("执行到这里");
+                        store.dispatch(addGroupChatMessage( message, roomId ));
+                    }
                 } else if (attrs.type === CHAT_TYPE.PRIVATE_CHAT) {
-                    let kind = attrs.id;
                     let from = attrs.from;
                     let message = {};
                     message.createdAt = new Date(stanza.getChild("body").attrs.createdAt);
@@ -124,7 +155,7 @@ export default class XmppApi {
                     } else if (kind === "normal") {
                         let userElement = stanza.getChild("user");
                         message.user = {
-                            _id: userElement.attrs._id,
+                            _id: Number(userElement.attrs._id),
                             name: userElement.attrs.name,
                             avatar: userElement.attrs.avatar,
                         };
@@ -138,11 +169,10 @@ export default class XmppApi {
                         if (stanzaIdElement !== null && stanzaIdElement !== undefined) {
                             message._id = stanzaIdElement.attrs.id;
                         }
-                        console.log(message);
-
-                        PrivateMessageApi.addMessage({
+                        console.log(message, currentUser);
+                        let data = {
                             text: message.text,
-                            image: !message.image?message.image.filter(item => item !== ""): null,
+                            image: !!message.image ? message.image.filter(item => item !== ""): [],
                             thatUserAvatar: message.user.avatar,
                             thatUserId: message.user._id,
                             thatUserName: message.user.name,
@@ -150,10 +180,16 @@ export default class XmppApi {
                             thisUserAvatar: currentUser.avatar,
                             thisUserId: currentUser.id,
                             isSelf: false,
-                        }, currentUser.jwt)
+                        };
+
+                        console.log(data);
+                        PrivateMessageApi.addMessage(data, currentUser.jwt)
                             .then(() => {
                                 store.dispatch(addPrivateMessage(message.user._id, message));
-                            });
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            })
                     } else {
                         // ...
                     }
@@ -222,6 +258,18 @@ export default class XmppApi {
         }
     };
 
+    static presenceAtGroupChat = async (roomId, userId) => {
+        let presence = xml('presence', {
+            id: "groupChatPresence",
+            to: `act${roomId}@conference.202.120.40.8/user${userId}`
+            },
+
+            xml('x', {
+                xmlns: "http://jabber.org/protocol/muc"})
+        );
+        await this.xmpp.send(presence);
+
+    };
     static getJid = (receiver, type) => {
         if (type === CHAT_TYPE.PRIVATE_CHAT) {
             return `user${receiver.id}@202.120.40.8`

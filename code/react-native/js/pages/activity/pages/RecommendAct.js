@@ -84,6 +84,7 @@ class RecommendAct extends React.Component{
                     }
                 }
                 onPress={() => {this._onPressItem(item.id)}}
+                isSelf={false}
             />)
     };
     loadData = () => {

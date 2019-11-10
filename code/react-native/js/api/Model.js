@@ -128,6 +128,7 @@ export default class Model {
             // type === 'other'
             data.activity_time = publishAct.activityTime;
         }
+        if(!!publishAct.id) data.act_id = publishAct.id;
         return data;
     };
 

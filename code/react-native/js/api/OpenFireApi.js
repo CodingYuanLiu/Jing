@@ -38,17 +38,13 @@ export class OpenFireApi{
             naturalName,
             description,
             maxUsers,
-            createDate: new Date(),
             canAnyoneDiscoverJID: false,
             canOccupantsChangeSubject: false,
             canChangeNickname: false,
             persistent: true,
-            owners: {
-                owner: owner,
-            },
-            admins: {
-                admin: [owner,]
-            }
+            owners: [
+                owner,
+            ],
         };
 
         let res = await axios.post(`${basicUri}/chatrooms`, data, {

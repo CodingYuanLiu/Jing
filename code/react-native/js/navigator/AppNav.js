@@ -29,6 +29,9 @@ import JaccountWebView from "../pages/login/JaccountWebView";
 import {LOGIN_STATUS} from "../common/constant/Constant";
 import FeedbackDetail from "../pages/me/Feedback/FeedbackDetail";
 import TaxiOriginDestDetail from "../pages/detail/TaxiOriginDestDetail";
+import ActTimeline from "../pages/me/ActTimeline";
+import AboutPage from "../pages/me/About";
+
 
 export const MainNav = createStackNavigator(
     {
@@ -95,6 +98,9 @@ export const MainNav = createStackNavigator(
         Feedback: {
             screen: Feedback,
         },
+        ActTimeline: {
+            screen: ActTimeline,
+        },
         PublishFeedbackPage: {
             screen: PublishFeedbackPage,
         },
@@ -109,6 +115,9 @@ export const MainNav = createStackNavigator(
         },
         ChatPage: {
             screen: ChatPage,
+        },
+        AboutPage: {
+            screen: AboutPage,
         }
     },
     {

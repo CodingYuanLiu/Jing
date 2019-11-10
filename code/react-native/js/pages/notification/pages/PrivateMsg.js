@@ -91,7 +91,7 @@ class PrivateMsgScreen extends React.PureComponent{
         return (
             <View>
                 <Text style={{fontSize: 13, color: "#666"}}>
-                    {item.snippet.text + (item.snippet.image? "[图片]": "")}
+                    {item.snippet.text + (item.snippet.image && item.snippet.image.length > 0 ? " [图片]": "")}
                 </Text>
             </View>
         );

@@ -10,6 +10,7 @@ export class PrivateMessageApi {
                 "Authorization": jwt,
             }
         });
+        console.log(res.data);
         return res.data;
     };
     static getChatHistory = async (senderId, jwt) => {
@@ -24,13 +25,14 @@ export class PrivateMessageApi {
     };
     static addMessage = async (message, jwt) => {
 
-        if(message.image !== null && message.image !== undefined) {
+        if(message.image !== null && message.image !== undefined && message.isSelf) {
             let list = [];
             for(let item of message.image) {
                 list.push(await RNFS.readFile(item, "base64"));
             }
             message.image = list;
         }
+
         let res = await axios.post(`${PRIVATE_MESSAGE_BASIC_URI}/chat`, message, {
             headers: {
                 "Authorization": jwt,

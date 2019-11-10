@@ -29,10 +29,12 @@ class PublishPage extends React.PureComponent{
         this.action = this.props.navigation.getParam("action");
         this.state = {
             type: "taxi",
+
             description: "",
             title: "",
             tags: [],
             images: [],
+
             endTimePickerVisible: false,
             specTimePickerVisible: false,
             saveModalVisible: false,
@@ -104,7 +106,7 @@ class PublishPage extends React.PureComponent{
                                             <View style={styles.imageContainer}>
                                                 <Image
                                                     style={styles.image}
-                                                    source={{uri: `data:${img.type};base64,${img.data}`}}
+                                                    source={{uri: typeof img === "string" && img.startsWith("http://") ? img : `data:${img.type};base64,${img.data}`}}
                                                     resizeMode={"cover"}
                                                 />
                                                 <View style={styles.deleteImageIconContainer}>
@@ -599,7 +601,7 @@ class PublishPage extends React.PureComponent{
         let data =
             Model.buildActivity(publishAct);
         let {currentUser} = this.props;
-        Api.publishAct(data, this.props.currentUser.jwt)
+        Api.publishAct(data, currentUser)
             .then (act => {
                 Api.addTag({
                     tags: this.state.remoteAddTags.map(item => item.title)
@@ -620,22 +622,14 @@ class PublishPage extends React.PureComponent{
             })
     };
     handleTitleTextChange = text => {
-        this.setState({title: text});
         this.saveByType({title: text}, this.type);
-        this.autoGetTag(text, this.state.description);
-    };
-    handleTitleTextBlur = () => {
-        let title = this.state.title;
-        this.saveByType({title: title}, this.type);
+        let propsAct = this.getActByType(this.props.publishAct, this.type);
+        this.autoGetTag(text, propsAct.description);
     };
     handleBodyTextChange = text => {
-        this.setState({description: text});
         this.saveByType({description: text}, this.type);
-        this.autoGetTag(this.state.title, text);
-    };
-    handleBodyTextBlur = () => {
-        let text = this.state.description;
-        this.saveByType({description: text}, this.type);
+        let propsAct = this.getActByType(this.props.publishAct, this.type);
+        this.autoGetTag(propsAct.title, text);
     };
     handleClickEndTime = () => {
         this.setState({
@@ -644,7 +638,6 @@ class PublishPage extends React.PureComponent{
     };
     confirmEndTime = (date) => {
         let dateString = Util.dateTimeToString(date);
-        this.setState({endTime: dateString});
         this.saveByType({endTime: dateString}, this.type);
         this.setState({endTImePickerVisible: false});
     };
@@ -676,17 +669,14 @@ class PublishPage extends React.PureComponent{
         let dateString = Util.dateTimeToString(date);
         switch(this.type) {
             case "takeout" : {
-                this.setState({orderTime: dateString});
                 this.props.saveTakeoutAct({orderTime: dateString});
                 break;
             }
             case "taxi" : {
-                this.setState({departTime: dateString});
                 this.props.saveTaxiAct({departTime: dateString});
                 break;
             }
             case "other" : {
-                this.setState({activityTime: dateString});
                 this.props.saveOtherAct({activityTime: dateString});
                 break;
             }
@@ -713,11 +703,9 @@ class PublishPage extends React.PureComponent{
             } else {
                 let type = res.type;
                 let img =  res.data;
-                let images = this.state.images;
+                let propsAct = this.getActByType(this.props.publishAct, this.type);
+                let images = propsAct.images;
                 let newImages = [{type: type, data: img}, ...images];
-                this.setState({
-                    images: newImages,
-                });
                 this.saveByType({
                     images: newImages,
                 }, this.type);

@@ -1,5 +1,5 @@
 import React from "react";
-import {View, StyleSheet, Text, ScrollView} from "react-native";
+import {View, StyleSheet, Text, ScrollView, TouchableNativeFeedback} from "react-native";
 import { Button, ListItem } from "react-native-elements";
 import Theme from "../../../common/constant/Theme";
 import {PropTypes} from "prop-types";
@@ -8,6 +8,7 @@ import UserNickname from "../../../common/components/UserNickname";
 import {ACT_EXPIRED, ACT_FORBIDDEN, ACT_FULL, ACT_RUNNING} from "../../../common/constant/Constant";
 import NavigationUtil from "../../../navigator/NavUtil";
 import ToolTip from "../../../common/components/ToolTip";
+import Api from "../../../api/Api";
 
 export default class JoinItem extends React.Component{
     constructor(props) {
@@ -25,15 +26,17 @@ export default class JoinItem extends React.Component{
         let sponsorComponent = this.renderSponsor(sponsor, createTime);
         let descriptionComponent = this.renderDesc(description);
         let applicantComponent = this.renderApplicants(status, applicants);
-        let timeLineComponent = this.renderTimeLine(createTime, endTime);
         return (
-            <View style={styles.container}>
-                {titleComponent}
-                {sponsorComponent}
-                {descriptionComponent}
-                {applicantComponent}
-                {timeLineComponent}
-            </View>
+            <TouchableNativeFeedback
+                onPress={() => this.toActDetail(this.props.act)}
+            >
+                <View style={styles.container}>
+                    {titleComponent}
+                    {sponsorComponent}
+                    {descriptionComponent}
+                    {applicantComponent}
+                </View>
+            </TouchableNativeFeedback>
         );
     };
     renderTitle = (title) => {
@@ -49,14 +52,12 @@ export default class JoinItem extends React.Component{
     };
     renderTooltip = () => {
         let {act} = this.props;
-        let feedbackButton = act.status === ACT_EXPIRED ?
-            (
+        let feedbackButton =
                 <Button
                     title={"评价"}
                     type={"clear"}
                     onPress={() => {this.toFeedback(act)}}
-                />
-            ) : null;
+                />;
         let quitButton = act.status === ACT_RUNNING ?
             (
                 <Button
@@ -76,36 +77,6 @@ export default class JoinItem extends React.Component{
             </ToolTip>
         );
     };
-    renderRightIconPopover = () => {
-        let {act} = this.props;
-        let {status} = act;
-        return (
-            <View style={{width: "100%",}}>
-                {
-                    status === ACT_RUNNING ?
-                        <Button
-                            type={"clear"}
-                            title={"退出"}
-                            titleStyle={styles.popoverButtonTitle}
-                            buttonStyle={styles.popoverButton}
-                            containerStyle={{padding: 0, margin: 0,}}
-                            onPress={() => {alert(`id: ${act.title}`)}}
-                        /> : null
-                }
-                {
-                    status === ACT_EXPIRED ?
-                    <Button
-                        type={"clear"}
-                        title={"评价"}
-                        titleStyle={styles.popoverButtonTitle}
-                        buttonStyle={styles.popoverButton}
-                        containerStyle={{padding: 0, margin: 0,}}
-                        onPress={() => {this.toFeedback(act)}}
-                    /> : null
-                }
-            </View>
-        )
-    };
     renderSponsor = (sponsor, createTime) => {
         let avatar = (
             <UserAvatar
@@ -120,6 +91,7 @@ export default class JoinItem extends React.Component{
             <UserNickname
                 title={sponsor.nickname}
                 style={styles.sponsorTitle}
+                id={sponsor.id}
             />
         );
         return (
@@ -194,16 +166,18 @@ export default class JoinItem extends React.Component{
             </Text>
         )
     };
-    renderTimeLine = (createTime, endTime) => {
-        return (
-            <View style={styles.footerContainer}>
-
-            </View>
-        );
+    toActDetail = (act) => {
+        NavigationUtil.toPage({id: act.id}, "Feedback");
     };
-
     quitAct = (act) => {
-        //Api.quitAct();
+        let {currentUser} = this.props;
+        Api.quitAct(currentUser.id, act.id, currentUser.jwt)
+            .then(res => {
+                console.log(res);
+            })
+            .catch(err => {
+                console.log(err);
+            })
     };
     toFeedback = (act) => {
         this.setState({isTooltipVisible: false});

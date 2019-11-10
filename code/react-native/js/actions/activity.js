@@ -3,6 +3,8 @@ import Api from "../api/Api";
 import Model from "../api/Model";
 import {ADD_PARTICIPANT} from "../common/constant/ActionTypes";
 import {DELETE_TYPE_ACT_OK} from "../common/constant/ActionTypes";
+import {ON_DELETE_TYPE_ACT} from "../common/constant/ActionTypes";
+import {DELETE_TYPE_ACT_FAIL} from "../common/constant/ActionTypes";
 
 /**
  * asynchronous action
@@ -29,47 +31,6 @@ const onLoadRecommendAct = (jwt) => {
     }
 };
 
-const onLoadMyManageAct = (jwt) => {
-    return dispatch => {
-        dispatch({
-            type: actionTypes.ON_LOADING_MY_MANAGE,
-        });
-        Api.getMyManagedAct(jwt)
-            .then(data => {
-                dispatch({
-                    type: actionTypes.LOADING_MY_MANAGE_OK,
-                    items: data,
-                });
-            })
-            .catch(err => {
-                dispatch({
-                    type: actionTypes.LOADING_MY_MANAGE_FAIL,
-                    err,
-                })
-            })
-    }
-};
-const onLoadMyJoinAct = (jwt) => {
-    return dispatch => {
-        dispatch({
-            type: actionTypes.ON_LOADING_MY_JOIN,
-        });
-        Api.getMyJoinAct(jwt)
-            .then(data => {
-                dispatch({
-                    type: actionTypes.LOADING_MY_JOIN_OK,
-                    items: data,
-                });
-            })
-            .catch(err => {
-                dispatch({
-                    type: actionTypes.LOADING_MY_JOIN_FAIL,
-                    err,
-                })
-            })
-    }
-};
-
 export const onLoadTypeAct = (type) => {
     return dispatch => {
         dispatch({
@@ -83,8 +44,10 @@ export const onLoadTypeAct = (type) => {
                     items: data,
                     typeName: type,
                 });
+                console.log(data);
             })
             .catch(err => {
+                console.log(err);
                 dispatch({
                     type: actionTypes.LOADING_TYPE_FAIL,
                     err,
@@ -96,6 +59,10 @@ export const onLoadTypeAct = (type) => {
 
 export const onDeleteTypeAct = (id, type, jwt) => {
     return dispatch => {
+        dispatch({
+            type: ON_DELETE_TYPE_ACT,
+            typeName: type,
+        });
         Api.deleteAct(id, jwt)
             .then(res => {
                 dispatch({
@@ -106,6 +73,10 @@ export const onDeleteTypeAct = (id, type, jwt) => {
             })
             .catch(err => {
                 console.log(err);
+                dispatch({
+                    type: DELETE_TYPE_ACT_FAIL,
+                    typeName: type,
+                })
             })
     };
 };
@@ -200,8 +171,6 @@ const saveOtherAct = (act) => ({
 });
 export default {
     onLoadRecommendAct,
-    onLoadMyJoinAct,
-    onLoadMyManageAct,
     onLoadTypeAct,
     onDeleteTypeAct,
     onLoadActDetail,

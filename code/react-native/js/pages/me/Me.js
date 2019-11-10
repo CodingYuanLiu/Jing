@@ -8,7 +8,7 @@ import OfflineUserCard from './components/OfflineUserCard';
 import { connect } from "react-redux"
 import { Button } from 'react-native-elements';
 import {setUserData} from '../../actions/currentUser';
-import {SearchIcon, SettingIcon} from "../../common/components/Icons";
+import {DateIcon, InformationIcon, SearchIcon, SettingIcon} from "../../common/components/Icons";
 import Theme from "../../common/constant/Theme";
 import LocalApi from "../../api/LocalApi";
 
@@ -131,10 +131,44 @@ class MeScreen extends React.PureComponent{
     };
 
     renderActMenu = () => {
-        return null;
+        return (
+            <View
+                style={styles.actContainer}
+            >
+                <ListItem
+                    leftIcon={
+                        <DateIcon
+                            color={"#bfbfbf"}
+                        />
+                    }
+                    title={"我的日程"}
+                    chevron
+                    onPress={this.toActTimeLine}
+                />
+            </View>
+        )
     };
     renderHelpMenu = () => {
-        return null;
+        return (
+            <View
+                style={styles.helpContainer}
+            >
+                <ListItem
+                    leftIcon={
+                        <InformationIcon
+                            color={"#bfbfbf"}
+                        />
+                    }
+                    title={"关于即应"}
+                    chevron
+                    onPress={this.toAboutPage}
+                />
+            </View>
+        );
+    };
+
+    renderLogoutButton = () => {
+
     };
 
     toUserHome = () => {
@@ -151,7 +185,15 @@ class MeScreen extends React.PureComponent{
     };
     toSearchPage = () => {
         NavigationUtil.toPage(null, "Search");
-    }
+    };
+
+    toActTimeLine = () => {
+        NavigationUtil.toPage(null, "ActTimeline")
+    };
+
+    toAboutPage = () => {
+        NavigationUtil.toPage(null, "AboutPage");
+    };
 }
 const mapStateToProps = state => ({
     currentUser: state.currentUser,
@@ -229,12 +271,12 @@ const styles = StyleSheet.create({
     //activity menu container
     actContainer: {
         width: "100%",
-        marginTop: 10,
+        marginTop: 20,
     },
     // help menu container
     helpContainer: {
         width: "100%",
-        marginTop: 10,
+        marginTop: 20,
         marginBottom: 5,
     },
 });

@@ -4,59 +4,27 @@ import ActItem from "../components/ActItem";
 import NavigationUtil from "../../../navigator/NavUtil";
 import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
-import Tag from "../../../common/components/Tag";
 import {onDeleteTypeAct} from "../../../actions/activity";
 
 class NewAct extends React.PureComponent{
     constructor(props) {
         super(props);
-        this.state = {
-            type: 'all',
-        }
     }
     componentDidMount() {
         this.loadData('all');
     }
     render() {
         let {typeAct} = this.props;
-        let {type} = this.state;
-        let actStore = typeAct[type];
+        let actStore = typeAct["all"];
         if (!actStore) {
             actStore = {
                 items: [],
                 isLoading: false,
             }
         }
-        if (!this.types) this.types = [
-            {title: "所有", name: "all"},
-            {title: "拼车", name: "taxi"},
-            {title: "网购", name: "order"},
-            {title: "外卖", name: "takeout"},
-            {title: "其他", name: "other"},
-        ];
-        console.log(actStore.items);
+
         return(
             <View style={styles.container}>
-                <View
-                    style={styles.topTagContainer}
-                >
-                    {
-                        this.types.map((type, i) => {
-                            return (
-                                <Tag
-                                    title={type.title}
-                                    key={i}
-                                    onPress={() => {this.changeType(type.name)}}
-                                    active={this.state.type===type.name}
-                                    style={styles.tag}
-                                    backgroundColor={"#dddddd"}
-                                    color={"#b0b0b0"}
-                                    activeBackgroundColor={"#d4e6ff"}
-                                />
-                                )
-                        })
-                    }
-                </View>
                 <FlatList
                     data={actStore.items}
                     renderItem={this.renderItem}
@@ -64,7 +32,7 @@ class NewAct extends React.PureComponent{
                     refreshControl={
                         <RefreshControl
                             refreshing={actStore.isLoading}
-                            onRefresh={() => {this.loadData(this.state.type)}}
+                            onRefresh={() => {this.loadData("all")}}
                             title={"加载中..."}
                             titleColor={"#0084ff"}
                             colors={["#0084ff"]}
@@ -110,7 +78,8 @@ class NewAct extends React.PureComponent{
                     }
                 }
                 onPress={() => {this._onPressItem(item.id)}}
-                onDelete={this.deleteAct}
+                onDelete={() => {this.deleteAct(item.id)}}
+                isSelf={item.sponsor.id === this.props.currentUser.id}
             />)
     };
     loadData = (type) => {
@@ -120,19 +89,13 @@ class NewAct extends React.PureComponent{
     _onPressItem = (id: number) => {
         NavigationUtil.toPage({id:id}, "ActDetail")
     };
-    changeType = (type) => {
-        this.setState(state => {
-            state.type = type;
-            this.loadData(type);
-            return state;
-        });
-    };
     deleteAct = (id) => {
         let {currentUser} = this.props;
+        console.log(currentUser);
         if (!currentUser.logged) {
             //...
         } else {
-            this.props.onDeleteTypeAct(id, currentUser.jwt);
+            this.props.onDeleteTypeAct(id, "all", currentUser.jwt);
         }
     }
 }
@@ -143,7 +106,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => ({
     onLoadTypeAct: (type) => dispatch(Activity.onLoadTypeAct(type)),
-    onDeleteTypeAct: (id, jwt) => dispatch(onDeleteTypeAct(id, jwt)),
+    onDeleteTypeAct: (id, type, jwt) => dispatch(onDeleteTypeAct(id, type, jwt)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(NewAct)
@@ -153,20 +116,4 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#eeeeee"
     },
-    topTagContainer: {
-        backgroundColor: "#fff",
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-        borderBottomWidth: 0.5,
-        borderBottomColor: "#efefef",
-    },
-    tag: {
-        margin:5,
-        paddingLeft:8,
-        paddingRight:8,
-        paddingBottom: 5,
-        paddingTop: 5
-    }
 });

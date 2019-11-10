@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginLeft: 15,
         marginRight: 15,
-        backgroundColor: "red",
     },
     navBar: {
         flexDirection: "row",

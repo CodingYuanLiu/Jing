@@ -1,8 +1,8 @@
 import React from "react";
 import {View, StyleSheet, Text, FlatList, RefreshControl} from "react-native";
-import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
 import MyJoinItem from "./MyJoinItem";
+import {onGetCurrentUserJoinAct} from "../../../actions/currentUserJoin";
 
 class MyJoin extends React.Component{
     constructor(props) {
@@ -14,7 +14,8 @@ class MyJoin extends React.Component{
     }
 
     render() {
-        let joinAct = this.props.myAct.joinAct;
+        let joinAct = this.props.currentUserJoin;
+        console.log(joinAct);
         if (!joinAct) {
             joinAct = {
                 items: [],
@@ -47,20 +48,21 @@ class MyJoin extends React.Component{
             <MyJoinItem
                 act={item}
                 applicants={[]}
+                currentUser={this.props.currentUser}
             />
         )
     };
     loadData = () => {
         let currentUser = this.props.currentUser;
-        this.props.onLoadMyJoinAct(currentUser.jwt);
+        this.props.onGetCurrentUserJoinAct(currentUser.jwt);
     }
 }
 const mapStateToProps = state => ({
-   myAct: state.myAct,
-   currentUser: state.currentUser,
+    currentUserJoin: state.currentUserJoin,
+    currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
-    onLoadMyJoinAct: (jwt) => dispatch(Activity.onLoadMyJoinAct(jwt)),
+    onGetCurrentUserJoinAct: (jwt) => dispatch(onGetCurrentUserJoinAct(jwt)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyJoin)

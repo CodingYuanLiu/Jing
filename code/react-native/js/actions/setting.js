@@ -1,4 +1,5 @@
 import {
+    SET_LOCATION_CITY,
     TOGGLE_FIND_BY_PHONE_SETTING,
     TOGGLE_SAVE_DATA_SETTING,
     TOGGLE_WATERMARK_SETTING
@@ -75,6 +76,11 @@ const onLoadSettings = () => {
               })
     };
 };
+
+const setCity = (city) => ({
+    type: SET_LOCATION_CITY,
+    city,
+});
 const saveDefaultSetting = async () => {
     await LocalApi.saveFindByPhoneSetting(false);
     await LocalApi.saveSaveDataSetting(false);
@@ -93,4 +99,5 @@ export {
     toggleSaveDataSetting,
     toggleWaterMarkSetting,
     onLoadSettings,
+    setCity,
 }

@@ -2,9 +2,9 @@ import axios from "axios"
 import qs from "qs"
 import Model from "./Model";
 import LocalApi from "./LocalApi";
-import XmppApi from "./XmppApi";
-import {CHAT_TYPE} from "../common/constant/Constant";
-import DeviceInfo from "react-native-device-info";
+
+
+import {OpenFireApi} from "./OpenFireApi";
 
 axios.defaults.baseURL="http://202.120.40.8:30255";
 axios.defaults.withCredentials=true;
@@ -259,8 +259,12 @@ export default class Api {
             acts = Model.transferActivityList(acts);
             let participants;
             for (let act of acts ) {
-                participants = await this.getActParticipants(act.id);
-                act.participants = participants.length;
+                try {
+                    participants = await this.getActParticipants(act.id);
+                    act.participants = participants.length;
+                }catch (err) {
+                    act.participants = 0;
+                }
             }
             return acts;
         }catch (e) {
@@ -281,8 +285,13 @@ export default class Api {
             acts = Model.transferActivityList(acts);
             let participants;
             for (let act of acts ) {
-                participants = await this.getActParticipants(act.id);
-                act.participants = participants.length;
+                try {
+                    participants = await this.getActParticipants(act.id);
+                    act.participants = participants.length;
+                } catch (err) {
+                    act.participants = 0;
+                }
+
             }
             return acts;
         }
@@ -347,15 +356,15 @@ export default class Api {
     static getActDetail = async (actId, jwt=null) => {
         let res = await axios.get(`/api/public/act/query?act_id=${actId}`);
         let data = Model.transferActivityFromSnakeToCamel(res.data);
-        data.participants = await this.getActParticipants(data.id);
 
-        LocalApi.saveRecentScan(data)
-            .catch(err => {
-            });
-        this.recordBehavior(data.type, "scanning", jwt)
-            .catch(err => {
-                console.log(err);
-            });
+        try {
+            data.participants = await this.getActParticipants(data.id);
+            await LocalApi.saveRecentScan(data);
+            await this.recordBehavior(data.type, "scanning", jwt)
+        } catch (err) {
+            // ...
+            data.participants = [];
+        }
 
         return data;
 
@@ -415,26 +424,23 @@ export default class Api {
      * @param data
      * @returns {Promise<R>}
      */
-    static publishAct(data, jwt) {
-        return new Promise((resolve, reject) => {
-            axios.post("/api/user/act/publish", data, {
+    static publishAct =async (data, currentUser) => {
+        let res = await axios.post("/api/user/act/publish", data, {
                 headers: {
-                    "Authorization": `Bearer ${jwt}`,
+                    "Authorization": `Bearer ${currentUser.jwt}`,
                 }
-            })
-                .then(res => {
-                    resolve({id: res.data.act_id});
-                    this.recordBehavior(data.type, "publish", jwt)
-                        .catch(err => {
-                            console.log(err);
-                        })
-                })
-                .catch(err => {
-                    Reject(err, reject)
-                })
-        })
+            });
+        console.log(res);
+        await OpenFireApi.createChatRoom(`act${res.data.act_id}`, data.title, data.description, data.max_member, `user${data.sponsor_id}`);
+        try{
+            await this.recordBehavior(data.type, "publish", currentUser.jwt);
+        } catch (err) {
+            // ...
+        }
+        return {id: res.data.act_id};
     };
-    static modifyAct(data, jwt) {
+    static modifyAct =  (data, jwt) => {
+        console.log(data);
         return new Promise((resolve, reject) => {
             axios.post("/api/user/act/modify", data, {
                 headers: {
@@ -442,10 +448,11 @@ export default class Api {
                 }
             })
                 .then(res => {
-                    resolve(res.data);
+                    console.log(res);
+                    resolve(res);
                 })
                 .catch(err => {
-                    Reject(err, reject);
+                    console.log(err.response);
                 })
         });
     };
@@ -468,13 +475,21 @@ export default class Api {
         return res.data;
     };
 
-    static deleteAct = async (id, jwt) => {
-        let res = await axios.post(`/api/user/act/delete?act_id=${id}`, null, {
-            headers: {
-                'Authorization': `Bearer ${jwt}`,
-            }
-        });
-        return res.data;
+    static deleteAct =  (id, jwt) => {
+         return new Promise((resolve, reject) => {
+             axios.post(`/api/user/act/delete?act_id=${id}`, null, {
+                 headers: {
+                     'Authorization': `Bearer ${jwt}`,
+                 }
+             })
+                 .then(res => {
+                     console.log(res);
+                     resolve(res.data);
+                 })
+                 .catch(err => {
+                     console.log(err.response);
+                 })
+         })
     };
     static addComment = async (comment, currentUser) => {
         let res = await axios.post("/api/user/act/comment",comment, {
@@ -482,11 +497,12 @@ export default class Api {
                 "Authorization": `Bearer ${currentUser.jwt}`
             }
         });
-        await XmppApi.sendMessage(`user${comment.receiver_id}`, `user${currentUser.id}`, CHAT_TYPE.PRIVATE_CHAT,
-                "comment", {
-            // comment message
-            }
-            )
+        return res.data;
+        // await XmppApi.sendMessage(`user${comment.receiver_id}`, `user${currentUser.id}`, CHAT_TYPE.PRIVATE_CHAT,
+        //         "comment", {
+        //     // comment message
+        //     }
+        //     )
     };
 
     /**
@@ -500,11 +516,45 @@ export default class Api {
             }
         });
 
-        await XmppApi.sendMessage(null, null, CHAT_TYPE.PRIVATE_CHAT,
-            "join", {
-            // message
-            }
-            )
+        return res.data;
+        // await XmppApi.sendMessage(null, null, CHAT_TYPE.PRIVATE_CHAT,
+        //     "join", {
+        //     // message
+        //     }
+        //     )
+    };
+
+    static quitAct = async (userId, actId, jwt) => {
+        try {
+            await axios.post(`/api/user/act/quit?act_id=${actId}`, null, {
+                headers: {
+                    "Authorization": `Bearer ${jwt}`,
+                }
+            });
+
+
+        } catch (e) {
+            console.log(e.response);
+        }
+    };
+
+    static deleteFeedback = (id, jwt) => {
+        return new Promise((resolve, reject) => {
+            axios.post("api/user/feedback/delete", {
+                object_id: id,
+            }, {
+                headers: {
+                    "Authorization": `Bearer ${jwt}`,
+                }
+            })
+                .then(res => {
+                    resolve(res.data);
+                })
+                .catch(err => {
+                    console.log(err);
+                    Reject(err, reject);
+                })
+        })
     };
 
     static getActApplicants(jwt) {
@@ -572,31 +622,27 @@ export default class Api {
                 })
         })
     };
-    static acceptApplicant(actId, userId, jwt) {
-        return new Promise((resolve, reject) => {
-            axios.post(`/api/user/act/acceptjoin?act_id=${actId}&user_id=${userId}`,
+    static acceptApplicant = async (actId, user, jwt) => {
+        let res = await axios.post(`/api/user/act/acceptjoin?act_id=${actId}&user_id=${user.id}`,
                 null, {
                 headers: {
                     "Authorization": `Bearer ${jwt}`
                 }
+            });
+    };
+    static rejectApplicant(actId, userId, jwt) {
+        console.log(actId, userId, jwt);
+        return new Promise((resolve, reject) => {
+            axios.post(`/api/user/act/refuse?act_id=${actId}&user_id=${userId}`, null, {
+                "Authorization": `Bearer ${jwt}`,
             })
                 .then(res => {
-                    resolve(res.data);
+                    resolve(res);
                 })
                 .catch(err => {
+                    console.log(err);
                     Reject(err, reject);
                 })
-        })
-    }
-    static rejectApplicant() {
-        return new Promise((resolve, reject) => {
-            try {
-                setTimeout(() => {
-                    resolve({status: 1, message: "reject ok"})
-                }, 1500)
-            }catch (err) {
-                console.log(err)
-            }
         })
     }
     static searchTakeoutStore (keyword) {
@@ -754,11 +800,12 @@ export default class Api {
                 'Authorization': `Bearer ${jwt}`,
             },
         });
-        await XmppApi.sendMessage(`user${from}`, `user${to}`, CHAT_TYPE.PRIVATE_CHAT,
-            "follow", {
-                // message
-            }
-        )
+        return res.data;
+        // await XmppApi.sendMessage(`user${from}`, `user${to}`, CHAT_TYPE.PRIVATE_CHAT,
+        //     "follow", {
+        //         // message
+        //     }
+        // )
     };
     static unFollow = async (from, to, jwt) => {
         let res = await axios.get(`/api/user/unfollow?id=${to}`, {

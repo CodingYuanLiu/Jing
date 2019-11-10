@@ -149,6 +149,13 @@ export default class ActItem extends React.PureComponent{
         )
     };
     renderTooltip = () => {
+        let deleteButton =
+            this.props.isSelf?
+            <Button
+            title={"删除"}
+            type={"clear"}
+            onPress={this.deleteAct}
+        /> : null;
         return(
             <ToolTip
                 style={[styles.miniActionContainer]}
@@ -161,11 +168,7 @@ export default class ActItem extends React.PureComponent{
                     type={"clear"}
                     onPress={this.reportThis}
                 />
-                <Button
-                    title={"删除"}
-                    type={"clear"}
-                    onPress={this.deleteAct}
-                />
+                {deleteButton}
                 <Button
                     title={"屏蔽此人"}
                     type={"clear"}

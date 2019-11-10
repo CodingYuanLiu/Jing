@@ -8,6 +8,7 @@ import {Button, ListItem} from "react-native-elements";
 import {toggleFindByPhoneSetting, toggleSaveDataSetting, toggleWaterMarkSetting} from "../../actions/setting";
 import {connect} from "react-redux";
 import LocalApi from "../../api/LocalApi";
+import {logout} from "../../actions/currentUser";
 
 
 class Settings extends React.PureComponent {
@@ -136,14 +137,18 @@ class Settings extends React.PureComponent {
         )
     };
     renderLogout = () => {
+        let {currentUser} = this.props;
+        if (!currentUser.logged || !currentUser.jwt) return null;
         return (
             <Button
-            title={"退出帐号"}
-            type={"clear"}
-            color={"#ff3835"}
-            titleStyle={styles.buttonTitle}
-            containerStyle={styles.buttonContainer}
-            TouchableComponent={TouchableWithoutFeedback}
+                title={"退出帐号"}
+                type={"clear"}
+                color={"#ff3835"}
+                titleStyle={styles.buttonTitle}
+                loading={currentUser.isLoading}
+                containerStyle={styles.buttonContainer}
+                TouchableComponent={TouchableWithoutFeedback}
+                onPress={this.logout}
             />
         )
     };
@@ -173,10 +178,7 @@ class Settings extends React.PureComponent {
         NavigationUtil.back(this.props);
     };
     logout = () => {
-        Dao.remove("@user")
-            .catch(err => {});
-        Dao.remove("@jwt")
-            .catch(err => {})
+        this.props.logout();
     };
     handleWaterMarkSettingChange = () => {
         this.setState(state => {
@@ -208,12 +210,14 @@ class Settings extends React.PureComponent {
 }
 const mapStateToProps = state => ({
     setting: state.setting,
+    currentUser: state.currentUser,
 });
 
 const mapDispatchToProps = dispatch => ({
     toggleWaterMarkSetting: (flag) => dispatch(toggleWaterMarkSetting(flag)),
     toggleSaveDataSetting: (flag) => dispatch(toggleSaveDataSetting(flag)),
     toggleFindByPhoneSetting: (flag) => dispatch(toggleFindByPhoneSetting(flag)),
+    logout: () => dispatch(logout()),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Settings);
 

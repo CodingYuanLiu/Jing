@@ -1,9 +1,15 @@
 import React from "react";
 import {StyleSheet, View, Text, FlatList, RefreshControl} from "react-native";
-import Activity from "../../../actions/activity";
 import {connect} from "react-redux";
 import ManageItem from "./MyManageItem";
-import {onDeleteCurrentUserManageAct} from "../../../actions/currentUserManage";
+import {onDeleteCurrentUserManageAct, onGetCurrentUserManageAct} from "../../../actions/currentUserManage";
+import Activity from "../../../actions/activity";
+import {
+    ACT_TYPE_ORDER,
+    ACT_TYPE_OTHER,
+    ACT_TYPE_TAKEOUT,
+    ACT_TYPE_TAXI,
+} from "../../../common/constant/Constant";
 
 class MyManage extends React.Component{
     constructor(props) {
@@ -14,7 +20,7 @@ class MyManage extends React.Component{
     }
 
     render() {
-        let manageAct = this.props.myAct.manageAct;
+        let manageAct = this.props.currentUserManage;
         if (!manageAct) {
             manageAct = {
                 items: [],
@@ -45,27 +51,51 @@ class MyManage extends React.Component{
         return (
             <ManageItem
                 {...item}
-                onDelete={this.deleteAct}
+                onDelete={this.onDelete}
+                onPublish={this.onPublish}
             />
         )
     };
     loadData = () => {
         let currentUser = this.props.currentUser;
-        this.props.onLoadMyManageAct(currentUser.jwt);
+        this.props.onGetCurrentUserManageAct(currentUser.jwt);
         console.log(this.props)
     };
-    deleteAct = (act) => {
+    onDelete = (act) => {
         let {currentUser} = this.props;
         this.props.onDeleteCurrentUserManageAct(act.id, currentUser.jwt);
     };
+    onPublish = (act) => {
+        console.log(act);
+        switch (act.type) {
+            case ACT_TYPE_TAXI:
+                this.props.saveTaxiAct(act);
+                break;
+            case ACT_TYPE_TAKEOUT:
+                this.props.saveTakeoutAct(act);
+                break;
+            case ACT_TYPE_ORDER:
+                this.props.saveOrderAct(act);
+                break;
+            case ACT_TYPE_OTHER:
+                this.props.saveOtherAct(act);
+                break;
+            default:
+                console.log("invalid type");
+        }
+    };
 }
 const mapStateToProps = state => ({
-    myAct: state.myAct,
+    currentUserManage: state.currentUserManage,
     currentUser: state.currentUser,
 });
 const mapDispatchToProps = dispatch => ({
-    onLoadMyManageAct: (jwt) => dispatch(Activity.onLoadMyManageAct(jwt)),
+    onGetCurrentUserManageAct: (jwt) => dispatch(onGetCurrentUserManageAct(jwt)),
     onDeleteCurrentUserManageAct: (id, jwt) => dispatch(onDeleteCurrentUserManageAct(id, jwt)),
+    saveOrderAct: act => dispatch(Activity.saveOrderAct(act)),
+    saveTaxiAct: act => dispatch(Activity.saveTaxiAct(act)),
+    saveOtherAct: act => dispatch(Activity.saveOtherAct(act)),
+    saveTakeoutAct: act => dispatch(Activity.saveTakeoutAct(act)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyManage)

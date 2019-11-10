@@ -17,6 +17,7 @@ const currentUserJoin = (state = initialState, action) => {
                 isLoading: true,
             };
         case GET_USER_JOIN_ACT_OK:
+            console.log(action);
             return {
                 ...state,
                 items: action.items,

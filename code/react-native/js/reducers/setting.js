@@ -1,4 +1,5 @@
 import {
+    SET_LOCATION_CITY,
     TOGGLE_FIND_BY_PHONE_SETTING,
     TOGGLE_SAVE_DATA_SETTING,
     TOGGLE_WATERMARK_SETTING
@@ -8,6 +9,7 @@ const initialState = {
     waterMarkActive: true,
     saveDataActive: false,
     findByPhoneActive: false,
+    city: "上海市",
 };
 const setting = (state = initialState, action) => {
     switch (action.type) {
@@ -25,6 +27,11 @@ const setting = (state = initialState, action) => {
             return {
                 ...state,
                 saveDataActive: action.flag,
+            };
+        case SET_LOCATION_CITY:
+            return {
+                ...state,
+                city: action.city,
             };
         default :
             return state;

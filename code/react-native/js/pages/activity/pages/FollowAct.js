@@ -171,6 +171,7 @@ class FollowActScreen extends React.PureComponent{
                         maxMember: item.maxMember,
                     }
                 }
+                isSelf={false}
                 onPress={() => {this._onPressItem(item.id)}}
             />)
     };

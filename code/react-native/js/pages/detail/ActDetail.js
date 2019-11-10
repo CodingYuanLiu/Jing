@@ -26,7 +26,7 @@ import {
     IS_SPONSOR,
     JOINED,
     JOINING,
-    NOT_JOIN,
+    NOT_JOIN, PUBLISH_ACTION,
     REJECTED
 } from "../../common/constant/Constant";
 import {WINDOW} from "../../common/constant/Constant";
@@ -141,6 +141,17 @@ class DetailScreen extends React.Component {
                 />
             )
         }
+        let modifyButton = null;
+        console.log("currentAct",currentAct);
+        if (currentAct.isSelf) {
+            modifyButton = (
+                <Button
+                    title={"编辑"}
+                    type={"clear"}
+                    onPress={this.modifyAct}
+                />
+            )
+        }
         return (
             <ToolTip
                 isVisible={this.state.isTooltipVisible}
@@ -153,6 +164,7 @@ class DetailScreen extends React.Component {
                     onPress={this.toggleEveningMode}
                 />
                 {deleteButton}
+                {modifyButton}
             </ToolTip>
         );
     };
@@ -550,7 +562,7 @@ class DetailScreen extends React.Component {
             <EditIcon
                 color={"#b4b4b4"}
                 size={24}
-                onPress={this.toPublishPage}
+                onPress={this.modifyAct}
             />
         );
         let messageOrEditButton = this.props.currentAct.isSelf ?
@@ -742,7 +754,6 @@ class DetailScreen extends React.Component {
         Api.joinAct(act, jwt)
             .then(() => {
                 this.setState({joinStatus: JOINING});
-                this.props.joinAct(user);
             })
             .catch(err => {
                 console.log(err)
@@ -801,7 +812,33 @@ class DetailScreen extends React.Component {
         }
     };
     deleteAct = () => {
-        alert("删除还没开发");
+        let {currentAct, currentUser} = this.props;
+        Api.deleteAct(currentAct.id, currentUser.jwt)
+            .then(() => {
+                NavigationUtil.toPage(null, "Home");
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    };
+    modifyAct = () => {
+        let {currentAct, currentUser} = this.props;
+        switch (currentAct.type) {
+            case ACT_TYPE_ORDER:
+                this.props.saveOrderAct(currentAct);
+                break;
+            case ACT_TYPE_TAKEOUT:
+                this.props.saveTakeoutAct(currentAct);
+                break;
+            case ACT_TYPE_TAXI:
+                this.props.saveTaxiAct(currentAct);
+                break;
+            case ACT_TYPE_OTHER:
+                this.props.saveOtherAct(currentAct);
+                break;
+        }
+        this.setState({isTooltipVisible: false});
+        NavigationUtil.toPage({action: PUBLISH_ACTION.MODIFY, type: currentAct.type}, "PublishPage");
     };
     toggleEveningMode = ()　=> {
         alert("没有事情发生")

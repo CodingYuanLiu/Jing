@@ -5,7 +5,7 @@ import Theme from "../../../common/constant/Theme";
 import {DotIcon, FoodIcon, MultiUserIcon, ShoppingBagIcon, TaxiIcon} from "../../../common/components/Icons";
 import {PropTypes} from "prop-types";
 import NavigationUtil from "../../../navigator/NavUtil";
-import {ACT_EXPIRED, ACT_RUNNING} from "../../../common/constant/Constant";
+import {ACT_EXPIRED, ACT_RUNNING, PUBLISH_ACTION} from "../../../common/constant/Constant";
 import ToolTip from "../../../common/components/ToolTip";
 
 
@@ -23,7 +23,6 @@ export default class ManageItem extends React.Component{
         let titleComponent = this.renderTitle(title);
         let descriptionComponent = this.renderDesc(description);
         let footerComponent = this.renderFooter(createTime, status);
-        let deleteConfirmModal = this.renderDeleteConfirmModal();
         return (
             <TouchableWithoutFeedback
                 onPress={this.toActDetail}
@@ -35,7 +34,6 @@ export default class ManageItem extends React.Component{
                         {descriptionComponent}
                         {footerComponent}
                     </View>
-                    {deleteConfirmModal}
                 </View>
             </TouchableWithoutFeedback>
         )
@@ -103,14 +101,13 @@ export default class ManageItem extends React.Component{
     };
     renderToolTip = () => {
         let act = this.props;
-        let feedbackButton = act.status === ACT_EXPIRED ?
-            (
+        let feedbackButton =
                 <Button
                     title={"评价"}
                     type={"clear"}
                     onPress={() => {this.toFeedback(act)}}
                 />
-            ): null;
+
         let deleteButton = (
             <Button
                 title={"删除"}
@@ -210,11 +207,6 @@ export default class ManageItem extends React.Component{
             />
         );
     };
-    renderDeleteConfirmModal = () => {
-        return (
-            null
-        )
-    };
     toActDetail = () => {
         this.setState({isTooltipVisible: false});
         let {id} = this.props;
@@ -226,7 +218,8 @@ export default class ManageItem extends React.Component{
     };
     toPublishPage = (act) => {
         this.setState({isTooltipVisible: false});
-        NavigationUtil.toPage({mode: "edit", act: act}, "PublishPage");
+        this.props.onPublish(act);
+        NavigationUtil.toPage({action: PUBLISH_ACTION.MODIFY, type: act.type}, "PublishPage");
     };
     deleteAct = (act) => {
         this.setState({isTooltipVisible: false});
@@ -239,6 +232,8 @@ ManageItem.propTypes = {
     description: PropTypes.string,
     createTime: PropTypes.string,
     status: PropTypes.number,
+
+    onPublish: PropTypes.func,
     onDelete: PropTypes.func,
 };
 

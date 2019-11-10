@@ -13,9 +13,10 @@ import {onGetCurrentUserManageAct} from "./actions/currentUserManage";
 import {onGetCurrentUserJoinAct} from "./actions/currentUserJoin";
 import {setUserData} from "./actions/currentUser";
 import XmppApi from "./api/XmppApi";
-import {onLoadSettings} from "./actions/setting";
+import {onLoadSettings, setCity} from "./actions/setting";
 import {PermissionsAndroid} from "react-native";
 import Util from "./common/util";
+import {Geolocation, init} from "react-native-amap-geolocation/lib/js";
 
 
 var base64 = require('base-64');
@@ -40,6 +41,14 @@ export default class App extends React.Component {
             });
         this.getPermission()
             .catch();
+        init({
+            android: "617d2c2e23b1d390b3ab75e14975ec32",
+        }).then(() => {
+            Geolocation.getCurrentPosition((nativeEvent) => {
+                store.dispatch(setCity(nativeEvent.location.city))
+            })
+
+        });
         StatusBar.setBackgroundColor("#0084ff", true);
     }
 

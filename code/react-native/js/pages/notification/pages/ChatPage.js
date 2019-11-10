@@ -16,6 +16,14 @@ import {PrivateMessageApi} from "../../../api/PrivateMessageApi";
 import ToolTip from "../../../common/components/ToolTip";
 import {addPrivateMessage, getPrivateChatHistory, forceFlushPrivateMessage} from "../../../actions/privateChat";
 import ImagePicker from "react-native-image-picker";
+import {
+    addGroupChatMessage,
+    flushGroupChatMessage,
+    getGroupChatHistory,
+    toggleHasPresence
+} from "../../../actions/groupChat";
+import GroupChatApi from "../../../api/GroupChatApi";
+
 
 class ChatPage extends React.PureComponent{
     constructor(props) {
@@ -34,9 +42,16 @@ class ChatPage extends React.PureComponent{
     }
 
     render() {
-        let {currentUser, privateChat} = this.props;
+        let {currentUser, privateChat, groupChat} = this.props;
         let receiver = this.props.navigation.getParam("receiver");
-        let chatProps = privateChat[receiver.id];
+        let type = this.props.navigation.getParam("type");
+        let chatProps;
+        if (type === CHAT_TYPE.PRIVATE_CHAT) {
+            chatProps = privateChat[receiver.id];
+        } else {
+            chatProps = groupChat[receiver.id];
+        }
+
         if (!chatProps) {
             chatProps = {
                 messages: [],
@@ -77,6 +92,7 @@ class ChatPage extends React.PureComponent{
                     }
                     renderAvatarOnTop={true}
                     inverted={false}
+                    renderUsernameOnMessage={type === CHAT_TYPE.GROUP_CHAT}
                 />
             </View>
         )
@@ -216,12 +232,12 @@ class ChatPage extends React.PureComponent{
     };
     sendAsync = async (props, message) => {
         let receiver = this.props.navigation.getParam("receiver");
-        try {
-            this.props.addPrivateMessage(receiver.id, message);
-            let type = this.props.navigation.getParam("type");
-            let {currentUser} = this.props;
+        let {currentUser} = this.props;
+        let type = this.props.navigation.getParam("type");
 
+        try {
             if( type === CHAT_TYPE.PRIVATE_CHAT) {
+                this.props.addPrivateMessage(receiver.id, message);
                 let data = await PrivateMessageApi.addMessage({
                     text: message.text,
                     image: message.image,
@@ -235,27 +251,46 @@ class ChatPage extends React.PureComponent{
                 }, this.props.currentUser.jwt);
                 message.image = data.message.image;
                 let from = XmppApi.getJid(this.props.currentUser, CHAT_TYPE.PRIVATE_CHAT);
-                let to = XmppApi.getJid(this.props.navigation.getParam("receiver"), CHAT_TYPE.PRIVATE_CHAT);
+                let to = XmppApi.getJid(receiver, CHAT_TYPE.PRIVATE_CHAT);
                 await XmppApi.sendMessage(
                     from, to, CHAT_TYPE.PRIVATE_CHAT, "normal",
                     message,
                 );
                 console.log(message);
+
             } else {
                 let from = XmppApi.getJid(this.props.currentUser, CHAT_TYPE.PRIVATE_CHAT);
-                let to = XmppApi.getJid(null, CHAT_TYPE.GROUP_CHAT);
+                let to = XmppApi.getJid(receiver, CHAT_TYPE.GROUP_CHAT);
+                this.props.addGroupChatMessage(message, receiver.id);
+                let image;
+                console.log("message", message);
+                if (!!message.image) {
+                    image = await GroupChatApi.uploadImages(message.image);
+                }
+                message.image = image;
                 await XmppApi.sendMessage(
-                    from, to, CHAT_TYPE.GROUP_CHAT, props.messageIdGenerator(),
+                    from, to, CHAT_TYPE.GROUP_CHAT, "groupchat",
                     message
                 );
             }
             message.pending = false;
-            this.props.forceFlushPrivateMessage(receiver.id, message);
+
+            if (type === CHAT_TYPE.PRIVATE_CHAT) {
+                this.props.forceFlushPrivateMessage(receiver.id, message);
+            }else {
+                // ...
+                this.props.flushGroupChatMessage(receiver.id, message);
+            }
         } catch (err) {
             console.log(err);
             message.pending = false;
             message.error = err;
-            this.props.forceFlushPrivateMessage(receiver.id, message);
+            if (type === CHAT_TYPE.PRIVATE_CHAT) {
+                this.props.forceFlushPrivateMessage(receiver.id, message);
+            } else {
+                // ...
+                this.props.flushGroupChatMessage(receiver.id, message);
+            }
         }
     };
     buildMessage = (props) => {
@@ -328,14 +363,26 @@ class ChatPage extends React.PureComponent{
         let {currentUser} = this.props;
         if (type === CHAT_TYPE.PRIVATE_CHAT) {
             let {privateChat} = this.props;
-            if (!privateChat.hasLoadHistory) {
-                let {id} = receiver;
+            let {id} = receiver;
+            if (!privateChat[id] || !privateChat[id].hasLoadHistory) {
+
                 this.props.getPrivateChatHistory(id, currentUser.jwt);
             } else {
                 // do nothing
+                console.log("do nothing");
             }
         } else if(type === CHAT_TYPE.GROUP_CHAT) {
+            let {groupChat} = this.props;
+            let {id} = receiver;
+            if (!groupChat[id] || !groupChat[id].hasLoadHistory) {
 
+                this.props.toggleHasPresence(id, currentUser.jwt);
+                XmppApi.presenceAtGroupChat(id, currentUser.id)
+                    .catch(err => console.log(err))
+            } else {
+                // do nothing
+                console.log("do nothing");
+            }
         } else {
             console.log("miss type param");
         }
@@ -356,14 +403,15 @@ const options = {
 const mapStateToProps = state => ({
     currentUser: state.currentUser,
     privateChat: state.privateChat,
-    chtRoom: state.chatRoom,
+    groupChat: state.groupChat,
 });
 const mapDispatchToProps = dispatch => ({
     getPrivateChatHistory: (senderId, jwt) => dispatch(getPrivateChatHistory(senderId, jwt)),
     addPrivateMessage: (id, message) => dispatch(addPrivateMessage(id, message)),
     forceFlushPrivateMessage: (id, message) => dispatch(forceFlushPrivateMessage(id, message)),
-    getChatRoomHistory: () => dispatch(),
-    addChatRoomMessage: () => dispatch(),
+    addGroupChatMessage:(message, id) => dispatch(addGroupChatMessage(message, id)),
+    toggleHasPresence: (id) => dispatch(toggleHasPresence(id)),
+    flushGroupChatMessage: (id, message) => dispatch(flushGroupChatMessage(id, message)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatPage);

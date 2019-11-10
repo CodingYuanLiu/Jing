@@ -918,6 +918,46 @@ class AlertCircleIcon extends React.PureComponent{
             />)
     }
 }
+
+class DateIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+
+        return (
+            <Icon
+                type={"material"}
+                name={"date-range"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
+
+class InformationIcon extends React.PureComponent{
+    constructor(props) {
+        super(props)
+    }
+    render() {
+        let {size, color, style, onPress} = this.props;
+
+        return (
+            <Icon
+                type={"material-community"}
+                name={"information"}
+                color={color}
+                size={size}
+                containerStyle={style}
+                onPress={onPress ? onPress : null}
+                {...this.props}
+            />)
+    }
+}
 export {
     // Configure the magic constant here
     SearchIcon,
@@ -970,4 +1010,6 @@ export {
     EyeIcon,
     EyeOffIcon,
     AlertCircleIcon,
+    DateIcon,
+    InformationIcon,
 }

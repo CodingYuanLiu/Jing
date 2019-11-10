@@ -1,6 +1,7 @@
 import Util from "../common/util";
 import Dao from "./Dao";
 import awaitAsyncGenerator from "@babel/runtime/helpers/esm/awaitAsyncGenerator";
+import groupChat from "../reducers/groupChat";
 
 export default class LocalApi {
     static savePublishDraft = async (item) => {
@@ -234,4 +235,65 @@ export default class LocalApi {
             console.log(e);
         }
     };
+
+    static removeToken = async () => {
+        try {
+            await Dao.remove("@jwt");
+        }catch (e) {
+            console.log(e);
+        }
+    };
+
+    static getGroupChatHistory = async (id) => {
+        try {
+            let res = JSON.parse( await Dao.get("@groupChatHistory") );
+            for (let item of res[id].messages) {
+                item.pending = false;
+            }
+            return res[id];
+        } catch (e) {
+            console.log(e);
+            return {
+                messages: [],
+                total: 0,
+            };
+        }
+    };
+
+    static saveGroupChatMessage = async (id, message) => {
+        try{
+            let history;
+            try {
+                let res = await Dao.get("@groupChatHistory");
+                history = JSON.parse(res);
+            } catch (e) {
+                history = {};
+            }
+
+            let chat = history[id];
+            if(!chat) {
+                chat = {
+                    messages: [],
+                    total: 0,
+                };
+                history[id] = chat;
+            }
+            chat.messages.push(message);
+            chat.total++;
+            console.log("history", chat);
+            await Dao.saveJson("@groupChatHistory", history);
+        }catch (e) {
+            console.log(e)
+        }
+    };
+
+    static removeHistory = async (id) => {
+        try {
+            let history = JSON.parse(await Dao.get("groupChatHistory"));
+            history[id] = null;
+            await Dao.saveJson("@groupChatHistory", history);
+        }catch (e) {
+            console.log(e);
+        }
+    }
 }

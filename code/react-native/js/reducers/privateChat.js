@@ -9,6 +9,7 @@ import {
 const initialState = {
     chatList: [],
     isLoading: false,
+    hasLoadHistory: false,
 };
 
 const flushPrivateMessage = (messages, message) => {
@@ -20,6 +21,25 @@ const flushPrivateMessage = (messages, message) => {
     }
     return [...messages];
 };
+
+const flushMessageList  = (state, id, snippet) => {
+    let chatList = state.chatList;
+    console.log(state, id, snippet);
+    let list = [];
+    if (!chatList && Array.isArray(chatList)) {
+        for (let item of chatList) {
+            if (item.id === id) {
+                item.text = snippet.text;
+                item.image = snippet.image;
+                item.createdAt = snippet.createdAt
+            }
+            list.push(item)
+        }
+    }
+
+    return list;
+};
+
 
 const privateChat = (state=initialState, action) => {
     switch (action.type) {

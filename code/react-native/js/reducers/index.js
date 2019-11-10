@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 import currentAct from "./currentAct";
 import recommendAct from "./recommendAct";
-import myAct from "./myAct";
 import typeAct from "./typeAct";
 import currentUser from "./currentUser";
 import publishAct from "./publishAct";
@@ -12,7 +11,7 @@ import currentUserJoin from "./currentUserJoin";
 import currentUserManage from "./currentUserManage";
 import setting from "./setting";
 import personalHome from "./personalHome";
-import chatRoom from "./chatRoom";
+import groupChat from "./groupChat";
 import privateChat from "./privateChat";
 
 export default combineReducers({
@@ -23,13 +22,12 @@ export default combineReducers({
     currentUserFollower,
     currentUserJoin,
     currentUserManage,
-    myAct,
     personalHome,
     publishAct,
     recommendAct,
     typeAct,
     setting,
-    chatRoom,
+    groupChat,
     privateChat,
 })
 

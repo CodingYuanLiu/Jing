@@ -28,7 +28,7 @@ class SystemNoticeScreen extends React.PureComponent{
                 <FlatList
                     data={this.state.noticeList}
                     renderItem={this.renderItem}
-                    keyExtractor={item => item.act_id.toString() + item.applicant_id.toString()}
+                    keyExtractor={item => item.act.id.toString() + item.applicant.id.toString()}
                     refreshControl={
                         <RefreshControl
                             refreshing={this.state.isLoading}
@@ -46,16 +46,7 @@ class SystemNoticeScreen extends React.PureComponent{
     renderItem = ({item}) => {
         return (
             <NoticeItem
-                applicant={{
-                    id: item.applicant_id,
-                    nickname: item.applicant_nickname,
-                    avatar: item.applicant_avatar,
-                }}
-                act={{
-                    id: item.act_id,
-                    title: item.act_title,
-                    type: item.type,
-                }}
+                {...item}
                 isRejecting={item.isRejecting}
                 isAccepting={item.isAccepting}
                 onReject={() => {this.reject(item)}}
@@ -93,7 +84,7 @@ class SystemNoticeScreen extends React.PureComponent{
     accept = (item) => {
         item.isAccepting=true;
         let currentUser = this.props.currentUser;
-        Api.acceptApplicant(item.act_id, item.applicant_id, currentUser.jwt)
+        Api.acceptApplicant(item.act.id, item.applicant, currentUser.jwt)
             .then((res) => {
                 console.log(res);
                 ToastAndroid.show("接受成功", 1000);
@@ -108,14 +99,14 @@ class SystemNoticeScreen extends React.PureComponent{
     };
     reject = (item) => {
         let currentUser = this.props.currentUser;
-        Api.rejectApplicant(item.act_id, item.applicant_id, currentUser.jwt)
+        Api.rejectApplicant(item.act.id, item.applicant.id, currentUser.jwt)
             .then((res) => {
                 console.log(res);
-                ToastAndroid.show("假的拒绝成功", 1000);
+                ToastAndroid.show("拒绝成功", 1000);
             })
             .catch(err => {
                 console.log(err);
-                ToastAndroid.show("假的拒绝失败", 1000);
+                ToastAndroid.show("拒绝失败", 1000);
             })
             .finally(() => {
                 item.isRejecting = false;
