@@ -25,7 +25,11 @@
         "pages/feedback/feedbackuser/feedbackuser",
         "pages/answer/participants/participants",
         "pages/showUserinfo/fb_comments/fb_comments",
-        "pages/my/myAct/myAct"
+        "pages/my/myAct/myAct",
+        "pages/my/help/help",
+        "pages/my/about/about",
+        "pages/showUserinfo/detail/detail",
+        "pages/my/setting/setting"
     ],
     "permission": {
         "scope.userLocation": {

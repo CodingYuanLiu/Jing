@@ -1,5 +1,5 @@
 <view class="container more">
-    <image style="width: 100%; position: absolute; top: 0" src="/images/mybackground.png"></image>
+    <image style="width: 100%; position: absolute; top: 0; height: 90px" src="/images/mybackground.png"></image>
     <i-card style="width:98vw; margin-top: 15px" title="  {{log?userInfo.nickname:'登录即应，更多功能'}}" extra="" thumb="{{avatar_src}}" i-class="card-demo">
         <view slot="content" >
             <i-row wx:if="{{log}}">
@@ -40,77 +40,17 @@
                     <text class="edit">查看或编辑个人主页</text>
                 </view>s
             </view> -->
-    <i-cell-group style="margin-top: 10px;width: 100vw;">
+    <i-cell-group wx:if="{{log}}" style="margin-top: 10px;width: 100vw;">
         <i-cell title="我的活动" is-link url="/pages/my/myAct/myAct"></i-cell>
-        <i-cell title="正在参与" is-link url="/pages/my/currentAct/currentAct"></i-cell>
-        <i-cell title="已结束" is-link url="/pages/my/endedAct/endedAct"></i-cell>
+        <!-- <i-cell title="正在参与" is-link url="/pages/my/currentAct/currentAct"></i-cell> -->
+        <i-cell title="缓存设置" is-link url="/pages/my/setting/setting"></i-cell>
     </i-cell-group>
     <i-cell-group style="margin-top: 10px;margin-bottom: 10px; width: 100vw">
-        <i-cell title="客服中心" is-link url=""></i-cell>
-        <i-cell title="反馈" is-link url=""></i-cell>
-        <i-cell title="用户满意度调研" is-link url=""></i-cell>
+        <!-- <i-cell title="使用帮助" is-link url="./help/help"></i-cell> -->
+        <i-cell title="关于即应" is-link url="./about/about"></i-cell>
+        <i-cell wx:if="{{log}}" title="修改个人信息" is-link url="../userinfo/userinfo"></i-cell>
         <!-- <i-cell title="去评价" is-link url="/pages/dashboard/index"></i-cell> -->
     </i-cell-group>
-    <!-- <view style="width: 100vw" class="my"> -->
-
-        <!-- <view class="my-item flex-wrp" bindtap="handlePub">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/pubed_line.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>我发布的</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="handleJoin">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/add_line.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>我加入的</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/editing_line.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>我的草稿</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="handleLook">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/recent_line.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>最近浏览</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="handleFollowing">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/following.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>我关注的</text>
-            </view>
-        </view>
-        <view class="my-item flex-wrp" bindtap="handleFollower">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/follower.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>关注我的</text>
-            </view>
-        </view> -->
-        <!-- <view class="my-item flex-wrp" bindtap="handleFeedback">
-            <view class="myitem-icon flex-item">
-                <image src="../../images/icons/feedback.png"></image>
-            </view>
-            <view class="myitem-name flex-item">
-                <text>用户反馈</text>
-            </view>
-        </view> -->
-
-    <!-- </view> -->
     <!-- <button open-type='feedback'>意见反馈</button> -->
     <view hidden="{{!log}}" style="width: 100%; background: white; float: bottom">
         <i-button style="width: 100%" type="error" bind:click="handleLogout">退出登录</i-button>

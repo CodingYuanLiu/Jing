@@ -1,4 +1,5 @@
 <!--pages/showuserinfo/showuserinfo.wxml-->
+<i-toast id="toast" />
 <view hidden="{{!error}}">network error</view>
 <view hidden="{{error}}">
     <view class="user flex-wrp">
@@ -8,14 +9,44 @@
         <view class="user-info flex-item">
             <text style="font-size:40rpx; padding-top: 20rpx">{{user.nickname}}</text>
         </view>
+        <view class="follow flex-item" bindtap="handleFollow">
+            <text wx:if="{{!followed}}">十 关注</text>
+            <text wx:if="{{followed}}">已关注</text>
+        </view>
     </view>
+</view>
+<i-cell-group>
+    <i-cell bind:click="handleToDetail" title="{{user.major!==''?user.major:'未填写'}} 专业" value="点击查看详细信息" is-link></i-cell>
+</i-cell-group>
+<view style="margin: 30px">
+
+
+    <!-- 平均分 -->
+    <i-row>
+        <i-col span="6" i-class="col-class">
+            沟通
+            <view style="font-size: 25px">{{avgC}}</view>
+        </i-col>
+        <i-col span="6" i-class="col-class">
+            守时
+            <view style="font-size: 25px">{{avgP}}</view>
+        </i-col>
+        <i-col span="6" i-class="col-class">
+            诚信
+            <view style="font-size: 25px;">{{avgH}}</view>
+        </i-col>
+        <i-col span="6" i-class="col-class">
+            退出率
+            <view style="font-size: 25px;">{{quitRatio}}</view>
+        </i-col>
+    </i-row>
 </view>
 <view hidden="{{error}}">
     <i-tabs current="{{ current }}" bindchange="handleChange">
-        <i-tab key="tab1" title="个人信息">
+        <i-tab key="tab1" title="发布">
 
         </i-tab>
-        <i-tab key="tab2" title="过往评价">
+        <i-tab key="tab2" title="评价">
             <!-- <i-panel title="活动评价"> -->
 
             <!-- </i-panel> -->
@@ -24,28 +55,26 @@
     </i-tabs>
     <!-- <i-panel title="个人信息"> -->
     <view wx:if="{{current === 'tab1'}}">
-        <view style="margin: 30px">
-            <!-- 平均分 -->
-            <i-row>
-                <i-col span="6" i-class="col-class">
-                    沟通
-                    <view style="font-size: 25px">{{avgC}}</view>
-                </i-col>
-                <i-col span="6" i-class="col-class">
-                    守时
-                    <view style="font-size: 25px">{{avgP}}</view>
-                </i-col>
-                <i-col span="6" i-class="col-class">
-                    诚信
-                    <view style="font-size: 25px;">{{avgH}}</view>
-                </i-col>
-                <i-col span="6" i-class="col-class">
-                    退出率
-                    <view style="font-size: 25px;">{{quitRatio}}</view>
-                </i-col>
-            </i-row>
+        <view class="container">
+            <block wx:for="{{acts}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
+                <view class="feed-item" style="margin: 0;">
+                    <view class="" style="padding: 0" bindtap="bindQueTap" data-id="{{item.act_id}}">
+                        <view class="">
+                            <a class="">
+                                <text style="font-size: 17px">{{item.title}} {{status_show[item.status]}}</text>
+                            </a>
+                        </view>
+                        <view class="">
+                            <view data-id="{{act_id}}">
+                                <text class="" aid="{{act_id}}" style="font-size:16px;color:darkgrey;margin-top: 5px">{{item.description}}</text>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </block>
         </view>
-        <view style="margin: 10px">
+
+        <!-- <view style="margin: 10px">
             <i-input value="{{ user.username }}" disabled type="text" maxlength="10" title="用户名" />
             <i-input value="{{ user.nickname }}" disabled type="text" maxlength="10" title="昵称" />
             <i-input value="{{ user.signature }}" disabled type="text" title="个性签名" maxlength="50" />
@@ -55,7 +84,7 @@
             <i-input value="{{ user.major }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="专业" maxlength="11" />
             <i-input value="{{ genders[user.gender] }}" wx:if="{{user.privacy === 0}}" disabled type="text" title="性别" maxlength="11" />
             <i-input value="{{ levels[user.privacy+1] }}" disabled type="text" title="隐私设置" maxlength="11" />
-        </view>
+        </view> -->
 
     </view>
     <!-- </i-panel> -->
@@ -66,25 +95,25 @@
                 <view slot="content">
 
                     <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                        <label style="display:inline-block">沟通</label>
+                        <label style="display:inline-block; font-size: 16px; color: black">沟通</label>
                         <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.communication}}" data-id="{{item.id}}">
                         </i-rate>
                     </view>
-                    <i-input value="{{item.communication_desc}}" disabled type="text" maxlength="100" title="" />
+                    <i-input style="color: #A9A9A9" value="{{item.communication_desc}}" disabled type="text" maxlength="100" title="" />
                     <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                        <label style="display:inline-block">守时</label>
+                        <label style="display:inline-block; font-size: 16px; color: black">守时</label>
                         <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.punctuality}}" data-id="{{item.id}}">
                         </i-rate>
                     </view>
-                    <i-input value="{{item.punctuality_desc}}" disabled type="text" maxlength="100" title="" />
+                    <i-input style="color: #A9A9A9" value="{{item.punctuality_desc}}" disabled type="text" maxlength="100" title="" />
 
                     <!-- <text style="margin-left:300rpx">{{item.punctuality_desc}}</text> -->
                     <view style="padding-left: 15px;padding-top: 5px;display:inline-block;width:100%">
-                        <label style="display:inline-block">诚信</label>
+                        <label style="display:inline-block; font-size: 16px; color: black">诚信</label>
                         <i-rate disabled style="display:inline-block; float: right; padding-right: 20px" size="27" value="{{item.honesty}}" data-id="{{item.id}}">
                         </i-rate>
                     </view>
-                    <i-input value="{{item.honesty_desc}}" disabled type="text" maxlength="100" title="" />
+                    <i-input style="color: #A9A9A9" value="{{item.honesty_desc}}" disabled type="text" maxlength="100" title="" />
 
                     <!-- <text style="margin-left:300rpx">{{item.honesty_desc}}</text> -->
                 </view>

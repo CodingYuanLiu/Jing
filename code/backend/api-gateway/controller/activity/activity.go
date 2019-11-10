@@ -495,10 +495,12 @@ func (activityController *Controller) AcceptJoinActivity(c *gin.Context) {
 		c.Abort()
 		return
 	} else if status == 2 {
+		dao.DeleteApplication(actId,userId)
 		c.JSON(http.StatusBadRequest,map[string] string{
 			"message": "The activity has expired",
 		})
 		c.Abort()
+
 		return
 	} else if status == -1 {
 		jing.SendError(c,jing.NewError(1,400,"The activity is blocked"))

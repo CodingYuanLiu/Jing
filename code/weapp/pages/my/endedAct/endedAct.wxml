@@ -1,5 +1,5 @@
 <!--pages/my/mypublish/mypublish.wxml-->
-<view hidden="{{!no_content}}"> 暂无 </view>
+<view hidden="{{!no_content}}"> 暂无相关活动 </view>
 <scroll-view scroll-y="true" class="container discovery">
     <view class="ctnt0">
         <block wx:for="{{acts}}" wx:for-index="idx" wx:for-item="item" data-idx="{{idx}}">
@@ -37,9 +37,8 @@
                             <!-- <view class="follow-it">
                                 <a>{{item.comment_num}} 关注</a>
                             </view> -->
-                            <label style="width: 19vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleParticipants" data-id="{{item.act_id}}">查看参与者</label>
-                            <label wx:if="{{item.status!==2}}" style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleModify" data-mode="{{item.type}}" data-id="{{item.act_id}}">修改</label>
-
+                            
+                            <label wx:if="{{item.status===2}}" style="width: 8vw; display: inline-block;float:right;font-size: 15px;color: white;background: #1296db;border: 1px solid;border-radius:4px; padding: 3px" bindtap="handleFeedback" data-id="{{item.act_id}}">评价</label>
                         </view>
                     </view>
                 </view>

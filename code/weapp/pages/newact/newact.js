@@ -3,6 +3,7 @@ let app = getApp();
 const {
     $Toast
 } = require('../../dist/base/index');
+
 import WxValidate from '../../utils/WxValidate.js'
 
 Page({
@@ -70,7 +71,7 @@ Page({
             }
         }
         this.WxValidate = new WxValidate(rules, messages)
-    }, 
+    },
     //调用验证函数 
     formSubmit: function(e) {
         console.log('form发生了submit事件，携带的数据为：', e.detail.value)
@@ -84,7 +85,33 @@ Page({
             msg: '提交成功'
         })
     },
-
+    createChatRoom: function(actid, title, des, maxUsers, userid) {
+        let data = 　 {
+            roomName: 'act' + actid,
+            publicRoom: false,
+            naturalName: title,
+            description: des,
+            maxUsers: maxUsers,
+            canOccupantsChangeSubject: false,
+            canChangeNickname: false,
+            persistent: true,
+            owners: ['user' + userid + '@202.120.40.8', ],
+            // admins: ['user' + userid + '@202.120.40.8', ]
+        };
+        console.log(data)
+        wx.request({
+            url: 'http://202.120.40.8:30257/plugins/restapi/v1/chatrooms',
+            method: 'POST',
+            header: {
+                "Authorization": 'lqynb',
+                "Content-Type": 'application/json'
+            },
+            data: data,
+            success: function(res) {
+                console.log(res)
+            }
+        })
+    },
     // submit click
     handleClick1: function(event) {
         setTimeout(this.handleClick1(event), 300);
@@ -139,8 +166,10 @@ Page({
                     "images": that.data.base,
                     "max_member": parseInt(that.data.max_member)
                 },
-                success: function() {
+                success: function(res) {
                     console.log("naviback")
+                    console.log(res)
+                    that.createChatRoom(res.data.act_id, that.data.title, 'des-test', that.data.max_member, app.globalData.userid)
                     wx.switchTab({
                         url: '/pages/index/index',
                     })

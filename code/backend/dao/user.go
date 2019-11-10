@@ -33,7 +33,7 @@ type Join struct {
 	ID 		int 		`gorm:"primary_key;auto_increment"`
 	UserID	int
 	ActID	int
-	IsAdmin int		// 0: common member 1: publisher -1: applicant -2: pigeon
+	IsAdmin int		// 0: common member 1: publisher -1: applicant -2: pigeon -3: rejected
 }
 
 type TagDict struct{
@@ -152,6 +152,10 @@ func GetAllUserActivityInt32(userId int) (acts []int32) {
 func DeleteActivity(actId int) error {
 	db.Where("act_id = ?", actId).Delete(Join{})
 	return nil
+}
+
+func DeleteApplication(actId int,userId int){
+	db.Where("act_id = ? and user_id = ?",actId, userId).Delete(Join{})
 }
 
 func GetJoinedActivity(userId int) (acts []int) {

@@ -6,7 +6,6 @@ Page({
         input: '',
         curButton: -1,
         oldFeed: [],
-        oldFed: [],
         category: [{
             "idx": 0,
             "r": [{
@@ -103,7 +102,8 @@ Page({
                 feed_data = res.data.acts;
                 that.setData({
                     feed: feed_data,
-                    feed_length: feed_data.length
+                    feed_length: feed_data.length,
+                    oldFeed: feed_data
                 });
             }
         })
