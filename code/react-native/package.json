@@ -18,7 +18,7 @@
     "prop-types": "latest",
     "qs": "^6.7.0",
     "react": "16.8.6",
-    "react-native": "0.60.0",
+    "react-native": "0.62.3",
     "react-native-amap-geolocation": "^1.0.4",
     "react-native-amap3d": "^1.1.1",
     "react-native-device-info": "^2.3.2",
